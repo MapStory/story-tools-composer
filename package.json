@@ -1,0 +1,17 @@
+{
+  "name": "story-tools-composer",
+  "version": "0.0.1",
+  "description": "",
+  "main": "js/composer.js",
+  "scripts": {
+    "bundle": "webpack",
+    "server": "node_modules/.bin/webpack-dev-server"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5",
+    "story-tools": "git+https://git@github.com/mapstory/story-tools.git",
+    "angular": "^1.5.0"
+  }
+}
