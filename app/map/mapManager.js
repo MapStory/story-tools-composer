@@ -1,5 +1,6 @@
 function MapManager($http, $q, $log, $rootScope, $location, $compile,
                     StoryPinLayerManager, stStoryMapBuilder, stLocalStorageSvc, stAnnotationsStore, stEditableLayerBuilder, EditableStoryMap, stStoryMapBaseBuilder, stEditableStoryMapBuilder) {
+    console.log('!DJA hello?');
     this.storyMap = new EditableStoryMap({target: 'map'});
     window.storyMap = this.storyMap;
     StoryPinLayerManager.map = this.storyMap;

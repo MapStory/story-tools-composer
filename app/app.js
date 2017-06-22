@@ -92,4 +92,4 @@ function getServer(name) {
 require('./map');
 require('./style');
 require('./layers');
-require('./navigation');
+require('./ui');
