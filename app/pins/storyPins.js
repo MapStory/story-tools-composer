@@ -5,7 +5,7 @@ function storyPins() {
     },
     link: function(scope) {
     },
-    templateUrl: "app/ui/templates/pin-sidebar.html"
+    templateUrl: "app/pins/templates/storypin-sidebar.html"
   };
 }
 

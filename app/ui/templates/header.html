@@ -1,0 +1,20 @@
+<header>
+    <div class="story-info">
+        <h1>{{ mapManager.title}}</h1>
+        <a href="#">Edit story info</a>
+    </div>
+    <div class="preview">
+        <div class="form-field">
+            <label for="timeline">Preview mode</label>
+            <label class="switch">
+                <input type="checkbox" ng-model="mode.preview" for="sidebar" ng-click="togglePreviewMode()">
+                <div class="slider round"></div>
+            </label>
+        </div>
+    </div>
+    <div class="autosave">
+        <p>Last edit was 6 days ago<p>
+        <button>Save</button>
+        <button>Publish</button>
+    </div>
+</header>
