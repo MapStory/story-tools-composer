@@ -9,9 +9,14 @@
   },
   "keywords": [],
   "devDependencies": {
-    "webpack": "^2.6.1",
-    "webpack-dev-server": "^2.4.5",
+    "angular": "^1.5.0",
+    "css-loader": "^0.28.4",
+    "extract-text-webpack-plugin": "^2.1.2",
+    "less": "^2.7.2",
+    "less-loader": "^4.0.4",
     "story-tools": "git+https://git@github.com/mapstory/story-tools.git",
-    "angular": "^1.5.0"
+    "style-loader": "^0.18.2",
+    "webpack": "^2.6.1",
+    "webpack-dev-server": "^2.4.5"
   }
 }
