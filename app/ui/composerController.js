@@ -32,6 +32,7 @@ function composerController($scope, $log, $compile, $http, $injector, MapManager
     };
 
     $scope.togglePreviewMode = function() {
+      console.log('!DJA ---> toggle preview mode');
       if ($scope.mode && $scope.mode.preview === true) {
         $scope.mapWidth = '100%'
       } else {

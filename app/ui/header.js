@@ -1,8 +1,7 @@
 function composerHeader() {
   return {
-    restrict: 'E',
-    scope: {
-    },
+    restrict: 'EA',
+    scope: false,
     link: function(scope) {
     },
     templateUrl: "app/ui/templates/header.html"
