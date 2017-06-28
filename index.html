@@ -20,36 +20,15 @@
   <script src="js/app.bundle.js"></script>
 </head>
 <body ng-controller="composerController as composer">
-<div id="appwrap">
-<composer-header></composer-header>
-<sidebar></sidebar>
-<div class="map-area">
-    <!--div class="interactive-banner">
-        <strong>Placement for "Default StoryFrame":</strong> Place your StoryFrame over the part of the map you want
-        viewers to see when they play the story. Drag the corners to resize.
+  <div id="appwrap">
+    <composer-header></composer-header>
+    <sidebar></sidebar>
+    <div class="map-area">
+        <div id="map" ng-style="{'width':mapWidth}"></div>
+        <div featureinfobox id="info-box" ng-show="featureInfoService.getSelectedItem() && featureInfoService.getEnabled()"
+         class="feature-info-box-popup"></div>
+        <time-controls></time-controls>
     </div>
-    <div class="stLegend"></div-->
-    <div id="map" ng-style="{'width':mapWidth}"></div>
-    <div featureinfobox id="info-box" ng-show="featureInfoService.getSelectedItem() && featureInfoService.getEnabled()"
-     class="feature-info-box-popup">
-</div>
-    <div id="footer" class='floating-below'
-         ng-show="timeControlsManager.timeControls && timeControlsManager.timeControls.isReady() " ng-style="{'width':mapWidth}">
-        <div id="time-controls-panel2" style="background: #34495e;">
-            <div class="navbar" style="margin:3px 0 0; min-height: 32px;" ng-controller="tileProgressController">
-                <st-playback-controls playback-options="playbackOptions" class="pull-left" style="width:100%"
-                                      time-controls="timeControlsManager.timeControls"></st-playback-controls>
-                <progressbar animate="false" style="width: 15%; margin:6px 0; font-size:14px"
-                             class="navbar-nav navbar-right" value="tilesLoadedProgress"><!--b ng-if="tilesLoaded"
-                                                                                            ng-bind="tilesLoaded + '/' + tilesToLoad"
-                                                                                            style="color:black"></b-->
-                </progressbar>
-            </div>
-            <div id="timeline" style="background: rgba(255, 255, 255, 0.9); display: none;"></div>
-        </div>
-    </div>
-</div>
-</div> <!--/appwrap-->
-
+  </div> 
 </body>
 </html>
