@@ -1,6 +1,8 @@
 'use strict';
 
 var angular = require('angular');
-var timeControls = require('./timeControls.js');
+var timeDirective = require('./timeDirective.js');
+var timeController = require('./timeController.js');
 
-angular.module('composer').directive('timeControls', timeControls);
+angular.module('composer').controller('timeController', timeController);
+angular.module('composer').directive('timeControls', timeDirective);

@@ -7,6 +7,10 @@
 - `npm run server`
 - `http://localhost:9090/`
 
+### Proxy Server
+- You can proxy map data from mapstory.org using the following endpoint format:
+`http://localhost:8001/#!/maps/<map_id>/data`
+  - example: `http://localhost:9090/#!/maps/1412/data`
 
 ## Development
 ### Style

@@ -93,5 +93,5 @@ require('./map');
 require('./style');
 require('./layers');
 require('./ui');
-require('./pins'); 
+require('./pins');
 require('./time');

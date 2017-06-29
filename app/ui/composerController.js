@@ -1,7 +1,8 @@
-function composerController($scope, $log, $compile, $http, $injector, MapManager, TimeControlsManager,
-                                                 styleUpdater, $location) {
+function composerController($scope, $rootScope, $log, $compile, $http, $injector,
+                            MapManager, TimeControlsManager, styleUpdater, 
+                            $location) {
     $scope.mapManager = MapManager;
-    $scope.timeControlsManager = $injector.instantiate(TimeControlsManager);
+    //$scope.timeControlsManager = $injector.instantiate(TimeControlsManager);
     $scope.playbackOptions = {
         mode: 'instant',
         fixed: false
@@ -32,7 +33,6 @@ function composerController($scope, $log, $compile, $http, $injector, MapManager
     };
 
     $scope.togglePreviewMode = function() {
-      console.log('mode ----- >', $scope.mode);
       if ($scope.mode && $scope.mode.preview === true) {
         $scope.mode.preview = true;
         $scope.mapWidth = '100%';
@@ -60,7 +60,7 @@ function composerController($scope, $log, $compile, $http, $injector, MapManager
         var nextChapter = Number(MapManager.storyChapter) + 1;
         if(nextChapter <= MapManager.chapterCount) {
             $log.info("Going to Chapter ", nextChapter);
-            $scope.timeControlsManager.timeControls.update(values);
+            $rootScope.timeControlsManager.timeControls.update(values);
             $location.path('/chapter/' + nextChapter);
         }else{
             $location.path('');
@@ -71,7 +71,7 @@ function composerController($scope, $log, $compile, $http, $injector, MapManager
         var previousChapter = Number(MapManager.storyChapter) - 1;
         if(previousChapter > 0) {
             $log.info("Going to the Chapter ", previousChapter);
-            $scope.timeControlsManager.timeControls.update(values);
+            $rootScope.timeControlsManager.timeControls.update(values);
             $location.path('/chapter/' + previousChapter);
         }else{
             $location.path('');

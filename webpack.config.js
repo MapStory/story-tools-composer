@@ -26,7 +26,25 @@ module.exports = {
     },
     devServer: {
       compress: true,
-      port: 9090
+      port: 9090,
+      proxy: {
+        '/maps/*': {
+          target: 'https://mapstory.org/maps',
+          changeOrigin: true,
+          secure: false,
+          pathRewrite: {
+            '^/maps': ''
+          }
+        },
+        '/geoserver/*': {
+          target: 'https://mapstory.org/geoserver',
+          changeOrigin: true,
+          secure: false,
+          pathRewrite: {
+            '^/geoserver': ''
+          }
+        }
+      }
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
