@@ -30,6 +30,6 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
-        new ExtractTextPlugin("../style/css/bundle.css")
+        new ExtractTextPlugin("../style/bundle.css")
     ]
 };

@@ -749,20 +749,6 @@ header .preview i {
   bottom: 0;
   width: 70%;
 }
-#map {
-  width: 70%;
-  height: 100%;
-  overflow:hidden;
-  position: absolute;
-}
-.ol-zoom {
-  right: .5em;
-  left: auto;
-}
-.ol-attribution {
-  top: 4.5em;
-  bottom: auto;
-}
 #time-controls-panel {
   padding: 0;
   bottom: 0;
@@ -815,4 +801,18 @@ header .preview i {
 #timeline {
   background-color: white;
   opacity: 0.58;
+}
+#map {
+  width: 70%;
+  height: 100%;
+  overflow: hidden;
+  position: absolute;
+}
+.ol-zoom {
+  right: .5em;
+  left: auto;
+}
+.ol-attribution {
+  top: 4.5em;
+  bottom: auto;
 }

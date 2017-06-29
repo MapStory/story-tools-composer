@@ -32,11 +32,13 @@ function composerController($scope, $log, $compile, $http, $injector, MapManager
     };
 
     $scope.togglePreviewMode = function() {
-      console.log('!DJA ---> toggle preview mode');
+      console.log('mode ----- >', $scope.mode);
       if ($scope.mode && $scope.mode.preview === true) {
-        $scope.mapWidth = '100%'
+        $scope.mode.preview = true;
+        $scope.mapWidth = '100%';
       } else {
-        $scope.mapWidth = '70%'
+        $scope.mode.preview = false;
+        $scope.mapWidth = '70%';
       }
       setTimeout(function() {
         window.storyMap.getMap().updateSize();

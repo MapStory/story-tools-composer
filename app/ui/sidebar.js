@@ -1,9 +1,8 @@
 function sidebar() {
   return {
-    restrict: 'E',
-    scope: {
-    },
-    link: function(scope) {
+    restrict: 'EA',
+    scope: false,
+    link: function($scope) {
     },
     templateUrl: "app/ui/templates/sidebar.html"
   };
