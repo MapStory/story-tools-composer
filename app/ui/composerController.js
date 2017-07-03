@@ -1,5 +1,5 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
-                            MapManager, TimeControlsManager, styleUpdater, 
+                            MapManager, TimeControlsManager, styleUpdater,
                             $location) {
     $scope.mapManager = MapManager;
     //$scope.timeControlsManager = $injector.instantiate(TimeControlsManager);
@@ -40,6 +40,10 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
         $scope.mode.preview = false;
         $scope.mapWidth = '70%';
       }
+      $rootScope.mapWidth = $scope.mapWidth;
+      $rootScope.$broadcast('toggleMode', {
+        mapWidth: $scope.mapWidth
+      });
       setTimeout(function() {
         window.storyMap.getMap().updateSize();
       });
