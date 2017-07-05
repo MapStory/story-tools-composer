@@ -1,8 +1,7 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
-                            MapManager, TimeControlsManager, styleUpdater,
+                            MapManager, styleUpdater,
                             $location) {
     $scope.mapManager = MapManager;
-    //$scope.timeControlsManager = $injector.instantiate(TimeControlsManager);
     $scope.playbackOptions = {
         mode: 'instant',
         fixed: false
