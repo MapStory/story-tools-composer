@@ -18,3 +18,6 @@
 - In order for the style to be added to the bundled stylesheet used by the application, import it into `style/style.js`.
   - Syntax example: `import styles from ../app/map/style/map.less`
 - All style's are bundled into `style/bundle.css`.
+
+###Testing (@TODO: improve config)
+`karma start karma.config.js`
