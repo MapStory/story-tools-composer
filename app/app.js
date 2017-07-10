@@ -16,7 +16,13 @@ var module = angular.module('composer', [
     'angular-sortable-view'
 ]);
 
-module.constant('iconCommonsHost', 'http://mapstory.dev.boundlessgeo.com');
+module.constant('config', {
+    'dimensions': {
+      mapWidthEditMode: '70%',
+      mapWidthPreviewMode: '100%'
+    },
+    'iconCommonsHost': 'http://mapstory.dev.boundlessgeo.com'
+});
 
 module.run(function() {
     // install a watchers debug loop

@@ -3,7 +3,10 @@ var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 
 module.exports = {
-    context: __dirname + '/app',
+    context: __dirname,
+    resolve: {
+        modules: ['node_modules', 'bower_components']
+    },
     module: {
         loaders: [
           {
@@ -17,9 +20,9 @@ module.exports = {
         ]
     },
     entry: {
-        app: './app.js',
-        style: '../style/style.js',
-        vendor: ['angular']
+        app: './app/app.js',
+        style: './style/style.js',
+        vendor: ['angular', 'angular-bootstrap-colorpicker']
     },
     output: {
         path: __dirname + '/js',
@@ -49,6 +52,6 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
-        new ExtractTextPlugin("../style/bundle.css")
+        new ExtractTextPlugin("style/bundle.css")
     ]
 };

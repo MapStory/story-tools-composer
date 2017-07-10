@@ -1,7 +1,9 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
-                            MapManager, styleUpdater,
+                            MapManager, styleUpdater, config,
                             $location) {
     $scope.mapManager = MapManager;
+    $scope.mode = {};
+    $scope.mapWidth = config.dimensions.mapWidthEditMode;
     $scope.playbackOptions = {
         mode: 'instant',
         fixed: false
@@ -32,12 +34,12 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
     };
 
     $scope.togglePreviewMode = function() {
-      if ($scope.mode && $scope.mode.preview === true) {
+      if ($scope.mode.preview === true) {
         $scope.mode.preview = true;
-        $scope.mapWidth = '100%';
+        $scope.mapWidth = config.dimensions.mapWidthPreviewMode;
       } else {
         $scope.mode.preview = false;
-        $scope.mapWidth = '70%';
+        $scope.mapWidth = config.dimensions.mapWidthEditMode;
       }
       $rootScope.mapWidth = $scope.mapWidth;
       $rootScope.$broadcast('toggleMode', {
@@ -46,7 +48,7 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
       setTimeout(function() {
         window.storyMap.getMap().updateSize();
       });
-    }
+    };
 
     // strip features from properties to avoid circular dependencies in debug
     $scope.layerProperties = function(lyr) {
