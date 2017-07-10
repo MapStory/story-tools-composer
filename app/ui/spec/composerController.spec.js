@@ -14,9 +14,18 @@ describe('composerController', function() {
     };
   }));
 
-  it('should toggle map width ', function() {
-    var controller = createController();
-    expect(scope.mapWidth).toBe(config.dimensions.mapWidthEditMode);
+  describe('getMapWidth', function() {
+
+    it('should provide preview mode map width when arg is `true`', function() {
+      var controller = createController();
+      expect(scope.getMapWidth(true)).toBe(config.dimensions.mapWidthPreviewMode);
+    });
+
+    it('should provide edit mode map width when arg is not `true`', function() {
+      var controller = createController();
+      expect(scope.getMapWidth(true)).toBe(config.dimensions.mapWidthPreviewMode);
+    });
+
   });
 
 });

@@ -1,8 +1,12 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
                             MapManager, styleUpdater, config,
                             $location) {
+
+
     $scope.mapManager = MapManager;
-    $scope.mode = {};
+    $scope.mode = {
+      preview: false
+    };
     $scope.mapWidth = config.dimensions.mapWidthEditMode;
     $scope.playbackOptions = {
         mode: 'instant',
@@ -33,14 +37,16 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
         });
     };
 
-    $scope.togglePreviewMode = function() {
-      if ($scope.mode.preview === true) {
-        $scope.mode.preview = true;
-        $scope.mapWidth = config.dimensions.mapWidthPreviewMode;
+    $scope.getMapWidth = function(preview) {
+      if (preview === true) {
+        return config.dimensions.mapWidthPreviewMode;
       } else {
-        $scope.mode.preview = false;
-        $scope.mapWidth = config.dimensions.mapWidthEditMode;
+        return config.dimensions.mapWidthEditMode;
       }
+    };
+
+    $scope.togglePreviewMode = function() {
+      $scope.mapWidth = $scope.getMapWidth($scope.mode.preview);
       $rootScope.mapWidth = $scope.mapWidth;
       $rootScope.$broadcast('toggleMode', {
         mapWidth: $scope.mapWidth
