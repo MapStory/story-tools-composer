@@ -68,22 +68,22 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
     var values = {annotations: [], boxes: [], data: []};
 
     $scope.nextChapter = function(){
-        var nextChapter = Number(MapManager.storyChapter) + 1;
-        if(nextChapter <= MapManager.chapterCount) {
+        var nextChapter = Number($scope.mapManager.storyChapter) + 1;
+        if(nextChapter <= $scope.mapManager.chapterCount) {
             $log.info("Going to Chapter ", nextChapter);
             $rootScope.timeControlsManager.timeControls.update(values);
-            $location.path('/chapter/' + nextChapter);
+            $location.path(config.routes.chapter + nextChapter);
         }else{
             $location.path('');
         }
     };
 
     $scope.previousChapter = function(){
-        var previousChapter = Number(MapManager.storyChapter) - 1;
+        var previousChapter = Number($scope.mapManager.storyChapter) - 1;
         if(previousChapter > 0) {
             $log.info("Going to the Chapter ", previousChapter);
             $rootScope.timeControlsManager.timeControls.update(values);
-            $location.path('/chapter/' + previousChapter);
+            $location.path(config.routes.chapter + previousChapter);
         }else{
             $location.path('');
         }

@@ -19,8 +19,8 @@
   - Syntax example: `import styles from ../app/map/style/map.less`
 - All style's are bundled into `style/bundle.css`.
 
-###App Config
+### App Config
 Global configuration constants are set in the `app/app.js` module constant `config` object.
 
-###Testing
-`karma start karma.config.js`
+### Testing
+`npm run test`

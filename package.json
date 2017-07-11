@@ -6,7 +6,7 @@
   "scripts": {
     "bundle": "webpack",
     "server": "node_modules/.bin/webpack-dev-server",
-    "test": "webpack && karma start karma.config.js --single-run",
+    "test": "webpack && karma start karma.config.js",
     "continuous": "webpack && karma start karma.config.js"
   },
   "keywords": [],

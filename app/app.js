@@ -21,6 +21,9 @@ module.constant('config', {
       mapWidthEditMode: '70%',
       mapWidthPreviewMode: '100%'
     },
+    'routes': {
+      'chapter': '/chapter/'
+    },
     'iconCommonsHost': 'http://mapstory.dev.boundlessgeo.com'
 });
 
