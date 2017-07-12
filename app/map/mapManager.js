@@ -1,5 +1,8 @@
 function MapManager($http, $q, $log, $rootScope, $location, $compile,
-                    StoryPinLayerManager, stStoryMapBuilder, stLocalStorageSvc, stAnnotationsStore, stEditableLayerBuilder, EditableStoryMap, stStoryMapBaseBuilder, stEditableStoryMapBuilder) {
+                    StoryPinLayerManager, stStoryMapBuilder, stLocalStorageSvc,
+                    stAnnotationsStore, stEditableLayerBuilder,
+                    EditableStoryMap, stStoryMapBaseBuilder,
+                    stEditableStoryMapBuilder) {
     this.storyMap = new EditableStoryMap({target: 'map'});
     window.storyMap = this.storyMap;
     StoryPinLayerManager.map = this.storyMap;
@@ -10,6 +13,7 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
     this.storyChapter = 1;
     this.chapterCount = 1;
     var self = this;
+    var config;
     StoryPinLayerManager.storyPinsLayer = this.storyMap.storyPinsLayer;
     this.loadConfig = function(config, chapter){
         self._config = config;
@@ -87,7 +91,7 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
         var mapID = /\/maps\/(\d+)/.exec(path) ? /\/maps\/(\d+)/.exec(path)[1] : null;
         var mapJsonUrl = '/maps/' + mapID + '/data';
 
-        if (path.indexOf('/chapter') === 0){
+        if (path && path.indexOf('/chapter') === 0){
             if ((matches = /\d+/.exec(path)) !== null) {
                 chapter = matches[0]
             }
@@ -100,7 +104,7 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
             }).done(function ( data ) {
               self.loadConfig(data, chapter);
           });
-        } else {
+        } else if (config) {
           self.loadConfig(config, chapter);
         }
 

@@ -16,7 +16,7 @@ var module = angular.module('composer', [
     'angular-sortable-view'
 ]);
 
-module.constant('config', {
+module.constant('appConfig', {
     'dimensions': {
       mapWidthEditMode: '70%',
       mapWidthPreviewMode: '100%'

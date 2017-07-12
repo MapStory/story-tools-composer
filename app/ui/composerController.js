@@ -1,5 +1,5 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
-                            MapManager, styleUpdater, config,
+                            MapManager, styleUpdater, appConfig,
                             $location) {
 
 
@@ -7,7 +7,7 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
     $scope.mode = {
       preview: false
     };
-    $scope.mapWidth = config.dimensions.mapWidthEditMode;
+    $scope.mapWidth = appConfig.dimensions.mapWidthEditMode;
     $scope.playbackOptions = {
         mode: 'instant',
         fixed: false
@@ -39,9 +39,9 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
 
     $scope.getMapWidth = function(preview) {
       if (preview === true) {
-        return config.dimensions.mapWidthPreviewMode;
+        return appConfig.dimensions.mapWidthPreviewMode;
       } else {
-        return config.dimensions.mapWidthEditMode;
+        return appConfig.dimensions.mapWidthEditMode;
       }
     };
 
@@ -71,8 +71,8 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
         var nextChapter = Number($scope.mapManager.storyChapter) + 1;
         if(nextChapter <= $scope.mapManager.chapterCount) {
             $log.info("Going to Chapter ", nextChapter);
-            $rootScope.timeControlsManager.timeControls.update(values);
-            $location.path(config.routes.chapter + nextChapter);
+            $rootScope.$broadcast('updateTimeValues', values);
+            $location.path(appConfig.routes.chapter + nextChapter);
         }else{
             $location.path('');
         }
@@ -80,10 +80,10 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
 
     $scope.previousChapter = function(){
         var previousChapter = Number($scope.mapManager.storyChapter) - 1;
-        if(previousChapter > 0) {
+        if (previousChapter > 0) {
             $log.info("Going to the Chapter ", previousChapter);
-            $rootScope.timeControlsManager.timeControls.update(values);
-            $location.path(config.routes.chapter + previousChapter);
+            $rootScope.$broadcast('updateTimeValues', values);
+            $location.path(appConfig.routes.chapter + previousChapter);
         }else{
             $location.path('');
         }

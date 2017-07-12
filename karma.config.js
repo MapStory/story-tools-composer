@@ -2,7 +2,7 @@ var webpackConfig = require('./webpack.config.js');
 
 module.exports = function(config) {
   config.set({
-    basePath: '',
+    basePath: '.',
     frameworks: ['jasmine'],
     reporters: ['mocha'],
     port: 9876,
@@ -26,20 +26,23 @@ module.exports = function(config) {
       './node_modules/time-controls/dist/story-tools-edit-ng.js',
       './node_modules/time-controls/dist/story-tools-mapstory.js',
       './js/app.bundle.js',
+      './app/**/*.html',
       './node_modules/angular-mocks/angular-mocks.js',
       './app/**/*.spec.js'],
     preprocessors: {
-      './js/app.bundle.js': ['webpack']
+      './js/app.bundle.js': ['webpack'],
+      './app/**/*.html': ['ng-html2js']
     },
     webpackMiddleware: {
       noInfo: true
     },
     plugins: [
-      require("karma-mocha-reporter"),
-      require("karma-chrome-launcher"),
-      require("karma-webpack"),
-      require("karma-jasmine"),
-      require("karma-phantomjs-launcher"),
+      'karma-ng-html2js-preprocessor',
+      'karma-mocha-reporter',
+      'karma-chrome-launcher',
+      'karma-webpack',
+      'karma-jasmine',
+      'karma-phantomjs-launcher'
     ]
   });
 };

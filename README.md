@@ -20,7 +20,7 @@
 - All style's are bundled into `style/bundle.css`.
 
 ### App Config
-Global configuration constants are set in the `app/app.js` module constant `config` object.
+Global configuration constants are set in the `app/app.js` module constant `appConfig` object.
 
 ### Testing
 `npm run test`
