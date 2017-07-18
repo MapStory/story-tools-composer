@@ -1,6 +1,6 @@
 function MapManager($http, $q, $log, $rootScope, $location, $compile,
                     StoryPinLayerManager, stStoryMapBuilder, stLocalStorageSvc,
-                    stAnnotationsStore, stEditableLayerBuilder,
+                    stAnnotationsStore, stEditableLayerBuilder, TimeControlsManager,
                     EditableStoryMap, stStoryMapBaseBuilder,
                     stEditableStoryMapBuilder) {
     this.storyMap = new EditableStoryMap({target: 'map'});
@@ -13,7 +13,6 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
     this.storyChapter = 1;
     this.chapterCount = 1;
     var self = this;
-    var config;
     StoryPinLayerManager.storyPinsLayer = this.storyMap.storyPinsLayer;
     this.loadConfig = function(config, chapter){
         self._config = config;
@@ -46,14 +45,7 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
             var boxesLoad = $http.get("/maps/" + options.id + "/boxes");
             $q.all([annotationsLoad, boxesLoad]).then(function(values) {
                 StoryPinLayerManager.loadFromGeoJSON(values[0].data, self.storyMap.getMap().getView().getProjection(), true);
-               // StoryBoxLayerManager.loadFromGeoJSON(values[1].data, self.storyMap.getMap().getView().getProjection(), true);
             });
-            //var config = stLocalStorageSvc.loadConfig(options.id);
-            //stEditableStoryMapBuilder.modifyStoryMap(self.storyMap, config);
-            //var annotations = stAnnotationsStore.loadAnnotations(options.id, this.storyMap.getMap().getView().getProjection());
-            //if (annotations) {
-            //    StoryPinLayerManager.pinsChanged(annotations, 'add', true);
-           // }
         } else if (options.url) {
             var mapLoad = $http.get(options.url).then(function(response) {
                 stEditableStoryMapBuilder.modifyStoryMap(self.storyMap, response.data);

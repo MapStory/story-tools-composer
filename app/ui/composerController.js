@@ -1,5 +1,5 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
-                            MapManager, styleUpdater, appConfig,
+                            MapManager, styleUpdater, appConfig, TimeControlsManager,
                             $location) {
 
 
@@ -7,6 +7,7 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
     $scope.mode = {
       preview: false
     };
+    $scope.timeControlsManager = $injector.instantiate(TimeControlsManager);
     $scope.mapWidth = appConfig.dimensions.mapWidthEditMode;
     $scope.playbackOptions = {
         mode: 'instant',
