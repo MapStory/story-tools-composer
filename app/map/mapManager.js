@@ -1,7 +1,7 @@
 function MapManager($http, $q, $log, $rootScope, $location, $compile,
                     StoryPinLayerManager, stStoryMapBuilder, stLocalStorageSvc,
                     stAnnotationsStore, stEditableLayerBuilder, TimeControlsManager,
-                    EditableStoryMap, stStoryMapBaseBuilder,
+                    EditableStoryMap, stStoryMapBaseBuilder, stateSvc,
                     stEditableStoryMapBuilder) {
     this.storyMap = new EditableStoryMap({target: 'map'});
     window.storyMap = this.storyMap;
@@ -78,36 +78,13 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
         }
         stAnnotationsStore.saveAnnotations(this.storyMap.get('id'), StoryPinLayerManager.storyPins);
     };
+
     $rootScope.$on('$locationChangeSuccess', function() {
-        var path = $location.path(), chapter = 1, matches;
-        var mapID = /\/maps\/(\d+)/.exec(path) ? /\/maps\/(\d+)/.exec(path)[1] : null;
-        var mapJsonUrl = '/maps/' + mapID + '/data';
-
-        if (path && path.indexOf('/chapter') === 0){
-            if ((matches = /\d+/.exec(path)) !== null) {
-                chapter = matches[0]
-            }
-        }
-
-        if (mapID) {
-          $.ajax({
-            dataType: "json",
-            url: mapJsonUrl ,
-            }).done(function ( data ) {
-              self.loadConfig(data, chapter);
-          });
-        } else if (config) {
-          self.loadConfig(config, chapter);
-        }
-
-        /* var path = $location.path();
-         if (path === '/new') {
-         self.loadMap();
-         } else if (path.indexOf('/local') === 0) {
-         self.loadMap({id: /\d+/.exec(path)});
-         } else {
-         self.loadMap({url: path});
-         }*/
+      var chapter = stateSvc.getChapter();
+      stateSvc.getConfig().then(function(config) {
+        console.log('config --- >', config);
+        self.loadConfig(config, stateSvc.getChapter());
+      });
     });
 
     this.addLayer = function(name, settings, server, fitExtent, styleName, title) {

@@ -1,8 +1,9 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
                             MapManager, styleUpdater, appConfig, TimeControlsManager,
+                            stateSvc,
                             $location) {
 
-
+    
     $scope.mapManager = MapManager;
     $scope.mode = {
       preview: false

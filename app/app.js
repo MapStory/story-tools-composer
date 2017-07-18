@@ -104,3 +104,4 @@ require('./layers');
 require('./ui');
 require('./pins');
 require('./time');
+require('./state');
