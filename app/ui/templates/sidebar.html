@@ -19,41 +19,14 @@
             <a ng-click="selected = {frames:true}"><i class="fa fa-object-group" ng-class="selected.frames && 'active'"></i></a>
         </nav>
         <div class="sidebar-content">
-            <div ng-if="selected.toc"> <div class="sidebar-toc-content">
-                <h1 class="sidebar-title"><strong>Table of Contents</strong></h1>
-                <p class="sidebar-instructions">Click and drag to re-order chapters.</p>
-                <button class="sidebar-button">Add New Chapter</button>
-                <div ng-repeat="chapter in mapManager._config.chapters" class="contents-chapter">
-                    <div class="contents-summary">
-                        <h2 class="chapter-number">{{ chapter.id}}</h2>
-                        <h2>{{ chapter.about.title }}</h2>
-                        <i class="fa fa-trash delete"></i>
-                        <p>
-                            {{ chapter.about.abstract }}
-                        </p>
-                    </div>
-                    <a href="chapter_info.html" class="arrow"><i class="fa fa-lg fa-caret-right"></i></a>
-                </div>
-            </div></div>
+            <div ng-if="selected.toc">
+              <ng-include src="'app/ui/templates/toc.html'"></ng-include>
+            </div>
             <div ng-if="selected.pins">
               <storypin-sidebar></storypin-sidebar>
             </div>
             <div  ng-if="selected.layers">
-                <h2 class="section-title">Chapter Info</h2>
-                <form>
-                    <div class="form-field">
-                        <label for="chapter_title">Chapter Title</label>
-                        <strong><abbr title="required">*</abbr></strong>
-                        <br />
-                        <input id="chapter_title" type="text" name="chapter_title" required />
-                    </div>
-                    <div class="form-field">
-                        <label for="chapter_summary">Chapter Summary</label>
-                        <strong><abbr title="required">*</abbr></strong>
-                        <br />
-                        <textarea id="chapter_summary" rows="10" name="chapter_summary" required /></textarea>
-                    </div>
-                </form>
+              <ng-include src="'app/ui/templates/layerinfo.html'"></ng-include>
             </div>
             <div ng-if="selected.frames">
                 <section>
