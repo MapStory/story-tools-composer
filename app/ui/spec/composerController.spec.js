@@ -41,45 +41,4 @@ describe('composerController', function() {
     });
   });
 
-  describe('nextChapter', function() {
-    beforeEach(inject(function ($controller, $rootScope, $compile) {
-      spyOn(location, 'path');
-    }));
-
-    it('should update the location path to the next chapter if it exists', function() {
-      var controller = createController();
-      scope.mapManager.chapterCount = 2;
-      scope.nextChapter();
-      expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
-    });
-
-    it('should update the location path to the first chapter if there is no next chapter ', function() {
-      var controller = createController();
-      scope.mapManager.chapterCount = 1;
-      scope.nextChapter();
-      expect(location.path).toHaveBeenCalledWith('');
-    });
-  });
-
-  describe('previous chapter', function() {
-    beforeEach(inject(function ($controller, $rootScope, $compile) {
-      spyOn(location, 'path');
-    }));
-
-    it('should update the location path to the previous chapter if it exists', function() {
-      var controller = createController();
-      scope.mapManager.storyChapter = 3;
-      scope.mapManager.chapterCount = 3;
-      scope.previousChapter();
-      expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
-    });
-
-    it('should update the location path to the first chapter if there is no previous chapter ', function() {
-      var controller = createController();
-      scope.mapManager.chapterCount = 1;
-      scope.previousChapter();
-      expect(location.path).toHaveBeenCalledWith('');
-    });
-  });
-
 });

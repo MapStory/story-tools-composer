@@ -38,15 +38,6 @@ function addLayers($log, $http, $sce, limitToFilter,  MapManager) {
                     }else {
                         msg += problems[0].data;
                     }
-                   /* $modal.open({
-                        templateUrl: '/lib/templates/core/error-dialog.html',
-                        controller: function($scope) {
-                            $scope.title = 'Error';
-                            $scope.msg = $sce.trustAsHtml(
-                                  'An error occurred while communicating with the server. ' +
-                                  '<br/>' + msg);
-                        }
-                    });*/
                     $log.warn('Failed to load %s because of %s',scope.layerName, problems);
                 }).finally(function() {
                     scope.loading = false;

@@ -2,9 +2,7 @@
 
 var angular = require('angular');
 var composerController = require('./composerController.js');
-var sidebar = require('./sidebar.js');
-var header = require('./header.js');
+var navigationSvc = require('./navigationSvc.js');
 
 angular.module('composer').controller('composerController', composerController);
-angular.module('composer').directive('sidebar', sidebar);
-angular.module('composer').directive('composerHeader', header);
+angular.module('composer').factory('navigationSvc', navigationSvc);

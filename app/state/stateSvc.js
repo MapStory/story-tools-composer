@@ -1,26 +1,33 @@
-function stateSvc($location, $q) {
+function stateSvc($location, $rootScope, $q) {
   var svc = {};
   svc.config = null;
-  svc.getConfig = function () {
-    var deferred = $q.defer();
+
+  svc.initConfig = (function () {
     var path = $location.path();
     var mapID = /\/maps\/(\d+)/.exec(path) ? /\/maps\/(\d+)/.exec(path)[1] : null;
     var mapJsonUrl = '/maps/' + mapID + '/data';
     if (svc.config) {
-      deferred.resolve(svc.config);
+      return;
     } else if (mapID) {
       $.ajax({
         dataType: "json",
         url: mapJsonUrl ,
         }).done(function ( data ) {
           svc.config = data;
-          deferred.resolve(data);
+          $rootScope.$broadcast('configInitialized');
       });
     } else {
       svc.config = window.config;
-      deferred.resolve(window.config);
+      $rootScope.$broadcast('configInitialized');
     }
-    return deferred.promise;
+  })();
+
+  svc.getConfig = function() {
+    return svc.config;
+  };
+
+  svc.setConfig = function(config) {
+    svc.config = config;
   };
 
   svc.getChapter = function() {
@@ -32,8 +39,30 @@ function stateSvc($location, $q) {
         chapter = matches[0];
       }
     }
-    return chapter;
+    return parseInt(chapter);
   };
+
+  svc.getChapterConfig = function() {
+    var chapter = svc.getChapter();
+    var config = svc.getConfig();
+    var i = chapter - 1;
+
+    if (config.chapters[i]) {
+      return config.chapters[i];
+    } else {
+      return config.chapters[0];
+    }
+  };
+
+  svc.getChapterConfigs = function() {
+    var config = svc.getConfig();
+    return config.chapters;
+  };
+
+  svc.getChapterCount = function() {
+    return svc.getChapterConfigs().length;
+  };
+
   return svc;
 }
 

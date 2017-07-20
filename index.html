@@ -21,8 +21,8 @@
 </head>
 <body ng-controller="composerController as composer">
   <div id="appwrap">
-    <composer-header></composer-header>
-    <sidebar></sidebar>
+    <ng-include src="'app/ui/templates/header.html'"></ng-include>
+    <ng-include src="'app/ui/templates/sidebar.html'"></ng-include>
     <div class="map-area">
         <div id="map" ng-style="{'width':mapWidth}"></div>
         <div featureinfobox id="info-box" ng-show="featureInfoService.getSelectedItem() && featureInfoService.getEnabled()"

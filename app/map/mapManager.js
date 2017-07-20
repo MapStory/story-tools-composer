@@ -79,13 +79,15 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
         stAnnotationsStore.saveAnnotations(this.storyMap.get('id'), StoryPinLayerManager.storyPins);
     };
 
-    $rootScope.$on('$locationChangeSuccess', function() {
+    var _initConfig = function() {
+      var config = stateSvc.getConfig();
+      if (!config) { return; }
       var chapter = stateSvc.getChapter();
-      stateSvc.getConfig().then(function(config) {
-        console.log('config --- >', config);
-        self.loadConfig(config, stateSvc.getChapter());
-      });
-    });
+      self.loadConfig(config, chapter);
+    };
+
+    $rootScope.$on('$locationChangeSuccess', _initConfig);
+    $rootScope.$on('configInitialized', _initConfig);
 
     this.addLayer = function(name, settings, server, fitExtent, styleName, title) {
         self.storyMap.setAllowZoom(settings.allowZoom);

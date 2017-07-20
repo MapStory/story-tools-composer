@@ -1,10 +1,16 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
                             MapManager, styleUpdater, appConfig, TimeControlsManager,
-                            stateSvc,
+                            stateSvc, navigationSvc,
                             $location) {
 
-    
+    // if (stateSvc.config) {
+    //   MapManager.init();
+    // } else {
+    //   $rootScope.$on('configInitialized', MapManager.init);
+    // }
+
     $scope.mapManager = MapManager;
+
     $scope.mode = {
       preview: false
     };
@@ -22,12 +28,14 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
     $scope.newMap = function() {
         $location.path('/new');
     };
+
     $scope.styleChanged = function(layer) {
         layer.on('change:type', function(evt) {
             styleUpdater.updateStyle(evt.target);
         });
         styleUpdater.updateStyle(layer);
     };
+
     $scope.showLoadMapDialog = function() {
         var promise = loadMapDialog.show();
         promise.then(function(result) {
@@ -66,30 +74,8 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
         return props;
     };
 
-
-    var values = {annotations: [], boxes: [], data: []};
-
-    $scope.nextChapter = function(){
-        var nextChapter = Number($scope.mapManager.storyChapter) + 1;
-        if(nextChapter <= $scope.mapManager.chapterCount) {
-            $log.info("Going to Chapter ", nextChapter);
-            $rootScope.$broadcast('updateTimeValues', values);
-            $location.path(appConfig.routes.chapter + nextChapter);
-        }else{
-            $location.path('');
-        }
-    };
-
-    $scope.previousChapter = function(){
-        var previousChapter = Number($scope.mapManager.storyChapter) - 1;
-        if (previousChapter > 0) {
-            $log.info("Going to the Chapter ", previousChapter);
-            $rootScope.$broadcast('updateTimeValues', values);
-            $location.path(appConfig.routes.chapter + previousChapter);
-        }else{
-            $location.path('');
-        }
-    };
+    $scope.nextChapter = navigationSvc.nextChapter;
+    $scope.previousChapter = navigationSvc.previousChapter;
 }
 
 module.exports = composerController;
