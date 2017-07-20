@@ -28,8 +28,8 @@ module.constant('appConfig', {
         {
             name: 'mapstory',
             path: '/geoserver/',
-            absolutePath: 'https://mapstory.org/geoserver/',
-            host: 'https://mapstory.org/',
+            absolutePath: '',//'https://mapstory.org/geoserver/',
+            host: 'localhost',//'https://mapstory.org/',
             canStyleWMS: false,
             timeEndpoint: function(name) {
                 return '/maps/time_info.json?layer=' + name;
