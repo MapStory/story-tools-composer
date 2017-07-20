@@ -2,7 +2,7 @@
   <h1 class="sidebar-title"><strong>Table of Contents</strong></h1>
   <p class="sidebar-instructions">Click and drag to re-order chapters.</p>
   <button class="sidebar-button">Add New Chapter</button>
-  <div ng-repeat="chapter in mapManager._config.chapters" class="contents-chapter">
+  <div ng-repeat="chapter in stateSvc.config.chapters" class="contents-chapter">
       <div class="contents-summary">
           <h2 class="chapter-number">{{ chapter.id}}</h2>
           <h2>{{ chapter.about.title }}</h2>

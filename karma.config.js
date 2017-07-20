@@ -1,25 +1,27 @@
 var webpackConfig = require('./webpack.config.js');
 
+var browserMode = false;
+
 module.exports = function(config) {
   config.set({
     basePath: '.',
     client: {
-      captureConsole: false
+      captureConsole: browserMode ? true : false
     },
     frameworks: ['jasmine'],
     reporters: ['mocha'],
     port: 9876,
     colors: true,
     logLevel: config.LOG_INFO,
-    autoWatch: true,
-    browsers: ['PhantomJS'],
-    singleRun: true,
+    autoWatch: false,
+    browsers: browserMode ? ['Chrome'] : ['PhantomJS'],
+    singleRun: browserMode ? false : true,
     autoWatchBatchDelay: 300,
     webpack:
      require('./webpack.config.js')[2],
     files: [
       './js/vendor.bundle.js',
-      './js/config.js',
+      './js/test_config.js',
       './bower_components/jquery/dist/jquery.min.js',
       './node_modules/time-controls/dist/story-tools-vendor-all.js',
       './bower_components/angular-sortable-view/src/angular-sortable-view.js',

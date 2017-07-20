@@ -69,4 +69,15 @@ describe('stateSvc', function() {
       expect(stateSvc.getConfig()).toBe(testConfig);
     });
   });
+
+  describe('updateCurrentChapterConfig', function() {
+    it('should update stateSvc.currentChapter with the current chapter config', function() {
+      var testConfig = {'chapters': [{},{'test': 'pass'},{}]};
+      stateSvc.setConfig(testConfig);
+      expect(stateSvc.currentChapter).toBeNull();
+      spyOn(location, 'path').and.returnValue('/chapter/2');
+      stateSvc.updateCurrentChapterConfig();
+      expect(stateSvc.currentChapter.test).toBe('pass');
+    });
+  });
 });

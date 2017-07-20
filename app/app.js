@@ -13,6 +13,7 @@ var module = angular.module('composer', [
     'storytools.core.ogc',
     'colorpicker.module',
     'ui.bootstrap',
+    'pascalprecht.translate',
     'angular-sortable-view'
 ]);
 
@@ -79,23 +80,26 @@ module.run(function() {
     })();
 });
 
-module.config(['$qProvider', function($qProvider) {
-  $qProvider.errorOnUnhandledRejections(false);
-}]);
+module.config(['$qProvider', '$translateProvider',
+  function($qProvider, $translateProvider) {
+    $qProvider.errorOnUnhandledRejections(false);
+    $translateProvider.preferredLanguage('en');
+  }
+]);
 
-function getServer(name) {
-    var server = null;
-    for (var i = 0; i < servers.length; i++) {
-        if (servers[i].name === name) {
-            server = servers[i];
-            break;
-        }
-    }
-    if (server === null) {
-        throw new Error('no server named : ' + name);
-    }
-    return server;
-}
+// function getServer(name) {
+//     var server = null;
+//     for (var i = 0; i < servers.length; i++) {
+//         if (servers[i].name === name) {
+//             server = servers[i];
+//             break;
+//         }
+//     }
+//     if (server === null) {
+//         throw new Error('no server named : ' + name);
+//     }
+//     return server;
+// }
 
 require('./map');
 require('./style');
@@ -103,3 +107,4 @@ require('./layers');
 require('./ui');
 require('./time');
 require('./state');
+require('./pins');

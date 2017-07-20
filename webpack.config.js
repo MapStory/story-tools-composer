@@ -22,7 +22,7 @@ module.exports = {
     entry: {
         app: './app/app.js',
         style: './style/style.js',
-        vendor: ['angular', 'angular-bootstrap-colorpicker']
+        vendor: ['angular', 'angular-bootstrap-colorpicker', 'angular-translate']
     },
     output: {
         path: __dirname + '/js',

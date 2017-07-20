@@ -4,12 +4,12 @@
         <label for="chapter_title">Chapter Title</label>
         <strong><abbr title="required">*</abbr></strong>
         <br />
-        <input ng-model="mapManager.title" id="chapter_title" type="text" name="chapter_title" required />
+        <input ng-model="stateSvc.currentChapter.about.title" id="chapter_title" type="text" name="chapter_title" required />
     </div>
     <div class="form-field">
         <label for="chapter_summary">Chapter Summary</label>
         <strong><abbr title="required">*</abbr></strong>
         <br />
-        <textarea id="chapter_summary" ng-model="storyService.active_chapter.about.abstract" rows="10" name="chapter_summary" required /></textarea>
+        <textarea id="chapter_summary" ng-model="stateSvc.currentChapter.about.abstract" rows="10" name="chapter_summary" required /></textarea>
     </div>
 </form>

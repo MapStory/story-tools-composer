@@ -13,6 +13,7 @@
   "devDependencies": {
     "angular": "^1.5.0",
     "angular-mocks": "^1.6.5",
+    "angular-translate": "^2.15.2",
     "css-loader": "^0.28.4",
     "extract-text-webpack-plugin": "^2.1.2",
     "gulp-connect": "^5.0.0",

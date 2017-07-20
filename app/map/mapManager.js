@@ -49,20 +49,16 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
         this.currentMapOptions = options;
     };
 
-    var _initConfig = function() {
+    this.initMapLoad = function() {
       var config = stateSvc.getChapterConfig();
       if (!config) { return; }
-      var chapter = stateSvc.getChapter();
-
       self.title = config.about.title;
       self.username = config.about.username;
       self.owner = config.about.owner;
-      console.log('chapter config ---- >', stateSvc.getChapterConfig());
       self.loadMap(config);
     };
 
-    $rootScope.$on('$locationChangeSuccess', _initConfig);
-    $rootScope.$on('configInitialized', _initConfig);
+    // add locationchange listener to composerCtrl and affect necessary changes in stateSvc
 
     this.addLayer = function(name, settings, server, fitExtent, styleName, title) {
         self.storyMap.setAllowZoom(settings.allowZoom);

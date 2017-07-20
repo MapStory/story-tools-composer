@@ -1,14 +1,27 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
                             MapManager, styleUpdater, appConfig, TimeControlsManager,
-                            stateSvc, navigationSvc,
+                            stateSvc, navigationSvc, pinSvc,
                             $location) {
 
     $scope.mapManager = MapManager;
     $scope.stateSvc = stateSvc;
 
-    console.log($scope.mapManager);
+    $rootScope.$on('$locationChangeSuccess', function() {
+      $scope.mapManager.initMapLoad();
+      $scope.stateSvc.updateCurrentChapterConfig();
+    });
 
-    $scope.selected = 'toc';
+    $rootScope.$on('configInitialized', function() {
+      $scope.mapManager.initMapLoad();
+    });
+
+    $rootScope.$on('chapter-added', function(event, config) {
+      pinSvc.addChapter();
+    });
+
+    $rootScope.$on('chapter-removed', function(event, chapter_index) {
+      pinSvc.removeChapter(chapter_index);
+    });
 
     $scope.updateSelected = function(selected) {
       $scope.selected = {selected: true};

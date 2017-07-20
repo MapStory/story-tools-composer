@@ -1,11 +1,14 @@
-function stateSvc($location, $rootScope, $q, stAnnotationsStore, stLocalStorageSvc) {
+function stateSvc($location, $rootScope, $q, stAnnotationsStore,
+                  stLocalStorageSvc) {
   var svc = {};
   svc.config = null;
+  svc.currentChapter = null;
   svc.originalConfig = null;
 
   svc.initConfig = (function () {
     var path = $location.path();
-    var mapID = /\/maps\/(\d+)/.exec(path) ? /\/maps\/(\d+)/.exec(path)[1] : null;
+    var mapID = /\/maps\/(\d+)/.exec(path) ?
+                /\/maps\/(\d+)/.exec(path)[1] : null;
     var mapJsonUrl = '/maps/' + mapID + '/data';
     if (svc.config) {
       return;
@@ -31,6 +34,10 @@ function stateSvc($location, $rootScope, $q, stAnnotationsStore, stLocalStorageS
 
   svc.setConfig = function(config) {
     svc.config = config;
+  };
+
+  svc.updateCurrentChapterConfig = function() {
+    svc.currentChapter = svc.getChapterConfig();
   };
 
   svc.getChapter = function() {
@@ -73,13 +80,14 @@ function stateSvc($location, $rootScope, $q, stAnnotationsStore, stLocalStorageS
     return svc.getChapterConfigs().length;
   };
 
-  this.saveMap = function() {
+  this.save = function() {
       var config = this.storyMap.getState();
       stLocalStorageSvc.saveConfig(config);
       if (this.storyMap.get('id') === undefined) {
           this.storyMap.set('id', config.id);
       }
-      stAnnotationsStore.saveAnnotations(this.storyMap.get('id'), StoryPinLayerManager.storyPins);
+      stAnnotationsStore.saveAnnotations(this.storyMap.get('id'),
+                                         StoryPinLayerManager.storyPins);
   };
 
   return svc;
