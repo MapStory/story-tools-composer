@@ -1,6 +1,7 @@
-function stateSvc($location, $rootScope, $q) {
+function stateSvc($location, $rootScope, $q, stAnnotationsStore, stLocalStorageSvc) {
   var svc = {};
   svc.config = null;
+  svc.originalConfig = null;
 
   svc.initConfig = (function () {
     var path = $location.path();
@@ -14,10 +15,12 @@ function stateSvc($location, $rootScope, $q) {
         url: mapJsonUrl ,
         }).done(function ( data ) {
           svc.config = data;
+          svc.originalConfig = data;
           $rootScope.$broadcast('configInitialized');
       });
     } else {
       svc.config = window.config;
+      svc.originalConfig = window.config;
       $rootScope.$broadcast('configInitialized');
     }
   })();
@@ -46,12 +49,19 @@ function stateSvc($location, $rootScope, $q) {
     var chapter = svc.getChapter();
     var config = svc.getConfig();
     var i = chapter - 1;
-
-    if (config.chapters[i]) {
-      return config.chapters[i];
+    if (config.chapters && chapter > 0 && chapter <= config.chapters.length) {
+      if (config.chapters[i]) {
+        return config.chapters[i];
+      } else {
+        return config.chapters[0];
+      }
     } else {
-      return config.chapters[0];
+      return config;
     }
+  };
+
+  svc.getChapterAbout = function() {
+    return svc.getChapterConfig().about;
   };
 
   svc.getChapterConfigs = function() {
@@ -61,6 +71,15 @@ function stateSvc($location, $rootScope, $q) {
 
   svc.getChapterCount = function() {
     return svc.getChapterConfigs().length;
+  };
+
+  this.saveMap = function() {
+      var config = this.storyMap.getState();
+      stLocalStorageSvc.saveConfig(config);
+      if (this.storyMap.get('id') === undefined) {
+          this.storyMap.set('id', config.id);
+      }
+      stAnnotationsStore.saveAnnotations(this.storyMap.get('id'), StoryPinLayerManager.storyPins);
   };
 
   return svc;

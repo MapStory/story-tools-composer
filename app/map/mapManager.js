@@ -14,27 +14,6 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
     this.chapterCount = 1;
     var self = this;
     StoryPinLayerManager.storyPinsLayer = this.storyMap.storyPinsLayer;
-    this.loadConfig = function(config, chapter){
-        self._config = config;
-        if(config.chapters){
-            self.chapterCount = config.chapters.length;
-            if(chapter > 0 && chapter <= config.chapters.length) {
-                self.storyChapter = chapter;
-                $log.info("Loading Chapter " + chapter + " of " + config.chapters.length);
-                self.loadMap(config.chapters[chapter - 1]);
-            }else{
-                $log.warn("Chapter " + chapter + " is INVALID so defaulting to Chapter 1. ");
-                self.loadMap(config.chapters[0]);
-            }
-        }else{
-            $log.info("Story config has no chapters so just loading the defaults.");
-            self.loadMap(config);
-        }
-
-        self.title = config.about.title;
-        self.username = config.about.username;
-        self.owner = config.about.owner;
-    };
 
     this.loadMap = function(options) {
         options = options || {};
@@ -68,22 +47,18 @@ function MapManager($http, $q, $log, $rootScope, $location, $compile,
             stStoryMapBaseBuilder.defaultMap(this.storyMap);
         }
         this.currentMapOptions = options;
-};
-
-    this.saveMap = function() {
-        var config = this.storyMap.getState();
-        stLocalStorageSvc.saveConfig(config);
-        if (this.storyMap.get('id') === undefined) {
-            this.storyMap.set('id', config.id);
-        }
-        stAnnotationsStore.saveAnnotations(this.storyMap.get('id'), StoryPinLayerManager.storyPins);
     };
 
     var _initConfig = function() {
-      var config = stateSvc.getConfig();
+      var config = stateSvc.getChapterConfig();
       if (!config) { return; }
       var chapter = stateSvc.getChapter();
-      self.loadConfig(config, chapter);
+
+      self.title = config.about.title;
+      self.username = config.about.username;
+      self.owner = config.about.owner;
+      console.log('chapter config ---- >', stateSvc.getChapterConfig());
+      self.loadMap(config);
     };
 
     $rootScope.$on('$locationChangeSuccess', _initConfig);

@@ -41,20 +41,30 @@ describe('stateSvc', function() {
 
   describe('getChapterConfig', function() {
     it('should return the config of the first chapter', function() {
-      expect(stateSvc.getChapterConfig().about.title).toBe('prisons');
+      expect(stateSvc.getChapterConfig().about.title).toBeDefined();
     });
-  });
-
-  describe('getChapterConfig', function() {
     it('should return the config of the second chapter', function() {
       spyOn(location, 'path').and.returnValue('/chapter/2');
       expect(stateSvc.getChapterConfig().about.title).toBe('just testing');
     });
   });
 
+  describe('getChapterAbout', function() {
+    it('should return a valid `about` object for the current chapter', function() {
+      var testConfig = {'chapters': [{'about': {'title': 'pass'}}]};
+      stateSvc.setConfig(testConfig);
+      expect(stateSvc.getChapterAbout().title).toBe('pass');
+    });
+    it('should return a valid `about` object when no chapters exist', function() {
+      var testConfig = {'about': {'title': 'pass'}};
+      stateSvc.setConfig(testConfig);
+      expect(stateSvc.getChapterAbout().title).toBe('pass');
+    });
+  });
+
   describe('setConfig', function() {
     it('should overwrite the existing config', function() {
-      var testConfig = {'test': 'passs'};
+      var testConfig = {'test': 'pass'};
       stateSvc.setConfig(testConfig);
       expect(stateSvc.getConfig()).toBe(testConfig);
     });

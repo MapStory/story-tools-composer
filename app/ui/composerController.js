@@ -4,6 +4,15 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
                             $location) {
 
     $scope.mapManager = MapManager;
+    $scope.stateSvc = stateSvc;
+
+    console.log($scope.mapManager);
+
+    $scope.selected = 'toc';
+
+    $scope.updateSelected = function(selected) {
+      $scope.selected = {selected: true};
+    };
 
     $scope.mode = {
       preview: false
@@ -16,7 +25,7 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
     };
 
     $scope.saveMap = function() {
-        MapManager.saveMap();
+        stateSvc.save();
     };
 
     $scope.newMap = function() {

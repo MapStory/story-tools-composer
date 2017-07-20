@@ -3,6 +3,9 @@ var webpackConfig = require('./webpack.config.js');
 module.exports = function(config) {
   config.set({
     basePath: '.',
+    client: {
+      captureConsole: false
+    },
     frameworks: ['jasmine'],
     reporters: ['mocha'],
     port: 9876,
