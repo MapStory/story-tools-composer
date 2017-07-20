@@ -1,17 +1,17 @@
 'use strict';
 
-function addLayers($log, $http, $sce, limitToFilter,  MapManager) {
+function addLayers($log, $http, $sce, limitToFilter, MapManager, appConfig) {
     return {
         restrict: 'E',
         scope: {
             map: "="
         },
-        templateUrl: 'templates/add-layers.html',
+        templateUrl: './app/layers/templates/add-layers.html',
         link: function(scope, el, atts) {
             scope.server = {
-                active: servers[0]
+                active: appConfig.servers[0]
             };
-            scope.servers = servers;
+            scope.servers = appConfig.servers;
             scope.results = function(layer_name) {
                 var url = scope.server.active.host + "api/base/search/?type__in=layer&q=" + layer_name;
                 return $http.get(url).then(function(response){

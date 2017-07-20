@@ -3,12 +3,6 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
                             stateSvc, navigationSvc,
                             $location) {
 
-    // if (stateSvc.config) {
-    //   MapManager.init();
-    // } else {
-    //   $rootScope.$on('configInitialized', MapManager.init);
-    // }
-
     $scope.mapManager = MapManager;
 
     $scope.mode = {

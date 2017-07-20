@@ -24,6 +24,29 @@ module.constant('appConfig', {
     'routes': {
       'chapter': '/chapter/'
     },
+    'servers': [
+        {
+            name: 'mapstory',
+            path: '/geoserver/',
+            absolutePath: 'https://mapstory.org/geoserver/',
+            host: 'https://mapstory.org/',
+            canStyleWMS: false,
+            timeEndpoint: function(name) {
+                return '/maps/time_info.json?layer=' + name;
+            }
+        },
+        {
+            name: 'storyscapes',
+            path: '/gsstoryscapes/',
+            canStyleWMS: true,
+            host: 'http://storyscapes.geointservices.io/'
+        },
+        {
+            name: 'local',
+            path: '/gslocal/',
+            canStyleWMS: true
+        }
+    ],
     'iconCommonsHost': 'http://mapstory.dev.boundlessgeo.com'
 });
 
@@ -59,30 +82,6 @@ module.run(function() {
 module.config(['$qProvider', function($qProvider) {
   $qProvider.errorOnUnhandledRejections(false);
 }]);
-
-var servers = [
-    {
-        name: 'mapstory',
-        path: '/geoserver/',
-        absolutePath: 'https://demo.mapstory.org/geoserver/',
-        host: 'https://demo.mapstory.org/',
-        canStyleWMS: false,
-        timeEndpoint: function(name) {
-            return '/maps/time_info.json?layer=' + name;
-        }
-    },
-    {
-        name: 'storyscapes',
-        path: '/gsstoryscapes/',
-        canStyleWMS: true,
-        host: 'http://storyscapes.geointservices.io/'
-    },
-    {
-        name: 'local',
-        path: '/gslocal/',
-        canStyleWMS: true
-    }
-];
 
 function getServer(name) {
     var server = null;

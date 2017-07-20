@@ -10,8 +10,9 @@
         </div>
     </div>
     <div class="sidebar-main">
-      <ng-include src="'app/ui/templates/nav.html'"></ng-include>
+        <ng-include src="'app/ui/templates/nav.html'"></ng-include>
         <div class="sidebar-content">
+            <div ng-if="selected.toc">
               <ng-include src="'app/ui/templates/toc.html'"></ng-include>
             </div>
             <div ng-if="selected.pins">
