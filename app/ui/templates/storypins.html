@@ -2,21 +2,23 @@
     <h2 class="section-title float-left">Storypins</h2>
     <button class="sidebar-button float-right">Bulk Upload</button>
     <button class="sidebar-button float-right"
-            ng-click="pinSvc.addEmptyPinToCurrentChapter()">
+            ng-click="uiHelperSvc.addNewPin()">
       Add New StoryPin
     </button>
 </section>
 <section id="pin-list">
-  <section ng-repeat="pin in pinSvc.getPins(0)">
-    <section class="accordion-item active pin-list-header">
+  <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
+    <section ng-class="{active: uiHelperSvc.activePin === {{$index}}}"
+             class="accordion-item pin-list-header"
+             ng-click="uiHelperSvc.togglePinForm({$index})">
         <div class="title-row">
-            <h2>StoryPin Name</h2>
+            <h2>{{pin.title}}</h2>
             <i class="fa fa-trash delete"></i>
-            <i class="fa fa-caret-up caret"
-               ng-click="uiHelperSvc.togglePinForm({$index})"></i>
+            <i class="fa fa-caret-up caret"></i>
         </div>
     </section>
-    <section class="pin-form" id="pin-form-{{$index}}">
+    <section class="pin-form" ng-show="uiHelperSvc.activePin === {{$index}}"
+             id="pin-form-{{$index}}">
         <form>
             <div class="form-field">
                 <label for="storypin_title">StoryPin Title</label>

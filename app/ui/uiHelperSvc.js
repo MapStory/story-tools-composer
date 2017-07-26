@@ -1,18 +1,22 @@
 'use strict';
 
-function uiHelperSvc($location, $rootScope, $log, stateSvc, appConfig) {
+function uiHelperSvc($location, $rootScope, $log, stateSvc, pinSvc, appConfig) {
   var svc = {};
+
+  svc.activePin = null;
 
   svc.togglePinForm = function($index) {
     var i = $index.$index;
-    var $pins = $('[id^="pin-form-"]');
-    var $pin = $('#pin-form-' + i);
-    if ($pin.css('display') === 'none') {
-      $pins.css('display', 'none');
-      $('#pin-form-' + i).css('display', 'block');
+    if (svc.activePin === i) {
+      svc.activePin = null;
     } else {
-      $('#pin-form-' + i).css('display', 'none');
+      svc.activePin = i;
     }
+  };
+
+  svc.addNewPin = function() {
+    pinSvc.addEmptyPinToCurrentChapter();
+    svc.activePin = pinSvc.getPins(stateSvc.getChapterIndex()).length;
   };
 
   return svc;

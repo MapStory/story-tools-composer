@@ -27,6 +27,17 @@ describe('stateSvc', function() {
     });
   });
 
+  describe('getChapterIndex', function() {
+    it('should return the number of the current chapter (value: 0)', function() {
+      expect(stateSvc.getChapterIndex()).toBe(0);
+    });
+
+    it('should return the number of the current chapter (value: 1)', function() {
+      spyOn(location, 'path').and.returnValue('/chapter/2');
+      expect(stateSvc.getChapterIndex()).toBe(1);
+    });
+  });
+
   describe('getChapterConfigs', function() {
     it('should return all chapter configs in an array', function() {
       expect(stateSvc.getChapterConfigs().length).toBe(2);

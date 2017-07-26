@@ -709,7 +709,7 @@ header .preview i {
   border-radius: 4px;
 }
 .title-row {
-  height: 16px;
+  height: 30px;
   padding: 8px 8px 12px 8px;
 }
 .active .title-row {
@@ -824,5 +824,5 @@ header .preview i {
   clear: both;
 }
 .pin-form {
-  clear: both;
+  margin-top: 30px;
 }

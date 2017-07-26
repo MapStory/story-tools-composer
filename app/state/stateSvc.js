@@ -52,6 +52,10 @@ function stateSvc($location, $rootScope, $q, stAnnotationsStore,
     return parseInt(chapter);
   };
 
+  svc.getChapterIndex = function() {
+    return svc.getChapter() - 1;
+  };
+
   svc.getChapterConfig = function() {
     var chapter = svc.getChapter();
     var config = svc.getConfig();
