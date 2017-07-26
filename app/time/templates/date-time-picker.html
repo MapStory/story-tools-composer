@@ -1,0 +1,29 @@
+<div class="row">
+  <div ng-show="(editable !== 'false') && (date === 'true')"
+   ng-class="{'col-md-6': (time === 'true'),
+   'col-md-12': (time === 'false') || (seperateTime === 'false')}">
+    <div class="form-group">
+      <div class="input-group date datepicker">
+      <input type="text" class="form-control"/>
+        <span class="input-group-addon">
+          <span class="glyphicon glyphicon-calendar"></span>
+        </span>
+      </div>
+    </div>
+  </div>
+  <div ng-show="(editable !== 'false') && (time === 'true') && ((seperateTime === 'true') ||
+   (date === 'false'))" ng-class="{'col-md-6': (date === 'true' && seperateTime === 'true'),
+   'col-md-12': (date === 'false')}">
+  <div class="form-group">
+    <div class="input-group date timepicker">
+      <input type="text" class="form-control"/>
+      <span class="input-group-addon">
+        <span class="glyphicon glyphicon-time"></span>
+      </span>
+    </div>
+    </div>
+  </div>
+  <div ng-show="(editable === 'false')">
+    <input type="text" ng-model="disabledText" disabled class="disabled-date form-control"/>
+  </div>
+</div>

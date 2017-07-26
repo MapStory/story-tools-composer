@@ -1,11 +1,15 @@
 var webpack = require('webpack');
+var Path = require('path');
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
 
 
 module.exports = {
     context: __dirname,
     resolve: {
-        modules: ['node_modules', 'bower_components']
+        modules: ['node_modules', 'bower_components'],
+        alias: {
+          jquery: Path.join(__dirname, 'node_modules/jquery/dist/jquery')
+        }
     },
     module: {
         loaders: [
@@ -53,6 +57,6 @@ module.exports = {
     },
     plugins: [
         new webpack.optimize.CommonsChunkPlugin({ name: 'vendor', filename: 'vendor.bundle.js' }),
-        new ExtractTextPlugin("style/bundle.css")
+        new ExtractTextPlugin("./../style/bundle.css")
     ]
 };

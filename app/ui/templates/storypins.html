@@ -1,81 +1,98 @@
-<section>
+<section id="pin-section">
     <h2 class="section-title float-left">Storypins</h2>
     <button class="sidebar-button float-right">Bulk Upload</button>
-    <button class="sidebar-button float-right">Add New StoryPin</button>
+    <button class="sidebar-button float-right"
+            ng-click="pinSvc.addEmptyPinToCurrentChapter()">
+      Add New StoryPin
+    </button>
 </section>
-<section class="accordion-item">
-    <div class="title-row">
-        <h2>First StoryPin</h2>
-        <i class="fa fa-trash delete"></i>
-        <i class="fa fa-caret-down caret"></i>
-    </div>
-</section>
-<section class="accordion-item active">
-    <div class="title-row">
-        <h2>StoryPin Name</h2>
-        <i class="fa fa-trash delete"></i>
-        <i class="fa fa-caret-up caret"></i>
-    </div>
-    <form>
-        <div class="form-field">
-            <label for="storypin_title">StoryPin Title</label>
-            <strong><abbr title="required">*</abbr></strong>
-            <br />
-            <input id="storypin_title" type="text" name="storypin_title" />
+<section id="pin-list">
+  <section ng-repeat="pin in pinSvc.getPins(0)">
+    <section class="accordion-item active pin-list-header">
+        <div class="title-row">
+            <h2>StoryPin Name</h2>
+            <i class="fa fa-trash delete"></i>
+            <i class="fa fa-caret-up caret"
+               ng-click="uiHelperSvc.togglePinForm({$index})"></i>
         </div>
-        <div class="form-field">
-            <label for="storypin_text">StoryPin Text</label>
-            <strong><abbr title="required">*</abbr></strong>
-            <br />
-            <input id="storypin_text" type="text" name="storypin_text" />
-        </div>
-        <div class="form-field">
-            <label for="storypin_media">StoryPin Media</label>
-            <strong><abbr title="required">*</abbr></strong>
-            <br />
-            <textarea id="storypin_media" rows="10" name="storypin_media" required /></textarea>
-        </div>
-        <div class="form-field">
-            <label for="start_time">Start Time</label>
-            <strong><abbr title="required">*</abbr></strong>
-            <br />
-            <input type="date" name="start_time_date">
-            <input type="time" name="start_time_time">
-        </div>
-        <div class="form-field">
-            <label for="end_time">End Time</label>
-            <strong><abbr title="required">*</abbr></strong>
-            <br />
-            <input type="date" name="end_time_date">
-            <input type="time" name="end_time_time">
-        </div>
-        <div class="form-field">
-            <label for="storypin_playback_options">StoryPin Playback Options</label>
-            <br />
-            <label class="switch">
-                <input type="checkbox" for="timeline">
-                <div class="slider round"></div>
-            </label>
-            <label for="timeline">Show StoryPin on Timeline</label>
-            <br />
-            <label class="switch">
-                <input type="checkbox" for="map">
-                <div class="slider round"></div>
-            </label>
-            <label for="map">Show StoryPin on Map</label>
-            <br />
-            <label class="switch">
-                <input type="checkbox" for="pause_playback">
-                <div class="slider round"></div>
-            </label>
-            <label for="pause_playback">Pause playback when StoryPin appears</label>
-            <br />
-            <label class="switch">
-                <input type="checkbox" for="play_embedded">
-                <div class="slider round"></div>
-            </label>
-            <label for="play_embedded">Play embedded StoryPin media automatically</label>
-        </div>
-
-    </form>
+    </section>
+    <section class="pin-form" id="pin-form-{{$index}}">
+        <form>
+            <div class="form-field">
+                <label for="storypin_title">StoryPin Title</label>
+                <strong><abbr title="required">*</abbr></strong>
+                <br />
+                <input id="storypin_title" type="text" name="storypin_title"
+                 ng-model="pin.title"/>
+            </div>
+            <div class="form-field">
+                <label for="storypin_text">StoryPin Text</label>
+                <strong><abbr title="required">*</abbr></strong>
+                <br />
+                <input id="storypin_text" type="text" name="storypin_text"
+                 ng-model="pin.content" />
+            </div>
+            <div class="form-field">
+                <label for="storypin_media">StoryPin Media</label>
+                <strong><abbr title="required">*</abbr></strong>
+                <br />
+                <textarea id="storypin_media" rows="10" name="storypin_media"
+                 required /></textarea>
+            </div>
+            <div class="form-field">
+                <label for="start_time">Start Time</label>
+                <strong><abbr title="required">*</abbr></strong>
+                <br />
+                <datetimepicker date-object="pin.start_time" default-date="inserting"
+                id="storyPinStartTime"></datetimepicker>
+            </div>
+            <div class="form-field">
+                <label for="end_time">End Time</label>
+                <strong><abbr title="required">*</abbr></strong>
+                <br />
+                <datetimepicker date-object="pin.start_time" default-date="inserting"
+                id="storyPinStartTime"></datetimepicker>
+            </div>
+            <div class="form-field">
+                <label for="storypin_playback_options">
+                  StoryPin Playback Options
+                </label>
+                <br />
+                <label class="switch">
+                    <input type="checkbox" for="timeline"
+                           ng-init="pin.in_timeline = false"
+                           ng-model="pin.in_timeline">
+                    <div class="slider round"></div>
+                </label>
+                <label for="timeline">Show StoryPin on Timeline</label>
+                <br />
+                <label class="switch">
+                    <input type="checkbox" for="map"
+                           ng-init="pin.in_map = true"
+                           ng-model="pin.in_map">
+                    <div class="slider round"></div>
+                </label>
+                <label for="map">Show StoryPin on Map</label>
+                <br />
+                <label class="switch">
+                    <input type="checkbox" for="pause_playback">
+                    <div class="slider round"></div>
+                </label>
+                <label for="pause_playback">
+                  Pause playback when StoryPin appears
+                </label>
+                <br />
+                <label class="switch">
+                    <input type="checkbox" for="play_embedded"
+                           ng-init="pin.auto_show = false"
+                           ng-model="pin.auto_show">
+                    <div class="slider round"></div>
+                </label>
+                <label for="play_embedded">
+                  Play embedded StoryPin media automatically
+                </label>
+            </div>
+        </form>
+    </section>
+  </section>
 </section>

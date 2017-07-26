@@ -1,10 +1,13 @@
 function composerController($scope, $rootScope, $log, $compile, $http, $injector,
                             MapManager, styleUpdater, appConfig, TimeControlsManager,
-                            stateSvc, navigationSvc, pinSvc,
+                            stateSvc, navigationSvc, pinSvc, uiHelperSvc,
                             $location) {
 
     $scope.mapManager = MapManager;
     $scope.stateSvc = stateSvc;
+    $scope.pinSvc = pinSvc;
+    $scope.uiHelperSvc = uiHelperSvc;
+    $scope.pin = {};
 
     $rootScope.$on('$locationChangeSuccess', function() {
       $scope.mapManager.initMapLoad();
@@ -13,6 +16,12 @@ function composerController($scope, $rootScope, $log, $compile, $http, $injector
 
     $rootScope.$on('configInitialized', function() {
       $scope.mapManager.initMapLoad();
+    });
+
+    $rootScope.$on('pin-added', function(event, chapter_index) {
+      console.log('PIN ADDED');
+      console.log($scope.pinSvc.getPins(0));
+      //$scope.$apply();
     });
 
     $rootScope.$on('chapter-added', function(event, config) {

@@ -295,6 +295,12 @@ describe('pinSvc', function() {
     });
   });
 
+  describe('addEmptyPinToCurrentChapter', function() {
+    it('should add an empty object to the current chapter\'s pin array',
+    function() {
+    });
+  });
+
   describe('addPinsFromGeojsonObj', function() {
     it('should create multiple valid pins', function(){
       pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);

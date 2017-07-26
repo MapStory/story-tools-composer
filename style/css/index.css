@@ -716,6 +716,7 @@ header .preview i {
   background-color: rgba(0, 171, 175, 0.15);
 }
 .accordion-item {
+  clear: both;
   border-top: 1px solid #e7e7e7;
   margin: 0;
 }

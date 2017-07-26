@@ -27,6 +27,11 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc, stateSvc) {
     svc.pins.push([]);
   };
 
+  svc.addEmptyPinToCurrentChapter = function() {
+    svc.pins[stateSvc.getChapter() - 1].push({});
+    $rootScope.$broadcast('pin-added', stateSvc.getChapter() - 1);
+  };
+
   svc.removeChapter = function(chapter_index) {
     svc.pins.splice(chapter_index, 1);
   };
