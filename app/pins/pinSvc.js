@@ -1,4 +1,5 @@
-function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc, stateSvc) {
+function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
+                featureManagerSvc, stateSvc) {
   var svc = {};
   svc.pins = [[]];
 
@@ -25,6 +26,12 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc, stateSvc) {
 
   svc.addChapter = function() {
     svc.pins.push([]);
+  };
+
+  svc.createStoryPinLayer = function() {
+    return featureManagerSvc.createVectorLayer(
+                             featureManagerSvc.storyPinLayerMetadata
+                          );
   };
 
   svc.addEmptyPinToCurrentChapter = function() {
@@ -98,7 +105,6 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc, stateSvc) {
       if (storyPin.id_ == svc.pins[chapter_index][i].id_) {
         var splice_index = i;
         if (splice_index === 0) {
-          var origLen = svc.pins[chapter_index].length;
           svc.pins[chapter_index].splice(0, 1);
         } else {
           svc.pins[chapter_index].splice(splice_index, 1);
@@ -107,6 +113,11 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc, stateSvc) {
         return storyPin.id;
       }
     }
+  };
+
+  svc.removePinByIndex = function(pin_index, chapter_index) {
+    svc.pins[chapter_index].splice(pin_index, 1);
+    $rootScope.$broadcast('pin-removed', chapter_index);
   };
 
   svc.validatePinProperty = function(pinInstantiationObj, propertyName) {

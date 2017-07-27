@@ -750,6 +750,9 @@ header .preview i {
   bottom: 0;
   width: 70%;
 }
+.float-right {
+  float: right;
+}
 #time-controls-panel {
   padding: 0;
   bottom: 0;

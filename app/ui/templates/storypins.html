@@ -13,8 +13,12 @@
              ng-click="uiHelperSvc.togglePinForm({$index})">
         <div class="title-row">
             <h2>{{pin.title}}</h2>
-            <i class="fa fa-trash delete"></i>
-            <i class="fa fa-caret-up caret"></i>
+            <i class="fa fa-trash delete"
+               ng-click="pinSvc.removePinByIndex({$index},
+                         stateSvc.getChapterIndex())"></i>
+            <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === {{$index}},
+                         'fa-caret-down': uiHelperSvc.activePin !== {{$index}}}"
+               class="fa float-right"></i>
         </div>
     </section>
     <section class="pin-form" ng-show="uiHelperSvc.activePin === {{$index}}"
@@ -45,14 +49,16 @@
                 <label for="start_time">Start Time</label>
                 <strong><abbr title="required">*</abbr></strong>
                 <br />
-                <datetimepicker date-object="pin.start_time" default-date="inserting"
+                <datetimepicker date-object="pin.start_time"
+                                default-date="inserting"
                 id="storyPinStartTime"></datetimepicker>
             </div>
             <div class="form-field">
                 <label for="end_time">End Time</label>
                 <strong><abbr title="required">*</abbr></strong>
                 <br />
-                <datetimepicker date-object="pin.start_time" default-date="inserting"
+                <datetimepicker date-object="pin.start_time"
+                                default-date="inserting"
                 id="storyPinStartTime"></datetimepicker>
             </div>
             <div class="form-field">

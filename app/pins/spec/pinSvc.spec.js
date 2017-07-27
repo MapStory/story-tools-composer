@@ -68,6 +68,13 @@ describe('pinSvc', function() {
     });
   });
 
+  describe('createStoryPinLayer', function() {
+    it('should return a layer with metadata that has `StoryPinLayer` set to `true`', function() {
+      var testLayer = pinSvc.createStoryPinLayer();
+      expect(testLayer.get('metadata').StoryPinLayer).toBe(true);
+    });
+  });
+
   describe('addGetterAndSetterToPinPrototype', function() {
     it('should add a getter and setter function for the attribute passed in',
     function() {
@@ -242,11 +249,22 @@ describe('pinSvc', function() {
   describe('removePin', function() {
     it('should remove the specified pin from the specified chapter index',
     function() {
-      // var newPin = jQuery.extend({}, pinSvc.pins[0][0]);
-      // pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
-      // expect(pinSvc.pins[0][0]).toBeDefined();
-      // pinSvc.removePin(pinSvc.pins[0][0], 0);
-      // expect(pinSvc.pins[0].length).toBe(0);
+      pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
+      var newPin = jQuery.extend(true, {}, pinSvc.pins[0][1]);
+      console.log('NEW PIN ---- > ', newPin);
+      expect(pinSvc.pins[0].length).toBe(2);
+      pinSvc.removePin(pinSvc.pins[0][0], 0);
+      expect(pinSvc.pins[0][0].id).toBe(newPin.id_);
+    });
+  });
+
+  describe('removePinByIndex', function() {
+    it('should remove the specified pin by index from the specified chapter index',
+    function() {
+      pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
+      expect(pinSvc.pins[0].length).toBe(2);
+      pinSvc.removePinByIndex(0, 0);
+      expect(pinSvc.pins[0].length).toBe(1);
     });
   });
 

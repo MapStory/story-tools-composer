@@ -1,6 +1,6 @@
 var webpackConfig = require('./webpack.config.js');
 
-var browserMode = true;
+var browserMode = false;
 
 module.exports = function(config) {
   config.set({
