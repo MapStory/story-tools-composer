@@ -12,8 +12,9 @@ function featureManagerSvc($rootScope, $http, $translate, $q, timeSvc, stateSvc)
   };
 
   svc.createVectorLayer = function(metadata) {
+    var meta = !metadata ? svc.vectorEditLayerMetadata : metadata;
     return new ol.layer.Vector({
-      metadata: metadata,
+      metadata: meta,
       source: new ol.source.Vector({
         parser: null
       }),

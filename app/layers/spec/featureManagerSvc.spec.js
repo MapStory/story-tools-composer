@@ -9,4 +9,11 @@ describe('featureManagerSvc', function() {
     location = $location;
   }));
 
+  describe('createVectorLayer', function() {
+    it('should return a layer with metadata that has `vectorEditLayer` set to `true`', function() {
+      var testLayer = featureManagerSvc.createVectorLayer();
+      expect(testLayer.get('metadata').vectorEditLayer).toBe(true);
+    });
+  });
+
 });
