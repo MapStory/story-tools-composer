@@ -1,11 +1,37 @@
-<section id="pin-section">
+<!--section id="pin-section">
     <h2 class="section-title float-left">Storypins</h2>
     <button class="sidebar-button float-right">Bulk Upload</button>
     <button class="sidebar-button float-right"
             ng-click="uiHelperSvc.addNewPin()">
       Add New StoryPin
     </button>
-</section>
+</section-->
+
+
+<div id="pins-editor" ng-if="selected.pins" class="floating style-editor-item" pins-editor
+ pins-overlay="mapManager.storyMap.overlay">
+    <accordion close-others="false" ng-init="open={chooser:true,editor:false}">
+        <accordion-group heading="StoryPins" is-open="open.chooser">
+            <button class="btn btn-inverse">Bulk Upload</button>
+            <button class="btn btn-inverse" ng-click="pinsCtrl.editStoryPin(); open.editor=true">Add a
+                StoryPin
+            </button>
+            <pin-chooser pin-selected="open.editor=true"></pin-chooser>
+        </accordion-group>
+        <accordion-group is-open="open.editor">
+            <accordion-heading>
+                <div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinsCtrl.currentPin.title : 'Add StoryPin'"></div>
+            </accordion-heading>
+            <div pin-editor>
+                <pin-editor-form></pin-editor-form>
+                <button class="btn btn-inverse" ng-disabled="!pinCtrl.isFormValid()"
+                        ng-click="pinsCtrl.saveStoryPin()">Save
+                </button>
+            </div>
+        </accordion-group>
+    </accordion>
+</div>
+
 <section id="pin-list">
   <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
     <section ng-class="{active: uiHelperSvc.activePin === {{$index}}}"

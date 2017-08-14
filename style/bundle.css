@@ -829,3 +829,6 @@ header .preview i {
 .pin-form {
   margin-top: 30px;
 }
+#pins-editor {
+  width: 100%;
+}

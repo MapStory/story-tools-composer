@@ -207,11 +207,12 @@ button {
    Default: As found in html
    Use: <number>
 */
-html, body {
-    height: 100%;
-    margin: 0;
-    min-height: 100%;
-    padding: 0;
+html,
+body {
+  height: 100%;
+  margin: 0;
+  min-height: 100%;
+  padding: 0;
 }
 body {
   font-family: 'Lato', Helvetica, Arial, sans-serif;
@@ -444,7 +445,8 @@ header .preview i {
   height: 100%;
   background-color: #f5f5f5;
   overflow-y: scroll;
-  padding-top:6em;
+  overflow-x: hidden;
+  padding-top: 6em;
 }
 .sidebar:last-child {
   margin-right: 0;

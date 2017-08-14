@@ -1,5 +1,13 @@
-function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
-                featureManagerSvc, stateSvc) {
+function pinSvc(
+  $rootScope,
+  $http,
+  $translate,
+  $http,
+  $q,
+  timeSvc,
+  featureManagerSvc,
+  stateSvc
+) {
   var svc = {};
   svc.pins = [[]];
 
@@ -17,12 +25,29 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
 
   var embed_width = '"180"';
   var embed_height = '"180"';
-  var model_attributes = ['title', 'id', '_id', 'content', 'media',
-                          'start_time', 'end_time', 'in_map', 'in_timeline',
-                          'pause_playback', 'auto_show'];
-  var filterPropertiesFromValidation = ['id', '_id', 'content', 'media',
-                                        'in_map', 'in_timeline',
-                                        'pause_playback', 'auto_show'];
+  var model_attributes = [
+    "title",
+    "id",
+    "_id",
+    "content",
+    "media",
+    "start_time",
+    "end_time",
+    "in_map",
+    "in_timeline",
+    "pause_playback",
+    "auto_show"
+  ];
+  var filterPropertiesFromValidation = [
+    "id",
+    "_id",
+    "content",
+    "media",
+    "in_map",
+    "in_timeline",
+    "pause_playback",
+    "auto_show"
+  ];
 
   svc.addChapter = function() {
     svc.pins.push([]);
@@ -30,13 +55,15 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
 
   svc.createStoryPinLayer = function() {
     return featureManagerSvc.createVectorLayer(
-                             featureManagerSvc.storyPinLayerMetadata
-                          );
+      featureManagerSvc.storyPinLayerMetadata
+    );
   };
+
+  svc.pinLayer = svc.createStoryPinLayer();
 
   svc.addEmptyPinToCurrentChapter = function() {
     svc.pins[stateSvc.getChapter() - 1].push({});
-    $rootScope.$broadcast('pin-added', stateSvc.getChapter() - 1);
+    $rootScope.$broadcast("pin-added", stateSvc.getChapter() - 1);
   };
 
   svc.removeChapter = function(chapter_index) {
@@ -46,8 +73,8 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
   svc.getFeaturesFromServer = function(config) {
     var defer = $q.defer();
     $http({
-      url: '/maps/' + config.id + '/annotations',
-      method: 'GET'
+      url: "/maps/" + config.id + "/annotations",
+      method: "GET"
     }).then(function(result) {
       defer.resolve(result.data);
     });
@@ -64,8 +91,10 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
     var props = feature.properties;
     props.geometry = $.parseJSON(feature.geometry);
     props.geometry.coordinates = ol.proj.transform(
-                                 props.geometry.coordinates,
-                                 'EPSG:4326', 'EPSG:3857');
+      props.geometry.coordinates,
+      "EPSG:4326",
+      "EPSG:3857"
+    );
     props.id = feature.id;
     props.start_time = props.start_time * 1000;
     props.end_time = props.end_time * 1000;
@@ -78,7 +107,7 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
     Object.defineProperty(svc.Pin.prototype, prop, {
       get: function() {
         var val = this.get(prop);
-        return typeof val === 'undefined' ? null : val;
+        return typeof val === "undefined" ? null : val;
       },
       set: function(val) {
         this.set(prop, val);
@@ -109,7 +138,7 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
         } else {
           svc.pins[chapter_index].splice(splice_index, 1);
         }
-        $rootScope.$broadcast('pin-removed', chapter_index);
+        $rootScope.$broadcast("pin-removed", chapter_index);
         return storyPin.id;
       }
     }
@@ -117,23 +146,27 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
 
   svc.removePinByIndex = function(pin_index, chapter_index) {
     svc.pins[chapter_index].splice(pin_index, 1);
-    $rootScope.$broadcast('pin-removed', chapter_index);
+    $rootScope.$broadcast("pin-removed", chapter_index);
   };
 
   svc.validatePinProperty = function(pinInstantiationObj, propertyName) {
-    return (pinInstantiationObj.hasOwnProperty(propertyName) &&
-           (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
-           !goog.string.isEmptySafe(pinInstantiationObj[propertyName])));
+    return (
+      pinInstantiationObj.hasOwnProperty(propertyName) &&
+      (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
+        !goog.string.isEmptySafe(pinInstantiationObj[propertyName]))
+    );
   };
 
   svc.validateAllPinProperties = function(pinInstantiationObj) {
     var missingProperties = [];
     var copy_attribs = angular.copy(model_attributes);
-    copy_attribs.push('geometry');
+    copy_attribs.push("geometry");
     for (var iProp = 0; iProp < copy_attribs.length; iProp += 1) {
       var property = copy_attribs[iProp];
-      if (!svc.validatePinProperty(pinInstantiationObj, property) &&
-          !goog.array.contains(filterPropertiesFromValidation, property)) {
+      if (
+        !svc.validatePinProperty(pinInstantiationObj, property) &&
+        !goog.array.contains(filterPropertiesFromValidation, property)
+      ) {
         missingProperties.push(property);
       }
     }
@@ -145,14 +178,15 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
 
   svc.handleInvalidPin = function(invalidProperties) {
     $translate(invalidProperties).then(function(translations) {
-      var invalid_string = 'These properties must be set before saving a StoryPin: ';
+      var invalid_string =
+        "These properties must be set before saving a StoryPin: ";
       for (var iProp = 0; iProp < invalidProperties.length; iProp += 1) {
         var property = invalidProperties[iProp];
         var translatedProp = translations[property];
-        translatedProp = translatedProp.concat(', ');
+        translatedProp = translatedProp.concat(", ");
         invalid_string = invalid_string.concat(translatedProp);
       }
-      toastr.error(invalid_string, 'Cannot save StoryPin');
+      toastr.error(invalid_string, "Cannot save StoryPin");
     });
   };
 
@@ -163,18 +197,21 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
       return false;
     }
     if (timeSvc.getTime(props.start_time) > timeSvc.getTime(props.end_time)) {
-      console.log('Start Time must be before End Time', 'Invalid Time');
-      toastr.error('Start Time must be before End Time', 'Invalid Time');
+      console.log("Start Time must be before End Time", "Invalid Time");
+      toastr.error("Start Time must be before End Time", "Invalid Time");
       return false;
     }
     //TODO: Check media whitelist and sanitize embed size.
     if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
-      props.media = props.media.replace(/width="\d+"/i, 'width=' + embed_width);
-      props.media = props.media.replace(/height="\d+"/i, 'height=' + embed_height);
+      props.media = props.media.replace(/width="\d+"/i, "width=" + embed_width);
+      props.media = props.media.replace(
+        /height="\d+"/i,
+        "height=" + embed_height
+      );
     }
     var storyPin = new svc.Pin(props);
     svc.pins[chapter_index].push(storyPin);
-    $rootScope.$broadcast('pin-added', chapter_index);
+    $rootScope.$broadcast("pin-added", chapter_index);
     return true;
   };
 
@@ -194,7 +231,7 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
         svc.pins[iPin] = pin;
       }
     }
-    rootScope_.$broadcast('pin-added', chapter_index);
+    rootScope_.$broadcast("pin-added", chapter_index);
   };
 
   //@TODO: move to another service
@@ -207,18 +244,22 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
 
   svc.defaultPinValues = function(pin) {
     Object.keys(pin).forEach(function(key, index) {
-      if (pin[key] === '') {
-        if (key === 'in_timeline' || key === 'auto_show' || key === 'pause_playback') {
+      if (pin[key] === "") {
+        if (
+          key === "in_timeline" ||
+          key === "auto_show" ||
+          key === "pause_playback"
+        ) {
           pin[key] = false;
-        } else if (key === 'in_map') {
+        } else if (key === "in_map") {
           pin[key] = true;
         } else {
           pin[key] = null;
         }
-      } else if (typeof pin[key] === 'string') {
-        if (pin[key].toUpperCase() === 'TRUE') {
+      } else if (typeof pin[key] === "string") {
+        if (pin[key].toUpperCase() === "TRUE") {
           pin[key] = true;
-        } else if (pin[key].toUpperCase() === 'FALSE') {
+        } else if (pin[key].toUpperCase() === "FALSE") {
           pin[key] = false;
         }
       }
@@ -230,29 +271,39 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
     var failedToAdd = 0;
     for (var iPin = 0; iPin < pinConfigs.length; iPin += 1) {
       var pin = pinConfigs[iPin];
-      console.log('pin --- > ', pin);
+      console.log("pin --- > ", pin);
       pin = svc.defaultPinValues(pin);
 
       pin.id = new Date().getUTCMilliseconds();
-      pin.geometry = {coordinates: ol.proj.transform([Number(pin['longitude']),
-                     Number(pin['latitude'])], 'EPSG:4326', 'EPSG:3857')};
-      delete pin['longitude'];
-      delete pin['latitude'];
-      if (svc.validateAllPinProperties(pin) !== true ||
-          timeSvc.getTime(pin.start_time) > timeSvc.getTime(pin.end_time)) {
+      pin.geometry = {
+        coordinates: ol.proj.transform(
+          [Number(pin["longitude"]), Number(pin["latitude"])],
+          "EPSG:4326",
+          "EPSG:3857"
+        )
+      };
+      delete pin["longitude"];
+      delete pin["latitude"];
+      if (
+        svc.validateAllPinProperties(pin) !== true ||
+        timeSvc.getTime(pin.start_time) > timeSvc.getTime(pin.end_time)
+      ) {
         failedToAdd += 1;
         continue;
       }
 
       if (goog.isDefAndNotNull(pin.media) && !svc.isUrl(pin.media)) {
-        pin.media = pin.media.replace(/width="\d+"/i, 'width=' + embed_width);
-        pin.media = pin.media.replace(/height="\d+"/i, 'height=' + embed_height);
+        pin.media = pin.media.replace(/width="\d+"/i, "width=" + embed_width);
+        pin.media = pin.media.replace(
+          /height="\d+"/i,
+          "height=" + embed_height
+        );
       }
 
       var storyPin = new svc.Pin(pin);
       svc.pins[chapter_index].push(storyPin);
     }
-    $rootScope.$broadcast('pin-added', chapter_index);
+    $rootScope.$broadcast("pin-added", chapter_index);
   };
 
   svc.addChaptersAndPins = function(config) {
@@ -261,8 +312,7 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
       if (!goog.isDefAndNotNull(svc.pins[index])) {
         svc.addChapter();
       }
-      svc.getFeaturesAndConvertToPins(chapterConfig)
-      .then(function(complete) {
+      svc.getFeaturesAndConvertToPins(chapterConfig).then(function(complete) {
         defer.resolve(complete);
       });
     });
@@ -271,8 +321,7 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
 
   svc.getFeaturesAndConvertToPins = function(chapterConfig) {
     var defer = $q.defer();
-    svc.getFeaturesFromServer(chapterConfig)
-    .then(function(geojson) {
+    svc.getFeaturesFromServer(chapterConfig).then(function(geojson) {
       addPinsFromGeojsonObj(geojson);
       defer.resolve(true);
     });
@@ -283,8 +332,7 @@ function pinSvc($rootScope, $http, $translate, $http, $q, timeSvc,
     var defer = $q.defer();
     var config = stateSvc.getConfig();
     if (goog.isDefAndNotNull(config.chapters)) {
-      svc.addChaptersAndPins(config)
-      .then(function(complete) {
+      svc.addChaptersAndPins(config).then(function(complete) {
         defer.resolve(complete);
       });
     }
