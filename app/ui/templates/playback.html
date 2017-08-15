@@ -1,0 +1,55 @@
+<section>
+     <h2 class="section-title">Chapter Playback Settings</h2>
+     <form>
+         <div class="form-field">
+             <label for="chapter_title">Data Playback</label>
+             <strong><abbr title="required">*</abbr></strong>
+             <br />
+             <input type="radio" name="data_playback" value="instant" id="instant"><label for="instant">Instant playback</label><br />
+             <div class="form-help-text radio">Shows features only during their start date.</div>
+             <input type="radio" name="data_playback" value="cumulative" id="cumulative"><label for="cumulative">Cumulative playback</label><br />
+             <div class="form-help-text radio">Shows features from their start date until the end of the chapter.</div>
+             <input type="radio" name="data_playback" value="range" id="range"><label for="range">Range playback</label><br />
+             <div class="form-help-text radio">Shows features from their start date to their end date.</div>
+         </div>
+     </form>
+</section>
+<h2 class="section-title">Map Control Settings</h2>
+   <form>
+     <div class="form-field">
+         <label for="basemap">Basemap</label>
+         <strong><abbr title="required">*</abbr></strong><br />
+         <select name="basemap">
+             <option value="osm">OpenStreetMap</option>
+             <option value="human_osm">Humanitarian OpenStreetMap</option>
+             <option value="natural_earth">Natural Earth</option>
+             <option value="natural_earth2">Natural Earth 2</option>
+             <option value="geography_class">Geography Class</option>
+             <option value="MapBoxControlRoom">MapBox Control Room</option>
+             <option value="world_dark">World Dark</option>
+             <option value="world_light">World Light</option>
+             <option value="esri_ngs">Esri NGS</option>
+         </select>
+     </div>
+     <div class="form-field">
+         <p>Choose what map controls viewers will see for this chapter when they play your MapStory or embed your map.</p>
+         <label class="switch">
+             <input type="checkbox" for="timeline">
+             <div class="slider round"></div>
+         </label>
+         <label for="timeline">Timeline open by default</label>
+         <br />
+         <label class="switch">
+             <input type="checkbox" for="sidebar">
+             <div class="slider round"></div>
+         </label>
+         <label for="sidebar">Summary sidebar open by default</label>
+     </div>
+     <div class="form-field">
+         <input type="checkbox" id="all_chapters" value="all_chapters">
+         <label for="all_chapters">
+             Apply to all chapters in this story
+         </label>
+     </div>
+</form>
+</div>

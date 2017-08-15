@@ -22,6 +22,9 @@
             <div ng-if="selected.toc">
               <ng-include src="'app/ui/templates/toc.html'"></ng-include>
             </div>
+            <div ng-if="selected.settings">
+              <ng-include src="'app/ui/templates/playback.html'"></ng-include>
+            </div>
             <div ng-if="selected.pins">
               <ng-include src="'app/ui/templates/storypins.html'"></ng-include>
             </div>
