@@ -50,6 +50,14 @@ module.exports = {
           "^/maps": ""
         }
       },
+      "/api/categories/*": {
+        target: "https://mapstory.org/api/categories/",
+        changeOrigin: true,
+        secure: false,
+        pathRewrite: {
+          "^/api/categories": ""
+        }
+      },
       "/geoserver/*": {
         target: "https://mapstory.org/geoserver",
         changeOrigin: true,

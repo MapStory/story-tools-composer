@@ -3,12 +3,17 @@ function stateSvc(
   $rootScope,
   $q,
   stAnnotationsStore,
-  stLocalStorageSvc
+  stLocalStorageSvc,
+  searchSvc
 ) {
   var svc = {};
   svc.config = null;
   svc.currentChapter = null;
   svc.originalConfig = null;
+
+  searchSvc.getCategories().then(function(data) {
+    console.log(data);
+  });
 
   svc.initConfig = (function() {
     var path = $location.path();
