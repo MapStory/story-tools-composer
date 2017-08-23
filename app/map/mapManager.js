@@ -143,6 +143,7 @@ function MapManager(
     return stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {
+        console.log("STORYLAYER --- >", a);
         svc.storyMap.addStoryLayer(a);
         if (fitExtent === true) {
           a.get("latlonBBOX");

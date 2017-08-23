@@ -26,28 +26,27 @@ function searchSvc($q, $rootScope, $http, searchConfig) {
     return defer.promise;
   };
 
-  svc.search = function() {
-    // we expose offset and limit for manipulation in the browser url,
-    // validate them for error cases here (not needed when not exposed)
-    // queryService.validateOffset($scope);
-    // queryService.validateLimit($scope);
+  svc.search = function(queries) {
+    var defer = $q.defer();
+    var params = jQuery.extend(svc.queries, queries);
 
-    return $http
-      .get(searchConfig.SEARCH_URL, { params: svc.queries || {} })
-      .then(
-        function(response) {
-          console.log(response.data.objects);
-          //page.paginate(response, vm, $scope);
-        },
-        function(error) {
-          if (error.data.error_message === "Sorry, no results on that page.") {
-            console.log("Setting offset to 0 and searching again.");
-            //queryService.resetOffset($scope);
-          } else {
-            console.log(error);
-          }
+    $http.get(searchConfig.SEARCH_URL, { params: params || {} }).then(
+      function(response) {
+        defer.resolve(response.data);
+        //page.paginate(response, vm, $scope);
+      },
+      function(error) {
+        if (error.data.error_message === "Sorry, no results on that page.") {
+          //console.log("Setting offset to 0 and searching again.");
+          //queryService.resetOffset($scope);
+          defer.resolve("noresults");
+        } else {
+          console.log(error);
+          defer.resolve("error");
         }
-      );
+      }
+    );
+    return defer.promise;
   };
 
   return svc;
