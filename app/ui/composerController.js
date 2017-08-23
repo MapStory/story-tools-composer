@@ -14,12 +14,14 @@ function composerController(
   navigationSvc,
   pinSvc,
   uiHelperSvc,
+  searchSvc,
   $location
 ) {
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
   $scope.uiHelperSvc = uiHelperSvc;
+  $scope.searchSvc = searchSvc;
   $scope.pin = {};
 
   $rootScope.$on("$locationChangeSuccess", function() {
@@ -33,7 +35,6 @@ function composerController(
   });
 
   $rootScope.$on("pin-added", function(event, chapter_index) {
-    console.log("PIN ADDED");
     console.log($scope.pinSvc.getPins(0));
     //$scope.$apply();
   });

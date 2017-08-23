@@ -1,6 +1,7 @@
 describe("pinSvc", function() {
   var rootScope,
     httpBackend,
+    searchConfig,
     searchSvc,
     stateSvc,
     pin,
@@ -11,11 +12,12 @@ describe("pinSvc", function() {
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(function($rootScope, $httpBackend, _searchSvc_) {
+    inject(function($rootScope, $httpBackend, _searchSvc_, _searchConfig_) {
       searchSvc = _searchSvc_;
+      searchConfig = _searchConfig_;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
-      var categoryRes = {
+      categoryRes = {
         meta: {
           limit: 1000,
           next: null,
@@ -124,9 +126,25 @@ describe("pinSvc", function() {
         requested_time: 1503346928.318694
       };
 
-      httpBackend.when("GET", "/maps/12/annotations").respond(categoryRes);
+      httpBackend
+        .when("GET", searchConfig.CATEGORIES_ENDPOINT)
+        .respond(categoryRes);
     })
   );
 
-  describe("getCategories", function() {});
+  describe("getCategories", function() {
+    var response;
+
+    beforeEach(function(done) {
+      searchSvc.getCategories().then(function(res) {
+        response = res;
+        done();
+      });
+      httpBackend.flush();
+    });
+
+    it("should return categories", function() {
+      expect(categoryRes.objects).toEqual(response);
+    });
+  });
 });

@@ -11,10 +11,6 @@ function stateSvc(
   svc.currentChapter = null;
   svc.originalConfig = null;
 
-  searchSvc.getCategories().then(function(data) {
-    console.log(data);
-  });
-
   svc.initConfig = (function() {
     var path = $location.path();
     var mapID = /\/maps\/(\d+)/.exec(path)
