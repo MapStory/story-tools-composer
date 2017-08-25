@@ -24,6 +24,7 @@ function addLayers($log, $http, $sce, limitToFilter, MapManager, appConfig) {
               names.push(response.data.objects[i].typename);
             }
           }
+          console.log("NAMES --- >", names);
           return limitToFilter(names, 15);
         });
       };
