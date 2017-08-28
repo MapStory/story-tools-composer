@@ -15,7 +15,7 @@
         As vector
     </label>
         <label class="checkbox" for="zoom">
-        <input type="checkbox" ng-model="allowZoom" value="" id="zoom" data-toggle="checkbox" class="custom-checkbox">
+        <input ng-init="allowZoom=true" type="checkbox" ng-model="allowZoom" id="zoom" data-toggle="checkbox" class="custom-checkbox">
         <span class="icons">
         <span class="icon-unchecked"></span>
         <span class="icon-checked"></span>
@@ -23,7 +23,7 @@
         Allow Zoom
     </label>
         <label class="checkbox" for="pan">
-        <input type="checkbox" ng-model="allowPan" value="" id="pan" data-toggle="checkbox" class="custom-checkbox">
+        <input ng-init="allowPan=true" type="checkbox" ng-model="allowPan" id="pan" data-toggle="checkbox" class="custom-checkbox">
         <span class="icons">
         <span class="icon-unchecked"></span>
         <span class="icon-checked"></span>
