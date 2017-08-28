@@ -1,6 +1,7 @@
 var webpack = require("webpack");
 var Path = require("path");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var serverHost = "https://mapstory.org";
 
 module.exports = {
   context: __dirname,
@@ -43,7 +44,7 @@ module.exports = {
     port: 9090,
     proxy: {
       "/maps/*": {
-        target: "https://mapstory.org/maps",
+        target: serverHost + "/maps",
         changeOrigin: true,
         secure: false,
         pathRewrite: {
@@ -51,7 +52,7 @@ module.exports = {
         }
       },
       "/api/*": {
-        target: "https://mapstory.org/api/",
+        target: serverHost + "/api/",
         changeOrigin: true,
         secure: false,
         pathRewrite: {
@@ -59,7 +60,7 @@ module.exports = {
         }
       },
       "/geoserver/*": {
-        target: "https://mapstory.org/geoserver",
+        target: serverHost + "/geoserver",
         changeOrigin: true,
         secure: false,
         pathRewrite: {

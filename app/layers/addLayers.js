@@ -8,20 +8,32 @@ function addLayers($log, $http, $sce, limitToFilter, MapManager, appConfig) {
     },
     templateUrl: "./app/layers/templates/add-layers.html",
     link: function(scope, el, atts) {
+      var nameIndex = [];
       scope.server = {
         active: appConfig.servers[0]
       };
       scope.servers = appConfig.servers;
       scope.results = function(layer_name) {
+        var layerId;
         var url =
           scope.server.active.host +
-          "/api/base/search/?type__in=layer&q=" +
+          "/api/base/search/?type__in=layer&limit=10&df=typename&q=" +
           layer_name;
         return $http.get(url).then(function(response) {
           var names = [];
+          console.log("SEARCH RESPONSE -- >", response.data);
           for (var i = 0; i < response.data.objects.length; i++) {
-            if (response.data.objects[i].title) {
-              names.push(response.data.objects[i].typename);
+            if (response.data.objects[i].typename) {
+              if (response.data.objects[i].title) {
+                names.push(response.data.objects[i].title);
+              } else {
+                names.push(response.data.objects[i].typename);
+              }
+
+              nameIndex.push({
+                title: response.data.objects[i].title,
+                typename: response.data.objects[i].typename
+              });
             }
           }
           console.log("NAMES --- >", names);
@@ -30,12 +42,21 @@ function addLayers($log, $http, $sce, limitToFilter, MapManager, appConfig) {
       };
       scope.addLayer = function() {
         scope.loading = true;
+        var name;
         var settings = {
           asVector: this.asVector,
           allowZoom: this.allowZoom,
           allowPan: this.allowPan
         };
-        MapManager.addLayer(this.layerName, settings, scope.server.active)
+        for (var i = 0; i < nameIndex.length; i++) {
+          if (
+            nameIndex[i].title === this.layerName ||
+            nameIndex[i].typename === this.layerName
+          ) {
+            name = nameIndex[i].typename;
+          }
+        }
+        MapManager.addLayer(name, settings, scope.server.active)
           .then(
             function() {
               // pass
