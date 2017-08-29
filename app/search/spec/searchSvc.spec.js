@@ -1,7 +1,9 @@
-describe("pinSvc", function() {
+describe("searchSvc", function() {
   var rootScope,
+    appConfig,
     httpBackend,
     searchConfig,
+    searchBarRes,
     searchSvc,
     stateSvc,
     pin,
@@ -12,9 +14,16 @@ describe("pinSvc", function() {
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(function($rootScope, $httpBackend, _searchSvc_, _searchConfig_) {
+    inject(function(
+      $rootScope,
+      $httpBackend,
+      _appConfig_,
+      _searchSvc_,
+      _searchConfig_
+    ) {
       searchSvc = _searchSvc_;
       searchConfig = _searchConfig_;
+      appConfig = _appConfig_;
       httpBackend = $httpBackend;
       rootScope = $rootScope;
       categoryRes = {
@@ -126,9 +135,26 @@ describe("pinSvc", function() {
         requested_time: 1503346928.318694
       };
 
+      searchBarRes = {
+        objects: [
+          {
+            title: "Green Iguana",
+            typename: "geonode:green_iguana",
+            type: "layer"
+          }
+        ]
+      };
+
       httpBackend
         .when("GET", searchConfig.CATEGORIES_ENDPOINT)
         .respond(categoryRes);
+      httpBackend
+        .when(
+          "GET",
+          appConfig.servers[0].host +
+            "/api/base/search/?type__in=layer&limit=15&df=typename&q=iguana"
+        )
+        .respond(searchBarRes);
     })
   );
 
@@ -145,6 +171,27 @@ describe("pinSvc", function() {
 
     it("should return categories", function() {
       expect(categoryRes.objects).toEqual(response);
+    });
+  });
+
+  describe("getSearchBarResultsIndex", function() {
+    var response;
+
+    beforeEach(function(done) {
+      searchSvc.getSearchBarResultsIndex("iguana").then(function(res) {
+        response = res;
+        done();
+      });
+      httpBackend.flush();
+    });
+
+    it("should return an array of objects containing layer 'title' and 'typename'", function() {
+      expect(response).toEqual([
+        {
+          title: "Green Iguana",
+          typename: "geonode:green_iguana"
+        }
+      ]);
     });
   });
 });

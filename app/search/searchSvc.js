@@ -1,4 +1,11 @@
-function searchSvc($q, $rootScope, $http, searchConfig) {
+function searchSvc(
+  $q,
+  $rootScope,
+  $http,
+  appConfig,
+  searchConfig,
+  limitToFilter
+) {
   var svc = {};
 
   svc.queries = {
@@ -6,6 +13,27 @@ function searchSvc($q, $rootScope, $http, searchConfig) {
     is_published: true,
     limit: searchConfig.CLIENT_RESULTS_LIMIT,
     offset: 0
+  };
+
+  svc.getSearchBarResultsIndex = function(layer_name) {
+    var layerId;
+    var url =
+      appConfig.servers[0].host +
+      "/api/base/search/?type__in=layer&limit=15&df=typename&q=" +
+      layer_name;
+    return $http.get(url).then(function(response) {
+      console.log("RESPONSE: ", response);
+      var nameIndex = [];
+      for (var i = 0; i < response.data.objects.length; i++) {
+        if (response.data.objects[i].typename) {
+          nameIndex.push({
+            title: response.data.objects[i].title,
+            typename: response.data.objects[i].typename
+          });
+        }
+      }
+      return nameIndex;
+    });
   };
 
   svc.getCategories = function() {
