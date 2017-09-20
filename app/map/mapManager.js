@@ -47,6 +47,10 @@ function MapManager(
       });
   };
 
+  svc.logselecteditem = function() {
+    console.log(mapManager.storyMap.getSelectedItem());
+  };
+
   svc.loadMapFromID = function(options) {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     var annotationsLoad = svc.getDataFromLocalServer(options.id, "annotations");

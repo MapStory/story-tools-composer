@@ -27,26 +27,34 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
-                    <div class="col-sm-5"><strong>Name</strong></div>
-                    <div class="col-sm-5"><strong>Type</strong></div>
-                    <div class="col-sm-2"><strong>Visible</strong></div>
-                </div>
-                <div class="row" ng-repeat="attr in layer.get('attributes') track by $index">
-                    <div class="col-sm-5">
-                        {{attr.name}}
-                    </div>
-                    <div class="col-sm-5">
-                        {{attr.type}}
-                    </div>
                     <div class="col-sm-2">
-                        <label class="checkbox" for="visibility-{{attr.name}}">
-                        <input type="checkbox" ng-model="allowPan" value="true" id="visibility-{{attr.name}}" data-toggle="checkbox"
-                               class="custom-checkbox">
-                        <span class="icons">
-                            <span class="icon-unchecked"></span>
-                            <span class="icon-checked"></span>
-                        </span>
-                        </label>
+                      <strong>Name:</strong>
+                    </div>
+                    <div class="col-sm-10">
+                        {{layer.getProperties().name}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                      <strong>Type:</strong>
+                    </div>
+                    <div class="col-sm-10">
+                        {{layer.getProperties().type}}
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-sm-2">
+                      <strong>Visibility:</strong>
+                    </div>
+                    <div class="col-sm-10">
+                      <label class="checkbox-inline" for="visibility-{{layer.getProperties().name}}" style="padding-left:45px;padding-top:4px;">
+                      <input type="checkbox" ng-model="allowPan" checked="true" id="visibility-{{layer.getProperties().name}}" data-toggle="checkbox"
+                             class="checkbox-inline"></input>
+                      <span class="icons">
+                          <span class="icon-unchecked"></span>
+                          <span class="icon-checked"></span>
+                      </span>
+                      </label>
                     </div>
                 </div>
             </div>

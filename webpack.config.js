@@ -1,7 +1,7 @@
 var webpack = require("webpack");
 var Path = require("path");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var serverHost = "https://mapstory.org";
+var serverHost = "https://mapstory.org"; //"https://docker";
 
 module.exports = {
   context: __dirname,

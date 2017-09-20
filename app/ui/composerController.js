@@ -47,6 +47,10 @@ function composerController(
     pinSvc.removeChapter(chapter_index);
   });
 
+  MapManager.storyMap.getMap().on("singleclick", function(evt) {
+    console.log("MAP CLICKED !!!", evt);
+  });
+
   $scope.updateSelected = function(selected) {
     $scope.selected = { selected: true };
   };

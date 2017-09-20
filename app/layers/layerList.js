@@ -61,6 +61,7 @@ function layerList(
       scope.layers = MapManager.storyMap.getStoryLayers().getArray();
       MapManager.storyMap.getStoryLayers().on("change:length", function() {
         scope.layers = MapManager.storyMap.getStoryLayers().getArray();
+        console.log("SCOPE LAYERS", scope.layers[0].getProperties());
       });
       scope.toggleVisibleLayer = function(lyr) {
         MapManager.storyMap.toggleStoryLayer(lyr);
