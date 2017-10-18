@@ -95,8 +95,10 @@ function MapManager(
   svc.loadMap = function(options) {
     options = options || {};
     if (options.id) {
+      console.log(" > LOAD MAP FROM ID", options);
       svc.loadMapFromID(options);
     } else if (options.url) {
+      console.log(" > LOAD MAP FROM URL");
       svc.loadMapFromUrl(options);
     } else {
       stStoryMapBaseBuilder.defaultMap(svc.storyMap);
@@ -112,6 +114,7 @@ function MapManager(
     svc.title = config.about.title;
     svc.username = config.about.username;
     svc.owner = config.about.owner;
+    console.log("---- > ", config);
     svc.loadMap(config);
   };
 
@@ -144,6 +147,7 @@ function MapManager(
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
       type: settings.asVector === true ? "VECTOR" : "WMS"
     };
+    stateSvc.saveLayer(options);
     return stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {

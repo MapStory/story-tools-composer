@@ -34,6 +34,7 @@ function addLayers(
       };
       scope.addLayer = function() {
         scope.loading = true;
+        console.log("ADD LAYER");
         var name = addLayerSvc.getNameFromIndex(scope.layerName, nameIndex);
         var settings = {
           asVector: scope.asVector,

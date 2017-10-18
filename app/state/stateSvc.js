@@ -4,6 +4,7 @@ function stateSvc(
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
+  newChapterConfigSvc,
   searchSvc
 ) {
   var svc = {};
@@ -18,6 +19,64 @@ function stateSvc(
     .then(function(data) {
       console.log(data);
     });
+
+  svc.addNewChapter = function() {
+    svc.config.chapters.push(newChapterConfigSvc.getNewChapterConfig(svc.config.chapters.length));
+  }
+
+  svc.getLayerSaveConfig = function getLayerSaveConfig(layer) {
+    console.log("        METADATA", layer);
+    var config = layer.get("metadata").config;
+    var styleStorageService = storytools.edit.styleStorageService.styleStorageService();
+
+    var jsonStyle = styleStorageService.getSavedStyle(
+      layer,
+      map_config.chapter_index
+    );
+
+    if (!goog.isDefAndNotNull(config)) {
+      console.log(
+        "Not saving layer: ",
+        layer.get("metadata").name,
+        "because the layer does not have a configuration object."
+      );
+      return false;
+    }
+
+    // Note: when a server is removed, its id diverges from the index. since in geonode's config object it is all
+    // index based, updating it to be the index in case the id is no longer the index
+    var serverIndex = serverService_.getServerIndex(config.source);
+    if (serverIndex > -1) {
+      config.source = serverIndex;
+    }
+    if (goog.isDefAndNotNull(jsonStyle)) {
+      config.jsonstyle = jsonStyle;
+    }
+    config.visibility = layer.get("visible");
+    if (goog.isDefAndNotNull(layer.get("metadata").dimensions)) {
+      var dimension = layer.get("metadata").dimensions[0];
+      config.capability = {};
+      config.capability.dimensions = {};
+      config.capability.dimensions.time = dimension;
+      if (dimension.values instanceof Array) {
+        config.capability.dimensions.time.values = dimension.values;
+      } else {
+        config.capability.dimensions.time.values = dimension.values.split(",");
+      }
+    }
+    if (goog.isDefAndNotNull(layer.get("metadata").schema)) {
+      config.schema = [];
+      for (var i in layer.get("metadata").schema) {
+        config.schema.push({
+          name: i,
+          visible: layer.get("metadata").schema[i].visible
+        });
+      }
+    } else if (goog.isDefAndNotNull(layer.get("metadata").savedSchema)) {
+      config.schema = layer.get("metadata").savedSchema;
+    }
+    return config;
+  };
 
   svc.initConfig = (function() {
     var path = $location.path();
@@ -42,6 +101,7 @@ function stateSvc(
       svc.originalConfig = window.config;
       $rootScope.$broadcast("configInitialized");
     }
+    console.log(" C O N F I G - - - - - >", svc.config);
   })();
 
   svc.getConfig = function() {
@@ -54,6 +114,10 @@ function stateSvc(
 
   svc.updateCurrentChapterConfig = function() {
     svc.currentChapter = svc.getChapterConfig();
+  };
+
+  svc.saveLayer = function(layerOptions) {
+    //svc.config.chapters[svc.getChapterIndex()].push(layerOptions);
   };
 
   svc.getChapter = function() {
@@ -103,14 +167,19 @@ function stateSvc(
     return svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
   };
 
-  this.save = function() {
-    var config = this.storyMap.getState();
+  svc.save = function() {
+    var config = window.storyMap.getState();
+    console.log(" CONFIG ON SAVE ---- >", config);
+    var layers = window.storyMap.getStoryLayers();
+    layers.forEach(function(lyr) {
+      console.log("    LAYER CONFIG -- >", svc.getLayerSaveConfig(lyr));
+    });
     stLocalStorageSvc.saveConfig(config);
-    if (this.storyMap.get("id") === undefined) {
-      this.storyMap.set("id", config.id);
+    if (window.storyMap.get("id") === undefined) {
+      window.storyMap.set("id", config.id);
     }
     stAnnotationsStore.saveAnnotations(
-      this.storyMap.get("id"),
+      window.storyMap.get("id"),
       StoryPinLayerManager.storyPins
     );
   };

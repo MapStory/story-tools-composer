@@ -61,13 +61,14 @@ function layerList(
       scope.layers = MapManager.storyMap.getStoryLayers().getArray();
       MapManager.storyMap.getStoryLayers().on("change:length", function() {
         scope.layers = MapManager.storyMap.getStoryLayers().getArray();
-        console.log("SCOPE LAYERS", scope.layers[0].getProperties());
+        console.log("SCOPE STORY MAP", MapManager.storyMap);
       });
       scope.toggleVisibleLayer = function(lyr) {
         MapManager.storyMap.toggleStoryLayer(lyr);
       };
 
       scope.removeLayer = function(lyr) {
+        console.log("REMOVE LAYER ---- >", lyr);
         MapManager.storyMap.removeStoryLayer(lyr);
       };
       scope.modifyLayer = function(lyr) {
