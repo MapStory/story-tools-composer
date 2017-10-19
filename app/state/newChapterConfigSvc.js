@@ -17,7 +17,7 @@ function newChapterConfigSvc() {
           title: "OpenStreetMap",
           args: ["OpenStreetMap"],
           visibility: false,
-          source: "0",
+          source: "3",
           fixed: true,
           type: "OpenLayers.Layer.OSM"
         },
@@ -36,7 +36,7 @@ function newChapterConfigSvc() {
             { tileOptions: { crossOriginKeyword: null } }
           ],
           visibility: false,
-          source: "0",
+          source: "3",
           fixed: true,
           type: "OpenLayers.Layer.OSM"
         },
@@ -112,9 +112,7 @@ function newChapterConfigSvc() {
         }
       ],
       sources: {
-        "1": { hidden: true, ptype: "gxp_mapboxsource" },
-        "0": { ptype: "gxp_osmsource" },
-        "3": {
+        "0": {
           lazy: true,
           name: "local geoserver",
           title: "Local Geoserver",
@@ -123,6 +121,9 @@ function newChapterConfigSvc() {
           url: "https://mapstory.org/geoserver/wms",
           isVirtualService: false
         },
+        "1": { hidden: true, ptype: "gxp_mapboxsource" },
+
+        "3": { ptype: "gxp_osmsource" },
         "2": {
           ptype: "gxp_arcrestsource",
           url:

@@ -16,6 +16,40 @@ describe('stateSvc', function() {
     });
   });
 
+  describe('saveLayer', function() {
+    it('should add the layer config provided to the current chapter config\'s layer array', function() {
+      spyOn(location, 'path').and.returnValue('/chapter/1');
+      var layerConfig = {
+        name: "testLayer",
+        settings: {
+          asVector: true,
+          allowZoom: true,
+          allowPan: true
+        },
+        server: {
+          name: "mapstory",
+          path: "/geoserver/",
+          absolutePath: "", //'https://mapstory.org/geoserver/',
+          host: "", //'https://mapstory.org/',
+          canStyleWMS: false,
+          timeEndpoint: function(name) {
+            return "/maps/time_info.json?layer=" + name;
+          }
+        }
+      };
+      var testConfig = {
+        chapters: [
+          {layers:[]}
+        ]
+      };
+      stateSvc.setConfig(testConfig);
+      expect(stateSvc.getChapter()).toBe(1);
+      stateSvc.saveLayer(layerConfig);
+      expect(stateSvc.getChapter().layers.length).toBe(1);
+      expect(stateSvc.getChapter().layers[0].name).toBe("tex");
+    });
+  });
+
   describe('getChapter', function() {
     it('should return the number of the current chapter (value: 1)', function() {
       expect(stateSvc.getChapter()).toBe(1);

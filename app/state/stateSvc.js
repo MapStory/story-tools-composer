@@ -117,7 +117,7 @@ function stateSvc(
   };
 
   svc.saveLayer = function(layerOptions) {
-    //svc.config.chapters[svc.getChapterIndex()].push(layerOptions);
+    svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
   };
 
   svc.getChapter = function() {
