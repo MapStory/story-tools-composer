@@ -1,7 +1,8 @@
 function layerList(
   stStoryMapBaseBuilder,
   stEditableStoryMapBuilder,
-  MapManager
+  MapManager,
+  stateSvc
 ) {
   return {
     restrict: "E",
@@ -68,7 +69,7 @@ function layerList(
       };
 
       scope.removeLayer = function(lyr) {
-        console.log("REMOVE LAYER ---- >", lyr);
+        stateSvc.removeLayer(lyr.values_.name);
         MapManager.storyMap.removeStoryLayer(lyr);
       };
       scope.modifyLayer = function(lyr) {

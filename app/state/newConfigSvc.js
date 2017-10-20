@@ -1,116 +1,29 @@
-function newChapterConfigSvc() {
+function newConfigSvc() {
   var svc = {};
 
-  svc.getNewChapterConfig = function(id){
-    return  {
+  svc.getNewMapstoryConfig = function() {
+    return {
+      about: {
+        owner: "",
+        username: "",
+        abstract: "",
+        title: ""
+      },
+      thumbnail_url: "/static/geonode/img/missing_thumb.png",
+      id: 0,
+      chapters: [svc.getNewChapterConfig(1)]
+    };
+  };
+
+  svc.getNewChapterConfig = function(id) {
+    return {
       id: id,
       about: {
         abstract: "",
         owner: "",
         title: "New Chapter"
       },
-      layers: [
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "mapnik",
-          title: "OpenStreetMap",
-          args: ["OpenStreetMap"],
-          visibility: false,
-          source: "3",
-          fixed: true,
-          type: "OpenLayers.Layer.OSM"
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "hot",
-          title: "Humanitarian OpenStreetMap",
-          args: [
-            "Humanitarian OpenStreetMap",
-            [
-              "//a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
-              "//b.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
-              "//c.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png"
-            ],
-            { tileOptions: { crossOriginKeyword: null } }
-          ],
-          visibility: false,
-          source: "3",
-          fixed: true,
-          type: "OpenLayers.Layer.OSM"
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "natural-earth-1",
-          title: "Natural Earth",
-          visibility: false,
-          source: "1",
-          fixed: false
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "natural-earth-2",
-          title: "Natural Earth 2",
-          visibility: false,
-          source: "1",
-          fixed: false
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "geography-class",
-          title: "Geography Class",
-          visibility: false,
-          source: "1",
-          fixed: false
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "control-room",
-          title: "MapBoxControlRoom",
-          visibility: false,
-          source: "1",
-          fixed: false
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "world-dark",
-          title: "World Dark",
-          visibility: true,
-          source: "1",
-          fixed: false
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "world-light",
-          title: "World Light",
-          selected: true,
-          visibility: false,
-          source: "1",
-          fixed: false
-        },
-        {
-          opacity: 1.0,
-          group: "background",
-          name: "NGS_Topo_US_2D",
-          title: "Esri NGS",
-          args: [
-            "Worldmap",
-            "https://services.arcgisonline.com/arcgis/rest/services/NGS_Topo_US_2D/MapServer/",
-            { layers: "basic" }
-          ],
-          visibility: false,
-          source: "2",
-          fixed: true,
-          type: "OpenLayers.Layer"
-        }
-      ],
+      layers: [],
       sources: {
         "0": {
           lazy: true,
@@ -261,10 +174,10 @@ function newChapterConfigSvc() {
         ],
         keywords: []
       }
-    }
-  }
+    };
+  };
 
   return svc;
 }
 
-module.exports = newChapterConfigSvc;
+module.exports = newConfigSvc;

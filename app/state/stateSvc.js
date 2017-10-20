@@ -4,11 +4,11 @@ function stateSvc(
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
-  newChapterConfigSvc,
+  newConfigSvc,
   searchSvc
 ) {
   var svc = {};
-  svc.config = null;
+  svc.config = newConfigSvc.getNewMapstoryConfig();
   svc.currentChapter = null;
   svc.originalConfig = null;
 
@@ -21,8 +21,10 @@ function stateSvc(
     });
 
   svc.addNewChapter = function() {
-    svc.config.chapters.push(newChapterConfigSvc.getNewChapterConfig(svc.config.chapters.length));
-  }
+    svc.config.chapters.push(
+      newConfigSvc.getNewChapterConfig(svc.config.chapters.length + 1)
+    );
+  };
 
   svc.getLayerSaveConfig = function getLayerSaveConfig(layer) {
     console.log("        METADATA", layer);
@@ -94,14 +96,12 @@ function stateSvc(
       }).done(function(data) {
         svc.config = data;
         svc.originalConfig = data;
-        $rootScope.$broadcast("configInitialized");
       });
     } else {
       svc.config = window.config;
       svc.originalConfig = window.config;
-      $rootScope.$broadcast("configInitialized");
     }
-    console.log(" C O N F I G - - - - - >", svc.config);
+    $rootScope.$broadcast("configInitialized");
   })();
 
   svc.getConfig = function() {
@@ -118,6 +118,11 @@ function stateSvc(
 
   svc.saveLayer = function(layerOptions) {
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
+  };
+
+  svc.removeLayer = function(name) {
+    // TODO: !DJA figure this out!
+    console.log(" > REMOVE", name);
   };
 
   svc.getChapter = function() {

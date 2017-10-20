@@ -2,7 +2,7 @@
 
 var angular = require('angular');
 var stateSvc = require('./stateSvc.js');
-var newChapterConfigSvc = require('./newChapterConfigSvc.js');
+var newConfigSvc = require('./newConfigSvc.js');
 
 angular.module('composer').factory('stateSvc', stateSvc);
-angular.module('composer').factory('newChapterConfigSvc', newChapterConfigSvc);
+angular.module('composer').factory('newConfigSvc', newConfigSvc);

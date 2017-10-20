@@ -55,11 +55,18 @@ function MapManager(
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     var annotationsLoad = svc.getDataFromLocalServer(options.id, "annotations");
     var boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
+    console.log(" LOAD MAP FROM ID WITH OPTIONS ---- >", options);
+    for (var i = 0; i < options.layers.length; i++) {
+      svc.buildStoryLayer(options.layers[i]);
+    }
     $q.all([annotationsLoad, boxesLoad]).then(function(values) {
       if (values[0] !== "error") {
         StoryPinLayerManager.loadFromGeoJSON(
           values[0].data,
-          svc.storyMap.getMap().getView().getProjection(),
+          svc.storyMap
+            .getMap()
+            .getView()
+            .getProjection(),
           true
         );
       }
@@ -87,7 +94,10 @@ function MapManager(
       var geojson = values[1].data;
       StoryPinLayerManager.loadFromGeoJSON(
         geojson,
-        svc.storyMap.getMap().getView().getProjection()
+        svc.storyMap
+          .getMap()
+          .getView()
+          .getProjection()
       );
     });
   };
@@ -118,9 +128,35 @@ function MapManager(
     svc.loadMap(config);
   };
 
-  // add locationchange listener to composerCtrl and affect necessary changes in stateSvc
+  svc.buildStoryLayer = function(options) {
+    return stEditableLayerBuilder
+      .buildEditableLayer(options, svc.storyMap.getMap())
+      .then(function(a) {
+        console.log("STORYLAYER --- >", a);
+        svc.storyMap.addStoryLayer(a);
+        if (fitExtent === true) {
+          a.get("latlonBBOX");
+          var extent = ol.proj.transformExtent(
+            a.get("latlonBBOX"),
+            "EPSG:4326",
+            svc.storyMap
+              .getMap()
+              .getView()
+              .getProjection()
+          );
+          // prevent getting off the earth
+          extent[1] = Math.max(-20037508.34, Math.min(extent[1], 20037508.34));
+          extent[3] = Math.max(-20037508.34, Math.min(extent[3], 20037508.34));
+          svc.storyMap
+            .getMap()
+            .getView()
+            .fitExtent(extent, svc.storyMap.getMap().getSize());
+        }
+      });
+  };
 
   svc.addLayer = function(name, settings, server, fitExtent, styleName, title) {
+    console.log(" ADD LAYER: ", name);
     svc.storyMap.setAllowZoom(settings.allowZoom);
     svc.storyMap.setAllowPan(settings.allowPan);
     if (fitExtent === undefined) {
@@ -145,30 +181,11 @@ function MapManager(
       path: server.path,
       canStyleWMS: server.canStyleWMS,
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
-      type: settings.asVector === true ? "VECTOR" : "WMS"
+      type: settings.asVector === true ? "VECTOR" : "WMS",
+      settings: settings
     };
     stateSvc.saveLayer(options);
-    return stEditableLayerBuilder
-      .buildEditableLayer(options, svc.storyMap.getMap())
-      .then(function(a) {
-        console.log("STORYLAYER --- >", a);
-        svc.storyMap.addStoryLayer(a);
-        if (fitExtent === true) {
-          a.get("latlonBBOX");
-          var extent = ol.proj.transformExtent(
-            a.get("latlonBBOX"),
-            "EPSG:4326",
-            svc.storyMap.getMap().getView().getProjection()
-          );
-          // prevent getting off the earth
-          extent[1] = Math.max(-20037508.34, Math.min(extent[1], 20037508.34));
-          extent[3] = Math.max(-20037508.34, Math.min(extent[3], 20037508.34));
-          svc.storyMap
-            .getMap()
-            .getView()
-            .fitExtent(extent, svc.storyMap.getMap().getSize());
-        }
-      });
+    return svc.buildStoryLayer(options);
   };
 
   return svc;
