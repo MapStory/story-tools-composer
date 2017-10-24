@@ -12,7 +12,7 @@ describe("stateSvc", function() {
 
   describe("getConfig", function() {
     it("should return a configuration object with a `chapters` attribute", function() {
-      expect(stateSvc.getConfig().chapters[0].about.title).toBe("prisons");
+      expect(stateSvc.getConfig().chapters[0].about.title).toBe("New Chapter");
     });
   });
 
@@ -72,13 +72,14 @@ describe("stateSvc", function() {
 
   describe("getChapterConfigs", function() {
     it("should return all chapter configs in an array", function() {
+      stateSvc.addNewChapter();
       expect(stateSvc.getChapterConfigs().length).toBe(2);
     });
   });
 
   describe("getChapterCount", function() {
     it("should return the number of chapters (value: 2)", function() {
-      expect(stateSvc.getChapterCount()).toBe(2);
+      expect(stateSvc.getChapterCount()).toBe(1);
     });
   });
 
@@ -88,7 +89,7 @@ describe("stateSvc", function() {
     });
     it("should return the config of the second chapter", function() {
       spyOn(location, "path").and.returnValue("/chapter/2");
-      expect(stateSvc.getChapterConfig().about.title).toBe("just testing");
+      expect(stateSvc.getChapterConfig().about.title).toBe("");
     });
   });
 

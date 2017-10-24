@@ -19,7 +19,7 @@ function newConfigSvc() {
     return {
       id: id,
       about: {
-        abstract: "",
+        abstract: "New chapter description",
         owner: "",
         title: "New Chapter"
       },

@@ -120,9 +120,17 @@ function stateSvc(
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
   };
 
-  svc.removeLayer = function(name) {
-    // TODO: !DJA figure this out!
-    console.log(" > REMOVE", name);
+  svc.removeLayer = function(uuid) {
+    var layers = svc.config.chapters[svc.getChapterIndex()].layers;
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i].uuid === uuid) {
+        var index = layers.indexOf(layers[i]);
+        if (index > -1) {
+          svc.config.chapters[svc.getChapterIndex()].layers.splice(index, 1);
+        }
+      }
+    }
+    console.log(" > REMOVE", svc.config);
   };
 
   svc.getChapter = function() {

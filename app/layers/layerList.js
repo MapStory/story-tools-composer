@@ -69,9 +69,11 @@ function layerList(
       };
 
       scope.removeLayer = function(lyr) {
-        stateSvc.removeLayer(lyr.values_.name);
+        console.log("STORY LAYERS --->", MapManager.storyMap.getStoryLayers());
+        stateSvc.removeLayer(lyr.values_.uuid);
         MapManager.storyMap.removeStoryLayer(lyr);
       };
+
       scope.modifyLayer = function(lyr) {
         scope.swapping = true;
         stEditableStoryMapBuilder.modifyStoryLayer(lyr).then(function() {

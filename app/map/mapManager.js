@@ -175,6 +175,7 @@ function MapManager(
     var id = workspace + ":" + name;
     var options = {
       id: id,
+      uuid: new Date().getTime(),
       name: name,
       title: title || name,
       url: url,
