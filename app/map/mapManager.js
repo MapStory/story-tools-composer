@@ -185,7 +185,7 @@ function MapManager(
       type: settings.asVector === true ? "VECTOR" : "WMS",
       settings: settings
     };
-    stateSvc.saveLayer(options);
+    stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
   };
 

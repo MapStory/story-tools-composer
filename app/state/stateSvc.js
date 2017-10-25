@@ -116,10 +116,11 @@ function stateSvc(
     svc.currentChapter = svc.getChapterConfig();
   };
 
-  svc.saveLayer = function(layerOptions) {
+  svc.addLayer = function(layerOptions) {
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
   };
 
+  // !DJA @TODO: write test
   svc.removeLayer = function(uuid) {
     var layers = svc.config.chapters[svc.getChapterIndex()].layers;
     for (var i = 0; i < layers.length; i++) {
@@ -130,7 +131,6 @@ function stateSvc(
         }
       }
     }
-    console.log(" > REMOVE", svc.config);
   };
 
   svc.getChapter = function() {

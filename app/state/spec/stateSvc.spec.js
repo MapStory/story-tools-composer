@@ -16,35 +16,46 @@ describe("stateSvc", function() {
     });
   });
 
-  describe("saveLayer", function() {
+  describe("addLayer", function() {
     it("should add the layer config provided to the current chapter config's layer array", function() {
       spyOn(location, "path").and.returnValue("/chapter/1");
       var layerConfig = {
-        name: "testLayer",
-        settings: {
-          asVector: true,
-          allowZoom: true,
-          allowPan: true
-        },
-        server: {
-          name: "mapstory",
-          path: "/geoserver/",
-          absolutePath: "", //'https://mapstory.org/geoserver/',
-          host: "", //'https://mapstory.org/',
-          canStyleWMS: false,
-          timeEndpoint: function(name) {
-            return "/maps/time_info.json?layer=" + name;
-          }
-        }
+        id: "test_id",
+        uuid: new Date().getTime(),
+        name: "test_name",
+        title: "test layer"
       };
       var testConfig = {
         chapters: [{ layers: [] }]
       };
 
       stateSvc.setConfig(testConfig);
-      stateSvc.saveLayer(layerConfig);
+      stateSvc.addLayer(layerConfig);
       expect(stateSvc.getChapterConfig().layers.length).toBe(1);
-      expect(stateSvc.getChapterConfig().layers[0].name).toBe("testLayer");
+      expect(stateSvc.getChapterConfig().layers[0].name).toBe("test_name");
+    });
+  });
+
+  describe("removeLayer", function() {
+    it("should add the layer config provided to the current chapter config's layer array", function() {
+      spyOn(location, "path").and.returnValue("/chapter/1");
+      var uuid = new Date().getTime();
+      var layerConfig = {
+        id: "test_id",
+        uuid: uuid,
+        name: "test_name",
+        title: "test layer"
+      };
+      var testConfig = {
+        chapters: [{ layers: [] }]
+      };
+
+      stateSvc.setConfig(testConfig);
+      stateSvc.addLayer(layerConfig);
+      expect(stateSvc.getChapterConfig().layers.length).toBe(1);
+      expect(stateSvc.getChapterConfig().layers[0].uuid).toBe(uuid);
+      stateSvc.removeLayer(uuid);
+      expect(stateSvc.getChapterConfig().layers.length).toBe(0);
     });
   });
 
