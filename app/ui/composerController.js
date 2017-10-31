@@ -66,7 +66,7 @@ function composerController(
   };
 
   $scope.saveMap = function() {
-    console.log("STORY MAP LAYERS ---- > ", window.storyMap.getStoryLayers());
+    $scope.console.log("STORY MAP LAYERS ---- > ", window.storyMap.getStoryLayers());
 
     stateSvc.save();
   };
@@ -127,6 +127,10 @@ function composerController(
 
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
+
+  $scope.storyDetails = function(frameSettings) {
+    console.log(frameSettings);
+  };
 }
 
 module.exports = composerController;

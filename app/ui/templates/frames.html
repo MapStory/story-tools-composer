@@ -7,6 +7,7 @@
           override the part of the map your viewers will see for this chapter.
       </p>
   </section>
+  <!---
   <section class="accordion-item active">
       <div class="title-row">
           <h2>Default StoryFrame</h2>
@@ -36,19 +37,22 @@
                   ng-click="pinsCtrl.saveStoryPin()">Save
           </button>
       </div>
+    -->
       <form>
           <div class="form-field">
-              <label for="storypin_title">StoryFrame Title</label>
-              <strong><abbr title="required">*</abbr></strong>
+              <label for="storypin_title">
+                  StoryFrame Title
+                  <strong><abbr title="required">*</abbr></strong>
+                  <input id="storypin_title" type="text" name="storypin_title" ng-model="story.title"/>
+              </label>
               <br />
-              <input id="storypin_title" type="text" name="storypin_title" />
           </div>
           <div class="form-field">
               <label for="start_time">Start Time</label>
               <strong><abbr title="required">*</abbr></strong>
               <br />
-              <input type="date" name="start_time_date">
-              <input type="time" name="start_time_time">
+              <input type="date" name="start_time_date" ng-model="frameSettings.startDate">
+              <input type="time" name="start_time_time" ng-model="frameSettings.startTime">
           </div>
           <div class="form-field">
               <label for="end_time">End Time</label>
@@ -59,8 +63,11 @@
               <br /><br />
               <p>Set placement for this StoryFrame on the map.</p>
           </div>
+          <button class="btn btn-inverse" ng-click="storyDetails(frameSettings)">Save</button>
       </form>
   </section>
+  <br/><br/><br/><br/>
+  <!---
   <section class="accordion-item">
       <div class="title-row">
           <h2>StoryFrame Name 3</h2>
@@ -68,3 +75,4 @@
           <i class="fa fa-caret-down caret"></i>
       </div>
   </section>
+    --!>
