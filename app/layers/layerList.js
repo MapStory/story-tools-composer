@@ -2,6 +2,7 @@ function layerList(
   stStoryMapBaseBuilder,
   stEditableStoryMapBuilder,
   MapManager,
+  layerSvc,
   stateSvc
 ) {
   return {
@@ -11,47 +12,7 @@ function layerList(
     },
     templateUrl: "./app/layers/templates/layer-list.html",
     link: function(scope, el, atts) {
-      scope.baseLayers = [
-        {
-          title: "World Light",
-          type: "MapBox",
-          name: "world-light"
-        },
-        {
-          title: "Geography Class",
-          type: "MapBox",
-          name: "geography-class"
-        },
-        {
-          title: "Natural Earth 2",
-          type: "MapBox",
-          name: "natural-earth-2"
-        },
-        {
-          title: "Natural Earth",
-          type: "MapBox",
-          name: "natural-earth-1"
-        },
-        {
-          title: "Humanitarian OpenStreetMap",
-          type: "HOT",
-          name: "hot"
-        },
-        {
-          title: "OpenStreetMap",
-          type: "OSM",
-          name: "osm"
-        },
-        {
-          title: "World Topo Map",
-          type: "ESRI",
-          name: "world-topo-map"
-        },
-        {
-          title: "No background",
-          type: "None"
-        }
-      ];
+      scope.baseLayers = layerSvc.baseLayers;
       var baseLayer = MapManager.storyMap.get("baselayer");
       if (baseLayer) {
         scope.baseLayer = baseLayer.get("title");
@@ -62,17 +23,9 @@ function layerList(
       scope.layers = MapManager.storyMap.getStoryLayers().getArray();
       MapManager.storyMap.getStoryLayers().on("change:length", function() {
         scope.layers = MapManager.storyMap.getStoryLayers().getArray();
-        console.log("SCOPE STORY MAP", MapManager.storyMap);
       });
-      scope.toggleVisibleLayer = function(lyr) {
-        MapManager.storyMap.toggleStoryLayer(lyr);
-      };
-
-      scope.removeLayer = function(lyr) {
-        console.log("STORY LAYERS --->", MapManager.storyMap.getStoryLayers());
-        stateSvc.removeLayer(lyr.values_.uuid);
-        MapManager.storyMap.removeStoryLayer(lyr);
-      };
+      scope.toggleVisibleLayer = layerSvc.toggleVisibleLayer;
+      scope.removeLayer = layerSvc.removeLayer;
 
       scope.modifyLayer = function(lyr) {
         scope.swapping = true;

@@ -7,7 +7,7 @@ function addLayers(
   limitToFilter,
   MapManager,
   searchSvc,
-  addLayerSvc,
+  layerSvc,
   appConfig,
   stateSvc
 ) {
@@ -29,13 +29,13 @@ function addLayers(
           .getSearchBarResultsIndex(layerName)
           .then(function(res) {
             nameIndex = res;
-            names = addLayerSvc.compileLayerNamesFromSearchIndex(res);
+            names = layerSvc.compileLayerNamesFromSearchIndex(res);
             return limitToFilter(names, 15);
           });
       };
       scope.addLayer = function() {
         scope.loading = true;
-        var name = addLayerSvc.getNameFromIndex(scope.layerName, nameIndex);
+        var name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
         var settings = {
           asVector: scope.asVector,
           allowZoom: scope.allowZoom,
@@ -44,7 +44,7 @@ function addLayers(
         MapManager.addLayer(name, settings, scope.server.active)
           .then(function() {
             scope.$parent.status.open = false;
-          }, addLayerSvc.handleAddLayerError)
+          }, layerSvc.handleAddLayerError)
           .finally(function() {
             scope.loading = false;
           });
