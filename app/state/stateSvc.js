@@ -5,7 +5,8 @@ function stateSvc(
   stAnnotationsStore,
   stLocalStorageSvc,
   newConfigSvc,
-  searchSvc
+  searchSvc,
+  utils
 ) {
   var svc = {};
   svc.config = newConfigSvc.getNewMapstoryConfig();
@@ -26,8 +27,11 @@ function stateSvc(
     );
   };
 
+  svc.reorderLayer = function(from, to) {
+    svc.config.chapters[svc.getChapterIndex()].layers.move(from, to);
+  };
+
   svc.getLayerSaveConfig = function getLayerSaveConfig(layer) {
-    console.log("        METADATA", layer);
     var config = layer.get("metadata").config;
     var styleStorageService = storytools.edit.styleStorageService.styleStorageService();
 

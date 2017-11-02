@@ -156,7 +156,6 @@ function MapManager(
   };
 
   svc.addLayer = function(name, settings, server, fitExtent, styleName, title) {
-    console.log(" ADD LAYER: ", name);
     svc.storyMap.setAllowZoom(settings.allowZoom);
     svc.storyMap.setAllowPan(settings.allowPan);
     if (fitExtent === undefined) {

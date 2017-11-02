@@ -46,6 +46,8 @@ function layerList(
             indexTo
         );
 
+        stateSvc.reorderLayer(indexFrom, indexTo);
+
         partFrom.forEach(function(layer) {
           console.log(layer.get("title"));
         });

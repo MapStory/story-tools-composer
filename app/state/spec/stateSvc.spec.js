@@ -117,6 +117,28 @@ describe("stateSvc", function() {
     });
   });
 
+  describe("reorderLayer", function() {
+    it("should move the specified layer from the `from` index in the layer array to the `to` index", function() {
+      var testConfig = {
+        chapters: [
+          {
+            layers: [
+              {
+                uuid: "LAYER_1"
+              },
+              {
+                uuid: "LAYER_2"
+              }
+            ]
+          }
+        ]
+      };
+      stateSvc.setConfig(testConfig);
+      stateSvc.reorderLayer(0, 1);
+      expect(stateSvc.getChapterConfig().layers[1].uuid).toBe("LAYER_1");
+    });
+  });
+
   describe("setConfig", function() {
     it("should overwrite the existing config", function() {
       var testConfig = { test: "pass" };
