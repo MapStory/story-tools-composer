@@ -131,6 +131,14 @@ function composerController(
   $scope.storyDetails = function(frameSettings) {
     $log.log(frameSettings);
   };
+
+  $scope.deleteStoryframe = function(frameTitle) {
+    $log.log('delete: ', frameTitle);
+  };
+
+  $scope.editStoryframe = function(frameTitle) {
+    $log.log('updated: ', frameTitle);
+  };
 }
 
 module.exports = composerController;
