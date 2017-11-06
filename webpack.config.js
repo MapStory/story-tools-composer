@@ -1,6 +1,7 @@
 var webpack = require("webpack");
 var Path = require("path");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
+var HtmlWebpackPlugin = require("html-webpack-plugin");
 var serverHost = "https://mapstory.org"; //"https://docker";
 
 module.exports = {
@@ -26,6 +27,15 @@ module.exports = {
           fallback: "style-loader",
           use: "css-loader!less-loader"
         })
+      },
+      {
+        test: /\.(html)$/,
+        use: {
+          loader: "html-loader",
+          options: {
+            attrs: [":data-src"]
+          }
+        }
       }
     ]
   },
@@ -70,6 +80,9 @@ module.exports = {
     }
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      template: "index.html"
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: "vendor",
       filename: "vendor.bundle.js"
