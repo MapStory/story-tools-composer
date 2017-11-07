@@ -1,4 +1,8 @@
 <html ng-app="composer">
-<%= require('html-loader!./partials/head.html') %>
-<%= require('html-loader!./partials/body.html') %>
+<head>
+  <%= require('html-loader!./partials/head.html') %>
+</head>
+<body ng-controller="composerController as composer">
+  <%= require('html-loader!./partials/body.html') %>
+</body>
 </html>
