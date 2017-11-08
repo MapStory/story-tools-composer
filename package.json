@@ -5,6 +5,7 @@
   "main": "js/composer.js",
   "scripts": {
     "bundle": "webpack",
+    "changepaths": "./scripts/change_paths.sh",
     "server": "node_modules/.bin/webpack-dev-server",
     "test": "webpack && karma start karma.config.js",
     "continuous": "webpack && karma start karma.config.js"

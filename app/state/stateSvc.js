@@ -13,14 +13,6 @@ function stateSvc(
   svc.currentChapter = null;
   svc.originalConfig = null;
 
-  searchSvc
-    .search({
-      q: "india"
-    })
-    .then(function(data) {
-      console.log(data);
-    });
-
   svc.addNewChapter = function() {
     svc.config.chapters.push(
       newConfigSvc.getNewChapterConfig(svc.config.chapters.length + 1)
