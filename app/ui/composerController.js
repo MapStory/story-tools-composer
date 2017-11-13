@@ -128,8 +128,12 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
+
+
+
   $scope.storyDetails = function(frameSettings) {
-    $log.log(frameSettings);
+      frameSettings.id = Date.now();
+      $log.log(frameSettings);
   };
 
   $scope.deleteStoryframe = function(frameTitle) {
@@ -139,6 +143,10 @@ function composerController(
   $scope.editStoryframe = function(frameTitle) {
     $log.log('updated: ', frameTitle);
   };
+
+
+
+
 }
 
 module.exports = composerController;

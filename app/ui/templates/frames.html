@@ -11,13 +11,15 @@
       <h2 class="section-title float-left clearfix">Created Storyframes</h2>
       <p class="clearfix">{{ frameSettings.title }}
           <i class="fa fa-edit" ng-click="editStoryframe(frameSettings.title)"></i>
-          <i class="fa fa-remove" ng-click="deleteStoryframe(frameSettings.title)"></i>
+          <i class="fa fa-trash" ng-click="deleteStoryframe(frameSettings.title)"></i>
       </p>
   </div>
 
+  <br/>
+
   <button class="sidebar-button" ng-click="showForm = !showForm">Create New StoryFrame</button>
 
-  <br/><br/>
+  <br/>
 
      <form ng-show="showForm == true">
          <div class="form-field">
