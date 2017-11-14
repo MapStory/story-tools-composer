@@ -137,7 +137,7 @@ function composerController(
   $scope.storyDetails = function(frameSettings) {
       frameSettings.id = Date.now();
 
-      frameSettings.push({
+      $scope.frameSettings.push({
               id: frameSettings.id,
               title: frameSettings.title,
               startDate: frameSettings.startDate,
@@ -148,13 +148,16 @@ function composerController(
       $log.log(storyframeList);
   };
 
-  $scope.deleteStoryframe = function(frameTitle) {
-    $log.log('delete: ', frameTitle);
-  };
-
   $scope.editStoryframe = function(frameTitle) {
     $log.log('updated: ', frameTitle);
   };
+
+
+
+  $scope.deleteStoryframe = function(index) {
+    $scope.frameSettings.splice(index, 1);
+  };
+
 
 }
 
