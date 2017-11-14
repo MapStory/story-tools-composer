@@ -129,11 +129,20 @@ function composerController(
   $scope.previousChapter = navigationSvc.previousChapter;
 
 
-
+  var storyframeList = [];
 
   $scope.storyDetails = function(frameSettings) {
+
       frameSettings.id = Date.now();
-      $log.log(frameSettings);
+      storyframeList.push({
+          id: frameSettings.id,
+          title: frameSettings.title,
+          startDate: frameSettings.startDate,
+          startTime: frameSettings.startTime,
+          endDate: frameSettings.endDate,
+          endTime: frameSettings.endTime});
+
+      $log.log(storyframeList);
   };
 
   $scope.deleteStoryframe = function(frameTitle) {

@@ -1,15 +1,15 @@
-  <section>
-      <h2 class="section-title float-left">StoryFrames</h2>
-      <p class="clearfix">
-          A StoryFrame defines the area of the map a viewer of your story will see.
-          Set the default StoryFrame below, or create additional StoryFrames to
-          override the part of the map your viewers will see for this chapter.
+<section>
+    <h2 class="section-title float-left">StoryFrames</h2>
+    <p class="clearfix">
+        A StoryFrame defines the area of the map a viewer of your story will see.
+        Set the default StoryFrame below, or create additional StoryFrames to
+        override the part of the map your viewers will see for this chapter.
       </p>
   </section>
 
   <div id="createdStoryframes" ng-show="frameSettings">
       <h2 class="section-title float-left clearfix">Created Storyframes</h2>
-      <p class="clearfix">{{ frameSettings.title }}
+      <p class="clearfix">
           <i class="fa fa-edit" ng-click="editStoryframe(frameSettings.title)"></i>
           <i class="fa fa-trash" ng-click="deleteStoryframe(frameSettings.title)"></i>
       </p>
