@@ -7,9 +7,10 @@
       </p>
   </section>
 
-  <div id="createdStoryframes" ng-show="frameSettings">
+  <div id="createdStoryframes">
       <h2 class="section-title float-left clearfix">Created Storyframes</h2>
-      <p class="clearfix">
+      <p class="clearfix" ng-repeat="title in frameSettings">
+        {{ title.title }}
           <i class="fa fa-edit" ng-click="editStoryframe(frameSettings.title)"></i>
           <i class="fa fa-trash" ng-click="deleteStoryframe(frameSettings.title)"></i>
       </p>

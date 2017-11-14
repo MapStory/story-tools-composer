@@ -128,20 +128,23 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
-
   var storyframeList = [];
 
+  $scope.frameSettings = [
+      {'title': 'Default Story'},
+  ]
+
   $scope.storyDetails = function(frameSettings) {
-
       frameSettings.id = Date.now();
-      storyframeList.push({
-          id: frameSettings.id,
-          title: frameSettings.title,
-          startDate: frameSettings.startDate,
-          startTime: frameSettings.startTime,
-          endDate: frameSettings.endDate,
-          endTime: frameSettings.endTime});
 
+      frameSettings.push({
+              id: frameSettings.id,
+              title: frameSettings.title,
+              startDate: frameSettings.startDate,
+              startTime: frameSettings.startTime,
+              endDate: frameSettings.endDate,
+              endTime: frameSettings.endTime
+      });
       $log.log(storyframeList);
   };
 
@@ -152,9 +155,6 @@ function composerController(
   $scope.editStoryframe = function(frameTitle) {
     $log.log('updated: ', frameTitle);
   };
-
-
-
 
 }
 
