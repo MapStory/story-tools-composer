@@ -1,0 +1,51 @@
+<html ng-app="composer">
+<head>
+  <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,900" rel="stylesheet">
+  <link href="node_modules/time-controls/dist/story-tools-core-all.css" rel="stylesheet">
+  <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+  <link href="build/bundle.css" rel="stylesheet">
+</head>
+<body ng-controller="composerController as composer">
+  <div id="appwrap">
+    <ng-include src="'app/ui/templates/header.html'"></ng-include>
+    <ng-include src="'app/ui/templates/sidebar.html'"></ng-include>
+    <div class="map-area">
+      <div featureinfobox id="info-box" ng-show="featureInfoService.getSelectedItem() && featureInfoService.getEnabled()"
+       class="feature-info-box-popup"></div>
+      <div id="map" ng-style="{'width':mapWidth}"></div>
+       <div id="footer" class='floating-below'
+            ng-show="timeControlsManager.timeControls && timeControlsManager.timeControls.isReady() " ng-style="{'width':mapWidth}">
+           <div id="time-controls-panel2" style="background: #34495e;">
+               <div class="navbar" style="margin:3px 0 0; min-height: 32px;" ng-controller="tileProgressController">
+                   <st-playback-controls playback-options="playbackOptions" class="pull-left" style="width:100%"
+                                         time-controls="timeControlsManager.timeControls"></st-playback-controls>
+               </div>
+               <div id="timeline" style="background: rgba(255, 255, 255, 0.9); display: none;"></div>
+           </div>
+           <div id="playback-settings" class="panel-collapse collapse" style="height: 0px; color:black; opacity: 0.58; background-color: white;">
+               <div class="panel-heading">Playback Options</div>
+               <st-playback-settings playback-options="playbackOptions" time-controls="timeControlsManager.timeControls"></st-playback-settings>
+           </div>
+       </div>
+  </div>
+  <script src="https://use.fontawesome.com/9690d4cb85.js"></script>
+  <script src="js/config.js"></script>
+  <script>
+  console.log(config);
+</script>
+  <script src="js/modernizr.js"></script>
+  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="build/vendor.bundle.js"></script>
+  <script src="bower_components/moment/min/moment.min.js"></script>
+  <script src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+  <script src="node_modules/time-controls/dist/story-tools-vendor-all.js"></script>
+  <script src="bower_components/angular-sortable-view/src/angular-sortable-view.js"></script>
+  <script src="node_modules/time-controls/dist/story-tools-core-all.js"></script>
+  <script src="node_modules/time-controls/dist/story-tools-edit-tpls.js"></script>
+  <script src="node_modules/time-controls/dist/story-tools-edit.js"></script>
+  <script src="node_modules/time-controls/dist/story-tools-edit-ng.js"></script>
+  <script src="node_modules/time-controls/dist/story-tools-mapstory.js"></script>
+  <script src="build/app.bundle.js"></script>
+</body>
+</html>
