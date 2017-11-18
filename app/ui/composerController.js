@@ -47,8 +47,18 @@ function composerController(
     pinSvc.removeChapter(chapter_index);
   });
 
+  $scope.locationSettings = []
+
   MapManager.storyMap.getMap().on("singleclick", function(evt) {
     $log.log("MAP CLICKED !!!", evt);
+
+    $scope.locationSettings.push({
+        lat: evt.coordinate[0],
+        lon: evt.coordinate[1]
+    });
+
+    $log.log(evt.coordinate);
+
   });
 
   $scope.updateSelected = function(selected) {
@@ -130,9 +140,7 @@ function composerController(
 
   var storyframeList = [];
 
-  $scope.frameSettings = [
-      {'title': 'Default Story'},
-  ]
+  $scope.frameSettings = [];
 
   $scope.storyDetails = function(frameSettings) {
       frameSettings.id = Date.now();
@@ -143,21 +151,19 @@ function composerController(
               startDate: frameSettings.startDate,
               startTime: frameSettings.startTime,
               endDate: frameSettings.endDate,
-              endTime: frameSettings.endTime
+              endTime: frameSettings.endTime,
+              radius: frameSettings.radius
       });
-      $log.log(storyframeList);
+      $log.log('frame settings: ', frameSettings);
   };
 
   $scope.editStoryframe = function(frameTitle) {
     $log.log('updated: ', frameTitle);
   };
 
-
-
   $scope.deleteStoryframe = function(index) {
     $scope.frameSettings.splice(index, 1);
   };
-
 
 }
 
