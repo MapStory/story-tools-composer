@@ -1,27 +1,51 @@
 function newConfigSvc() {
   var svc = {};
 
-  svc.getNewMapstoryConfig = function() {
-    return {
-      about: {
+  svc.getMapstoryConfig = function(data) {
+    if (!data) {
+      data = {
+        abstract: "New Mapstory description",
         owner: "",
         username: "",
-        abstract: "",
-        title: ""
+        title: "New Mapstory",
+        id: 0,
+        chapters: [{}]
+      };
+    }
+    var cfg = {
+      about: {
+        owner: data.owner,
+        username: data.owner.username,
+        abstract: data.abstract,
+        title: data.title
       },
-      thumbnail_url: "/static/geonode/img/missing_thumb.png",
-      id: 0,
-      chapters: [svc.getNewChapterConfig(1)]
+      thumbnail_url: data.thumbnail_url,
+      id: data.id,
+      chapters: data.chapters
     };
+
+    for (var i = 0; i < data.chapters.length; i++) {
+      data.chapters[i].owner = data.owner;
+      cfg.chapters[i] = svc.getChapterConfig(i, data.chapters[i]);
+    }
+
+    return cfg;
   };
 
-  svc.getNewChapterConfig = function(id) {
-    return {
-      id: id,
-      about: {
+  svc.getChapterConfig = function(id, data) {
+    if (!data) {
+      data = {
         abstract: "New chapter description",
         owner: "",
         title: "New Chapter"
+      };
+    }
+    var cfg = {
+      id: id,
+      about: {
+        abstract: data.abstract,
+        owner: data.owner,
+        title: data.title
       },
       layers: [],
       sources: {
@@ -35,7 +59,6 @@ function newConfigSvc() {
           isVirtualService: false
         },
         "1": { hidden: true, ptype: "gxp_mapboxsource" },
-
         "3": { ptype: "gxp_osmsource" },
         "2": {
           ptype: "gxp_arcrestsource",
@@ -175,6 +198,7 @@ function newConfigSvc() {
         keywords: []
       }
     };
+    return cfg;
   };
 
   return svc;

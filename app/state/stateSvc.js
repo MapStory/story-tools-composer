@@ -9,13 +9,13 @@ function stateSvc(
   utils
 ) {
   var svc = {};
-  svc.config = newConfigSvc.getNewMapstoryConfig();
   svc.currentChapter = null;
   svc.originalConfig = null;
+  svc.config = null;
 
   svc.addNewChapter = function() {
     svc.config.chapters.push(
-      newConfigSvc.getNewChapterConfig(svc.config.chapters.length + 1)
+      newConfigSvc.getChapterConfig(svc.config.chapters.length + 1)
     );
   };
 
@@ -77,27 +77,32 @@ function stateSvc(
   };
 
   svc.initConfig = (function() {
-    var path = $location.path();
-    var mapID = /\/maps\/(\d+)/.exec(path)
-      ? /\/maps\/(\d+)/.exec(path)[1]
+    console.log(" >>> INIT CONFIG");
+    var path = window.location.pathname;
+    var mapID = /\/story\/(\d+)/.exec(path)
+      ? /\/story\/(\d+)/.exec(path)[1]
       : null;
     console.log(mapID);
-    var mapJsonUrl = "/maps/" + mapID + "/data";
+    var mapJsonUrl = "/api/mapstories/" + mapID;
     if (svc.config) {
+      console.log("SERVICE CONFIG ALREADY EXISTS");
       return;
     } else if (mapID) {
       $.ajax({
         dataType: "json",
         url: mapJsonUrl
       }).done(function(data) {
-        svc.config = data;
+        svc.config = newConfigSvc.getMapstoryConfig(data);
+        window.config = svc.config;
         svc.originalConfig = data;
+        $rootScope.$broadcast("configInitialized");
       });
     } else {
-      svc.config = window.config;
+      svc.config = newConfigSvc.getMapstoryConfig();
+      window.config = svc.config;
       svc.originalConfig = window.config;
+      $rootScope.$broadcast("configInitialized");
     }
-    $rootScope.$broadcast("configInitialized");
   })();
 
   svc.getConfig = function() {
@@ -113,6 +118,7 @@ function stateSvc(
   };
 
   svc.addLayer = function(layerOptions) {
+    console.log("LAYER OPTIONS", layerOptions);
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
   };
 
