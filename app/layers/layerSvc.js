@@ -1,6 +1,6 @@
 "use strict";
 
-function layerSvc(MapManager, stateSvc) {
+function layerSvc(stateSvc) {
   var svc = {};
 
   svc.baseLayers = [
@@ -47,11 +47,11 @@ function layerSvc(MapManager, stateSvc) {
 
   svc.removeLayer = function(lyr) {
     stateSvc.removeLayer(lyr.values_.uuid);
-    MapManager.storyMap.removeStoryLayer(lyr);
+    window.storyMap.removeStoryLayer(lyr);
   };
 
   svc.toggleVisibleLayer = function(lyr) {
-    MapManager.storyMap.toggleStoryLayer(lyr);
+    window.storyMap.toggleStoryLayer(lyr);
   };
 
   svc.compileLayerNamesFromSearchIndex = function(searchIndex) {

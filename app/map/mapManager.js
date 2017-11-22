@@ -12,6 +12,7 @@ function MapManager(
   stEditableLayerBuilder,
   TimeControlsManager,
   EditableStoryMap,
+  layerSvc,
   stStoryMapBaseBuilder,
   stateSvc,
   stEditableStoryMapBuilder
@@ -192,6 +193,7 @@ function MapManager(
   };
 
   svc.buildStoryLayer = function(options) {
+    console.log(" B U I L D STORYLAYER O P T I O N S:", options);
     return stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {
@@ -219,34 +221,15 @@ function MapManager(
   };
 
   svc.addLayer = function(name, settings, server, fitExtent, styleName, title) {
-    svc.storyMap.setAllowZoom(settings.allowZoom);
-    svc.storyMap.setAllowPan(settings.allowPan);
-    if (fitExtent === undefined) {
-      fitExtent = true;
-    }
-    if (angular.isString(server)) {
-      server = getServer(server);
-    }
-    var workspace = "geonode";
-    var parts = name.split(":");
-    if (parts.length > 1) {
-      workspace = parts[0];
-      name = parts[1];
-    }
-    var url = server.path + workspace + "/" + name + "/wms";
-    var id = workspace + ":" + name;
-    var options = {
-      id: id,
-      uuid: new Date().getTime(),
-      name: name,
-      title: title || name,
-      url: url,
-      path: server.path,
-      canStyleWMS: server.canStyleWMS,
-      timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
-      type: settings.asVector === true ? "VECTOR" : "WMS",
-      settings: settings
-    };
+    options = layerSvc.getLayerOptions(
+      name,
+      settings,
+      server,
+      fitExtent,
+      styleName,
+      title
+    );
+    console.log("SERVER SERVER: ", server);
     stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
   };

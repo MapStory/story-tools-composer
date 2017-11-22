@@ -1,5 +1,24 @@
-function newConfigSvc() {
+function newConfigSvc(layerOptionsSvc, appConfig) {
   var svc = {};
+
+  svc.getLayerListFromServerData = function(layers) {
+    if (!layers) {
+      return [];
+    }
+    var newLayers = [];
+    for (var i = 0; i < layers.length; i += 1) {
+      if (layers[i].indexOf("/geoserver") > -1) {
+        var name = layers[i].split("/geoserver/wms?layers=")[1];
+        var options = layerOptionsSvc.getLayerOptions(
+          name,
+          {},
+          appConfig.servers[0]
+        );
+        newLayers.push(options);
+      }
+    }
+    return newLayers;
+  };
 
   svc.getMapstoryConfig = function(data) {
     if (!data) {
@@ -12,6 +31,7 @@ function newConfigSvc() {
         chapters: [{}]
       };
     }
+
     var cfg = {
       about: {
         owner: data.owner,
@@ -47,7 +67,7 @@ function newConfigSvc() {
         owner: data.owner,
         title: data.title
       },
-      layers: [],
+      layers: svc.getLayerListFromServerData(data.layers),
       sources: {
         "0": {
           lazy: true,
