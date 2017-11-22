@@ -9,44 +9,26 @@
 
   <div id="createdStoryframes" ng-show="frameSettings">
       <h2 class="section-title float-left clearfix">Created Storyframes</h2>
-      <div class="clearfix" ng-repeat="title in frameSettings">
-          <a href="#" ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title"><i class="fa fa-expand"></i>
-            {{ title.title }}
+      <div class="clearfix" ng-repeat="item in frameSettings">
+          <a href="#" ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title">
+              <i class="fa fa-expand"></i> {{ item.title }}
           </a>
           <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
-
-          <div class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
-              <ul>
-                  <li>{{$index+1}}</li>
-                  <li ng-repeat="lat in locationSettings">
-                    Lat: {{ lat.lat }}
-                  </li>
-                  <li ng-repeat="lon in locationSettings">
-                    Lon: {{ lon.lon }}
-                  </li>
-                  <li ng-repeat="radius in frameSettings">
-                      Radius: {{ radius.radius }}
-                  </li>
-                  <li ng-repeat="startDate in frameSettings">
-                      Start Date: {{ startDate.startDate }}
-                  </li>
-                  <li ng-repeat="startTime in frameSettings">
-                      Start Time: {{ startTime.startTime }}
-                  </li>
-                  <li ng-repeat="endDate in frameSettings">
-                      End Date: {{ endDate.endDate }}
-                  </li>
-                  <li ng-repeat="endTime in frameSettings">
-                      End Time: {{ endTime.endTime }}
-                  </li>
-              </ul>
+          <ul class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
+              <li>Location: {{ $scope.locationSettings.loc }}</li>
+              <li>Radius: {{ item.radius }}</li>
+              <li>Start Date: {{ item.startDate }}</li>
+              <li>Start Time: {{ item.startTime }}</li>
+              <li>End Date: {{ item.endDate }}</li>
+              <li>End Time: {{ item.endTime }}</li>
+          </ul>
           </div>
       </div>
   </div>
 
   <br/>
 
-  <button class="sidebar-button float-left" ng-click="showForm = !showForm">Create New StoryFrame</button>
+  <button class="sidebar-button" ng-click="showForm = !showForm">Create New StoryFrame</button>
 
   <br/>
 
@@ -80,8 +62,7 @@
               <label for="location">Location Center</label>
               <strong><abbr title="required">*</abbr></strong>
               <br />
-              <input type="text" name="location_lat" ng-model="locationSettings[0].lat" placeholder="Click the map to choose a location.">
-              <input type="text" name="location_lon" ng-model="locationSettings[0].lon">
+              <input type="text" name="location" ng-model="locationSettings.loc" placeholder="Click the map to choose a location.">
               <br />
               <label for="radius">Radius (km)</label>
               <strong><abbr title="required">*</abbr></strong>

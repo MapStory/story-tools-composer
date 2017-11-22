@@ -53,11 +53,10 @@ function composerController(
     $log.log("MAP CLICKED !!!", evt);
 
     $scope.locationSettings.push({
-        lat: evt.coordinate[0],
-        lon: evt.coordinate[1]
+        loc: evt.coordinate[0] + ',' + evt.coordinate[1],
     });
 
-    $log.log(evt.coordinate);
+    $log.log(evt.coordinate[0] + ',' + evt.coordinate[1]);
 
   });
 
@@ -138,11 +137,11 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
-  var storyframeList = [];
 
   $scope.frameSettings = [];
 
   $scope.storyDetails = function(frameSettings) {
+
       frameSettings.id = Date.now();
 
       $scope.frameSettings.push({
@@ -164,7 +163,6 @@ function composerController(
   $scope.deleteStoryframe = function(index) {
     $scope.frameSettings.splice(index, 1);
   };
-
 }
 
 module.exports = composerController;
