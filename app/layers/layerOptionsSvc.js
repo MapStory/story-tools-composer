@@ -11,8 +11,10 @@ function layerOptionsSvc() {
     styleName,
     title
   ) {
-    window.storyMap.setAllowZoom(settings.allowZoom || true);
-    window.storyMap.setAllowPan(settings.allowPan || true);
+    if (window.storyMap) {
+      window.storyMap.setAllowZoom(settings.allowZoom || true);
+      window.storyMap.setAllowPan(settings.allowPan || true);
+    }
     if (fitExtent === undefined) {
       fitExtent = true;
     }

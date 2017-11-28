@@ -76,16 +76,14 @@ function stateSvc(
     return config;
   };
 
-  svc.initConfig = (function() {
-    console.log(" >>> INIT CONFIG");
+  svc.initConfig = function() {
     var path = window.location.pathname;
     var mapID = /\/story\/(\d+)/.exec(path)
       ? /\/story\/(\d+)/.exec(path)[1]
       : null;
-    console.log(mapID);
+    console.log("> map ID: ", mapID);
     var mapJsonUrl = "/api/mapstories/" + mapID;
     if (svc.config) {
-      console.log("SERVICE CONFIG ALREADY EXISTS");
       return;
     } else if (mapID) {
       $.ajax({
@@ -103,7 +101,7 @@ function stateSvc(
       svc.originalConfig = window.config;
       $rootScope.$broadcast("configInitialized");
     }
-  })();
+  };
 
   svc.getConfig = function() {
     return svc.config;
@@ -198,6 +196,8 @@ function stateSvc(
       StoryPinLayerManager.storyPins
     );
   };
+
+  svc.initConfig();
 
   return svc;
 }

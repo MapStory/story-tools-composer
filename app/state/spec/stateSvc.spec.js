@@ -12,7 +12,9 @@ describe("stateSvc", function() {
 
   describe("getConfig", function() {
     it("should return a configuration object with a `chapters` attribute", function() {
-      expect(stateSvc.getConfig().chapters[0].about.title).toBe("New Chapter");
+      expect(stateSvc.getConfig().chapters[0].about.title).toBe(
+        "Chapter Title"
+      );
     });
   });
 
@@ -100,7 +102,7 @@ describe("stateSvc", function() {
     });
     it("should return the config of the second chapter", function() {
       spyOn(location, "path").and.returnValue("/chapter/2");
-      expect(stateSvc.getChapterConfig().about.title).toBe("");
+      expect(stateSvc.getChapterConfig().about.title).toBe("Chapter title");
     });
   });
 

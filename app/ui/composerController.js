@@ -15,6 +15,7 @@ function composerController(
   pinSvc,
   uiHelperSvc,
   searchSvc,
+  stateSvc,
   popupSvc,
   $location
 ) {

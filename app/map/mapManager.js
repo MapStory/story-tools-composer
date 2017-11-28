@@ -117,6 +117,7 @@ function MapManager(
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     var annotationsLoad = svc.getDataFromLocalServer(options.id, "annotations");
     var boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
+    console.log(" > LOAD MAP FROM ID OPTIONS: ", options);
     for (var i = 0; i < options.layers.length; i++) {
       svc.buildStoryLayer(options.layers[i]);
     }
@@ -165,7 +166,8 @@ function MapManager(
 
   svc.loadMap = function(options) {
     options = options || {};
-    if (options.id) {
+    console.log("LOAD MAP OPTIONS: ", options);
+    if (options.id !== null && options.id !== undefined) {
       console.log(" > LOAD MAP FROM ID", options);
       svc.loadMapFromID(options);
     } else if (options.url) {
