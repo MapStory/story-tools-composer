@@ -77,15 +77,13 @@ function stateSvc(
   };
 
   svc.initConfig = (function() {
-    console.log(" >>> INIT CONFIG");
     var path = window.location.pathname;
     var mapID = /\/story\/(\d+)/.exec(path)
       ? /\/story\/(\d+)/.exec(path)[1]
       : null;
-    console.log(mapID);
+    console.log("> map ID: ", mapID);
     var mapJsonUrl = "/api/mapstories/" + mapID;
     if (svc.config) {
-      console.log("SERVICE CONFIG ALREADY EXISTS");
       return;
     } else if (mapID) {
       $.ajax({

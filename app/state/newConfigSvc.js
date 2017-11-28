@@ -21,13 +21,14 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
   };
 
   svc.getMapstoryConfig = function(data) {
+    console.log(" USE DATA: ", data);
     if (!data) {
       data = {
         abstract: "New Mapstory description",
         owner: "",
         username: "",
         title: "New Mapstory",
-        id: 0,
+        id: data.id,
         chapters: [{}]
       };
     }
