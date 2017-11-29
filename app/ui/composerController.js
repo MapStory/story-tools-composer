@@ -56,8 +56,7 @@ function composerController(
         loc: evt.coordinate[0] + ',' + evt.coordinate[1],
     });
 
-    $log.log(evt.coordinate[0] + ',' + evt.coordinate[1]);
-
+    $log.log($scope.locationSettings);
   });
 
   $scope.updateSelected = function(selected) {
@@ -153,16 +152,38 @@ function composerController(
               endTime: frameSettings.endTime,
               radius: frameSettings.radius
       });
+
       $log.log('frame settings: ', frameSettings);
   };
 
-  $scope.editStoryframe = function(frameTitle) {
-    $log.log('updated: ', frameTitle);
+
+
+
+  $scope.editStoryframe = function(index) {
+    $scope.frameSettings.title = $scope.frameSettings[index].title;
+    $scope.frameSettings.startDate = $scope.frameSettings[index].startDate;
+    $scope.frameSettings.startTime = $scope.frameSettings[index].startTime;
+    $scope.frameSettings.endDate = $scope.frameSettings[index].endDate;
+    $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
+    $scope.frameSettings.radius = $scope.frameSettings[index].radius;
+
+    $scope.disableButton = false;
+    $scope.disableButton = !$scope.disableButton;
   };
+
+
+
+
+  $scope.updateStoryframeRecord = function() {
+
+  }
+
 
   $scope.deleteStoryframe = function(index) {
     $scope.frameSettings.splice(index, 1);
   };
+
+
 }
 
 module.exports = composerController;

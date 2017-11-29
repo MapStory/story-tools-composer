@@ -1,10 +1,10 @@
 <section>
     <h2 class="section-title float-left">StoryFrames</h2>
-    <p class="clearfix">
+    <!-- <p class="clearfix">
         A StoryFrame defines the area of the map a viewer of your story will see.
         Set the default StoryFrame below, or create additional StoryFrames to
         override the part of the map your viewers will see for this chapter.
-      </p>
+      </p>-->
   </section>
 
   <div id="createdStoryframes" ng-show="frameSettings">
@@ -14,8 +14,9 @@
               <i class="fa fa-expand"></i> {{ item.title }}
           </a>
           <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
+          <i class="fa fa-edit" ng-click="editStoryframe($index)"></i>
           <ul class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
-              <li>Location: {{ $scope.locationSettings.loc }}</li>
+              <li>Location: {{ locationSettings.loc }}</li>
               <li>Radius: {{ item.radius }}</li>
               <li>Start Date: {{ item.startDate }}</li>
               <li>Start Time: {{ item.startTime }}</li>
@@ -76,16 +77,9 @@
                   <option value="2000">2000</option>
               </select>
               <br><br>
-
-
-              <!--<p>Set placement for this StoryFrame on the map.</p>-->
-
-
-
-
-
           </div>
-          <button class="btn btn-inverse" ng-click="storyDetails(frameSettings)">Save</button>
+         <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="storyDetails(frameSettings)">Save</button>
+         <button class="btn btn-inverse" ng-click="updateStoryframeRecord(frameSettings, $index)">Update</button>
          <button class="btn btn-inverse" type="reset">Reset</button>
       </form>
   </section>

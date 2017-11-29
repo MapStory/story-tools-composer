@@ -1,5 +1,6 @@
 function stateSvc(
   $location,
+  $log,
   $rootScope,
   $q,
   stAnnotationsStore,
@@ -17,7 +18,7 @@ function stateSvc(
       q: "india"
     })
     .then(function(data) {
-      console.log(data);
+      $log.log(data);
     });
 
   svc.addNewChapter = function() {
@@ -27,7 +28,7 @@ function stateSvc(
   };
 
   svc.getLayerSaveConfig = function getLayerSaveConfig(layer) {
-    console.log("        METADATA", layer);
+    $log.log("        METADATA", layer);
     var config = layer.get("metadata").config;
     var styleStorageService = storytools.edit.styleStorageService.styleStorageService();
 
@@ -37,7 +38,7 @@ function stateSvc(
     );
 
     if (!goog.isDefAndNotNull(config)) {
-      console.log(
+      $log.log(
         "Not saving layer: ",
         layer.get("metadata").name,
         "because the layer does not have a configuration object."
@@ -85,7 +86,7 @@ function stateSvc(
     var mapID = /\/maps\/(\d+)/.exec(path)
       ? /\/maps\/(\d+)/.exec(path)[1]
       : null;
-    console.log(mapID);
+    $log.log(mapID);
     var mapJsonUrl = "/maps/" + mapID + "/data";
     if (svc.config) {
       return;
@@ -122,7 +123,7 @@ function stateSvc(
 
   svc.removeLayer = function(name) {
     // TODO: !DJA figure this out!
-    console.log(" > REMOVE", name);
+    $log.log(" > REMOVE", name);
   };
 
   svc.getChapter = function() {
@@ -174,10 +175,10 @@ function stateSvc(
 
   svc.save = function() {
     var config = window.storyMap.getState();
-    console.log(" CONFIG ON SAVE ---- >", config);
+    $log.log(" CONFIG ON SAVE ---- >", config);
     var layers = window.storyMap.getStoryLayers();
     layers.forEach(function(lyr) {
-      console.log("    LAYER CONFIG -- >", svc.getLayerSaveConfig(lyr));
+      $log.log("    LAYER CONFIG -- >", svc.getLayerSaveConfig(lyr));
     });
     stLocalStorageSvc.saveConfig(config);
     if (window.storyMap.get("id") === undefined) {

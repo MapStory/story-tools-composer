@@ -3,6 +3,8 @@
   <component name="ChangeListManager">
     <list default="true" id="28db5c83-1d21-4785-ba27-1ce200a1244a" name="Default" comment="">
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/frames/style/frames.less" afterPath="$PROJECT_DIR$/app/frames/style/frames.less" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/state/stateSvc.js" afterPath="$PROJECT_DIR$/app/state/stateSvc.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/ui/composerController.js" afterPath="$PROJECT_DIR$/app/ui/composerController.js" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/ui/templates/frames.html" afterPath="$PROJECT_DIR$/app/ui/templates/frames.html" />
     </list>
@@ -18,11 +20,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="frames.html" pinned="false" current-in-tab="false">
+      <file leaf-file-name="frames.html" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/ui/templates/frames.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="255">
-              <caret line="17" column="54" lean-forward="false" selection-start-line="17" selection-start-column="54" selection-end-line="17" selection-end-column="54" />
+            <state relative-caret-position="524">
+              <caret line="80" column="77" lean-forward="false" selection-start-line="80" selection-start-column="77" selection-end-line="80" selection-end-column="77" />
               <folding />
             </state>
           </provider>
@@ -31,18 +33,8 @@
       <file leaf-file-name="frames.less" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/frames/style/frames.less">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="180">
-              <caret line="12" column="25" lean-forward="false" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="bundle.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/build/bundle.css">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="607">
-              <caret line="852" column="0" lean-forward="false" selection-start-line="852" selection-start-column="0" selection-end-line="852" selection-end-column="0" />
+            <state relative-caret-position="465">
+              <caret line="31" column="1" lean-forward="true" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
               <folding />
             </state>
           </provider>
@@ -51,18 +43,18 @@
       <file leaf-file-name="stateSvc.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/state/stateSvc.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="667">
-              <caret line="113" column="0" lean-forward="true" selection-start-line="113" selection-start-column="0" selection-end-line="113" selection-end-column="0" />
+            <state relative-caret-position="2700">
+              <caret line="180" column="14" lean-forward="false" selection-start-line="180" selection-start-column="14" selection-end-line="180" selection-end-column="14" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="composerController.js" pinned="false" current-in-tab="true">
+      <file leaf-file-name="composerController.js" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="190">
-              <caret line="55" column="57" lean-forward="true" selection-start-line="55" selection-start-column="57" selection-end-line="55" selection-end-column="57" />
+            <state relative-caret-position="487">
+              <caret line="170" column="48" lean-forward="true" selection-start-line="170" selection-start-column="48" selection-end-line="170" selection-end-column="48" />
               <folding />
             </state>
           </provider>
@@ -82,7 +74,16 @@
       <find>Content</find>
       <find>fa</find>
       <find>map click</find>
+      <find>save</find>
+      <find>console.</find>
+      <find>delete</find>
+      <find>trash</find>
+      <find>index</find>
     </findStrings>
+    <replaceStrings>
+      <replace />
+      <replace>$log.</replace>
+    </replaceStrings>
   </component>
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
@@ -93,6 +94,7 @@
         <option value="$PROJECT_DIR$/style/css/index.css" />
         <option value="$PROJECT_DIR$/app/frames/frames.css" />
         <option value="$PROJECT_DIR$/style/style.js" />
+        <option value="$PROJECT_DIR$/app/state/stateSvc.js" />
         <option value="$PROJECT_DIR$/build/bundle.css" />
         <option value="$PROJECT_DIR$/app/frames/style/frames.less" />
         <option value="$PROJECT_DIR$/app/ui/composerController.js" />
@@ -201,12 +203,12 @@
       <workItem from="1509984050263" duration="2081000" />
       <workItem from="1509997184403" duration="14373000" />
       <workItem from="1510583569917" duration="174000" />
-      <workItem from="1510591523314" duration="71544000" />
+      <workItem from="1510591523314" duration="85735000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="111337000" />
+    <option name="totallyTimeSpent" value="125528000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="8" y="23" width="1421" height="819" extended-state="0" />
@@ -214,7 +216,8 @@
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18719211" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.3529412" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35207498" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956153" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -227,7 +230,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -399,14 +401,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/state/stateSvc.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="667">
-          <caret line="113" column="0" lean-forward="true" selection-start-line="113" selection-start-column="0" selection-end-line="113" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/app/map/style/map.less">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
@@ -439,14 +433,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/build/bundle.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="607">
-          <caret line="852" column="0" lean-forward="false" selection-start-line="852" selection-start-column="0" selection-end-line="852" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/index.html">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
@@ -455,26 +441,42 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/frames/style/frames.less">
+    <entry file="file://$PROJECT_DIR$/app/state/stateSvc.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="180">
-          <caret line="12" column="25" lean-forward="false" selection-start-line="12" selection-start-column="25" selection-end-line="12" selection-end-column="25" />
+        <state relative-caret-position="2700">
+          <caret line="180" column="14" lean-forward="false" selection-start-line="180" selection-start-column="14" selection-end-line="180" selection-end-column="14" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/ui/templates/frames.html">
+    <entry file="file://$PROJECT_DIR$/build/bundle.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="255">
-          <caret line="17" column="54" lean-forward="false" selection-start-line="17" selection-start-column="54" selection-end-line="17" selection-end-column="54" />
+        <state relative-caret-position="222">
+          <caret line="149" column="35" lean-forward="false" selection-start-line="149" selection-start-column="34" selection-end-line="149" selection-end-column="35" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/frames/style/frames.less">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="465">
+          <caret line="31" column="1" lean-forward="true" selection-start-line="31" selection-start-column="1" selection-end-line="31" selection-end-column="1" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="190">
-          <caret line="55" column="57" lean-forward="true" selection-start-line="55" selection-start-column="57" selection-end-line="55" selection-end-column="57" />
+        <state relative-caret-position="487">
+          <caret line="170" column="48" lean-forward="true" selection-start-line="170" selection-start-column="48" selection-end-line="170" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/ui/templates/frames.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="524">
+          <caret line="80" column="77" lean-forward="false" selection-start-line="80" selection-start-column="77" selection-end-line="80" selection-end-column="77" />
           <folding />
         </state>
       </provider>
