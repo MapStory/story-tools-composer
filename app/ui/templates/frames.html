@@ -78,8 +78,13 @@
               </select>
               <br><br>
           </div>
+
+         <div class="alert alert-success" role="alert">
+             <p>Your Storyframe details have been updated.</p>
+         </div>
+
          <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="storyDetails(frameSettings)">Save</button>
-         <button class="btn btn-inverse" ng-click="updateStoryframeRecord(frameSettings, $index)">Update</button>
+         <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframeRecord(frameSettings, $index)">Update</button>
          <button class="btn btn-inverse" type="reset">Reset</button>
       </form>
   </section>

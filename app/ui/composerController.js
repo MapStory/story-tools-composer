@@ -152,8 +152,6 @@ function composerController(
               endTime: frameSettings.endTime,
               radius: frameSettings.radius
       });
-
-      $log.log('frame settings: ', frameSettings);
   };
 
 
@@ -167,15 +165,27 @@ function composerController(
     $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
     $scope.frameSettings.radius = $scope.frameSettings[index].radius;
 
+    $scope.currentIndex = index;
+
     $scope.disableButton = false;
     $scope.disableButton = !$scope.disableButton;
   };
 
 
-
-
   $scope.updateStoryframeRecord = function() {
+      // update frameSettings object
 
+      $log.log($scope.currentIndex)
+
+      $scope.frameSettings[$scope.currentIndex].title = $scope.frameSettings.title
+      $scope.frameSettings[$scope.currentIndex].startDate = $scope.frameSettings.startDate
+      $scope.frameSettings[$scope.currentIndex].startTime = $scope.frameSettings.startTime
+      $scope.frameSettings[$scope.currentIndex].endDate = $scope.frameSettings.endDate
+      $scope.frameSettings[$scope.currentIndex].endTime = $scope.frameSettings.endTime
+      $scope.frameSettings[$scope.currentIndex].radius = $scope.frameSettings.radius
+
+      $scope.disableButton = true;
+      $scope.disableButton = !$scope.disableButton;
   }
 
 
