@@ -1,10 +1,10 @@
 <section>
     <h2 class="section-title float-left">StoryFrames</h2>
-    <!-- <p class="clearfix">
+    <p class="clearfix">
         A StoryFrame defines the area of the map a viewer of your story will see.
         Set the default StoryFrame below, or create additional StoryFrames to
         override the part of the map your viewers will see for this chapter.
-      </p>-->
+      </p>
   </section>
 
   <div id="createdStoryframes" ng-show="frameSettings">
@@ -16,23 +16,18 @@
           <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
           <i class="fa fa-edit" ng-click="editStoryframe($index)"></i>
           <ul class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
-              <li>Location: {{ locationSettings.loc }}</li>
-              <li>Radius: {{ item.radius }}</li>
-              <li>Start Date: {{ item.startDate }}</li>
-              <li>Start Time: {{ item.startTime }}</li>
-              <li>End Date: {{ item.endDate }}</li>
-              <li>End Time: {{ item.endTime }}</li>
+              <li>Location: {{ locationSettings[0].loc }}</li>
+              <li>Radius: {{ item.radius }} km</li>
+              <li>Start Date: {{ item.startDate | date: 'MM/dd/yyyy' }}</li>
+              <li>Start Time: {{ item.startTime | date: 'h:mma' }}</li>
+              <li>End Date: {{ item.endDate | date: 'MM/dd/yyyy' }}</li>
+              <li>End Time: {{ item.endTime | date: 'h:mma' }}</li>
           </ul>
-          </div>
       </div>
   </div>
-
   <br/>
-
   <button class="sidebar-button" ng-click="showForm = !showForm">Create New StoryFrame</button>
-
   <br/>
-
      <form ng-show="showForm == true">
          <div class="form-field">
              <label for="storypin_title">
@@ -44,8 +39,9 @@
               <label for="start_date">Start Date</label>
               <strong><abbr title="required">*</abbr></strong>
               <br />
-              <input type="date" name="start_time_date" ng-model="frameSettings.startDate">
-              <label for="start_time">Start Time</label>
+              <input type="date" ng-model="frameSettings.startDate">
+              <br />
+             <label for="start_time">Start Time</label>
               <strong><abbr title="required">*</abbr></strong>
               <br />
               <input type="time" name="start_time_time" ng-model="frameSettings.startTime">
@@ -63,7 +59,7 @@
               <label for="location">Location Center</label>
               <strong><abbr title="required">*</abbr></strong>
               <br />
-              <input type="text" name="location" ng-model="locationSettings.loc" placeholder="Click the map to choose a location.">
+              <input type="text" name="location" ng-model="locationSettings[0].loc" placeholder="Click the map to choose a location.">
               <br />
               <label for="radius">Radius (km)</label>
               <strong><abbr title="required">*</abbr></strong>
@@ -79,9 +75,9 @@
               <br><br>
           </div>
 
-         <div class="alert alert-success" role="alert">
+         <!--<div class="alert alert-success" role="alert">
              <p>Your Storyframe details have been updated.</p>
-         </div>
+         </div>-->
 
          <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="storyDetails(frameSettings)">Save</button>
          <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframeRecord(frameSettings, $index)">Update</button>

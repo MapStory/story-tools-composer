@@ -17,6 +17,7 @@ function composerController(
   searchSvc,
   $location
 ) {
+
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
@@ -46,22 +47,6 @@ function composerController(
   $rootScope.$on("chapter-removed", function(event, chapter_index) {
     pinSvc.removeChapter(chapter_index);
   });
-
-  $scope.locationSettings = []
-
-  MapManager.storyMap.getMap().on("singleclick", function(evt) {
-    $log.log("MAP CLICKED !!!", evt);
-
-    $scope.locationSettings.push({
-        loc: evt.coordinate[0] + ',' + evt.coordinate[1],
-    });
-
-    $log.log($scope.locationSettings);
-  });
-
-  $scope.updateSelected = function(selected) {
-    $scope.selected = { selected: true };
-  };
 
   $scope.mode = {
     preview: false
@@ -133,29 +118,36 @@ function composerController(
     return props;
   };
 
+  $scope.updateSelected = function(selected) {
+    $scope.selected = { selected: true };
+  };
+
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
 
   $scope.frameSettings = [];
+  $scope.locationSettings = []
+
+  MapManager.storyMap.getMap().on("singleclick", function(evt) {
+    $scope.locationSettings.push({
+        loc: evt.coordinate[0] + ',' + evt.coordinate[1],
+    });
+  });
 
   $scope.storyDetails = function(frameSettings) {
+    frameSettings.id = Date.now();
 
-      frameSettings.id = Date.now();
-
-      $scope.frameSettings.push({
-              id: frameSettings.id,
-              title: frameSettings.title,
-              startDate: frameSettings.startDate,
-              startTime: frameSettings.startTime,
-              endDate: frameSettings.endDate,
-              endTime: frameSettings.endTime,
-              radius: frameSettings.radius
+    $scope.frameSettings.push({
+        id: frameSettings.id,
+        title: frameSettings.title,
+        startDate: frameSettings.startDate,
+        startTime: frameSettings.startTime,
+        endDate: frameSettings.endDate,
+        endTime: frameSettings.endTime,
+        radius: frameSettings.radius
       });
   };
-
-
-
 
   $scope.editStoryframe = function(index) {
     $scope.frameSettings.title = $scope.frameSettings[index].title;
@@ -163,37 +155,30 @@ function composerController(
     $scope.frameSettings.startTime = $scope.frameSettings[index].startTime;
     $scope.frameSettings.endDate = $scope.frameSettings[index].endDate;
     $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
+    //$scope.locationSettings[0].loc = $scope.locationSettings[index][0].loc;
     $scope.frameSettings.radius = $scope.frameSettings[index].radius;
 
     $scope.currentIndex = index;
-
     $scope.disableButton = false;
     $scope.disableButton = !$scope.disableButton;
   };
 
-
   $scope.updateStoryframeRecord = function() {
-      // update frameSettings object
-
-      $log.log($scope.currentIndex)
-
-      $scope.frameSettings[$scope.currentIndex].title = $scope.frameSettings.title
-      $scope.frameSettings[$scope.currentIndex].startDate = $scope.frameSettings.startDate
-      $scope.frameSettings[$scope.currentIndex].startTime = $scope.frameSettings.startTime
-      $scope.frameSettings[$scope.currentIndex].endDate = $scope.frameSettings.endDate
-      $scope.frameSettings[$scope.currentIndex].endTime = $scope.frameSettings.endTime
-      $scope.frameSettings[$scope.currentIndex].radius = $scope.frameSettings.radius
+      $scope.frameSettings[$scope.currentIndex].title = $scope.frameSettings.title;
+      $scope.frameSettings[$scope.currentIndex].startDate = $scope.frameSettings.startDate;
+      $scope.frameSettings[$scope.currentIndex].startTime = $scope.frameSettings.startTime;
+      $scope.frameSettings[$scope.currentIndex].endDate = $scope.frameSettings.endDate;
+      $scope.frameSettings[$scope.currentIndex].endTime = $scope.frameSettings.endTime;
+      //$scope.locationSettings[$scope.currentIndex][0].loc = $scope.locationSettings[0].loc
+      $scope.frameSettings[$scope.currentIndex].radius = $scope.frameSettings.radius;
 
       $scope.disableButton = true;
       $scope.disableButton = !$scope.disableButton;
   }
 
-
   $scope.deleteStoryframe = function(index) {
     $scope.frameSettings.splice(index, 1);
   };
-
-
 }
 
 module.exports = composerController;
