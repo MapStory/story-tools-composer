@@ -21,7 +21,6 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
   };
 
   svc.getMapstoryConfig = function(data) {
-    console.log(" USE DATA: ", data);
     if (!data) {
       data = {
         abstract: "Mapstory description",

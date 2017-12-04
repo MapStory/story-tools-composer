@@ -13,7 +13,18 @@ describe("layerOptionsSvc", function() {
   );
 
   describe("getLayerOptions", function() {
-    it("should return valid layer options", function() {
+    it("should return the correct server path", function() {
+      var layerOptTest = layerOptionsSvc.getLayerOptions(
+        "test_layer",
+        {},
+        testServer
+      );
+      expect(layerOptTest.path).toBe(testServer.path);
+    });
+  });
+
+  describe("getLayerOptions", function() {
+    it("should return the correct server path", function() {
       var layerOptTest = layerOptionsSvc.getLayerOptions(
         "test_layer",
         {},

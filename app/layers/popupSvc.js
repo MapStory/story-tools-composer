@@ -10,12 +10,10 @@ function popupSvc(olpopup) {
       maxwidth: 250,
       maxheight: 250
     };
-    console.log("STORY MAP: ", self.storyMap);
     if (typeof pin == "undefined" || pin == null) {
       feature = window.storyMap
         .getMap()
         .forEachFeatureAtPixel(pixel, function(feature, layer) {
-          console.log("FEATURE CLICKED");
           return feature;
         });
     } else {

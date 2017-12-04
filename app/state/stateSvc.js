@@ -81,7 +81,6 @@ function stateSvc(
     var mapID = /\/story\/(\d+)/.exec(path)
       ? /\/story\/(\d+)/.exec(path)[1]
       : null;
-    console.log("> map ID: ", mapID);
     var mapJsonUrl = "/api/mapstories/" + mapID;
     if (svc.config) {
       return;
@@ -116,7 +115,6 @@ function stateSvc(
   };
 
   svc.addLayer = function(layerOptions) {
-    console.log("LAYER OPTIONS", layerOptions);
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
   };
 
@@ -182,11 +180,8 @@ function stateSvc(
 
   svc.save = function() {
     var config = window.storyMap.getState();
-    console.log(" CONFIG ON SAVE ---- >", config);
     var layers = window.storyMap.getStoryLayers();
-    layers.forEach(function(lyr) {
-      console.log("    LAYER CONFIG -- >", svc.getLayerSaveConfig(lyr));
-    });
+    layers.forEach(function(lyr) {});
     stLocalStorageSvc.saveConfig(config);
     if (window.storyMap.get("id") === undefined) {
       window.storyMap.set("id", config.id);

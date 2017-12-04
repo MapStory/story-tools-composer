@@ -271,7 +271,6 @@ function pinSvc(
     var failedToAdd = 0;
     for (var iPin = 0; iPin < pinConfigs.length; iPin += 1) {
       var pin = pinConfigs[iPin];
-      console.log("pin --- > ", pin);
       pin = svc.defaultPinValues(pin);
 
       pin.id = new Date().getUTCMilliseconds();

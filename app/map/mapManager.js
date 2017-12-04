@@ -13,6 +13,7 @@ function MapManager(
   TimeControlsManager,
   EditableStoryMap,
   layerSvc,
+  layerOptionsSvc,
   stStoryMapBaseBuilder,
   stateSvc,
   stEditableStoryMapBuilder
@@ -49,8 +50,6 @@ function MapManager(
     } else {
       feature = pin;
     }
-    console.log(" >>>>> SHOW FEATURE", pixel);
-
     if (feature) {
       var overlays = svc.storyMap
         .getMap()
@@ -65,6 +64,7 @@ function MapManager(
         feature.get("content");
       var geometry = feature.getGeometry();
       var coord = geometry.getCoordinates();
+      console.log(" >>>>> SHOW FEATURE", coord);
       for (var iOverlay = 0; iOverlay < overlays.length; iOverlay += 1) {
         var overlay = overlays[iOverlay];
         if (overlay.getId && overlay.getId() == "popup-" + feature.id) {
@@ -117,7 +117,6 @@ function MapManager(
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     var annotationsLoad = svc.getDataFromLocalServer(options.id, "annotations");
     var boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
-    console.log(" > LOAD MAP FROM ID OPTIONS: ", options);
     for (var i = 0; i < options.layers.length; i++) {
       svc.buildStoryLayer(options.layers[i]);
     }
@@ -166,12 +165,9 @@ function MapManager(
 
   svc.loadMap = function(options) {
     options = options || {};
-    console.log("LOAD MAP OPTIONS: ", options);
     if (options.id !== null && options.id !== undefined) {
-      console.log(" > LOAD MAP FROM ID", options);
       svc.loadMapFromID(options);
     } else if (options.url) {
-      console.log(" > LOAD MAP FROM URL");
       svc.loadMapFromUrl(options);
     } else {
       stStoryMapBaseBuilder.defaultMap(svc.storyMap);
@@ -190,16 +186,13 @@ function MapManager(
     svc.title = config.about.title;
     svc.username = config.about.username;
     svc.owner = config.about.owner;
-    console.log("---- > ", config);
     svc.loadMap(config);
   };
 
   svc.buildStoryLayer = function(options) {
-    console.log(" B U I L D STORYLAYER O P T I O N S:", options);
     return stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {
-        console.log("STORYLAYER --- >", a);
         svc.storyMap.addStoryLayer(a);
         if (fitExtent === true) {
           a.get("latlonBBOX");
@@ -223,7 +216,7 @@ function MapManager(
   };
 
   svc.addLayer = function(name, settings, server, fitExtent, styleName, title) {
-    options = layerSvc.getLayerOptions(
+    options = layerOptionsSvc.getLayerOptions(
       name,
       settings,
       server,

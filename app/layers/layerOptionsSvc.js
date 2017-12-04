@@ -16,7 +16,7 @@ function layerOptionsSvc() {
       window.storyMap.setAllowPan(settings.allowPan || true);
     }
     if (fitExtent === undefined) {
-      fitExtent = true;
+      settings.fitExtent = true;
     }
     if (angular.isString(server)) {
       server = getServer(server);

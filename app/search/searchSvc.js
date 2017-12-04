@@ -22,7 +22,6 @@ function searchSvc(
       "/api/base/search/?type__in=layer&limit=15&df=typename&q=" +
       layer_name;
     return $http.get(url).then(function(response) {
-      console.log("RESPONSE: ", response);
       var nameIndex = [];
       for (var i = 0; i < response.data.objects.length; i++) {
         if (response.data.objects[i].typename) {

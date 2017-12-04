@@ -48,12 +48,10 @@ function composerController(
   });
 
   $rootScope.$on("configInitialized", function() {
-    console.log("config --- > ", stateSvc.getConfig());
     $scope.mapManager.initMapLoad();
   });
 
   $rootScope.$on("pin-added", function(event, chapter_index) {
-    console.log($scope.pinSvc.getPins(0));
     //$scope.$apply();
   });
 
@@ -66,9 +64,7 @@ function composerController(
   });
 
   MapManager.storyMap.getMap().on("click", function(evt) {
-    // console.log(" E V E N T:", evt.pixel);
     // popupSvc.displayInfo(evt.pixel);
-    // console.log(stFeatureInfoService.getSelectedItem());
   });
 
   $scope.updateSelected = function(selected) {
@@ -86,8 +82,6 @@ function composerController(
   };
 
   $scope.saveMap = function() {
-    console.log("STORY MAP LAYERS ---- > ", window.storyMap.getStoryLayers());
-
     stateSvc.save();
   };
 
