@@ -126,14 +126,75 @@ function composerController(
   $scope.previousChapter = navigationSvc.previousChapter;
 
 
+
+
+
   $scope.frameSettings = [];
-  $scope.locationSettings = []
 
   MapManager.storyMap.getMap().on("singleclick", function(evt) {
-    $scope.locationSettings.push({
-        loc: evt.coordinate[0] + ',' + evt.coordinate[1],
+    var storyCenter = new ol.geom.Point(
+        [evt.coordinate[0], evt.coordinate[1]]
+    );
+
+    var storyFeature = new ol.Feature();
+    storyFeature.setGeometry(storyCenter);
+
+    var vectorLayer = new ol.layer.Vector({
+        source: new ol.source.Vector({
+            features: [storyFeature]
+        })
     });
+
+    MapManager.storyMap.getMap().addLayer(vectorLayer);
+
+    $scope.location = ol.proj.transform([evt.coordinate[0], evt.coordinate[1]], 'EPSG:3857', 'EPSG:4326' );
   });
+
+
+
+  $scope.setStoryRadius = function(radius) {
+      var circle = new ol.geom.Circle(ol.proj.transform($scope.location, 'EPSG:4326', 'EPSG:3857'), radius * 100);
+      var storyFeatureRadius = new ol.Feature(circle);
+      storyFeatureRadius.setGeometry(circle);
+
+      var radiusLayer = new ol.layer.Vector({
+          source: new ol.source.Vector({
+              features: [storyFeatureRadius],
+              style: [
+                  new ol.style.Style({
+                      stroke: new ol.style.Stroke({
+                          color: 'blue',
+                          width: 3
+                      }),
+                      fill: new ol.style.Fill({
+                          color: 'yellow'
+                      })
+                  })]
+          })
+      });
+
+      MapManager.storyMap.getMap().addLayer(radiusLayer);
+  };
+
+
+
+
+
+
+
+  $scope.removeMapLayer = function(layer) {
+    MapManager.storyMap.getMap().removeLayer(layer);
+  }
+
+
+
+
+
+
+
+
+
+
 
   $scope.storyDetails = function(frameSettings) {
     frameSettings.id = Date.now();

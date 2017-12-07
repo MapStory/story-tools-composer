@@ -16,7 +16,7 @@
           <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
           <i class="fa fa-edit" ng-click="editStoryframe($index)"></i>
           <ul class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
-              <li>Location: {{ locationSettings[0].loc }}</li>
+              <!--<li>Location: {{ locationSettings[0].loc[0] | limitTo: 7 }}, {{ locationSettings[0].loc[1] | limitTo: 7 }}</li>-->
               <li>Radius: {{ item.radius }} km</li>
               <li>Start Date: {{ item.startDate | date: 'MM/dd/yyyy' }}</li>
               <li>Start Time: {{ item.startTime | date: 'h:mma' }}</li>
@@ -59,12 +59,12 @@
               <label for="location">Location Center</label>
               <strong><abbr title="required">*</abbr></strong>
               <br />
-              <input type="text" name="location" ng-model="locationSettings[0].loc" placeholder="Click the map to choose a location.">
+              <input type="text" name="location" ng-model="location" placeholder="Click the map to choose a location.">
               <br />
               <label for="radius">Radius (km)</label>
               <strong><abbr title="required">*</abbr></strong>
               <br />
-              <select name="selectRadius" ng-model="frameSettings.radius">
+              <select name="selectRadius" ng-model="frameSettings.radius" ng-change="setStoryRadius(frameSettings.radius)">
                   <option value="10">10</option>
                   <option value="50">50</option>
                   <option value="100">100</option>
