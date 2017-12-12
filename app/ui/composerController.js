@@ -125,13 +125,17 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
-
-
-
-
   $scope.frameSettings = [];
 
-  MapManager.storyMap.getMap().on("singleclick", function(evt) {
+  MapManager.storyMap.getMap().on("click", function(evt) {
+    $scope.clearLayers();
+
+    MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
+        if(layer.get('name') === 'radiusLayer') {
+            MapManager.storyMap.getMap().removeLayer(layer);
+        }
+    });
+
     var storyCenter = new ol.geom.Point(
         [evt.coordinate[0], evt.coordinate[1]]
     );
@@ -145,12 +149,18 @@ function composerController(
         })
     });
 
+    vectorLayer.set('name', $scope.frameSettings.title);
     MapManager.storyMap.getMap().addLayer(vectorLayer);
-
     $scope.location = ol.proj.transform([evt.coordinate[0], evt.coordinate[1]], 'EPSG:3857', 'EPSG:4326' );
   });
 
-
+  $scope.clearLayers = function() {
+      MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
+          if(layer instanceof ol.layer.Vector) {
+              MapManager.storyMap.getMap().removeLayer(layer);
+          }
+      });
+  };
 
   $scope.setStoryRadius = function(radius) {
       var circle = new ol.geom.Circle(ol.proj.transform($scope.location, 'EPSG:4326', 'EPSG:3857'), radius * 100);
@@ -159,42 +169,13 @@ function composerController(
 
       var radiusLayer = new ol.layer.Vector({
           source: new ol.source.Vector({
-              features: [storyFeatureRadius],
-              style: [
-                  new ol.style.Style({
-                      stroke: new ol.style.Stroke({
-                          color: 'blue',
-                          width: 3
-                      }),
-                      fill: new ol.style.Fill({
-                          color: 'yellow'
-                      })
-                  })]
+              features: [storyFeatureRadius]
           })
       });
 
+      radiusLayer.set('name', 'radiusLayer');
       MapManager.storyMap.getMap().addLayer(radiusLayer);
   };
-
-
-
-
-
-
-
-  $scope.removeMapLayer = function(layer) {
-    MapManager.storyMap.getMap().removeLayer(layer);
-  }
-
-
-
-
-
-
-
-
-
-
 
   $scope.storyDetails = function(frameSettings) {
     frameSettings.id = Date.now();
