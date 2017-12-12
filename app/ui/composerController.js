@@ -130,11 +130,7 @@ function composerController(
   MapManager.storyMap.getMap().on("click", function(evt) {
     $scope.clearLayers();
 
-    MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
-        if(layer.get('name') === 'radiusLayer') {
-            MapManager.storyMap.getMap().removeLayer(layer);
-        }
-    });
+    $scope.resetRadius();
 
     var storyCenter = new ol.geom.Point(
         [evt.coordinate[0], evt.coordinate[1]]
@@ -154,6 +150,17 @@ function composerController(
     $scope.location = ol.proj.transform([evt.coordinate[0], evt.coordinate[1]], 'EPSG:3857', 'EPSG:4326' );
   });
 
+
+  $scope.resetRadius = function() {
+      MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
+          if(layer.get('name') === 'radiusLayer') {
+              MapManager.storyMap.getMap().removeLayer(layer);
+          }
+      });
+  }
+
+
+
   $scope.clearLayers = function() {
       MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
           if(layer instanceof ol.layer.Vector) {
@@ -162,7 +169,12 @@ function composerController(
       });
   };
 
+
+
+
+
   $scope.setStoryRadius = function(radius) {
+      $scope.resetRadius();
       var circle = new ol.geom.Circle(ol.proj.transform($scope.location, 'EPSG:4326', 'EPSG:3857'), radius * 100);
       var storyFeatureRadius = new ol.Feature(circle);
       storyFeatureRadius.setGeometry(circle);
@@ -176,6 +188,11 @@ function composerController(
       radiusLayer.set('name', 'radiusLayer');
       MapManager.storyMap.getMap().addLayer(radiusLayer);
   };
+
+
+
+
+
 
   $scope.storyDetails = function(frameSettings) {
     frameSettings.id = Date.now();
