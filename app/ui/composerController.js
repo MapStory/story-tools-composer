@@ -157,9 +157,7 @@ function composerController(
               MapManager.storyMap.getMap().removeLayer(layer);
           }
       });
-  }
-
-
+  };
 
   $scope.clearLayers = function() {
       MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
@@ -168,10 +166,6 @@ function composerController(
           }
       });
   };
-
-
-
-
 
   $scope.setStoryRadius = function(radius) {
       $scope.resetRadius();
@@ -188,12 +182,7 @@ function composerController(
       radiusLayer.set('name', 'radiusLayer');
       MapManager.storyMap.getMap().addLayer(radiusLayer);
   };
-
-
-
-
-
-
+    
   $scope.storyDetails = function(frameSettings) {
     frameSettings.id = Date.now();
 
