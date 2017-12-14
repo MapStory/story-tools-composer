@@ -16,7 +16,7 @@ function composerController(
   uiHelperSvc,
   searchSvc,
   stateSvc,
-  popupSvc,
+  // popupSvc,
   $location
 ) {
   $scope.mapManager = MapManager;
@@ -31,7 +31,7 @@ function composerController(
   });
 
   $rootScope.$on("rangeChange", function(event, range) {
-    StoryPinLayerManager.autoDisplayPins(range);
+    // StoryPinLayerManager.autoDisplayPins(range);
   });
 
   $rootScope.$on("hidePinOverlay", function(event, pin) {

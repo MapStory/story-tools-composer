@@ -13,6 +13,7 @@ function MapManager(
   TimeControlsManager,
   EditableStoryMap,
   layerSvc,
+  popupSvc,
   layerOptionsSvc,
   stStoryMapBaseBuilder,
   stateSvc,
@@ -64,7 +65,6 @@ function MapManager(
         feature.get("content");
       var geometry = feature.getGeometry();
       var coord = geometry.getCoordinates();
-      console.log(" >>>>> SHOW FEATURE", coord);
       for (var iOverlay = 0; iOverlay < overlays.length; iOverlay += 1) {
         var overlay = overlays[iOverlay];
         if (overlay.getId && overlay.getId() == "popup-" + feature.id) {
@@ -173,7 +173,10 @@ function MapManager(
       stStoryMapBaseBuilder.defaultMap(svc.storyMap);
     }
     svc.storyMap.getMap().on("click", function(evt) {
-      svc.displayPinInfo(evt.pixel);
+      var coordinate = evt.coordinate;
+      var hdms = ol.coordinate.toStringHDMS(
+        ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326")
+      );
     });
     svc.currentMapOptions = options;
   };
@@ -224,7 +227,6 @@ function MapManager(
       styleName,
       title
     );
-    console.log("SERVER SERVER: ", server);
     stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
   };
