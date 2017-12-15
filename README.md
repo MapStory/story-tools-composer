@@ -13,11 +13,9 @@
 
 ### Adding Story-tools to your development environment
 - Ensure that [story-tools](https://github.com/MapStory/story-tools) is a parallel directory to `story-tools-composer`.
-- Rename your `story-tools` directory `time-controls` (stupid step, just until we rename story-tools in `package.json`).
-- `cd story-tools-composer`
-- `rm -rf node_modules/time-controls`
-- Symlink your parallel `time-controls` directory to the `time-controls` directory in `story-tools-composer/node_modules`:
-  - From `story-tools-composer` directory: `ln -s /absolute/path/to/time-controls node_modules/time-controls`
+- `rm -rf node_modules/story-tools`
+- Symlink your parallel `story-tools` directory to the `story-tools` directory in `story-tools-composer/node_modules`:
+  - From `story-tools-composer` directory: `ln -s /absolute/path/to/story-tools node_modules/story-tools`
 - After making any changes to Story-tools, run `gulp scripts` from the `story-tools` directory and they should appear in composer.
 
 ### Adding layers
