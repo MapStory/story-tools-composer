@@ -10,14 +10,14 @@ function composerController(
   stFeatureInfoService,
   appConfig,
   TimeControlsManager,
-  stateSvc,
   navigationSvc,
   pinSvc,
   uiHelperSvc,
   searchSvc,
+  stateSvc,
+  // popupSvc,
   $location
 ) {
-
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
@@ -127,39 +127,8 @@ function composerController(
 
   $scope.frameSettings = [];
 
-  MapManager.storyMap.getMap().on("click", function(evt) {
-    $scope.clearLayers();
-
-    $scope.resetRadius();
-
-    var storyCenter = new ol.geom.Point(
-        [evt.coordinate[0], evt.coordinate[1]]
-    );
-
-    var storyFeature = new ol.Feature();
-    storyFeature.setGeometry(storyCenter);
-
-    var vectorLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({
-            features: [storyFeature]
-        })
-    });
-
-    vectorLayer.set('name', $scope.frameSettings.title);
-    MapManager.storyMap.getMap().addLayer(vectorLayer);
-    $scope.location = ol.proj.transform([evt.coordinate[0], evt.coordinate[1]], 'EPSG:3857', 'EPSG:4326' );
-  });
-
-
-  $scope.resetRadius = function() {
-      MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
-          if(layer.get('name') === 'radiusLayer') {
-              MapManager.storyMap.getMap().removeLayer(layer);
-          }
-      });
-  };
-
   $scope.clearLayers = function() {
+      $log.log('clear layers');
       MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
           if(layer instanceof ol.layer.Vector) {
               MapManager.storyMap.getMap().removeLayer(layer);
@@ -167,22 +136,30 @@ function composerController(
       });
   };
 
-  $scope.setStoryRadius = function(radius) {
-      $scope.resetRadius();
-      var circle = new ol.geom.Circle(ol.proj.transform($scope.location, 'EPSG:4326', 'EPSG:3857'), radius * 100);
-      var storyFeatureRadius = new ol.Feature(circle);
-      storyFeatureRadius.setGeometry(circle);
-
-      var radiusLayer = new ol.layer.Vector({
-          source: new ol.source.Vector({
-              features: [storyFeatureRadius]
-          })
+  $scope.drawBoundingBox = function() {
+      var bbVector = new ol.source.Vector({wrapX: false});
+      var vector = new ol.layer.Vector({
+          source: bbVector
       });
-
-      radiusLayer.set('name', 'radiusLayer');
-      MapManager.storyMap.getMap().addLayer(radiusLayer);
+      bbVector.on('addfeature', function(evt){
+          var feature = evt.feature;
+          $scope.coords = feature.getGeometry().getCoordinates();
+      });
+      var geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
+      var draw = new ol.interaction.Draw({
+        source: bbVector,
+        type: 'Circle',
+        geometryFunction: geometryFunction
+      });
+      vector.set('name', 'boundingBox');
+      MapManager.storyMap.getMap().addLayer(vector);
+      MapManager.storyMap.getMap().addInteraction(draw);
   };
-    
+
+  $scope.setDefaultStoryframe = function(index) {
+      $log.log('default story: ', $scope.frameSettings[index].title);
+  };
+
   $scope.storyDetails = function(frameSettings) {
     frameSettings.id = Date.now();
 
@@ -193,7 +170,11 @@ function composerController(
         startTime: frameSettings.startTime,
         endDate: frameSettings.endDate,
         endTime: frameSettings.endTime,
-        radius: frameSettings.radius
+        radius: frameSettings.radius,
+        bb1: ol.proj.transform([$scope.coords[0][0][0], $scope.coords[0][0][1]], 'EPSG:3857', 'EPSG:4326'),
+        bb2: ol.proj.transform([$scope.coords[0][1][0], $scope.coords[0][1][1]], 'EPSG:3857', 'EPSG:4326'),
+        bb3: ol.proj.transform([$scope.coords[0][2][0], $scope.coords[0][2][1]], 'EPSG:3857', 'EPSG:4326'),
+        bb4: ol.proj.transform([$scope.coords[0][3][0], $scope.coords[0][3][1]], 'EPSG:3857', 'EPSG:4326')
       });
   };
 
@@ -203,9 +184,7 @@ function composerController(
     $scope.frameSettings.startTime = $scope.frameSettings[index].startTime;
     $scope.frameSettings.endDate = $scope.frameSettings[index].endDate;
     $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
-    //$scope.locationSettings[0].loc = $scope.locationSettings[index][0].loc;
     $scope.frameSettings.radius = $scope.frameSettings[index].radius;
-
     $scope.currentIndex = index;
     $scope.disableButton = false;
     $scope.disableButton = !$scope.disableButton;
@@ -217,9 +196,7 @@ function composerController(
       $scope.frameSettings[$scope.currentIndex].startTime = $scope.frameSettings.startTime;
       $scope.frameSettings[$scope.currentIndex].endDate = $scope.frameSettings.endDate;
       $scope.frameSettings[$scope.currentIndex].endTime = $scope.frameSettings.endTime;
-      //$scope.locationSettings[$scope.currentIndex][0].loc = $scope.locationSettings[0].loc
       $scope.frameSettings[$scope.currentIndex].radius = $scope.frameSettings.radius;
-
       $scope.disableButton = true;
       $scope.disableButton = !$scope.disableButton;
   }

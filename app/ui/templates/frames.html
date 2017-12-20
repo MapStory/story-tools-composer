@@ -1,6 +1,8 @@
 <section>
     <h2 class="section-title float-left">StoryFrames</h2>
-    <p class="clearfix">
+    <button class="sidebar-button" ng-click="showForm = !showForm">Create New StoryFrame</button>
+    <br/>
+    <p class="clearfix" id="storyDescription">
         A StoryFrame defines the area of the map a viewer of your story will see.
         Set the default StoryFrame below, or create additional StoryFrames to
         override the part of the map your viewers will see for this chapter.
@@ -8,27 +10,33 @@
   </section>
 
   <div id="createdStoryframes" ng-show="frameSettings">
-      <h2 class="section-title float-left clearfix">Created Storyframes</h2>
+      <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
       <div class="clearfix" ng-repeat="item in frameSettings">
-          <a href="#" ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title">
-              <i class="fa fa-expand"></i> {{ item.title }}
-          </a>
-          <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
-          <i class="fa fa-edit" ng-click="editStoryframe($index)"></i>
+          <div ng-class="{ 'defaultStory':  isDefault }" id="titleBar">
+              <a href="#" ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title">
+                  <i class="fa fa-expand"></i> {{ item.title }}
+              </a>
+              <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
+              <i class="fa fa-home" ng-click="setDefaultStoryframe($index); isDefault = ! isDefault"></i>
+              <i class="fa fa-edit" ng-click="editStoryframe($index)"></i>
+          </div>
           <ul class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
-              <!--<li>Location: {{ locationSettings[0].loc[0] | limitTo: 7 }}, {{ locationSettings[0].loc[1] | limitTo: 7 }}</li>-->
-              <li>Radius: {{ item.radius }} km</li>
-              <li>Start Date: {{ item.startDate | date: 'MM/dd/yyyy' }}</li>
+              <li>Bounding Box:</li>
+              <ol>
+                  <li>{{ item.bb1[0] | limitTo: 7 }}, {{ item.bb1[1] | limitTo: 7 }}</li>
+                  <li>{{ item.bb2[0] | limitTo: 7 }}, {{ item.bb2[1] | limitTo: 7 }}</li>
+                  <li>{{ item.bb3[0] | limitTo: 7 }}, {{ item.bb3[1] | limitTo: 7 }}</li>
+                  <li>{{ item.bb4[0] | limitTo: 7 }}, {{ item.bb4[1] | limitTo: 7 }}</li>
+              </ol>
+              <li>Start Date: {{ item.startDate | date: 'mediumDate' }}</li>
               <li>Start Time: {{ item.startTime | date: 'h:mma' }}</li>
-              <li>End Date: {{ item.endDate | date: 'MM/dd/yyyy' }}</li>
+              <li>End Date: {{ item.endDate | date: 'mediumDate' }}</li>
               <li>End Time: {{ item.endTime | date: 'h:mma' }}</li>
           </ul>
       </div>
   </div>
   <br/>
-  <button class="sidebar-button" ng-click="showForm = !showForm">Create New StoryFrame</button>
-  <br/>
-     <form ng-show="showForm == true">
+     <form ng-show="showForm == true" id="storySettings">
          <div class="form-field">
              <label for="storypin_title">
                  Title
@@ -55,29 +63,11 @@
               <strong><abbr title="required">*</abbr></strong>
               <br />
               <input type="time" name="end_time_time" ng-model="frameSettings.endTime">
-              <br /><br />
-              <label for="location">Location Center</label>
-              <strong><abbr title="required">*</abbr></strong>
-              <br />
-              <input type="text" name="location" ng-model="location" placeholder="Click the map to choose a location.">
-              <br />
-              <label for="radius">Radius (km)</label>
-              <strong><abbr title="required">*</abbr></strong>
-              <br />
-              <select name="selectRadius" ng-model="frameSettings.radius" ng-change="setStoryRadius(frameSettings.radius)">
-                  <option value="10">10</option>
-                  <option value="50">50</option>
-                  <option value="100">100</option>
-                  <option value="500">500</option>
-                  <option value="1000">1000</option>
-                  <option value="2000">2000</option>
-              </select>
-              <br><br>
           </div>
 
-         <!--<div class="alert alert-success" role="alert">
-             <p>Your Storyframe details have been updated.</p>
-         </div>-->
+         <div id="setPlacement">
+             <p href="#" ng-click="drawBoundingBox()">Set Placement for Storyframe on map.</p>
+         </div>
 
          <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="storyDetails(frameSettings)">Save</button>
          <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframeRecord(frameSettings, $index)">Update</button>

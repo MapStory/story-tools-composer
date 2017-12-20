@@ -8,25 +8,45 @@
     max-height: 0;
 }
 
+#titleBar {
+    padding:5px;
+}
+
+.defaultStory {
+    background: #C8E1E3;
+    width:100%;
+}
+
 #createdStoryframes ul  {
     font-size:80%;
     padding-bottom: 10px;
 }
 
-#createdStoryframes > div > i {
+#createdStoryframes > div {
+    border-bottom:1px solid #CCC;
+    padding:5px;
+}
+
+#createdStoryframes > div > div > i {
+    cursor: hand;
+}
+
+#createdStoryframes > div > div > i.fa.fa-trash {
+    margin-left:5px;
+}
+
+#createdStoryframes > div > div > i.fa.fa-edit {
+    float:right;
+    margin-right:3px;
+}
+
+#createdStoryframes > div > div > i.fa.fa-home {
     float:right;
 }
 
-#createdStoryframes > div {
-    margin-top:10px;
-    border-bottom:1px solid #CCC;
-    padding:5px;
-    transition: all 0.5s ease-out;
+#setPlacement {
+    cursor:hand;
+    margin:10px 0 10px 0;
 }
 
-#createdStoryframes > div > i.fa.fa-edit {
-    margin-right:5px;
-}
-.active {
-    background: red;
-}
+
