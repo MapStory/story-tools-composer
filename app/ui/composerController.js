@@ -125,6 +125,16 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
+  $scope.isDefault = function($event, index) {
+    var elem = document.querySelectorAll('.isDefault')
+
+    for (var i = 0; i < elem.length; i++) {
+        elem[i].classList.remove('isDefault');
+    }
+
+    $event.currentTarget.classList.add('isDefault');
+  };
+
   $scope.frameSettings = [];
 
   $scope.clearLayers = function() {
@@ -154,10 +164,6 @@ function composerController(
       vector.set('name', 'boundingBox');
       MapManager.storyMap.getMap().addLayer(vector);
       MapManager.storyMap.getMap().addInteraction(draw);
-  };
-
-  $scope.setDefaultStoryframe = function(index) {
-      $log.log('default story: ', $scope.frameSettings[index].title);
   };
 
   $scope.storyDetails = function(frameSettings) {

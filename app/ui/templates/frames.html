@@ -12,12 +12,12 @@
   <div id="createdStoryframes" ng-show="frameSettings">
       <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
       <div class="clearfix" ng-repeat="item in frameSettings">
-          <div ng-class="{ 'defaultStory':  isDefault }" id="titleBar">
+          <div id="titleBar">
               <a href="#" ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title">
                   <i class="fa fa-expand"></i> {{ item.title }}
               </a>
               <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
-              <i class="fa fa-home" ng-click="setDefaultStoryframe($index); isDefault = ! isDefault"></i>
+              <i class="fa fa-home" ng-click="isDefault($event)"></i>
               <i class="fa fa-edit" ng-click="editStoryframe($index)"></i>
           </div>
           <ul class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
