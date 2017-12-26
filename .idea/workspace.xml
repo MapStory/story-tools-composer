@@ -2,10 +2,7 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="28db5c83-1d21-4785-ba27-1ce200a1244a" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/frames/style/frames.less" afterPath="$PROJECT_DIR$/app/frames/style/frames.less" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/ui/composerController.js" afterPath="$PROJECT_DIR$/app/ui/composerController.js" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/ui/templates/frames.html" afterPath="$PROJECT_DIR$/app/ui/templates/frames.html" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -32,8 +29,8 @@
       <file leaf-file-name="frames.less" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/frames/style/frames.less">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="67">
-              <caret line="15" column="24" lean-forward="false" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+            <state relative-caret-position="199">
+              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -42,8 +39,8 @@
       <file leaf-file-name="composerController.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="609">
-              <caret line="124" column="49" lean-forward="true" selection-start-line="124" selection-start-column="49" selection-end-line="124" selection-end-column="49" />
+            <state relative-caret-position="370">
+              <caret line="134" column="63" lean-forward="false" selection-start-line="134" selection-start-column="63" selection-end-line="134" selection-end-column="63" />
               <folding />
             </state>
           </provider>
@@ -108,8 +105,8 @@
         <option value="$PROJECT_DIR$/app/pins/pinSvc.js" />
         <option value="$PROJECT_DIR$/node_modules/time-controls/examples/composer.html" />
         <option value="$PROJECT_DIR$/app/map/mapManager.js" />
-        <option value="$PROJECT_DIR$/app/frames/style/frames.less" />
         <option value="$PROJECT_DIR$/app/ui/templates/frames.html" />
+        <option value="$PROJECT_DIR$/app/frames/style/frames.less" />
         <option value="$PROJECT_DIR$/app/ui/composerController.js" />
       </list>
     </option>
@@ -212,12 +209,12 @@
       <workItem from="1510583569917" duration="174000" />
       <workItem from="1510591523314" duration="102356000" />
       <workItem from="1512162379305" duration="107110000" />
-      <workItem from="1513808883012" duration="12631000" />
+      <workItem from="1513808883012" duration="14113000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="261890000" />
+    <option name="totallyTimeSpent" value="263372000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="6" y="23" width="1421" height="819" extended-state="0" />
@@ -591,8 +588,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/frames/style/frames.less">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="67">
-          <caret line="15" column="24" lean-forward="false" selection-start-line="15" selection-start-column="24" selection-end-line="15" selection-end-column="24" />
+        <state relative-caret-position="199">
+          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
           <folding />
         </state>
       </provider>
@@ -607,8 +604,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="609">
-          <caret line="124" column="49" lean-forward="true" selection-start-line="124" selection-start-column="49" selection-end-line="124" selection-end-column="49" />
+        <state relative-caret-position="370">
+          <caret line="134" column="63" lean-forward="false" selection-start-line="134" selection-start-column="63" selection-end-line="134" selection-end-column="63" />
           <folding />
         </state>
       </provider>

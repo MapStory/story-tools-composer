@@ -132,7 +132,7 @@ function composerController(
         elem[i].classList.remove('isDefault');
     }
 
-    $event.currentTarget.classList.add('isDefault');
+    $event.currentTarget.parentNode.classList.add('isDefault');
   };
 
   $scope.frameSettings = [];
