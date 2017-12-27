@@ -12,6 +12,9 @@ function MapManager(
   stEditableLayerBuilder,
   TimeControlsManager,
   EditableStoryMap,
+  layerSvc,
+  popupSvc,
+  layerOptionsSvc,
   stStoryMapBaseBuilder,
   stateSvc,
   stEditableStoryMapBuilder
@@ -32,6 +35,69 @@ function MapManager(
   svc.chapterCount = 1;
   StoryPinLayerManager.storyPinsLayer = svc.storyMap.storyPinsLayer;
 
+  svc.displayPinInfo = function(pixel, pin) {
+    var feature = null;
+    var embed_params = {
+      nowrap: "on",
+      maxwidth: 250,
+      maxheight: 250
+    };
+    if (typeof pin == "undefined" || pin == null) {
+      feature = svc.storyMap
+        .getMap()
+        .forEachFeatureAtPixel(pixel, function(feature, layer) {
+          return feature;
+        });
+    } else {
+      feature = pin;
+    }
+    if (feature) {
+      var overlays = svc.storyMap
+        .getMap()
+        .getOverlays()
+        .getArray();
+
+      var popup = null;
+      var titleDescrip =
+        '<div style="text-align:center;"><h4>' +
+        feature.get("title") +
+        "</h4></div><hr>" +
+        feature.get("content");
+      var geometry = feature.getGeometry();
+      var coord = geometry.getCoordinates();
+      for (var iOverlay = 0; iOverlay < overlays.length; iOverlay += 1) {
+        var overlay = overlays[iOverlay];
+        if (overlay.getId && overlay.getId() == "popup-" + feature.id) {
+          popup = overlay;
+          break;
+        }
+      }
+
+      if (popup === null) {
+        var popupOptions = {
+          insertFirst: false,
+          id: "popup-" + feature.id,
+          positioning: "bottom-center",
+          stopEvent: false
+        };
+        popup = new ol.Overlay.Popup(popupOptions);
+        svc.storyMap.getMap().addOverlay(popup);
+        $rootScope.$broadcast("pausePlayback");
+      }
+      popup.setPosition(coord);
+      if (feature.get("media")) {
+        mediaService
+          .getEmbedContent(feature.get("media"), embed_params)
+          .then(function(result) {
+            var cont = result ? titleDescrip + result : titleDescrip;
+            popup.show(coord, cont);
+          });
+      } else {
+        popup.show(coord, titleDescrip);
+      }
+    }
+  };
+
   svc.getDataFromLocalServer = function(mapId, dataType) {
     return $http
       .get("/maps/" + mapId + "/" + dataType)
@@ -47,15 +113,10 @@ function MapManager(
       });
   };
 
-  svc.logselecteditem = function() {
-    console.log(mapManager.storyMap.getSelectedItem());
-  };
-
   svc.loadMapFromID = function(options) {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     var annotationsLoad = svc.getDataFromLocalServer(options.id, "annotations");
     var boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
-    console.log(" LOAD MAP FROM ID WITH OPTIONS ---- >", options);
     for (var i = 0; i < options.layers.length; i++) {
       svc.buildStoryLayer(options.layers[i]);
     }
@@ -104,15 +165,19 @@ function MapManager(
 
   svc.loadMap = function(options) {
     options = options || {};
-    if (options.id) {
-      console.log(" > LOAD MAP FROM ID", options);
+    if (options.id !== null && options.id !== undefined) {
       svc.loadMapFromID(options);
     } else if (options.url) {
-      console.log(" > LOAD MAP FROM URL");
       svc.loadMapFromUrl(options);
     } else {
       stStoryMapBaseBuilder.defaultMap(svc.storyMap);
     }
+    svc.storyMap.getMap().on("click", function(evt) {
+      var coordinate = evt.coordinate;
+      var hdms = ol.coordinate.toStringHDMS(
+        ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326")
+      );
+    });
     svc.currentMapOptions = options;
   };
 
@@ -124,7 +189,6 @@ function MapManager(
     svc.title = config.about.title;
     svc.username = config.about.username;
     svc.owner = config.about.owner;
-    console.log("---- > ", config);
     svc.loadMap(config);
   };
 
@@ -132,7 +196,6 @@ function MapManager(
     return stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {
-        console.log("STORYLAYER --- >", a);
         svc.storyMap.addStoryLayer(a);
         if (fitExtent === true) {
           a.get("latlonBBOX");
@@ -156,35 +219,15 @@ function MapManager(
   };
 
   svc.addLayer = function(name, settings, server, fitExtent, styleName, title) {
-    console.log(" ADD LAYER: ", name);
-    svc.storyMap.setAllowZoom(settings.allowZoom);
-    svc.storyMap.setAllowPan(settings.allowPan);
-    if (fitExtent === undefined) {
-      fitExtent = true;
-    }
-    if (angular.isString(server)) {
-      server = getServer(server);
-    }
-    var workspace = "geonode";
-    var parts = name.split(":");
-    if (parts.length > 1) {
-      workspace = parts[0];
-      name = parts[1];
-    }
-    var url = server.path + workspace + "/" + name + "/wms";
-    var id = workspace + ":" + name;
-    var options = {
-      id: id,
-      name: name,
-      title: title || name,
-      url: url,
-      path: server.path,
-      canStyleWMS: server.canStyleWMS,
-      timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
-      type: settings.asVector === true ? "VECTOR" : "WMS",
-      settings: settings
-    };
-    stateSvc.saveLayer(options);
+    options = layerOptionsSvc.getLayerOptions(
+      name,
+      settings,
+      server,
+      fitExtent,
+      styleName,
+      title
+    );
+    stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
   };
 

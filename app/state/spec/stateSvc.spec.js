@@ -12,39 +12,50 @@ describe("stateSvc", function() {
 
   describe("getConfig", function() {
     it("should return a configuration object with a `chapters` attribute", function() {
-      expect(stateSvc.getConfig().chapters[0].about.title).toBe("prisons");
+      expect(stateSvc.getConfig().chapters[0]).toBeDefined();
     });
   });
 
-  describe("saveLayer", function() {
+  describe("addLayer", function() {
     it("should add the layer config provided to the current chapter config's layer array", function() {
       spyOn(location, "path").and.returnValue("/chapter/1");
       var layerConfig = {
-        name: "testLayer",
-        settings: {
-          asVector: true,
-          allowZoom: true,
-          allowPan: true
-        },
-        server: {
-          name: "mapstory",
-          path: "/geoserver/",
-          absolutePath: "", //'https://mapstory.org/geoserver/',
-          host: "", //'https://mapstory.org/',
-          canStyleWMS: false,
-          timeEndpoint: function(name) {
-            return "/maps/time_info.json?layer=" + name;
-          }
-        }
+        id: "test_id",
+        uuid: new Date().getTime(),
+        name: "test_name",
+        title: "test layer"
       };
       var testConfig = {
         chapters: [{ layers: [] }]
       };
 
       stateSvc.setConfig(testConfig);
-      stateSvc.saveLayer(layerConfig);
+      stateSvc.addLayer(layerConfig);
       expect(stateSvc.getChapterConfig().layers.length).toBe(1);
-      expect(stateSvc.getChapterConfig().layers[0].name).toBe("testLayer");
+      expect(stateSvc.getChapterConfig().layers[0].name).toBe("test_name");
+    });
+  });
+
+  describe("removeLayer", function() {
+    it("should add the layer config provided to the current chapter config's layer array", function() {
+      spyOn(location, "path").and.returnValue("/chapter/1");
+      var uuid = new Date().getTime();
+      var layerConfig = {
+        id: "test_id",
+        uuid: uuid,
+        name: "test_name",
+        title: "test layer"
+      };
+      var testConfig = {
+        chapters: [{ layers: [] }]
+      };
+
+      stateSvc.setConfig(testConfig);
+      stateSvc.addLayer(layerConfig);
+      expect(stateSvc.getChapterConfig().layers.length).toBe(1);
+      expect(stateSvc.getChapterConfig().layers[0].uuid).toBe(uuid);
+      stateSvc.removeLayer(uuid);
+      expect(stateSvc.getChapterConfig().layers.length).toBe(0);
     });
   });
 
@@ -72,23 +83,20 @@ describe("stateSvc", function() {
 
   describe("getChapterConfigs", function() {
     it("should return all chapter configs in an array", function() {
+      stateSvc.addNewChapter();
       expect(stateSvc.getChapterConfigs().length).toBe(2);
     });
   });
 
   describe("getChapterCount", function() {
     it("should return the number of chapters (value: 2)", function() {
-      expect(stateSvc.getChapterCount()).toBe(2);
+      expect(stateSvc.getChapterCount()).toBe(1);
     });
   });
 
   describe("getChapterConfig", function() {
     it("should return the config of the first chapter", function() {
-      expect(stateSvc.getChapterConfig().about.title).toBeDefined();
-    });
-    it("should return the config of the second chapter", function() {
-      spyOn(location, "path").and.returnValue("/chapter/2");
-      expect(stateSvc.getChapterConfig().about.title).toBe("just testing");
+      expect(stateSvc.getChapterConfig()).toBeDefined();
     });
   });
 
@@ -102,6 +110,28 @@ describe("stateSvc", function() {
       var testConfig = { about: { title: "pass" } };
       stateSvc.setConfig(testConfig);
       expect(stateSvc.getChapterAbout().title).toBe("pass");
+    });
+  });
+
+  describe("reorderLayer", function() {
+    it("should move the specified layer from the `from` index in the layer array to the `to` index", function() {
+      var testConfig = {
+        chapters: [
+          {
+            layers: [
+              {
+                uuid: "LAYER_1"
+              },
+              {
+                uuid: "LAYER_2"
+              }
+            ]
+          }
+        ]
+      };
+      stateSvc.setConfig(testConfig);
+      stateSvc.reorderLayer(0, 1);
+      expect(stateSvc.getChapterConfig().layers[1].uuid).toBe("LAYER_1");
     });
   });
 

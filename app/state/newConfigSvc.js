@@ -1,29 +1,73 @@
-function newConfigSvc() {
+function newConfigSvc(layerOptionsSvc, appConfig) {
   var svc = {};
 
-  svc.getNewMapstoryConfig = function() {
-    return {
-      about: {
-        owner: "",
-        username: "",
-        abstract: "",
-        title: ""
-      },
-      thumbnail_url: "/static/geonode/img/missing_thumb.png",
-      id: 0,
-      chapters: [svc.getNewChapterConfig(1)]
-    };
+  svc.getLayerListFromServerData = function(layers) {
+    if (!layers) {
+      return [];
+    }
+    var newLayers = [];
+    for (var i = 0; i < layers.length; i += 1) {
+      if (layers[i].indexOf("/geoserver") > -1) {
+        var name = layers[i].split("/geoserver/wms?layers=")[1];
+        var options = layerOptionsSvc.getLayerOptions(
+          name,
+          {},
+          appConfig.servers[0]
+        );
+        newLayers.push(options);
+      }
+    }
+    return newLayers;
   };
 
-  svc.getNewChapterConfig = function(id) {
-    return {
-      id: id,
+  svc.getMapstoryConfig = function(data) {
+    if (!data) {
+      data = {
+        abstract: "Mapstory description",
+        owner: "",
+        username: "",
+        title: "Mapstory title",
+        id: 0,
+        chapters: [{}]
+      };
+    }
+
+    var cfg = {
       about: {
-        abstract: "",
+        owner: data.owner,
+        username: data.owner.username,
+        abstract: data.abstract,
+        title: data.title
+      },
+      thumbnail_url: data.thumbnail_url,
+      id: data.id,
+      chapters: data.chapters
+    };
+
+    for (var i = 0; i < data.chapters.length; i++) {
+      data.chapters[i].owner = data.owner;
+      cfg.chapters[i] = svc.getChapterConfig(i, data.chapters[i]);
+    }
+
+    return cfg;
+  };
+
+  svc.getChapterConfig = function(id, data) {
+    if (!data) {
+      data = {
+        abstract: "New chapter description",
         owner: "",
         title: "New Chapter"
+      };
+    }
+    var cfg = {
+      id: id,
+      about: {
+        abstract: data.abstract,
+        owner: data.owner,
+        title: data.title
       },
-      layers: [],
+      layers: svc.getLayerListFromServerData(data.layers),
       sources: {
         "0": {
           lazy: true,
@@ -35,7 +79,6 @@ function newConfigSvc() {
           isVirtualService: false
         },
         "1": { hidden: true, ptype: "gxp_mapboxsource" },
-
         "3": { ptype: "gxp_osmsource" },
         "2": {
           ptype: "gxp_arcrestsource",
@@ -175,6 +218,7 @@ function newConfigSvc() {
         keywords: []
       }
     };
+    return cfg;
   };
 
   return svc;

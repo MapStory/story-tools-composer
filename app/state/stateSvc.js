@@ -1,34 +1,29 @@
 function stateSvc(
   $location,
-  $log,
   $rootScope,
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
   newConfigSvc,
-  searchSvc
+  searchSvc,
+  utils
 ) {
   var svc = {};
-  svc.config = newConfigSvc.getNewMapstoryConfig();
   svc.currentChapter = null;
   svc.originalConfig = null;
-
-  searchSvc
-    .search({
-      q: "india"
-    })
-    .then(function(data) {
-      $log.log(data);
-    });
+  svc.config = null;
 
   svc.addNewChapter = function() {
     svc.config.chapters.push(
-      newConfigSvc.getNewChapterConfig(svc.config.chapters.length + 1)
+      newConfigSvc.getChapterConfig(svc.config.chapters.length + 1)
     );
   };
 
+  svc.reorderLayer = function(from, to) {
+    svc.config.chapters[svc.getChapterIndex()].layers.move(from, to);
+  };
+
   svc.getLayerSaveConfig = function getLayerSaveConfig(layer) {
-    $log.log("        METADATA", layer);
     var config = layer.get("metadata").config;
     var styleStorageService = storytools.edit.styleStorageService.styleStorageService();
 
@@ -38,7 +33,7 @@ function stateSvc(
     );
 
     if (!goog.isDefAndNotNull(config)) {
-      $log.log(
+      console.log(
         "Not saving layer: ",
         layer.get("metadata").name,
         "because the layer does not have a configuration object."
@@ -81,13 +76,12 @@ function stateSvc(
     return config;
   };
 
-  svc.initConfig = (function() {
-    var path = $location.path();
-    var mapID = /\/maps\/(\d+)/.exec(path)
-      ? /\/maps\/(\d+)/.exec(path)[1]
+  svc.initConfig = function() {
+    var path = window.location.pathname;
+    var mapID = /\/story\/(\d+)/.exec(path)
+      ? /\/story\/(\d+)/.exec(path)[1]
       : null;
-    $log.log(mapID);
-    var mapJsonUrl = "/maps/" + mapID + "/data";
+    var mapJsonUrl = "/api/mapstories/" + mapID;
     if (svc.config) {
       return;
     } else if (mapID) {
@@ -95,15 +89,18 @@ function stateSvc(
         dataType: "json",
         url: mapJsonUrl
       }).done(function(data) {
-        svc.config = data;
+        svc.config = newConfigSvc.getMapstoryConfig(data);
+        window.config = svc.config;
         svc.originalConfig = data;
+        $rootScope.$broadcast("configInitialized");
       });
     } else {
-      svc.config = window.config;
+      svc.config = newConfigSvc.getMapstoryConfig();
+      window.config = svc.config;
       svc.originalConfig = window.config;
+      $rootScope.$broadcast("configInitialized");
     }
-    $rootScope.$broadcast("configInitialized");
-  })();
+  };
 
   svc.getConfig = function() {
     return svc.config;
@@ -117,13 +114,21 @@ function stateSvc(
     svc.currentChapter = svc.getChapterConfig();
   };
 
-  svc.saveLayer = function(layerOptions) {
+  svc.addLayer = function(layerOptions) {
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
   };
 
-  svc.removeLayer = function(name) {
-    // TODO: !DJA figure this out!
-    $log.log(" > REMOVE", name);
+  // !DJA @TODO: write test
+  svc.removeLayer = function(uuid) {
+    var layers = svc.config.chapters[svc.getChapterIndex()].layers;
+    for (var i = 0; i < layers.length; i++) {
+      if (layers[i].uuid === uuid) {
+        var index = layers.indexOf(layers[i]);
+        if (index > -1) {
+          svc.config.chapters[svc.getChapterIndex()].layers.splice(index, 1);
+        }
+      }
+    }
   };
 
   svc.getChapter = function() {
@@ -175,11 +180,8 @@ function stateSvc(
 
   svc.save = function() {
     var config = window.storyMap.getState();
-    $log.log(" CONFIG ON SAVE ---- >", config);
     var layers = window.storyMap.getStoryLayers();
-    layers.forEach(function(lyr) {
-      $log.log("    LAYER CONFIG -- >", svc.getLayerSaveConfig(lyr));
-    });
+    layers.forEach(function(lyr) {});
     stLocalStorageSvc.saveConfig(config);
     if (window.storyMap.get("id") === undefined) {
       window.storyMap.set("id", config.id);
@@ -189,6 +191,8 @@ function stateSvc(
       StoryPinLayerManager.storyPins
     );
   };
+
+  svc.initConfig();
 
   return svc;
 }
