@@ -2,7 +2,10 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="28db5c83-1d21-4785-ba27-1ce200a1244a" name="Default" comment="">
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/frames/style/frames.less" afterPath="$PROJECT_DIR$/app/frames/style/frames.less" />
       <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/ui/composerController.js" afterPath="$PROJECT_DIR$/app/ui/composerController.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bower.json" afterPath="$PROJECT_DIR$/bower.json" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -19,8 +22,8 @@
       <file leaf-file-name="frames.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/ui/templates/frames.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="107">
-              <caret line="14" column="18" lean-forward="false" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="28" />
+            <state relative-caret-position="555">
+              <caret line="37" column="7" lean-forward="false" selection-start-line="37" selection-start-column="7" selection-end-line="37" selection-end-column="7" />
               <folding />
             </state>
           </provider>
@@ -29,8 +32,8 @@
       <file leaf-file-name="frames.less" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/frames/style/frames.less">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="199">
-              <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+            <state relative-caret-position="165">
+              <caret line="11" column="16" lean-forward="false" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
               <folding />
             </state>
           </provider>
@@ -39,8 +42,8 @@
       <file leaf-file-name="composerController.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="370">
-              <caret line="134" column="63" lean-forward="false" selection-start-line="134" selection-start-column="63" selection-end-line="134" selection-end-column="63" />
+            <state relative-caret-position="100">
+              <caret line="129" column="59" lean-forward="false" selection-start-line="129" selection-start-column="59" selection-end-line="129" selection-end-column="59" />
               <folding />
             </state>
           </provider>
@@ -50,10 +53,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>location</find>
-      <find>openlayers</find>
-      <find>3.13</find>
-      <find>point_feature</find>
       <find>addLayer</find>
       <find>change</find>
       <find>log.log</find>
@@ -80,6 +79,10 @@
       <find>showDetails</find>
       <find>check</find>
       <find>home</find>
+      <find>title</find>
+      <find>eonasdan</find>
+      <find>angular.element</find>
+      <find>del</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -105,8 +108,8 @@
         <option value="$PROJECT_DIR$/app/pins/pinSvc.js" />
         <option value="$PROJECT_DIR$/node_modules/time-controls/examples/composer.html" />
         <option value="$PROJECT_DIR$/app/map/mapManager.js" />
-        <option value="$PROJECT_DIR$/app/ui/templates/frames.html" />
         <option value="$PROJECT_DIR$/app/frames/style/frames.less" />
+        <option value="$PROJECT_DIR$/app/ui/templates/frames.html" />
         <option value="$PROJECT_DIR$/app/ui/composerController.js" />
       </list>
     </option>
@@ -126,7 +129,7 @@
     <dismissed value="$PROJECT_DIR$/package.json" />
   </component>
   <component name="ProjectFrameBounds">
-    <option name="x" value="6" />
+    <option name="x" value="12" />
     <option name="y" value="23" />
     <option name="width" value="1421" />
     <option name="height" value="819" />
@@ -157,6 +160,11 @@
               <item name="story-tools-composer" type="b2602c69:ProjectViewProjectNode" />
               <item name="story-tools-composer" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="story-tools-composer" type="b2602c69:ProjectViewProjectNode" />
+              <item name="story-tools-composer" type="462c0819:PsiDirectoryNode" />
+              <item name="build" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
@@ -209,20 +217,21 @@
       <workItem from="1510583569917" duration="174000" />
       <workItem from="1510591523314" duration="102356000" />
       <workItem from="1512162379305" duration="107110000" />
-      <workItem from="1513808883012" duration="14113000" />
+      <workItem from="1513808883012" duration="21249000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="263372000" />
+    <option name="totallyTimeSpent" value="270508000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="6" y="23" width="1421" height="819" extended-state="0" />
+    <frame x="12" y="23" width="1421" height="819" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18719211" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.35207498" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
       <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32956153" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
@@ -235,7 +244,6 @@
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
       <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
     </layout>
   </component>
@@ -288,6 +296,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="1515">
           <caret line="101" column="31" lean-forward="true" selection-start-line="101" selection-start-column="31" selection-end-line="101" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -541,6 +550,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-113">
           <caret line="3" column="46" lean-forward="false" selection-start-line="3" selection-start-column="46" selection-end-line="3" selection-end-column="70" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -555,6 +565,7 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="329">
           <caret line="101" column="31" lean-forward="false" selection-start-line="101" selection-start-column="31" selection-end-line="101" selection-end-column="31" />
+          <folding />
         </state>
       </provider>
     </entry>
@@ -588,24 +599,40 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/frames/style/frames.less">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="199">
-          <caret line="17" column="0" lean-forward="true" selection-start-line="17" selection-start-column="0" selection-end-line="17" selection-end-column="0" />
+        <state relative-caret-position="165">
+          <caret line="11" column="16" lean-forward="false" selection-start-line="11" selection-start-column="16" selection-end-line="11" selection-end-column="16" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/vendor.bundle.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/build/app.bundle.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/ui/templates/frames.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="107">
-          <caret line="14" column="18" lean-forward="false" selection-start-line="14" selection-start-column="18" selection-end-line="14" selection-end-column="28" />
+        <state relative-caret-position="555">
+          <caret line="37" column="7" lean-forward="false" selection-start-line="37" selection-start-column="7" selection-end-line="37" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="370">
-          <caret line="134" column="63" lean-forward="false" selection-start-line="134" selection-start-column="63" selection-end-line="134" selection-end-column="63" />
+        <state relative-caret-position="100">
+          <caret line="129" column="59" lean-forward="false" selection-start-line="129" selection-start-column="59" selection-end-line="129" selection-end-column="59" />
           <folding />
         </state>
       </provider>

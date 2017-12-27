@@ -125,8 +125,14 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
+
+  // add, remove bounding box to map when story frame is selected.
+  // make frame active feature sep from set default feature
+
+
+
   $scope.isDefault = function($event, index) {
-    var elem = document.querySelectorAll('.isDefault')
+    var elem = document.querySelectorAll('.isDefault');
 
     for (var i = 0; i < elem.length; i++) {
         elem[i].classList.remove('isDefault');
@@ -208,6 +214,7 @@ function composerController(
   }
 
   $scope.deleteStoryframe = function(index) {
+    $log.log($scope.frameSettings[index].title);
     $scope.frameSettings.splice(index, 1);
   };
 }
