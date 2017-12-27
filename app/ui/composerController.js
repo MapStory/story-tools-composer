@@ -15,6 +15,8 @@ function composerController(
   pinSvc,
   uiHelperSvc,
   searchSvc,
+  stateSvc,
+  // popupSvc,
   $location
 ) {
   $scope.mapManager = MapManager;
@@ -24,18 +26,32 @@ function composerController(
   $scope.searchSvc = searchSvc;
   $scope.pin = {};
 
+  $rootScope.$on("showPin", function(event, pin) {
+    self.displayPinInfo(null, pin);
+  });
+
+  $rootScope.$on("rangeChange", function(event, range) {
+    // StoryPinLayerManager.autoDisplayPins(range);
+  });
+
+  $rootScope.$on("hidePinOverlay", function(event, pin) {
+    self.hidePinOverlay(pin);
+  });
+
+  $rootScope.$on("hidePinOverlay", function(event, pin) {
+    self.hidePinOverlay(pin);
+  });
+
   $rootScope.$on("$locationChangeSuccess", function() {
     $scope.mapManager.initMapLoad();
     $scope.stateSvc.updateCurrentChapterConfig();
   });
 
   $rootScope.$on("configInitialized", function() {
-    console.log("config --- > ", stateSvc.getConfig());
     $scope.mapManager.initMapLoad();
   });
 
   $rootScope.$on("pin-added", function(event, chapter_index) {
-    console.log($scope.pinSvc.getPins(0));
     //$scope.$apply();
   });
 
@@ -47,8 +63,8 @@ function composerController(
     pinSvc.removeChapter(chapter_index);
   });
 
-  MapManager.storyMap.getMap().on("singleclick", function(evt) {
-    console.log("MAP CLICKED !!!", evt);
+  MapManager.storyMap.getMap().on("click", function(evt) {
+    // popupSvc.displayInfo(evt.pixel);
   });
 
   $scope.updateSelected = function(selected) {
@@ -66,8 +82,6 @@ function composerController(
   };
 
   $scope.saveMap = function() {
-    console.log("STORY MAP LAYERS ---- > ", window.storyMap.getStoryLayers());
-
     stateSvc.save();
   };
 

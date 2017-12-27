@@ -23,8 +23,7 @@
     "angular-bootstrap": "0.11.2",
     "angular-bootstrap-colorpicker": "~3.0.8",
     "angular-sortable-view": "0.0.13",
-    "materialize": "0.98.0",
-    "eonasdan-bootstrap-datetimepicker": "^4.17.47"
+    "materialize": "0.98.0"
   },
   "devDependencies": {
     "bootstrap": "3.0.0",
