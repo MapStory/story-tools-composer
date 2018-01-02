@@ -6,7 +6,7 @@ function composerController(
   $http,
   $injector,
   MapManager,
-  styleUpdater,
+  styleSvc,
   stFeatureInfoService,
   appConfig,
   TimeControlsManager,
@@ -24,7 +24,9 @@ function composerController(
   $scope.pinSvc = pinSvc;
   $scope.uiHelperSvc = uiHelperSvc;
   $scope.searchSvc = searchSvc;
+  $scope.selected = {};
   $scope.pin = {};
+  $scope.styleActivated = false;
 
   $rootScope.$on("showPin", function(event, pin) {
     self.displayPinInfo(null, pin);
@@ -91,9 +93,9 @@ function composerController(
 
   $scope.styleChanged = function(layer) {
     layer.on("change:type", function(evt) {
-      styleUpdater.updateStyle(evt.target);
+      styleSvc.updateStyle(evt.target);
     });
-    styleUpdater.updateStyle(layer);
+    styleSvc.updateStyle(layer);
   };
 
   $scope.showLoadMapDialog = function() {

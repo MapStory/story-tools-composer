@@ -1,74 +1,82 @@
-<accordion close-others="true" sv-root sv-part="layers" sv-on-sort="onSort($item, $partFrom, $partTo, $indexFrom, $indexTo)">
+<div ng-if="styleActivated">
+  <ng-include src="'app/layers/templates/style-bar.html'"></ng-include>
+</div>
+<div ng-if="!styleActivated">
+  <accordion close-others="true" sv-root sv-part="layers" sv-on-sort="onSort($item, $partFrom, $partTo, $indexFrom, $indexTo)">
 
-    <accordion-group is-open="status.open">
-        <accordion-heading>
-            Add a StoryLayer <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-        </accordion-heading>
-        <add-layers map="map"></add-layers>
-    </accordion-group>
+      <accordion-group is-open="status.open">
+          <accordion-heading>
+              Add a StoryLayer <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+          </accordion-heading>
+          <add-layers map="map"></add-layers>
+      </accordion-group>
 
-    <accordion-group sv-element ng-repeat="layer in layers" is-open="accordianOpen" ng-init="accordianOpen = $first">
-        <accordion-heading>
-            {{layer.get('title')}}
-            <div class="pull-right">
-                <button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
-                    <div class="stLoading" spinner-radius="16" spinner-hidden="!swapping"></div>
-                    <i class="glyphicon glyphicon-cog"></i>
-                </button>
-                <button type="button" data-toggle="button" ng-click="toggleVisibleLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
-                    <i class="glyphicon" ng-class="{'glyphicon-eye-open': layer.get('visibility'), 'glyphicon-eye-close': !layer.get('visibility')}"></i>
-                </button>
-                <button type="button" data-toggle="button" ng-click="removeLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
-                    <i class="glyphicon glyphicon-trash"></i>
-                </button>
-            </div>
-        </accordion-heading>
+      <accordion-group sv-element ng-repeat="layer in layers" is-open="accordianOpen" ng-init="accordianOpen = $first">
+          <accordion-heading>
+              {{layer.get('title')}}
+              <div class="pull-right">
+                  <button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
+                      <div class="stLoading" spinner-radius="16" spinner-hidden="!swapping"></div>
+                      <i class="glyphicon glyphicon-cog"></i>
+                  </button>
+                  <button type="button" data-toggle="button" ng-click="toggleVisibleLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
+                      <i class="glyphicon" ng-class="{'glyphicon-eye-open': layer.get('visibility'), 'glyphicon-eye-close': !layer.get('visibility')}"></i>
+                  </button>
+                  <button type="button" data-toggle="button" ng-click="removeLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
+                      <i class="glyphicon glyphicon-trash"></i>
+                  </button>
+              </div>
+          </accordion-heading>
 
-        <div class="row">
-            <div class="col-sm-12">
-                <div class="row">
-                    <div class="col-sm-2">
-                      <strong>Name:</strong>
-                    </div>
-                    <div class="col-sm-10">
-                        {{layer.getProperties().name}}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-2">
-                      <strong>Type:</strong>
-                    </div>
-                    <div class="col-sm-10">
-                        {{layer.getProperties().type}}
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-sm-2">
-                      <strong>Visibility:</strong>
-                    </div>
-                    <div class="col-sm-10">
-                      <label class="checkbox-inline" for="visibility-{{layer.getProperties().name}}" style="padding-left:45px;padding-top:4px;">
-                      <input type="checkbox" ng-model="allowPan" checked="true" id="visibility-{{layer.getProperties().name}}" data-toggle="checkbox"
-                             class="checkbox-inline"></input>
-                      <span class="icons">
-                          <span class="icon-unchecked"></span>
-                          <span class="icon-checked"></span>
-                      </span>
-                      </label>
-                    </div>
-                </div>
-            </div>
-        </div>
+          <div class="row">
+             <div class="col-sm-12">
+               <a ng-click="toggleStyle(layer);$event.preventDefault();">STYLE</a>
+             </div>
+           </div>
+          <div class="row">
+              <div class="col-sm-12">
+                  <div class="row">
+                      <div class="col-sm-2">
+                        <strong>Name:</strong>
+                      </div>
+                      <div class="col-sm-10">
+                          {{layer.getProperties().name}}
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-sm-2">
+                        <strong>Type:</strong>
+                      </div>
+                      <div class="col-sm-10">
+                          {{layer.getProperties().type}}
+                      </div>
+                  </div>
+                  <div class="row">
+                      <div class="col-sm-2">
+                        <strong>Visibility:</strong>
+                      </div>
+                      <div class="col-sm-10">
+                        <label class="checkbox-inline" for="visibility-{{layer.getProperties().name}}" style="padding-left:45px;padding-top:4px;">
+                        <input type="checkbox" ng-model="allowPan" checked="true" id="visibility-{{layer.getProperties().name}}" data-toggle="checkbox"
+                               class="checkbox-inline"></input>
+                        <span class="icons">
+                            <span class="icon-unchecked"></span>
+                            <span class="icon-checked"></span>
+                        </span>
+                        </label>
+                      </div>
+                  </div>
+              </div>
+          </div>
 
-    </accordion-group>
-    <accordion-group>
-        <accordion-heading>
-            Basemaps <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-        </accordion-heading>
-        <div>
-            <button style="height: 100px; border:1px white solid; color:#2C3E50; background-image:url('img/{{ baseLayer.name}}.png');" class="btn col-xs-4" ng-repeat="baseLayer in baseLayers" ng-click="onChange(baseLayer)">{{baseLayer.title}}</button>
-        </div>
-    </accordion-group>
-</accordion>
-
+      </accordion-group>
+      <accordion-group>
+          <accordion-heading>
+              Basemaps <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
+          </accordion-heading>
+          <div>
+              <button style="height: 100px; border:1px white solid; color:#2C3E50; background-image:url('img/{{ baseLayer.name}}.png');" class="btn col-xs-4" ng-repeat="baseLayer in baseLayers" ng-click="onChange(baseLayer)">{{baseLayer.title}}</button>
+          </div>
+      </accordion-group>
+  </accordion>
 </div>

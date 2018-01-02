@@ -8,6 +8,7 @@ function addLayers(
   MapManager,
   searchSvc,
   layerSvc,
+  styleSvc,
   appConfig,
   stateSvc
 ) {

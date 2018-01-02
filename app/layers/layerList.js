@@ -3,16 +3,20 @@ function layerList(
   stEditableStoryMapBuilder,
   MapManager,
   layerSvc,
+  styleSvc,
   stateSvc
 ) {
   return {
     restrict: "E",
     scope: {
-      map: "="
+      map: "=",
+      selected: "@"
     },
     templateUrl: "./app/layers/templates/layer-list.html",
     link: function(scope, el, atts) {
       scope.baseLayers = layerSvc.baseLayers;
+      scope.styleSvc = styleSvc;
+      scope.styleActivated = false;
       var baseLayer = MapManager.storyMap.get("baselayer");
       if (baseLayer) {
         scope.baseLayer = baseLayer.get("title");
@@ -20,6 +24,12 @@ function layerList(
       MapManager.storyMap.on("change:baselayer", function() {
         scope.baseLayer = MapManager.storyMap.get("baselayer").get("title");
       });
+
+      scope.toggleStyle = function(layer) {
+        scope.styleSvc.setCurrentLayer(layer);
+        scope.styleActivated = scope.styleActivated ? false : true;
+      };
+
       scope.layers = MapManager.storyMap.getStoryLayers().getArray();
       MapManager.storyMap.getStoryLayers().on("change:length", function() {
         scope.layers = MapManager.storyMap.getStoryLayers().getArray();
@@ -37,15 +47,6 @@ function layerList(
         stStoryMapBaseBuilder.setBaseLayer(MapManager.storyMap, baseLayer);
       };
       scope.onSort = function(item, partFrom, partTo, indexFrom, indexTo) {
-        console.log(
-          "Changed layer position of " +
-            item.get("title") +
-            " FROM " +
-            indexFrom +
-            " TO " +
-            indexTo
-        );
-
         stateSvc.reorderLayer(indexFrom, indexTo);
 
         partFrom.forEach(function(layer) {

@@ -123,7 +123,6 @@ module.config([
 // }
 
 require("./map");
-require("./style");
 require("./layers");
 require("./ui");
 require("./time");

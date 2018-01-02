@@ -247,7 +247,6 @@ describe("pinSvc", function() {
     it("should remove the specified pin from the specified chapter index", function() {
       pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
       var newPin = jQuery.extend(true, {}, pinSvc.pins[0][1]);
-      console.log("NEW PIN ---- > ", newPin);
       expect(pinSvc.pins[0].length).toBe(2);
       pinSvc.removePin(pinSvc.pins[0][0], 0);
       expect(pinSvc.pins[0][0].id).toBe(newPin.id_);

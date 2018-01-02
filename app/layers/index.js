@@ -5,6 +5,7 @@ var addLayers = require("./addLayers.js");
 var layerSvc = require("./layerSvc.js");
 var layerOptionsSvc = require("./layerOptionsSvc.js");
 var layerList = require("./layerList.js");
+var styleSvc = require("./styleSvc.js");
 var tileProgressController = require("./tileProgressController.js");
 var popupSvc = require("./popupSvc.js");
 var olpopup = require("./ol3-popup.js");
@@ -17,6 +18,7 @@ angular.module("composer").factory("layerOptionsSvc", layerOptionsSvc);
 angular.module("composer").directive("addLayers", addLayers);
 angular.module("composer").directive("layerList", layerList);
 angular.module("composer").factory("featureManagerSvc", featureManagerSvc);
+angular.module("composer").service("styleSvc", styleSvc);
 
 angular
   .module("composer")
