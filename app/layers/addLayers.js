@@ -44,6 +44,8 @@ function addLayers(
         };
         MapManager.addLayer(name, settings, scope.server.active)
           .then(function() {
+            // !DJA
+            layerSvc.getLayerConfig(name);
             scope.$parent.status.open = false;
           }, layerSvc.handleAddLayerError)
           .finally(function() {

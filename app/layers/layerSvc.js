@@ -1,6 +1,6 @@
 "use strict";
 
-function layerSvc(stateSvc) {
+function layerSvc(stateSvc, appConfig, $http, $q) {
   var svc = {};
 
   svc.baseLayers = [
@@ -87,6 +87,37 @@ function layerSvc(stateSvc) {
       msg += problems[0].data;
     }
     $log.warn("Failed to load %s because of %s", scope.layerName, problems);
+  };
+
+  svc.getLayerConfig = function(layerName) {
+    var result = $q.defer();
+    var layerConfig = null;
+    var server = appConfig.servers[0];
+    var url = server.path;
+    var namespace = "geonode";
+    var parser = new ol.format.WMSCapabilities();
+    url = url.substring(0, url.lastIndexOf("/")) + "/" + namespace;
+    url += "/" + layerName + "/wms?request=GetCapabilities";
+    server.populatingLayersConfig = true;
+    var config = {};
+    config.headers = {};
+    if (goog.isDefAndNotNull(server.authentication)) {
+      config.headers["Authorization"] = "Basic " + server.authentication;
+    } else {
+      config.headers["Authorization"] = "";
+    }
+    $http.get(url, config).then(function(data, status, headers, config) {
+      var response = parser.read(data.data);
+      if (
+        goog.isDefAndNotNull(response.Capability) &&
+        goog.isDefAndNotNull(response.Capability.Layer)
+      ) {
+        layerConfig = response.Capability.Layer;
+        result.resolve(layerConfig);
+      }
+    });
+
+    return result.promise;
   };
 
   return svc;
