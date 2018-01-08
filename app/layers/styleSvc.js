@@ -4,6 +4,7 @@ function styleService($http, ol3StyleConverter, stEditableStoryMapBuilder) {
   svc.currentLayer = null;
 
   svc.setCurrentLayer = function(layer) {
+    console.log("CURRENT LAYER", layer.get("style"));
     svc.currentLayer = layer;
   };
 
@@ -22,7 +23,7 @@ function styleService($http, ol3StyleConverter, stEditableStoryMapBuilder) {
   };
 
   svc.handleVectorStyle = function(storyLayer) {
-    var style = storyLayer.get("style"),
+    var style = storyLayer.get("styleName"),
       layer = storyLayer.getLayer();
     layer.setStyle(function(feature, resolution) {
       return ol3StyleConverter.generateStyle(style, feature, resolution);

@@ -193,11 +193,12 @@ function MapManager(
   };
 
   svc.buildStoryLayer = function(options) {
-    return stEditableLayerBuilder
+    var storyLayer = stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {
+        console.log(a.get("path") + "rest/layers/" + a.get("id") + ".json");
         svc.storyMap.addStoryLayer(a);
-        if (fitExtent === true) {
+        if (options.fitExtent === true) {
           a.get("latlonBBOX");
           var extent = ol.proj.transformExtent(
             a.get("latlonBBOX"),
@@ -216,6 +217,7 @@ function MapManager(
             .fitExtent(extent, svc.storyMap.getMap().getSize());
         }
       });
+    return storyLayer;
   };
 
   svc.addLayer = function(name, settings, server, fitExtent, styleName, title) {
@@ -228,7 +230,9 @@ function MapManager(
       title
     );
     stateSvc.addLayer(options);
-    return svc.buildStoryLayer(options);
+    var layer = svc.buildStoryLayer(options);
+    console.log("LAYER ---- >", layer);
+    return layer;
   };
 
   return svc;
