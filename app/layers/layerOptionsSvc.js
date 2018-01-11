@@ -35,6 +35,8 @@ function layerOptionsSvc() {
       name: name,
       title: title || name,
       url: url,
+      style: styleName,
+      geomType: "point", //!DJA
       path: server.path,
       canStyleWMS: server.canStyleWMS,
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,

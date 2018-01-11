@@ -196,7 +196,6 @@ function MapManager(
     var storyLayer = stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {
-        console.log(a.get("path") + "rest/layers/" + a.get("id") + ".json");
         svc.storyMap.addStoryLayer(a);
         if (options.fitExtent === true) {
           a.get("latlonBBOX");
@@ -231,7 +230,6 @@ function MapManager(
     );
     stateSvc.addLayer(options);
     var layer = svc.buildStoryLayer(options);
-    console.log("LAYER ---- >", layer);
     return layer;
   };
 

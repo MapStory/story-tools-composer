@@ -42,16 +42,23 @@ function addLayers(
           allowZoom: scope.allowZoom,
           allowPan: scope.allowPan
         };
-        MapManager.addLayer(name, settings, scope.server.active)
-          .then(function() {
-            // !DJA
-            layerSvc.getLayerConfig(name);
-            scope.$parent.status.open = false;
-          }, layerSvc.handleAddLayerError)
-          .finally(function() {
-            scope.loading = false;
-          });
-        scope.layerName = null;
+        layerSvc.getLayerConfig(name).then(function(config) {
+          var styleName = config.Layer[0].Style[0].Name;
+          MapManager.addLayer(
+            name,
+            settings,
+            scope.server.active,
+            null,
+            styleName
+          )
+            .then(function() {
+              scope.$parent.status.open = false;
+            }, layerSvc.handleAddLayerError)
+            .finally(function() {
+              scope.loading = false;
+            });
+          scope.layerName = null;
+        });
       };
     }
   };
