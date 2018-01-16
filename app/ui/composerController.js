@@ -1,3 +1,5 @@
+var $ = require("jquery");
+
 function composerController(
     $scope,
     $rootScope,
@@ -24,6 +26,7 @@ function composerController(
     $scope.uiHelperSvc = uiHelperSvc;
     $scope.searchSvc = searchSvc;
     $scope.pin = {};
+
 
     $rootScope.$on("$locationChangeSuccess", function() {
         $scope.mapManager.initMapLoad();
@@ -133,6 +136,10 @@ function composerController(
         $event.currentTarget.parentNode.classList.add('isDefault');
     };
 
+
+
+
+
     $scope.frameSettings = [];
 
     $scope.clearLayers = function() {
@@ -162,6 +169,14 @@ function composerController(
         vector.set('name', 'boundingBox');
         MapManager.storyMap.getMap().addLayer(vector);
         MapManager.storyMap.getMap().addInteraction(draw);
+
+
+        // *** on mouse up, turn off BB tool
+        // *** remove any BB before creating new BB
+
+
+        //var extent = bbVector.getExtent();
+        //MapManager.storyMap.getView().fit(extent, MapManager.storyMap.getSize());
     };
 
     $scope.storyDetails = function(frameSettings) {
