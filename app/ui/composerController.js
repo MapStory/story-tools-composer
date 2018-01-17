@@ -1,15 +1,10 @@
-var $ = require("jquery");
-
 function composerController(
     $scope,
     $rootScope,
     $log,
-    $compile,
-    $http,
     $injector,
     MapManager,
     styleUpdater,
-    stFeatureInfoService,
     appConfig,
     TimeControlsManager,
     navigationSvc,
@@ -17,7 +12,6 @@ function composerController(
     uiHelperSvc,
     searchSvc,
     stateSvc,
-    // popupSvc,
     $location
 ) {
     $scope.mapManager = MapManager;
@@ -28,28 +22,18 @@ function composerController(
     $scope.pin = {};
 
 
-    $rootScope.$on("$locationChangeSuccess", function() {
+    $rootScope.$on("$locationChangeSuccess", () => {
         $scope.mapManager.initMapLoad();
         $scope.stateSvc.updateCurrentChapterConfig();
     });
 
-    $rootScope.$on("configInitialized", function() {
-        $log.log("config --- > ", stateSvc.getConfig());
-        $scope.mapManager.initMapLoad();
-    });
+    $rootScope.$on("configInitialized", () => $scope.mapManager.initMapLoad());
 
-    $rootScope.$on("pin-added", function(event, chapter_index) {
-        $log.log($scope.pinSvc.getPins(0));
-        //$scope.$apply();
-    });
+    $rootScope.$on("pin-added", (event, chapter_index) => $log.log($scope.pinSvc.getPins(0)));
 
-    $rootScope.$on("chapter-added", function(event, config) {
-        pinSvc.addChapter();
-    });
+    $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
 
-    $rootScope.$on("chapter-removed", function(event, chapter_index) {
-        pinSvc.removeChapter(chapter_index);
-    });
+    $rootScope.$on("chapter-removed", (event, chapter_index) => pinSvc.removeChapter(chapter_index));
 
     $scope.mode = {
         preview: false
@@ -61,26 +45,23 @@ function composerController(
         fixed: false
     };
 
-    $scope.saveMap = function() {
-        $scope.console.log("STORY MAP LAYERS ---- > ", window.storyMap.getStoryLayers());
-
+    $scope.saveMap = () => {
+        $log.log("STORY MAP LAYERS ---- > ", window.storyMap.getStoryLayers());
         stateSvc.save();
     };
 
-    $scope.newMap = function() {
-        $location.path("/new");
-    };
+    $scope.newMap = () => $location.path("/new");
 
-    $scope.styleChanged = function(layer) {
-        layer.on("change:type", function(evt) {
+    $scope.styleChanged = (layer) => {
+        layer.on("change:type", (evt) => {
             styleUpdater.updateStyle(evt.target);
         });
         styleUpdater.updateStyle(layer);
     };
 
-    $scope.showLoadMapDialog = function() {
-        var promise = loadMapDialog.show();
-        promise.then(function(result) {
+    $scope.showLoadMapDialog = () => {
+        const promise = loadMapDialog.show();
+        promise.then((result) => {
             if (result.mapstoryMapId) {
                 $location.path("/maps/" + result.mapstoryMapId + "/data/");
             } else if (result.localMapId) {
@@ -89,7 +70,7 @@ function composerController(
         });
     };
 
-    $scope.getMapWidth = function(preview) {
+    $scope.getMapWidth = (preview) => {
         if (preview === true) {
             return appConfig.dimensions.mapWidthPreviewMode;
         } else {
@@ -97,7 +78,7 @@ function composerController(
         }
     };
 
-    $scope.togglePreviewMode = function() {
+    $scope.togglePreviewMode = () => {
         $scope.mapWidth = $scope.getMapWidth($scope.mode.preview);
         $rootScope.mapWidth = $scope.mapWidth;
         if ($scope.mode.preview) {
@@ -108,60 +89,54 @@ function composerController(
         $rootScope.$broadcast("toggleMode", {
             mapWidth: $scope.mapWidth
         });
-        setTimeout(function() {
+        setTimeout(() => {
             window.storyMap.getMap().updateSize();
         });
     };
 
-    // strip features from properties to avoid circular dependencies in debug
-    $scope.layerProperties = function(lyr) {
-        var props = lyr.getProperties();
-        var features = delete props.features;
+    $scope.layerProperties = (lyr) => {
+        const props = lyr.getProperties();
+        const features = delete props.features;
         props.featureCount = (features || []).length;
         return props;
     };
 
-    $scope.updateSelected = function(selected) {
+    $scope.updateSelected = (selected) => {
         $scope.selected = { selected: true };
     };
 
     $scope.nextChapter = navigationSvc.nextChapter;
     $scope.previousChapter = navigationSvc.previousChapter;
 
-    $scope.isDefault = function($event, index) {
-        var elem = document.querySelectorAll('.isDefault')
-        for (var i = 0; i < elem.length; i++) {
+    $scope.frameSettings = [];
+
+    $scope.isDefault = ($event, index) => {
+        const elem = document.querySelectorAll('.isDefault')
+        for (let i = 0; i < elem.length; i++) {
             elem[i].classList.remove('isDefault');
         }
         $event.currentTarget.parentNode.classList.add('isDefault');
     };
 
-
-
-
-
-    $scope.frameSettings = [];
-
-    $scope.clearLayers = function() {
-        $log.log('clear layers');
-        MapManager.storyMap.getMap().getLayers().forEach(function (layer) {
+    $scope.clearLayers = () => {
+        MapManager.storyMap.getMap().getLayers().forEach((layer) => {
             if(layer instanceof ol.layer.Vector) {
                 MapManager.storyMap.getMap().removeLayer(layer);
             }
         });
     };
 
-    $scope.drawBoundingBox = function() {
-        var bbVector = new ol.source.Vector({wrapX: false});
-        var vector = new ol.layer.Vector({
+    $scope.drawBoundingBox = () => {
+        const bbVector = new ol.source.Vector({wrapX: false});
+        const vector = new ol.layer.Vector({
             source: bbVector
         });
-        bbVector.on('addfeature', function(evt){
-            var feature = evt.feature;
+        bbVector.on('addfeature', (evt) => {
+            const feature = evt.feature;
             $scope.coords = feature.getGeometry().getCoordinates();
         });
-        var geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
-        var draw = new ol.interaction.Draw({
+        const geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
+        const draw = new ol.interaction.Draw({
             source: bbVector,
             type: 'Circle',
             geometryFunction: geometryFunction
@@ -169,17 +144,13 @@ function composerController(
         vector.set('name', 'boundingBox');
         MapManager.storyMap.getMap().addLayer(vector);
         MapManager.storyMap.getMap().addInteraction(draw);
-
-
-        // *** on mouse up, turn off BB tool
-        // *** remove any BB before creating new BB
-
-
-        //var extent = bbVector.getExtent();
-        //MapManager.storyMap.getView().fit(extent, MapManager.storyMap.getSize());
     };
 
-    $scope.storyDetails = function(frameSettings) {
+    function transformCoords(loc) {
+        return ol.proj.transform(loc, 'EPSG:3857', 'EPSG:4326');
+    }
+
+    $scope.storyDetails = (frameSettings) => {
         frameSettings.id = Date.now();
 
         $scope.frameSettings.push({
@@ -190,14 +161,14 @@ function composerController(
             endDate: frameSettings.endDate,
             endTime: frameSettings.endTime,
             radius: frameSettings.radius,
-            bb1: ol.proj.transform([$scope.coords[0][0][0], $scope.coords[0][0][1]], 'EPSG:3857', 'EPSG:4326'),
-            bb2: ol.proj.transform([$scope.coords[0][1][0], $scope.coords[0][1][1]], 'EPSG:3857', 'EPSG:4326'),
-            bb3: ol.proj.transform([$scope.coords[0][2][0], $scope.coords[0][2][1]], 'EPSG:3857', 'EPSG:4326'),
-            bb4: ol.proj.transform([$scope.coords[0][3][0], $scope.coords[0][3][1]], 'EPSG:3857', 'EPSG:4326')
+            bb1: transformCoords([$scope.coords[0][0][0], $scope.coords[0][0][1]]),
+            bb2: transformCoords([$scope.coords[0][1][0], $scope.coords[0][1][1]]),
+            bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
+            bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
         });
     };
 
-    $scope.editStoryframe = function(index) {
+    $scope.editStoryframe = (index) => {
         $scope.frameSettings.title = $scope.frameSettings[index].title;
         $scope.frameSettings.startDate = $scope.frameSettings[index].startDate;
         $scope.frameSettings.startTime = $scope.frameSettings[index].startTime;
@@ -209,7 +180,7 @@ function composerController(
         $scope.disableButton = !$scope.disableButton;
     };
 
-    $scope.updateStoryframeRecord = function() {
+    $scope.updateStoryframeRecord = () => {
         $scope.frameSettings[$scope.currentIndex].title = $scope.frameSettings.title;
         $scope.frameSettings[$scope.currentIndex].startDate = $scope.frameSettings.startDate;
         $scope.frameSettings[$scope.currentIndex].startTime = $scope.frameSettings.startTime;
@@ -220,7 +191,7 @@ function composerController(
         $scope.disableButton = !$scope.disableButton;
     }
 
-    $scope.deleteStoryframe = function(index) {
+    $scope.deleteStoryframe = (index) => {
         $scope.frameSettings.splice(index, 1);
     };
 }
