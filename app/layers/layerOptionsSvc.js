@@ -1,16 +1,9 @@
 "use strict";
 
 function layerOptionsSvc() {
-  var svc = {};
+  const svc = {};
 
-  svc.getLayerOptions = function(
-    name,
-    settings,
-    server,
-    fitExtent,
-    styleName,
-    title
-  ) {
+  svc.getLayerOptions = (name, settings, server, fitExtent, styleName, title) => {
     if (window.storyMap) {
       window.storyMap.setAllowZoom(settings.allowZoom || true);
       window.storyMap.setAllowPan(settings.allowPan || true);
@@ -21,15 +14,15 @@ function layerOptionsSvc() {
     if (angular.isString(server)) {
       server = getServer(server);
     }
-    var workspace = "geonode";
-    var parts = name.split(":");
+    let workspace = "geonode";
+    const parts = name.split(":");
     if (parts.length > 1) {
       workspace = parts[0];
       name = parts[1];
     }
-    var url = server.path + workspace + "/" + name + "/wms";
-    var id = workspace + ":" + name;
-    var options = {
+    const url = `${server.path + workspace}/${name}/wms`;
+    const id = `${workspace}:${name}`;
+    const options = {
       id: id,
       uuid: new Date().getTime(),
       name: name,

@@ -1,8 +1,8 @@
-var olpopup = function() {
-  var svc = {};
-  svc.init = function() {
+const olpopup = () => {
+  const svc = {};
+  svc.init = () => {
     ol.Overlay.Popup = function(opt_options) {
-      var options = opt_options || {};
+      const options = opt_options || {};
 
       this.panMapIfOutOfView = options.panMapIfOutOfView;
       if (this.panMapIfOutOfView === undefined) {
@@ -67,7 +67,7 @@ var olpopup = function() {
 
     ol.Overlay.Popup.prototype.show = function(coord, encodedHtml) {
       this.setPosition(coord);
-      var html;
+      let html;
       try {
         html = decodeURIComponent(escape(encodedHtml));
       } catch (e) {
@@ -91,29 +91,23 @@ var olpopup = function() {
    * @private
    */
     ol.Overlay.Popup.prototype.panIntoView_ = function(coord) {
-      var popSize = {
-          width: this.getElement().clientWidth + 20,
-          height: this.getElement().clientHeight + 20
-        },
-        mapSize = this.getMap().getSize();
+      const popSize = {
+                width: this.getElement().clientWidth + 20,
+                height: this.getElement().clientHeight + 20
+              },
+            mapSize = this.getMap().getSize();
 
-      var tailHeight = 20,
-        tailOffsetLeft = 60,
-        tailOffsetRight = popSize.width - tailOffsetLeft,
-        popOffset = this.getOffset(),
-        popPx = this.getMap().getPixelFromCoordinate(coord);
+      const tailHeight = 20, tailOffsetLeft = 60, tailOffsetRight = popSize.width - tailOffsetLeft, popOffset = this.getOffset(), popPx = this.getMap().getPixelFromCoordinate(coord);
 
-      var fromLeft = popPx[0] - tailOffsetLeft,
-        fromRight = mapSize[0] - (popPx[0] + tailOffsetRight);
+      const fromLeft = popPx[0] - tailOffsetLeft, fromRight = mapSize[0] - (popPx[0] + tailOffsetRight);
 
-      var fromTop = popPx[1] - popSize.height + popOffset[1],
-        fromBottom = mapSize[1] - (popPx[1] + tailHeight) - popOffset[1];
+      const fromTop = popPx[1] - popSize.height + popOffset[1], fromBottom = mapSize[1] - (popPx[1] + tailHeight) - popOffset[1];
 
-      var center = this.getMap()
-          .getView()
-          .getCenter(),
-        curPx = this.getMap().getPixelFromCoordinate(center),
-        newPx = curPx.slice();
+      const center = this.getMap()
+                .getView()
+                .getCenter(),
+            curPx = this.getMap().getPixelFromCoordinate(center),
+            newPx = curPx.slice();
 
       if (fromRight < 0) {
         newPx[0] -= fromRight;

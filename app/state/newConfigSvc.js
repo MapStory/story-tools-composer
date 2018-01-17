@@ -1,15 +1,15 @@
 function newConfigSvc(layerOptionsSvc, appConfig) {
-  var svc = {};
+  const svc = {};
 
-  svc.getLayerListFromServerData = function(layers) {
+  svc.getLayerListFromServerData = layers => {
     if (!layers) {
       return [];
     }
-    var newLayers = [];
-    for (var i = 0; i < layers.length; i += 1) {
+    const newLayers = [];
+    for (let i = 0; i < layers.length; i += 1) {
       if (layers[i].indexOf("/geoserver") > -1) {
-        var name = layers[i].split("/geoserver/wms?layers=")[1];
-        var options = layerOptionsSvc.getLayerOptions(
+        const name = layers[i].split("/geoserver/wms?layers=")[1];
+        const options = layerOptionsSvc.getLayerOptions(
           name,
           {},
           appConfig.servers[0]
@@ -20,7 +20,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
     return newLayers;
   };
 
-  svc.getMapstoryConfig = function(data) {
+  svc.getMapstoryConfig = data => {
     if (!data) {
       data = {
         abstract: "Mapstory description",
@@ -32,7 +32,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       };
     }
 
-    var cfg = {
+    const cfg = {
       about: {
         owner: data.owner,
         username: data.owner.username,
@@ -44,7 +44,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       chapters: data.chapters
     };
 
-    for (var i = 0; i < data.chapters.length; i++) {
+    for (let i = 0; i < data.chapters.length; i++) {
       data.chapters[i].owner = data.owner;
       cfg.chapters[i] = svc.getChapterConfig(i, data.chapters[i]);
     }
@@ -52,7 +52,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
     return cfg;
   };
 
-  svc.getChapterConfig = function(id, data) {
+  svc.getChapterConfig = (id, data) => {
     if (!data) {
       data = {
         abstract: "New chapter description",
@@ -60,7 +60,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         title: "New Chapter"
       };
     }
-    var cfg = {
+    const cfg = {
       id: id,
       about: {
         abstract: data.abstract,

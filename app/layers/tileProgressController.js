@@ -4,7 +4,7 @@ function tileProgressController($scope) {
   $scope.tilesToLoad = 0;
   $scope.tilesLoadedProgress = 0;
   $scope.safeApply = function(fn) {
-    var phase = this.$root.$$phase;
+    const phase = this.$root.$$phase;
     if (phase == "$apply" || phase == "$digest") {
       if (fn && typeof fn === "function") {
         fn();
@@ -13,8 +13,8 @@ function tileProgressController($scope) {
       this.$apply(fn);
     }
   };
-  $scope.$on("tilesLoaded", function(evt, remaining) {
-    $scope.safeApply(function() {
+  $scope.$on("tilesLoaded", (evt, remaining) => {
+    $scope.safeApply(() => {
       if (remaining <= 0) {
         $scope.tilesToLoad = 0;
         $scope.tilesLoaded = 0;

@@ -18,34 +18,32 @@ function addLayers(
     },
     templateUrl: "./app/layers/templates/add-layers.html",
     link: function(scope, el, atts) {
-      var nameIndex;
-      var names;
+      let nameIndex;
+      let names;
       scope.server = {
         active: appConfig.servers[0]
       };
       scope.servers = appConfig.servers;
-      scope.results = function(layerName) {
-        return searchSvc
-          .getSearchBarResultsIndex(layerName)
-          .then(function(res) {
-            nameIndex = res;
-            names = layerSvc.compileLayerNamesFromSearchIndex(res);
-            return limitToFilter(names, 15);
-          });
-      };
-      scope.addLayer = function() {
+      scope.results = layerName => searchSvc
+        .getSearchBarResultsIndex(layerName)
+        .then(res => {
+          nameIndex = res;
+          names = layerSvc.compileLayerNamesFromSearchIndex(res);
+          return limitToFilter(names, 15);
+        });
+      scope.addLayer = () => {
         scope.loading = true;
-        var name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
-        var settings = {
+        const name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
+        const settings = {
           asVector: scope.asVector,
           allowZoom: scope.allowZoom,
           allowPan: scope.allowPan
         };
         MapManager.addLayer(name, settings, scope.server.active)
-          .then(function() {
+          .then(() => {
             scope.$parent.status.open = false;
           }, layerSvc.handleAddLayerError)
-          .finally(function() {
+          .finally(() => {
             scope.loading = false;
           });
         scope.layerName = null;
