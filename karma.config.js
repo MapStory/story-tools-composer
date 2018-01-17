@@ -35,13 +35,20 @@ module.exports = function(config) {
       "./app/**/*.spec.js"
     ],
     preprocessors: {
+      "./app/**/*.spec.js": ["babel"],
       "./js/app.bundle.js": ["webpack"],
       "./app/**/*.html": ["ng-html2js"]
+    },
+    babelPreprocessor: {
+      options: {
+        presets: ["es2015"]
+      }
     },
     webpackMiddleware: {
       noInfo: true
     },
     plugins: [
+      "karma-babel-preprocessor",
       "karma-ng-html2js-preprocessor",
       "karma-mocha-reporter",
       "karma-chrome-launcher",

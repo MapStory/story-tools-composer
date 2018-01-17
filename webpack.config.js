@@ -14,6 +14,15 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.spec\.js$/,
+        exclude: /(bower_components|node_modules)/,
+        loader: "babel-loader",
+        query: {
+          presets: ["es2015", "stage-0"],
+          cacheDirectory: true
+        }
+      },
+      {
         test: /\.less$/,
         loader: ExtractTextPlugin.extract({
           fallback: "style-loader",
@@ -35,23 +44,7 @@ module.exports = {
           use: "css-loader"
         })
       }
-    ] /*,
-    loaders: [
-      {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: "css-loader"
-        })
-      },
-      {
-        test: /\.less$/,
-        loader: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: "css-loader!less-loader"
-        })
-      }
-    ]*/
+    ]
   },
   entry: {
     app: ["babel-polyfill", "./app/app.js"],
