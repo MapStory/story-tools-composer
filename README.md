@@ -3,10 +3,10 @@
 ## Deployment
 
 ### Standalone
-- `npm install`
+- `yarn install`
 - `bower install`
 - `webpack`
-- `npm run server`
+- `yarn run server`
 - `http://localhost:9090/`
 
 ## Development
