@@ -1,6 +1,6 @@
 "use strict";
 
-var angular = require("angular");
-var utils = require("./utils.js");
+const angular = require("angular");
+const utils = require("./utils.js");
 
 angular.module("composer").factory("utils", utils);

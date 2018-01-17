@@ -1,17 +1,17 @@
-describe('featureManagerSvc', function() {
+describe('featureManagerSvc', () => {
 
-  var rootScope, location, featureManagerSvc;
+  let rootScope, location, featureManagerSvc;
 
   beforeEach(module('composer'));
-  beforeEach(inject(function ($rootScope, $location, _featureManagerSvc_) {
+  beforeEach(inject(($rootScope, $location, _featureManagerSvc_) => {
     featureManagerSvc = _featureManagerSvc_;
     rootScope = $rootScope;
     location = $location;
   }));
 
-  describe('createVectorLayer', function() {
-    it('should return a layer with metadata that has `vectorEditLayer` set to `true`', function() {
-      var testLayer = featureManagerSvc.createVectorLayer();
+  describe('createVectorLayer', () => {
+    it('should return a layer with metadata that has `vectorEditLayer` set to `true`', () => {
+      const testLayer = featureManagerSvc.createVectorLayer();
       expect(testLayer.get('metadata').vectorEditLayer).toBe(true);
     });
   });

@@ -1,16 +1,9 @@
-describe("pinSvc", function() {
-  var rootScope,
-    httpBackend,
-    pinSvc,
-    stateSvc,
-    pin,
-    serverFeatures,
-    validProperties,
-    pinConfigs;
+describe("pinSvc", () => {
+  let rootScope, httpBackend, pinSvc, stateSvc, pin, serverFeatures, validProperties, pinConfigs;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(function($rootScope, $httpBackend, _pinSvc_, _stateSvc_) {
+    inject(($rootScope, $httpBackend, _pinSvc_, _stateSvc_) => {
       pinSvc = _pinSvc_;
       stateSvc = _stateSvc_;
       httpBackend = $httpBackend;
@@ -70,29 +63,29 @@ describe("pinSvc", function() {
     })
   );
 
-  describe("Pin", function() {
-    it("should instantiate an object if provided geometry data", function() {
+  describe("Pin", () => {
+    it("should instantiate an object if provided geometry data", () => {
       expect(pin).toBeDefined();
     });
   });
 
-  describe("createStoryPinLayer", function() {
-    it("should return a layer with metadata that has `StoryPinLayer` set to `true`", function() {
-      var testLayer = pinSvc.createStoryPinLayer();
+  describe("createStoryPinLayer", () => {
+    it("should return a layer with metadata that has `StoryPinLayer` set to `true`", () => {
+      const testLayer = pinSvc.createStoryPinLayer();
       expect(testLayer.get("metadata").StoryPinLayer).toBe(true);
     });
   });
 
-  describe("addGetterAndSetterToPinPrototype", function() {
-    it("should add a getter and setter function for the attribute passed in", function() {
+  describe("addGetterAndSetterToPinPrototype", () => {
+    it("should add a getter and setter function for the attribute passed in", () => {
       pinSvc.addGetterAndSetterToPinPrototype("test");
       pin.set("test", "pass");
       expect(pin.get("test")).toBe("pass");
     });
   });
 
-  describe("addMultipleGettersAndSettersToPinPrototype", function() {
-    it("should add getter and setter functions for all properties passed as an array", function() {
+  describe("addMultipleGettersAndSettersToPinPrototype", () => {
+    it("should add getter and setter functions for all properties passed as an array", () => {
       pinSvc.addMultipleGettersAndSettersToPinPrototype(["test_1", "test_2"]);
       pin.set("test_1", "pass_1");
       pin.set("test_2", "pass_2");
@@ -101,20 +94,20 @@ describe("pinSvc", function() {
     });
   });
 
-  describe("validatePinProperty", function() {
-    it("", function() {});
+  describe("validatePinProperty", () => {
+    it("", () => {});
   });
 
-  describe("addChapter", function() {
-    it("add an additional array to the `pins` array", function() {
+  describe("addChapter", () => {
+    it("add an additional array to the `pins` array", () => {
       expect(pinSvc.pins.length).toBe(1);
       pinSvc.addChapter();
       expect(pinSvc.pins.length).toBe(2);
     });
   });
 
-  describe("removeChapter", function() {
-    it("remove the specified chapter index", function() {
+  describe("removeChapter", () => {
+    it("remove the specified chapter index", () => {
       expect(pinSvc.pins.length).toBe(1);
       pinSvc.pins[0].push("ch1");
       expect(pinSvc.pins[0][0]).toBe("ch1");
@@ -129,38 +122,38 @@ describe("pinSvc", function() {
     });
   });
 
-  describe("validateAllPinProperties", function() {
-    it("should return true if provided an object containing all valid properties", function() {
-      var test = pinSvc.validateAllPinProperties(validProperties);
+  describe("validateAllPinProperties", () => {
+    it("should return true if provided an object containing all valid properties", () => {
+      const test = pinSvc.validateAllPinProperties(validProperties);
       expect(test).toBe(true);
     });
 
-    it("should return missing required properties as an array", function() {
-      var incompleteProps = {
+    it("should return missing required properties as an array", () => {
+      const incompleteProps = {
         title: "test",
         geometry: {},
         end_time: 1
       };
-      var test = pinSvc.validateAllPinProperties(incompleteProps);
+      const test = pinSvc.validateAllPinProperties(incompleteProps);
       expect(test[0]).toBe("start_time");
     });
   });
 
-  describe("addPin", function() {
-    it("should create a valid pin", function() {
-      var test = pinSvc.addPin(validProperties, 0);
+  describe("addPin", () => {
+    it("should create a valid pin", () => {
+      const test = pinSvc.addPin(validProperties, 0);
       expect(test).toBe(true);
     });
 
-    it("should push the pin to the correct svc.pin array", function() {
+    it("should push the pin to the correct svc.pin array", () => {
       pinSvc.addPin(validProperties, 0);
       expect(pinSvc.pins[0][0].get("title")).toBe("test");
     });
   });
 
-  describe("addPinFromGeojsonObj", function() {
-    it("should create a valid pin", function() {
-      var test = pinSvc.addPinFromGeojsonObj(
+  describe("addPinFromGeojsonObj", () => {
+    it("should create a valid pin", () => {
+      const test = pinSvc.addPinFromGeojsonObj(
         {
           geometry: '{"coordinates": [29,30]}',
           properties: {
@@ -175,64 +168,64 @@ describe("pinSvc", function() {
     });
   });
 
-  describe("getFeaturesFromServer", function() {
-    it("should return a promise containing feature data", function() {
-      pinSvc.getFeaturesFromServer({ id: 12 }).then(function(data) {
+  describe("getFeaturesFromServer", () => {
+    it("should return a promise containing feature data", () => {
+      pinSvc.getFeaturesFromServer({ id: 12 }).then(data => {
         expect(data).toBe(serverFeatures);
       });
     });
   });
 
-  describe("getFeaturesAndConvertToPins", function() {
-    it("should return true", function() {
-      pinSvc.getFeaturesAndConvertToPins({ id: 12 }).then(function(data) {
+  describe("getFeaturesAndConvertToPins", () => {
+    it("should return true", () => {
+      pinSvc.getFeaturesAndConvertToPins({ id: 12 }).then(data => {
         expect(data).toBe(true);
       });
     });
 
-    it("should add pins to pin collection", function() {
+    it("should add pins to pin collection", () => {
       pinSvc.pins = [[]];
-      pinSvc.getFeaturesAndConvertToPins({ id: 12 }).then(function(data) {
+      pinSvc.getFeaturesAndConvertToPins({ id: 12 }).then(data => {
         expect(pinSvc.pins[0].length).toBe(2);
       });
     });
   });
 
-  describe("getPins", function() {
-    it("should return pin array for a given chapter index if the chapter exists", function() {
-      var config = stateSvc.getConfig();
-      pinSvc.addChaptersAndPins(config).then(function(complete) {
-        var chapterPins = pinSvc.getPins(1);
+  describe("getPins", () => {
+    it("should return pin array for a given chapter index if the chapter exists", () => {
+      const config = stateSvc.getConfig();
+      pinSvc.addChaptersAndPins(config).then(complete => {
+        const chapterPins = pinSvc.getPins(1);
         expect(chapterPins.length).toBe(1);
       });
     });
 
-    it("should return an empty array for a given chapter index if the chapter does not exist", function() {
+    it("should return an empty array for a given chapter index if the chapter does not exist", () => {
       pinSvc.pins = [[]];
-      var chapterPins = pinSvc.getPins(1);
+      const chapterPins = pinSvc.getPins(1);
       expect(chapterPins.length).toBe(0);
     });
   });
 
-  describe("addChaptersAndPins", function() {
-    it("should return a promise", function() {
-      var config = stateSvc.getConfig();
-      pinSvc.addChaptersAndPins(config).then(function(complete) {
+  describe("addChaptersAndPins", () => {
+    it("should return a promise", () => {
+      const config = stateSvc.getConfig();
+      pinSvc.addChaptersAndPins(config).then(complete => {
         expect(complete).toBe(true);
       });
     });
 
-    it("should add chapters and pins to `svc.pins`", function() {
-      var config = stateSvc.getConfig();
-      pinSvc.addChaptersAndPins(config).then(function() {
+    it("should add chapters and pins to `svc.pins`", () => {
+      const config = stateSvc.getConfig();
+      pinSvc.addChaptersAndPins(config).then(() => {
         expect(pinSvc.pins[0][0]).toBeDefined();
         expect(pinSvc.pins[1][0]).toBeDefined();
       });
     });
   });
 
-  describe("reorderPins", function() {
-    it("should reoder a pin collection given the `to` and `from` index", function() {
+  describe("reorderPins", () => {
+    it("should reoder a pin collection given the `to` and `from` index", () => {
       pinSvc.pins = [["1"], ["2"], ["3"]];
       pinSvc.reorderPins(0, 1);
       expect(pinSvc.pins[0][0]).toBe("2");
@@ -243,10 +236,10 @@ describe("pinSvc", function() {
 
   // @TODO: figure out why splice isn't working in this method,
   // causing test to fail
-  describe("removePin", function() {
-    it("should remove the specified pin from the specified chapter index", function() {
+  describe("removePin", () => {
+    it("should remove the specified pin from the specified chapter index", () => {
       pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
-      var newPin = jQuery.extend(true, {}, pinSvc.pins[0][1]);
+      const newPin = jQuery.extend(true, {}, pinSvc.pins[0][1]);
       console.log("NEW PIN ---- > ", newPin);
       expect(pinSvc.pins[0].length).toBe(2);
       pinSvc.removePin(pinSvc.pins[0][0], 0);
@@ -254,8 +247,8 @@ describe("pinSvc", function() {
     });
   });
 
-  describe("removePinByIndex", function() {
-    it("should remove the specified pin by index from the specified chapter index", function() {
+  describe("removePinByIndex", () => {
+    it("should remove the specified pin by index from the specified chapter index", () => {
       pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
       expect(pinSvc.pins[0].length).toBe(2);
       pinSvc.removePinByIndex(0, 0);
@@ -263,19 +256,19 @@ describe("pinSvc", function() {
     });
   });
 
-  describe("defaultPinValues", function() {
-    it('should convert a string value of "TRUE" to a boolean', function() {
-      var newPin = pinSvc.defaultPinValues({ test: "TRUE" });
+  describe("defaultPinValues", () => {
+    it('should convert a string value of "TRUE" to a boolean', () => {
+      const newPin = pinSvc.defaultPinValues({ test: "TRUE" });
       expect(newPin.test).toBe(true);
     });
 
-    it('should convert a string value of "FALSE" to a boolean', function() {
-      var newPin = pinSvc.defaultPinValues({ test: "FALSE" });
+    it('should convert a string value of "FALSE" to a boolean', () => {
+      const newPin = pinSvc.defaultPinValues({ test: "FALSE" });
       expect(newPin.test).toBe(false);
     });
 
-    it("should replace an empty string with `false` for the keys `in_timeline`, `auto_show`, and `pause_playback`", function() {
-      var newPin = pinSvc.defaultPinValues({
+    it("should replace an empty string with `false` for the keys `in_timeline`, `auto_show`, and `pause_playback`", () => {
+      const newPin = pinSvc.defaultPinValues({
         in_timeline: "",
         auto_show: "",
         pause_playback: ""
@@ -285,16 +278,16 @@ describe("pinSvc", function() {
       expect(newPin.pause_playback).toBe(false);
     });
 
-    it("should replace an empty string with `true` for the keys `in_map`", function() {
-      var newPin = pinSvc.defaultPinValues({
+    it("should replace an empty string with `true` for the keys `in_map`", () => {
+      const newPin = pinSvc.defaultPinValues({
         in_map: ""
       });
       expect(newPin.in_map).toBe(true);
     });
   });
 
-  describe("bulkPinAdd", function() {
-    it("should add multiple pins to the provided chapter index", function() {
+  describe("bulkPinAdd", () => {
+    it("should add multiple pins to the provided chapter index", () => {
       expect(pinSvc.pins[0][0]).toBeUndefined();
       expect(pinSvc.pins[0][1]).toBeUndefined();
       pinSvc.bulkPinAdd(pinConfigs, 0);
@@ -303,12 +296,12 @@ describe("pinSvc", function() {
     });
   });
 
-  describe("addEmptyPinToCurrentChapter", function() {
-    it("should add an empty object to the current chapter's pin array", function() {});
+  describe("addEmptyPinToCurrentChapter", () => {
+    it("should add an empty object to the current chapter's pin array", () => {});
   });
 
-  describe("addPinsFromGeojsonObj", function() {
-    it("should create multiple valid pins", function() {
+  describe("addPinsFromGeojsonObj", () => {
+    it("should create multiple valid pins", () => {
       pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
       expect(pinSvc.pins[0][0]).toBeDefined();
       expect(pinSvc.pins[0][1]).toBeDefined();

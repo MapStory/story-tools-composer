@@ -1,12 +1,12 @@
 'use strict';
 
 function uiHelperSvc($location, $rootScope, $log, stateSvc, pinSvc, appConfig) {
-  var svc = {};
+  const svc = {};
 
   svc.activePin = null;
 
-  svc.togglePinForm = function($index) {
-    var i = $index.$index;
+  svc.togglePinForm = $index => {
+    const i = $index.$index;
     if (svc.activePin === i) {
       svc.activePin = null;
     } else {
@@ -14,7 +14,7 @@ function uiHelperSvc($location, $rootScope, $log, stateSvc, pinSvc, appConfig) {
     }
   };
 
-  svc.addNewPin = function() {
+  svc.addNewPin = () => {
     pinSvc.addEmptyPinToCurrentChapter();
     svc.activePin = pinSvc.getPins(stateSvc.getChapterIndex()).length;
   };

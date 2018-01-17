@@ -1,41 +1,38 @@
-describe('composerController', function() {
+describe('composerController', () => {
 
-  var config, scope, element,
-      rootScope, location, createController;
+  let config, scope, element, rootScope, location, createController;
 
   beforeEach(module('composer'));
-  beforeEach(inject(function ($rootScope, $controller, $location, _appConfig_) {
+  beforeEach(inject(($rootScope, $controller, $location, _appConfig_) => {
     config = _appConfig_;
     rootScope = $rootScope;
     location = $location;
     scope = $rootScope.$new();
-    createController = function() {
-      return $controller('composerController', {
-          '$scope': scope
-      });
-    };
+    createController = () => $controller('composerController', {
+        '$scope': scope
+    });
   }));
 
-  describe('getMapWidth', function() {
+  describe('getMapWidth', () => {
 
-    it('should provide preview mode map width when arg is `true`', function() {
-      var controller = createController();
+    it('should provide preview mode map width when arg is `true`', () => {
+      const controller = createController();
       expect(scope.getMapWidth(true)).toBe(config.dimensions.mapWidthPreviewMode);
     });
 
-    it('should provide edit mode map width when arg is not `true`', function() {
-      var controller = createController();
+    it('should provide edit mode map width when arg is not `true`', () => {
+      const controller = createController();
       expect(scope.getMapWidth(true)).toBe(config.dimensions.mapWidthPreviewMode);
     });
   });
 
-  describe('togglePreviewMode', function() {
-    beforeEach(function() {
+  describe('togglePreviewMode', () => {
+    beforeEach(() => {
       spyOn(rootScope, '$broadcast');
     });
 
-    it('should broadcast `toggleMode` with the current map width', function() {
-      var controller = createController();
+    it('should broadcast `toggleMode` with the current map width', () => {
+      const controller = createController();
       scope.togglePreviewMode();
       expect(rootScope.$broadcast).toHaveBeenCalledWith('toggleMode', { mapWidth: config.dimensions.mapWidthEditMode });
     });

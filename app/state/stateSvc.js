@@ -8,26 +8,26 @@ function stateSvc(
   searchSvc,
   utils
 ) {
-  var svc = {};
+  const svc = {};
   svc.currentChapter = null;
   svc.originalConfig = null;
   svc.config = null;
 
-  svc.addNewChapter = function() {
+  svc.addNewChapter = () => {
     svc.config.chapters.push(
       newConfigSvc.getChapterConfig(svc.config.chapters.length + 1)
     );
   };
 
-  svc.reorderLayer = function(from, to) {
+  svc.reorderLayer = (from, to) => {
     svc.config.chapters[svc.getChapterIndex()].layers.move(from, to);
   };
 
   svc.getLayerSaveConfig = function getLayerSaveConfig(layer) {
-    var config = layer.get("metadata").config;
-    var styleStorageService = storytools.edit.styleStorageService.styleStorageService();
+    const config = layer.get("metadata").config;
+    const styleStorageService = storytools.edit.styleStorageService.styleStorageService();
 
-    var jsonStyle = styleStorageService.getSavedStyle(
+    const jsonStyle = styleStorageService.getSavedStyle(
       layer,
       map_config.chapter_index
     );
@@ -43,7 +43,7 @@ function stateSvc(
 
     // Note: when a server is removed, its id diverges from the index. since in geonode's config object it is all
     // index based, updating it to be the index in case the id is no longer the index
-    var serverIndex = serverService_.getServerIndex(config.source);
+    const serverIndex = serverService_.getServerIndex(config.source);
     if (serverIndex > -1) {
       config.source = serverIndex;
     }
@@ -52,7 +52,7 @@ function stateSvc(
     }
     config.visibility = layer.get("visible");
     if (goog.isDefAndNotNull(layer.get("metadata").dimensions)) {
-      var dimension = layer.get("metadata").dimensions[0];
+      const dimension = layer.get("metadata").dimensions[0];
       config.capability = {};
       config.capability.dimensions = {};
       config.capability.dimensions.time = dimension;
@@ -64,7 +64,7 @@ function stateSvc(
     }
     if (goog.isDefAndNotNull(layer.get("metadata").schema)) {
       config.schema = [];
-      for (var i in layer.get("metadata").schema) {
+      for (const i in layer.get("metadata").schema) {
         config.schema.push({
           name: i,
           visible: layer.get("metadata").schema[i].visible
@@ -76,19 +76,19 @@ function stateSvc(
     return config;
   };
 
-  svc.initConfig = function() {
-    var path = window.location.pathname;
-    var mapID = /\/story\/(\d+)/.exec(path)
+  svc.initConfig = () => {
+    const path = window.location.pathname;
+    const mapID = /\/story\/(\d+)/.exec(path)
       ? /\/story\/(\d+)/.exec(path)[1]
       : null;
-    var mapJsonUrl = "/api/mapstories/" + mapID;
+    const mapJsonUrl = `/api/mapstories/${mapID}`;
     if (svc.config) {
       return;
     } else if (mapID) {
       $.ajax({
         dataType: "json",
         url: mapJsonUrl
-      }).done(function(data) {
+      }).done(data => {
         svc.config = newConfigSvc.getMapstoryConfig(data);
         window.config = svc.config;
         svc.originalConfig = data;
@@ -102,28 +102,26 @@ function stateSvc(
     }
   };
 
-  svc.getConfig = function() {
-    return svc.config;
-  };
+  svc.getConfig = () => svc.config;
 
-  svc.setConfig = function(config) {
+  svc.setConfig = config => {
     svc.config = config;
   };
 
-  svc.updateCurrentChapterConfig = function() {
+  svc.updateCurrentChapterConfig = () => {
     svc.currentChapter = svc.getChapterConfig();
   };
 
-  svc.addLayer = function(layerOptions) {
+  svc.addLayer = layerOptions => {
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
   };
 
   // !DJA @TODO: write test
-  svc.removeLayer = function(uuid) {
-    var layers = svc.config.chapters[svc.getChapterIndex()].layers;
-    for (var i = 0; i < layers.length; i++) {
+  svc.removeLayer = uuid => {
+    const layers = svc.config.chapters[svc.getChapterIndex()].layers;
+    for (let i = 0; i < layers.length; i++) {
       if (layers[i].uuid === uuid) {
-        var index = layers.indexOf(layers[i]);
+        const index = layers.indexOf(layers[i]);
         if (index > -1) {
           svc.config.chapters[svc.getChapterIndex()].layers.splice(index, 1);
         }
@@ -131,10 +129,10 @@ function stateSvc(
     }
   };
 
-  svc.getChapter = function() {
-    var chapter = 1;
-    var path = $location.path();
-    var matches;
+  svc.getChapter = () => {
+    let chapter = 1;
+    const path = $location.path();
+    let matches;
     if (path && path.indexOf("/chapter") === 0) {
       if ((matches = /\d+/.exec(path)) !== null) {
         chapter = matches[0];
@@ -143,17 +141,15 @@ function stateSvc(
     return parseInt(chapter);
   };
 
-  svc.getChapterIndex = function() {
-    return svc.getChapter() - 1;
-  };
+  svc.getChapterIndex = () => svc.getChapter() - 1;
 
-  svc.getChapterConfig = function() {
-    var chapter = svc.getChapter();
-    var config = svc.getConfig();
+  svc.getChapterConfig = () => {
+    const chapter = svc.getChapter();
+    const config = svc.getConfig();
     if (!config) {
       return;
     }
-    var i = chapter - 1;
+    const i = chapter - 1;
     if (config.chapters && chapter > 0 && chapter <= config.chapters.length) {
       if (config.chapters[i]) {
         return config.chapters[i];
@@ -165,23 +161,19 @@ function stateSvc(
     }
   };
 
-  svc.getChapterAbout = function() {
-    return svc.getChapterConfig().about;
-  };
+  svc.getChapterAbout = () => svc.getChapterConfig().about;
 
-  svc.getChapterConfigs = function() {
-    var config = svc.getConfig();
+  svc.getChapterConfigs = () => {
+    const config = svc.getConfig();
     return config.chapters;
   };
 
-  svc.getChapterCount = function() {
-    return svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
-  };
+  svc.getChapterCount = () => svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
 
-  svc.save = function() {
-    var config = window.storyMap.getState();
-    var layers = window.storyMap.getStoryLayers();
-    layers.forEach(function(lyr) {});
+  svc.save = () => {
+    const config = window.storyMap.getState();
+    const layers = window.storyMap.getStoryLayers();
+    layers.forEach(lyr => {});
     stLocalStorageSvc.saveConfig(config);
     if (window.storyMap.get("id") === undefined) {
       window.storyMap.set("id", config.id);

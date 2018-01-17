@@ -12,6 +12,30 @@ module.exports = {
     }
   },
   module: {
+    rules: [
+      {
+        test: /\.less$/,
+        loader: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: "css-loader!less-loader"
+        })
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        query: {
+          presets: ["es2015", "stage-0"]
+        }
+      },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: "css-loader"
+        })
+      }
+    ] /*,
     loaders: [
       {
         test: /\.css$/,
@@ -27,10 +51,10 @@ module.exports = {
           use: "css-loader!less-loader"
         })
       }
-    ]
+    ]*/
   },
   entry: {
-    app: "./app/app.js",
+    app: ["babel-polyfill", "./app/app.js"],
     style: "./style/style.js",
     vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate"]
   },

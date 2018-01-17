@@ -1,14 +1,14 @@
 "use strict";
 
-var angular = require("angular");
-var addLayers = require("./addLayers.js");
-var layerSvc = require("./layerSvc.js");
-var layerOptionsSvc = require("./layerOptionsSvc.js");
-var layerList = require("./layerList.js");
-var tileProgressController = require("./tileProgressController.js");
-var popupSvc = require("./popupSvc.js");
-var olpopup = require("./ol3-popup.js");
-var featureManagerSvc = require("./featureManagerSvc.js");
+const angular = require("angular");
+const addLayers = require("./addLayers.js");
+const layerSvc = require("./layerSvc.js");
+const layerOptionsSvc = require("./layerOptionsSvc.js");
+const layerList = require("./layerList.js");
+const tileProgressController = require("./tileProgressController.js");
+const popupSvc = require("./popupSvc.js");
+const olpopup = require("./ol3-popup.js");
+const featureManagerSvc = require("./featureManagerSvc.js");
 
 angular.module("composer").factory("olpopup", olpopup);
 angular.module("composer").factory("popupSvc", popupSvc);
