@@ -1,5 +1,7 @@
 "use strict";
 
+var X2JS = require("x2js");
+
 function layerSvc(stateSvc, appConfig, $http, $q) {
   var svc = {};
 
@@ -106,27 +108,27 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
   };
 
   svc.getFeatureType = function(layer) {
-    console.log("FEATURE TYPE", layer.get("metadata"));
-    var featureType = layer.get("metadata").name;
-    var workspaceRoute = svc.parseWorkspaceRoute(featureType);
-    var deferredResponse = q.defer();
+    console.log("LAYER METADATA", layer.get("geomType"));
+    var deferredResponse = $q.defer();
 
     var url =
-      layer.get("metadata").url +
-      "/wfs?version=" +
-      settings.WFSVersion +
+      layer.get("path") +
+      "wfs?version=1.1.0" +
       "&request=DescribeFeatureType&typeName=" +
-      workspaceRoute.typeName;
+      layer.get("name");
     console.log("URL ---- >", url);
 
     $http.get(url).then(
       function(response) {
         // TODO: Use the OpenLayers parser once it is done
         var x2js = new X2JS();
-        var json = x2js.xml_str2json(response.data);
+        console.log("X2JSSSSS", x2js);
+        var json = x2js.xml2js(response.data);
         var wps = new storytools.edit.WFSDescribeFeatureType
           .WFSDescribeFeatureType();
         var layerInfo = wps.parseResult(response.data);
+        console.log("> LAYER INFO!!!!!!!! ", layerInfo);
+
         var schema = [];
         var geometryType = null;
         if (goog.isDefAndNotNull(json.schema)) {
@@ -173,8 +175,7 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
           layer.set("attributes", layerInfo.attributes);
           layer.set("featureNS", layerInfo.featureNS);
           layer.set("typeName", layer.get("metadata").name);
-          layer.get("metadata").nativeName = layer.get("metadata").name;
-          layer.set("styleName", "geonode_" + layer.get("metadata").name);
+          layer.set("styleName", "geonode_" + layer.get("name"));
           layer.set("path", "/geoserver/");
           console.log("LAYER LAYER", layer);
         }

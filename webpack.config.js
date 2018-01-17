@@ -32,7 +32,12 @@ module.exports = {
   entry: {
     app: "./app/app.js",
     style: "./style/style.js",
-    vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate"]
+    vendor: [
+      "angular",
+      "angular-bootstrap-colorpicker",
+      "angular-translate",
+      "x2js"
+    ]
   },
   output: {
     path: __dirname + "/build",

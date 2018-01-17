@@ -197,6 +197,8 @@ function MapManager(
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(function(a) {
         svc.storyMap.addStoryLayer(a);
+        console.log("GET FEATURE TYPE FOR LAYER -- >", a);
+        layerSvc.getFeatureType(a);
         if (options.fitExtent === true) {
           a.get("latlonBBOX");
           var extent = ol.proj.transformExtent(
@@ -229,8 +231,8 @@ function MapManager(
       title
     );
     stateSvc.addLayer(options);
-    var layer = svc.buildStoryLayer(options);
-    return layer;
+    var promise = svc.buildStoryLayer(options);
+    return promise;
   };
 
   return svc;
