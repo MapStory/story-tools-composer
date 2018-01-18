@@ -2,16 +2,19 @@ function composerController(
     $scope,
     $rootScope,
     $log,
+    $compile,
+    $http,
     $injector,
     MapManager,
     styleUpdater,
+    stFeatureInfoService,
     appConfig,
     TimeControlsManager,
+    stateSvc,
     navigationSvc,
     pinSvc,
     uiHelperSvc,
     searchSvc,
-    stateSvc,
     $location
 ) {
     $scope.mapManager = MapManager;
@@ -34,6 +37,26 @@ function composerController(
     $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
 
     $rootScope.$on("chapter-removed", (event, chapter_index) => pinSvc.removeChapter(chapter_index));
+
+    $rootScope.$on("showPin", (event, pin) => {
+        self.displayPinInfo(null, pin);
+    });
+
+    $rootScope.$on("rangeChange", (event, range) => {
+        // StoryPinLayerManager.autoDisplayPins(range);
+     });
+
+    $rootScope.$on("hidePinOverlay", (event, pin) => {
+        self.hidePinOverlay(pin);
+    });
+
+    $rootScope.$on("hidePinOverlay", (event, pin) => {
+        self.hidePinOverlay(pin);
+    });
+
+    MapManager.storyMap.getMap().on("click", evt => {
+        // popupSvc.displayInfo(evt.pixel);
+    });
 
     $scope.mode = {
         preview: false
