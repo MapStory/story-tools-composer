@@ -19,7 +19,7 @@ function MapManager(
   stateSvc,
   stEditableStoryMapBuilder
 ) {
-  var svc = {};
+  const svc = {};
   svc.storyMap = new EditableStoryMap({
     target: "map",
     overlayElement: document.getElementById("info-box")
@@ -35,9 +35,9 @@ function MapManager(
   svc.chapterCount = 1;
   StoryPinLayerManager.storyPinsLayer = svc.storyMap.storyPinsLayer;
 
-  svc.displayPinInfo = function(pixel, pin) {
-    var feature = null;
-    var embed_params = {
+  svc.displayPinInfo = (pixel, pin) => {
+    let feature = null;
+    const embed_params = {
       nowrap: "on",
       maxwidth: 250,
       maxheight: 250
@@ -45,38 +45,34 @@ function MapManager(
     if (typeof pin == "undefined" || pin == null) {
       feature = svc.storyMap
         .getMap()
-        .forEachFeatureAtPixel(pixel, function(feature, layer) {
-          return feature;
-        });
+        .forEachFeatureAtPixel(pixel, (feature, layer) => feature);
     } else {
       feature = pin;
     }
     if (feature) {
-      var overlays = svc.storyMap
+      const overlays = svc.storyMap
         .getMap()
         .getOverlays()
         .getArray();
 
-      var popup = null;
-      var titleDescrip =
-        '<div style="text-align:center;"><h4>' +
-        feature.get("title") +
-        "</h4></div><hr>" +
-        feature.get("content");
-      var geometry = feature.getGeometry();
-      var coord = geometry.getCoordinates();
-      for (var iOverlay = 0; iOverlay < overlays.length; iOverlay += 1) {
-        var overlay = overlays[iOverlay];
-        if (overlay.getId && overlay.getId() == "popup-" + feature.id) {
+      let popup = null;
+      const titleDescrip = `<div style="text-align:center;"><h4>${feature.get(
+        "title"
+      )}</h4></div><hr>${feature.get("content")}`;
+      const geometry = feature.getGeometry();
+      const coord = geometry.getCoordinates();
+      for (let iOverlay = 0; iOverlay < overlays.length; iOverlay += 1) {
+        const overlay = overlays[iOverlay];
+        if (overlay.getId && overlay.getId() === `popup-${feature.id}`) {
           popup = overlay;
           break;
         }
       }
 
       if (popup === null) {
-        var popupOptions = {
+        const popupOptions = {
           insertFirst: false,
-          id: "popup-" + feature.id,
+          id: `popup-${feature.id}`,
           positioning: "bottom-center",
           stopEvent: false
         };
@@ -88,8 +84,8 @@ function MapManager(
       if (feature.get("media")) {
         mediaService
           .getEmbedContent(feature.get("media"), embed_params)
-          .then(function(result) {
-            var cont = result ? titleDescrip + result : titleDescrip;
+          .then(result => {
+            const cont = result ? titleDescrip + result : titleDescrip;
             popup.show(coord, cont);
           });
       } else {
@@ -98,29 +94,29 @@ function MapManager(
     }
   };
 
-  svc.getDataFromLocalServer = function(mapId, dataType) {
-    return $http
-      .get("/maps/" + mapId + "/" + dataType)
-      .then(function(response) {
-        return response;
-      })
-      .catch(function(data, status) {
+  svc.getDataFromLocalServer = (mapId, dataType) =>
+    $http
+      .get(`/maps/${mapId}/${dataType}`)
+      .then(response => response)
+      .catch((data, status) => {
         if (status === 404) {
           console.log("404 error");
           return "error";
         }
         return "error";
       });
-  };
 
-  svc.loadMapFromID = function(options) {
+  svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
-    var annotationsLoad = svc.getDataFromLocalServer(options.id, "annotations");
-    var boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
-    for (var i = 0; i < options.layers.length; i++) {
+    const annotationsLoad = svc.getDataFromLocalServer(
+      options.id,
+      "annotations"
+    );
+    const boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
+    for (let i = 0; i < options.layers.length; i++) {
       svc.buildStoryLayer(options.layers[i]);
     }
-    $q.all([annotationsLoad, boxesLoad]).then(function(values) {
+    $q.all([annotationsLoad, boxesLoad]).then(values => {
       if (values[0] !== "error") {
         StoryPinLayerManager.loadFromGeoJSON(
           values[0].data,
@@ -134,25 +130,25 @@ function MapManager(
     });
   };
 
-  svc.loadMapFromUrl = function(options) {
-    var mapLoad = $http
+  svc.loadMapFromUrl = options => {
+    const mapLoad = $http
       .get(options.url)
-      .then(function(response) {
+      .then(response => {
         stEditableStoryMapBuilder.modifyStoryMap(svc.storyMap, response.data);
       })
-      .catch(function(data, status) {
+      .catch((data, status) => {
         if (status === 401) {
-          window.console.warn("Not authorized to see map " + mapId);
+          window.console.warn(`Not authorized to see map ${mapId}`);
           stStoryMapBaseBuilder.defaultMap(svc.storyMap);
         }
       });
-    var annotationsURL = options.url.replace("/data", "/annotations");
+    let annotationsURL = options.url.replace("/data", "/annotations");
     if (annotationsURL.slice(-1) === "/") {
       annotationsURL = annotationsURL.slice(0, -1);
     }
-    var annotationsLoad = $http.get(annotationsURL);
-    $q.all([mapLoad, annotationsLoad]).then(function(values) {
-      var geojson = values[1].data;
+    const annotationsLoad = $http.get(annotationsURL);
+    $q.all([mapLoad, annotationsLoad]).then(values => {
+      const geojson = values[1].data;
       StoryPinLayerManager.loadFromGeoJSON(
         geojson,
         svc.storyMap
@@ -163,7 +159,7 @@ function MapManager(
     });
   };
 
-  svc.loadMap = function(options) {
+  svc.loadMap = options => {
     options = options || {};
     if (options.id !== null && options.id !== undefined) {
       svc.loadMapFromID(options);
@@ -172,17 +168,17 @@ function MapManager(
     } else {
       stStoryMapBaseBuilder.defaultMap(svc.storyMap);
     }
-    svc.storyMap.getMap().on("click", function(evt) {
-      var coordinate = evt.coordinate;
-      var hdms = ol.coordinate.toStringHDMS(
+    svc.storyMap.getMap().on("click", evt => {
+      const coordinate = evt.coordinate;
+      const hdms = ol.coordinate.toStringHDMS(
         ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326")
       );
     });
     svc.currentMapOptions = options;
   };
 
-  svc.initMapLoad = function() {
-    var config = stateSvc.getChapterConfig();
+  svc.initMapLoad = () => {
+    const config = stateSvc.getChapterConfig();
     if (!config) {
       return;
     }
@@ -192,16 +188,17 @@ function MapManager(
     svc.loadMap(config);
   };
 
-  svc.buildStoryLayer = function(options) {
-    var storyLayer = stEditableLayerBuilder
+  svc.buildStoryLayer = options => {
+    const storyLayer = stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
-      .then(function(a) {
+      .then(a => {
         svc.storyMap.addStoryLayer(a);
         console.log("GET FEATURE TYPE FOR LAYER -- >", a);
         layerSvc.getFeatureType(a);
+
         if (options.fitExtent === true) {
           a.get("latlonBBOX");
-          var extent = ol.proj.transformExtent(
+          const extent = ol.proj.transformExtent(
             a.get("latlonBBOX"),
             "EPSG:4326",
             svc.storyMap
@@ -221,8 +218,8 @@ function MapManager(
     return storyLayer;
   };
 
-  svc.addLayer = function(name, settings, server, fitExtent, styleName, title) {
-    options = layerOptionsSvc.getLayerOptions(
+  svc.addLayer = (name, settings, server, fitExtent, styleName, title) => {
+    const options = layerOptionsSvc.getLayerOptions(
       name,
       settings,
       server,
@@ -231,7 +228,7 @@ function MapManager(
       title
     );
     stateSvc.addLayer(options);
-    var promise = svc.buildStoryLayer(options);
+    const promise = svc.buildStoryLayer(options);
     return promise;
   };
 

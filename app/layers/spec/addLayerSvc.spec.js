@@ -1,9 +1,9 @@
-describe("layerSvc", function() {
-  var testIndex, layerSvc;
+describe("layerSvc", () => {
+  let testIndex, layerSvc;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(function(_layerSvc_) {
+    inject(_layerSvc_ => {
       layerSvc = _layerSvc_;
       testIndex = [
         {
@@ -22,16 +22,16 @@ describe("layerSvc", function() {
     })
   );
 
-  describe("compileLayerNamesFromSearchIndex", function() {
-    it("should return an array of names with the same length as the index passed in", function() {
-      var test = layerSvc.compileLayerNamesFromSearchIndex(testIndex);
+  describe("compileLayerNamesFromSearchIndex", () => {
+    it("should return an array of names with the same length as the index passed in", () => {
+      const test = layerSvc.compileLayerNamesFromSearchIndex(testIndex);
       expect(test.length).toBe(3);
     });
 
-    it("should use the typename as the title if no title is available", function() {
-      var names = layerSvc.compileLayerNamesFromSearchIndex(testIndex);
-      var testName1 = names.indexOf("test3_typename") > -1;
-      var testName2 = names.indexOf("test2_title") > -1;
+    it("should use the typename as the title if no title is available", () => {
+      const names = layerSvc.compileLayerNamesFromSearchIndex(testIndex);
+      const testName1 = names.indexOf("test3_typename") > -1;
+      const testName2 = names.indexOf("test2_title") > -1;
       expect(testName1).toBe(true);
       expect(testName2).toBe(true);
     });

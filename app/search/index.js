@@ -1,9 +1,9 @@
 "use strict";
 
-var angular = require("angular");
-var searchConfig = require("./searchConfig.js");
-var searchSvc = require("./searchSvc.js");
-var paginationSvc = require("./paginationSvc.js");
+const angular = require("angular");
+const searchConfig = require("./searchConfig.js");
+const searchSvc = require("./searchSvc.js");
+const paginationSvc = require("./paginationSvc.js");
 
 angular.module("composer").factory("searchConfig", searchConfig);
 angular.module("composer").factory("searchSvc", searchSvc);

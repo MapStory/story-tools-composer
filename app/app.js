@@ -1,8 +1,8 @@
 "use strict";
 
-var angular = require("angular");
+const angular = require("angular");
 
-var module = angular.module("composer", [
+const module = angular.module("composer", [
   "storytools.core.time",
   "storytools.core.mapstory",
   "storytools.core.loading",
@@ -33,7 +33,7 @@ module.constant("appConfig", {
       host: "", //'https://mapstory.org/',
       canStyleWMS: false,
       timeEndpoint: function(name) {
-        return "/maps/time_info.json?layer=" + name;
+        return `/maps/time_info.json?layer=${name}`;
       }
     },
     {
@@ -51,24 +51,24 @@ module.constant("appConfig", {
   iconCommonsHost: "http://mapstory.dev.boundlessgeo.com"
 });
 
-module.run(function() {
+module.run(() => {
   // install a watchers debug loop
-  (function() {
-    var root = angular.element(document.getElementsByTagName("body"));
-    var last;
-    var watchers = 0;
+  ((() => {
+    const root = angular.element(document.getElementsByTagName("body"));
+    let last;
+    let watchers = 0;
 
-    var f = function(element) {
+    const f = element => {
       if (element.data().hasOwnProperty("$scope")) {
         watchers += (element.data().$scope.$$watchers || []).length;
       }
 
-      angular.forEach(element.children(), function(childElement) {
+      angular.forEach(element.children(), childElement => {
         f(angular.element(childElement));
       });
     };
 
-    window.setInterval(function() {
+    window.setInterval(() => {
       watchers = 0;
       f(root);
       if (watchers != last) {
@@ -76,7 +76,7 @@ module.run(function() {
       }
       last = watchers;
     }, 1000);
-  })();
+  }))();
 });
 
 module.config([
@@ -84,12 +84,7 @@ module.config([
   "$translateProvider",
   "$httpProvider",
   "$sceDelegateProvider",
-  function(
-    $qProvider,
-    $translateProvider,
-    $httpProvider,
-    $sceDelegateProvider
-  ) {
+  ($qProvider, $translateProvider, $httpProvider, $sceDelegateProvider) => {
     $qProvider.errorOnUnhandledRejections(false);
     $translateProvider.preferredLanguage("en");
     $httpProvider.defaults.headers.post["X-Requested-With"] = "XMLHttpRequest";

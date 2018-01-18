@@ -1,9 +1,9 @@
-describe("layerOptionsSvc", function() {
-  var rootScope, layerOptionsSvc, testServer;
+describe("layerOptionsSvc", () => {
+  let rootScope, layerOptionsSvc, testServer;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(function($rootScope, _layerOptionsSvc_) {
+    inject(($rootScope, _layerOptionsSvc_) => {
       rootScope = $rootScope;
       layerOptionsSvc = _layerOptionsSvc_;
       testServer = {
@@ -12,9 +12,9 @@ describe("layerOptionsSvc", function() {
     })
   );
 
-  describe("getLayerOptions", function() {
-    it("should return the correct server path", function() {
-      var layerOptTest = layerOptionsSvc.getLayerOptions(
+  describe("getLayerOptions", () => {
+    it("should return the correct server path", () => {
+      const layerOptTest = layerOptionsSvc.getLayerOptions(
         "test_layer",
         {},
         testServer
@@ -23,9 +23,9 @@ describe("layerOptionsSvc", function() {
     });
   });
 
-  describe("getLayerOptions", function() {
-    it("should return the correct server path", function() {
-      var layerOptTest = layerOptionsSvc.getLayerOptions(
+  describe("getLayerOptions", () => {
+    it("should return the correct server path", () => {
+      const layerOptTest = layerOptionsSvc.getLayerOptions(
         "test_layer",
         {},
         testServer

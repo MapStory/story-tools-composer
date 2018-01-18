@@ -9,8 +9,7 @@ function addLayers(
   searchSvc,
   layerSvc,
   styleSvc,
-  appConfig,
-  stateSvc
+  appConfig
 ) {
   return {
     restrict: "E",
@@ -18,32 +17,29 @@ function addLayers(
       map: "="
     },
     templateUrl: "./app/layers/templates/add-layers.html",
-    link: function(scope, el, atts) {
-      var nameIndex;
-      var names;
+    link: (scope, el) => {
+      let nameIndex;
+      let names;
       scope.server = {
         active: appConfig.servers[0]
       };
       scope.servers = appConfig.servers;
-      scope.results = function(layerName) {
-        return searchSvc
-          .getSearchBarResultsIndex(layerName)
-          .then(function(res) {
-            nameIndex = res;
-            names = layerSvc.compileLayerNamesFromSearchIndex(res);
-            return limitToFilter(names, 15);
-          });
-      };
-      scope.addLayer = function() {
+      scope.results = layerName =>
+        searchSvc.getSearchBarResultsIndex(layerName).then(res => {
+          nameIndex = res;
+          names = layerSvc.compileLayerNamesFromSearchIndex(res);
+          return limitToFilter(names, 15);
+        });
+      scope.addLayer = () => {
         scope.loading = true;
-        var name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
-        var settings = {
+        const name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
+        const settings = {
           asVector: scope.asVector,
           allowZoom: scope.allowZoom,
           allowPan: scope.allowPan
         };
-        layerSvc.getLayerConfig(name).then(function(config) {
-          var styleName = config.Layer[0].Style[0].Name;
+        layerSvc.getLayerConfig(name).then(config => {
+          const styleName = config.Layer[0].Style[0].Name;
           MapManager.addLayer(
             name,
             settings,
@@ -51,10 +47,10 @@ function addLayers(
             null,
             styleName
           )
-            .then(function() {
+            .then(() => {
               scope.$parent.status.open = false;
             }, layerSvc.handleAddLayerError)
-            .finally(function() {
+            .finally(() => {
               scope.loading = false;
             });
           scope.layerName = null;

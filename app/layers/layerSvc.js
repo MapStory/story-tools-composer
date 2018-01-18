@@ -1,9 +1,7 @@
-"use strict";
+const X2JS = require("x2js");
 
-var X2JS = require("x2js");
-
-function layerSvc(stateSvc, appConfig, $http, $q) {
-  var svc = {};
+function layerSvc(stateSvc, appConfig, $http, $q, $log) {
+  const svc = {};
 
   svc.baseLayers = [
     {
@@ -47,18 +45,18 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
     }
   ];
 
-  svc.removeLayer = function(lyr) {
+  svc.removeLayer = lyr => {
     stateSvc.removeLayer(lyr.values_.uuid);
     window.storyMap.removeStoryLayer(lyr);
   };
 
-  svc.toggleVisibleLayer = function(lyr) {
+  svc.toggleVisibleLayer = lyr => {
     window.storyMap.toggleStoryLayer(lyr);
   };
 
-  svc.compileLayerNamesFromSearchIndex = function(searchIndex) {
-    var names = [];
-    for (var i = 0; i < searchIndex.length; i += 1) {
+  svc.compileLayerNamesFromSearchIndex = searchIndex => {
+    const names = [];
+    for (let i = 0; i < searchIndex.length; i += 1) {
       if (searchIndex[i].title) {
         names.push(searchIndex[i].title);
       } else {
@@ -68,9 +66,9 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
     return names;
   };
 
-  svc.getNameFromIndex = function(layerName, nameIndex) {
-    var name;
-    for (var i = 0; i < nameIndex.length; i++) {
+  svc.getNameFromIndex = (layerName, nameIndex) => {
+    let name;
+    for (let i = 0; i < nameIndex.length; i += 1) {
       if (
         nameIndex[i].title.trim() === layerName.trim() ||
         nameIndex[i].typename === layerName
@@ -81,19 +79,13 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
     return name;
   };
 
-  svc.handleAddLayerError = function(problems) {
-    var msg = "Something went wrong:";
-    if (problems[0].status == 404) {
-      msg = "Cannot find the specified layer: ";
-    } else {
-      msg += problems[0].data;
-    }
-    $log.warn("Failed to load %s because of %s", scope.layerName, problems);
+  svc.handleAddLayerError = problems => {
+    $log.warn("Failed to load because of %s", problems);
   };
 
-  svc.parseWorkspaceRoute = function(featureType) {
+  svc.parseWorkspaceRoute = featureType => {
     if (featureType) {
-      var split = featureType.split(":");
+      const split = featureType.split(":");
       if (split.length === 1) {
         return {
           typeName: split[0]
@@ -107,40 +99,39 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
     return null;
   };
 
-  svc.getFeatureType = function(layer) {
+  svc.getFeatureType = layer => {
     console.log("LAYER METADATA", layer.get("geomType"));
-    var deferredResponse = $q.defer();
+    const deferredResponse = $q.defer();
 
-    var url =
-      layer.get("path") +
-      "wfs?version=1.1.0" +
-      "&request=DescribeFeatureType&typeName=" +
-      layer.get("name");
+    const url = `${layer.get(
+      "path"
+    )}wfs?version=1.1.0&request=DescribeFeatureType&typeName=${layer.get(
+      "name"
+    )}`;
     console.log("URL ---- >", url);
 
     $http.get(url).then(
-      function(response) {
+      response => {
         // TODO: Use the OpenLayers parser once it is done
-        var x2js = new X2JS();
+        const x2js = new X2JS();
         console.log("X2JSSSSS", x2js);
-        var json = x2js.xml2js(response.data);
-        var wps = new storytools.edit.WFSDescribeFeatureType
-          .WFSDescribeFeatureType();
-        var layerInfo = wps.parseResult(response.data);
+        const json = x2js.xml2js(response.data);
+        const wps = new storytools.edit.WFSDescribeFeatureType.WFSDescribeFeatureType();
+        const layerInfo = wps.parseResult(response.data);
         console.log("> LAYER INFO!!!!!!!! ", layerInfo);
 
-        var schema = [];
-        var geometryType = null;
+        const schema = [];
+        let geometryType = null;
         if (goog.isDefAndNotNull(json.schema)) {
-          var savedSchema = layer.get("metadata").savedSchema;
+          const savedSchema = layer.get("metadata").savedSchema;
           forEachArrayish(
             json.schema.complexType.complexContent.extension.sequence.element,
-            function(obj) {
+            obj => {
               schema[obj._name] = obj;
               schema[obj._name].visible = true;
 
               if (obj._type.indexOf("gml:") != -1) {
-                var lp = obj._type.substring(4);
+                const lp = obj._type.substring(4);
                 if (
                   lp.indexOf("Polygon") !== -1 ||
                   lp.indexOf("MultiSurfacePropertyType") !== -1
@@ -154,7 +145,7 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
               }
 
               if (goog.isDefAndNotNull(savedSchema)) {
-                for (var index = 0; index < savedSchema.length; index++) {
+                for (let index = 0; index < savedSchema.length; index++) {
                   if (obj._name == savedSchema[index].name) {
                     schema[obj._name].visible = savedSchema[index].visible;
                   }
@@ -175,38 +166,38 @@ function layerSvc(stateSvc, appConfig, $http, $q) {
           layer.set("attributes", layerInfo.attributes);
           layer.set("featureNS", layerInfo.featureNS);
           layer.set("typeName", layer.get("metadata").name);
-          layer.set("styleName", "geonode_" + layer.get("name"));
+          layer.set("styleName", `geonode_${layer.get("name")}`);
           layer.set("path", "/geoserver/");
           console.log("LAYER LAYER", layer);
         }
         deferredResponse.resolve();
       },
-      function(reject) {
+      reject => {
         deferredResponse.reject(reject);
       }
     );
     return deferredResponse.promise;
   };
 
-  svc.getLayerConfig = function(layerName) {
-    var result = $q.defer();
-    var layerConfig = null;
-    var server = appConfig.servers[0];
-    var config = {};
+  svc.getLayerConfig = layerName => {
+    const result = $q.defer();
+    let layerConfig = null;
+    const server = appConfig.servers[0];
+    const config = {};
     config.headers = {};
     if (goog.isDefAndNotNull(server.authentication)) {
-      config.headers["Authorization"] = "Basic " + server.authentication;
+      config.headers["Authorization"] = `Basic ${server.authentication}`;
     } else {
       config.headers["Authorization"] = "";
     }
-    var url = server.path;
-    var namespace = "geonode";
-    var parser = new ol.format.WMSCapabilities();
-    url = url.substring(0, url.lastIndexOf("/")) + "/" + namespace;
-    url += "/" + layerName + "/wms?request=GetCapabilities";
+    let url = server.path;
+    const namespace = "geonode";
+    const parser = new ol.format.WMSCapabilities();
+    url = `${url.substring(0, url.lastIndexOf("/"))}/${namespace}`;
+    url += `/${layerName}/wms?request=GetCapabilities`;
     server.populatingLayersConfig = true;
-    $http.get(url, config).then(function(data, status, headers, config) {
-      var response = parser.read(data.data);
+    $http.get(url, config).then((data, status, headers, config) => {
+      const response = parser.read(data.data);
       if (
         goog.isDefAndNotNull(response.Capability) &&
         goog.isDefAndNotNull(response.Capability.Layer)

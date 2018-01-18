@@ -15,7 +15,6 @@ function composerController(
   pinSvc,
   uiHelperSvc,
   searchSvc,
-  stateSvc,
   // popupSvc,
   $location
 ) {
@@ -28,48 +27,48 @@ function composerController(
   $scope.pin = {};
   $scope.styleActivated = false;
 
-  $rootScope.$on("showPin", function(event, pin) {
+  $rootScope.$on("showPin", (event, pin) => {
     self.displayPinInfo(null, pin);
   });
 
-  $rootScope.$on("rangeChange", function(event, range) {
+  $rootScope.$on("rangeChange", (event, range) => {
     // StoryPinLayerManager.autoDisplayPins(range);
   });
 
-  $rootScope.$on("hidePinOverlay", function(event, pin) {
+  $rootScope.$on("hidePinOverlay", (event, pin) => {
     self.hidePinOverlay(pin);
   });
 
-  $rootScope.$on("hidePinOverlay", function(event, pin) {
+  $rootScope.$on("hidePinOverlay", (event, pin) => {
     self.hidePinOverlay(pin);
   });
 
-  $rootScope.$on("$locationChangeSuccess", function() {
+  $rootScope.$on("$locationChangeSuccess", () => {
     $scope.mapManager.initMapLoad();
     $scope.stateSvc.updateCurrentChapterConfig();
   });
 
-  $rootScope.$on("configInitialized", function() {
+  $rootScope.$on("configInitialized", () => {
     $scope.mapManager.initMapLoad();
   });
 
-  $rootScope.$on("pin-added", function(event, chapter_index) {
+  $rootScope.$on("pin-added", (event, chapter_index) => {
     //$scope.$apply();
   });
 
-  $rootScope.$on("chapter-added", function(event, config) {
+  $rootScope.$on("chapter-added", (event, config) => {
     pinSvc.addChapter();
   });
 
-  $rootScope.$on("chapter-removed", function(event, chapter_index) {
+  $rootScope.$on("chapter-removed", (event, chapter_index) => {
     pinSvc.removeChapter(chapter_index);
   });
 
-  MapManager.storyMap.getMap().on("click", function(evt) {
+  MapManager.storyMap.getMap().on("click", evt => {
     // popupSvc.displayInfo(evt.pixel);
   });
 
-  $scope.updateSelected = function(selected) {
+  $scope.updateSelected = selected => {
     $scope.selected = { selected: true };
   };
 
@@ -83,33 +82,33 @@ function composerController(
     fixed: false
   };
 
-  $scope.saveMap = function() {
+  $scope.saveMap = () => {
     stateSvc.save();
   };
 
-  $scope.newMap = function() {
+  $scope.newMap = () => {
     $location.path("/new");
   };
 
-  $scope.styleChanged = function(layer) {
-    layer.on("change:type", function(evt) {
+  $scope.styleChanged = layer => {
+    layer.on("change:type", evt => {
       styleSvc.updateStyle(evt.target);
     });
     styleSvc.updateStyle(layer);
   };
 
-  $scope.showLoadMapDialog = function() {
-    var promise = loadMapDialog.show();
-    promise.then(function(result) {
+  $scope.showLoadMapDialog = () => {
+    const promise = loadMapDialog.show();
+    promise.then(result => {
       if (result.mapstoryMapId) {
-        $location.path("/maps/" + result.mapstoryMapId + "/data/");
+        $location.path(`/maps/${result.mapstoryMapId}/data/`);
       } else if (result.localMapId) {
-        $location.path("/local/" + result.localMapId);
+        $location.path(`/local/${result.localMapId}`);
       }
     });
   };
 
-  $scope.getMapWidth = function(preview) {
+  $scope.getMapWidth = preview => {
     if (preview === true) {
       return appConfig.dimensions.mapWidthPreviewMode;
     } else {
@@ -117,7 +116,7 @@ function composerController(
     }
   };
 
-  $scope.togglePreviewMode = function() {
+  $scope.togglePreviewMode = () => {
     $scope.mapWidth = $scope.getMapWidth($scope.mode.preview);
     $rootScope.mapWidth = $scope.mapWidth;
     if ($scope.mode.preview) {
@@ -128,15 +127,15 @@ function composerController(
     $rootScope.$broadcast("toggleMode", {
       mapWidth: $scope.mapWidth
     });
-    setTimeout(function() {
+    setTimeout(() => {
       window.storyMap.getMap().updateSize();
     });
   };
 
   // strip features from properties to avoid circular dependencies in debug
-  $scope.layerProperties = function(lyr) {
-    var props = lyr.getProperties();
-    var features = delete props.features;
+  $scope.layerProperties = lyr => {
+    const props = lyr.getProperties();
+    const features = delete props.features;
     props.featureCount = (features || []).length;
     return props;
   };

@@ -6,7 +6,7 @@ function searchSvc(
   searchConfig,
   limitToFilter
 ) {
-  var svc = {};
+  const svc = {};
 
   svc.queries = {
     content: true,
@@ -15,15 +15,13 @@ function searchSvc(
     offset: 0
   };
 
-  svc.getSearchBarResultsIndex = function(layer_name) {
-    var layerId;
-    var url =
-      appConfig.servers[0].host +
-      "/api/base/search/?type__in=layer&limit=15&df=typename&q=" +
-      layer_name;
-    return $http.get(url).then(function(response) {
-      var nameIndex = [];
-      for (var i = 0; i < response.data.objects.length; i++) {
+  svc.getSearchBarResultsIndex = layer_name => {
+    let layerId;
+    const url =
+      `${appConfig.servers[0].host}/api/base/search/?type__in=layer&limit=15&df=typename&q=${layer_name}`;
+    return $http.get(url).then(response => {
+      const nameIndex = [];
+      for (let i = 0; i < response.data.objects.length; i++) {
         if (response.data.objects[i].typename) {
           nameIndex.push({
             title: response.data.objects[i].title,
@@ -35,34 +33,34 @@ function searchSvc(
     });
   };
 
-  svc.getCategories = function() {
-    var defer = $q.defer();
-    var params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
+  svc.getCategories = () => {
+    const defer = $q.defer();
+    const params = typeof FILTER_TYPE == "undefined" ? {} : { type: FILTER_TYPE };
     $http
       .get(searchConfig.CATEGORIES_ENDPOINT, {
         params: params
       })
       .then(
-        function(response) {
+        response => {
           defer.resolve(response.data.objects);
         },
-        function(error) {
+        error => {
           defer.resolve("error");
         }
       );
     return defer.promise;
   };
 
-  svc.search = function(queries) {
-    var defer = $q.defer();
-    var params = jQuery.extend(svc.queries, queries);
+  svc.search = queries => {
+    const defer = $q.defer();
+    const params = jQuery.extend(svc.queries, queries);
 
     $http.get(searchConfig.SEARCH_URL, { params: params || {} }).then(
-      function(response) {
+      response => {
         defer.resolve(response.data);
         //page.paginate(response, vm, $scope);
       },
-      function(error) {
+      error => {
         if (error.data.error_message === "Sorry, no results on that page.") {
           //console.log("Setting offset to 0 and searching again.");
           //queryService.resetOffset($scope);

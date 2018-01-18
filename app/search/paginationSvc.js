@@ -1,8 +1,8 @@
 function paginationSvc(queryService) {
-  var svc;
+  let svc;
 
-  svc.paginate = function(response, view, scope) {
-    var meta = response.data.meta;
+  svc.paginate = (response, view, scope) => {
+    const meta = response.data.meta;
 
     // pagination info under meta property is only available on content (resource base API)
     if (meta.current_page != undefined) {
@@ -23,7 +23,7 @@ function paginationSvc(queryService) {
   };
 
   // given an api response and a controller view, this sets pagination and 'showing' values
-  svc.apiPaginate = function(response, view) {
+  svc.apiPaginate = (response, view) => {
     view.totalCount = response.data.meta.total_count;
     view.currentPage = response.data.meta.current_page;
     view.numPages = response.data.meta.num_pages;
@@ -34,10 +34,10 @@ function paginationSvc(queryService) {
 
   // given an api response that doesn't use django paginator, this sets pagination values
   // "page a of b"  "showing x - y of z results"
-  svc.manualPaginate = function(view, scope) {
-    var limit = scope.query.limit;
-    var offset = scope.query.offset;
-    var cards = scope.cards || view.cards;
+  svc.manualPaginate = (view, scope) => {
+    const limit = scope.query.limit;
+    const offset = scope.query.offset;
+    const cards = scope.cards || view.cards;
 
     view.currentPage = Math.ceil(offset / limit) + 1;
     view.numPages = Math.ceil(view.totalCount / limit);
@@ -46,37 +46,33 @@ function paginationSvc(queryService) {
     view.endIndex = Number(offset) + Number(cards.length);
   };
 
-  svc.changePage = function(view, scope) {
-    var limit = scope.query.limit;
-    var page = view.currentPage - 1; //stepback to a 0 index
+  svc.changePage = (view, scope) => {
+    const limit = scope.query.limit;
+    const page = view.currentPage - 1; //stepback to a 0 index
 
-    var nextOffset = limit * page;
+    const nextOffset = limit * page;
     // next offset will be a multiple of the current limit
     scope.query.offset = nextOffset;
 
     // update result cards
     // some controllers will have the search method
     // on the view model and some on the scope
-    var search = scope.search || view.search;
+    const search = scope.search || view.search;
     search();
   };
 
-  svc.up = function(view, scope) {
-    return function() {
-      if (view.currentPage < view.numPages) {
-        view.currentPage += 1;
-        changePage(view, scope);
-      }
-    };
+  svc.up = (view, scope) => () => {
+    if (view.currentPage < view.numPages) {
+      view.currentPage += 1;
+      changePage(view, scope);
+    }
   };
 
-  svc.down = function(view, scope) {
-    return function() {
-      if (view.currentPage > 1) {
-        view.currentPage -= 1;
-        changePage(view, scope);
-      }
-    };
+  svc.down = (view, scope) => () => {
+    if (view.currentPage > 1) {
+      view.currentPage -= 1;
+      changePage(view, scope);
+    }
   };
 
   return svc;
