@@ -1,7 +1,7 @@
 "use strict";
 
 function layerSvc(stateSvc) {
-  var svc = {};
+  const svc = {};
 
   svc.baseLayers = [
     {
@@ -45,18 +45,18 @@ function layerSvc(stateSvc) {
     }
   ];
 
-  svc.removeLayer = function(lyr) {
+  svc.removeLayer = lyr => {
     stateSvc.removeLayer(lyr.values_.uuid);
     window.storyMap.removeStoryLayer(lyr);
   };
 
-  svc.toggleVisibleLayer = function(lyr) {
+  svc.toggleVisibleLayer = lyr => {
     window.storyMap.toggleStoryLayer(lyr);
   };
 
-  svc.compileLayerNamesFromSearchIndex = function(searchIndex) {
-    var names = [];
-    for (var i = 0; i < searchIndex.length; i += 1) {
+  svc.compileLayerNamesFromSearchIndex = searchIndex => {
+    const names = [];
+    for (let i = 0; i < searchIndex.length; i += 1) {
       if (searchIndex[i].title) {
         names.push(searchIndex[i].title);
       } else {
@@ -66,9 +66,9 @@ function layerSvc(stateSvc) {
     return names;
   };
 
-  svc.getNameFromIndex = function(layerName, nameIndex) {
-    var name;
-    for (var i = 0; i < nameIndex.length; i++) {
+  svc.getNameFromIndex = (layerName, nameIndex) => {
+    let name;
+    for (let i = 0; i < nameIndex.length; i++) {
       if (
         nameIndex[i].title.trim() === layerName.trim() ||
         nameIndex[i].typename === layerName
@@ -79,8 +79,8 @@ function layerSvc(stateSvc) {
     return name;
   };
 
-  svc.handleAddLayerError = function(problems) {
-    var msg = "Something went wrong:";
+  svc.handleAddLayerError = problems => {
+    let msg = "Something went wrong:";
     if (problems[0].status == 404) {
       msg = "Cannot find the specified layer: ";
     } else {

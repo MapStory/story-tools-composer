@@ -2,17 +2,16 @@ function pinSvc(
   $rootScope,
   $http,
   $translate,
-  $http,
   $q,
   timeSvc,
   featureManagerSvc,
   stateSvc
 ) {
-  var svc = {};
+  const svc = {};
   svc.pins = [[]];
 
   svc.Pin = function(data) {
-    var copyData = angular.copy(data);
+    const copyData = angular.copy(data);
     delete data.geometry;
     ol.Feature.call(this, data);
     this.properties = data;
@@ -23,9 +22,9 @@ function pinSvc(
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
   svc.Pin.prototype.constructor = svc.Pin;
 
-  var embed_width = '"180"';
-  var embed_height = '"180"';
-  var model_attributes = [
+  const embed_width = '"180"';
+  const embed_height = '"180"';
+  const model_attributes = [
     "title",
     "id",
     "_id",
@@ -38,7 +37,7 @@ function pinSvc(
     "pause_playback",
     "auto_show"
   ];
-  var filterPropertiesFromValidation = [
+  const filterPropertiesFromValidation = [
     "id",
     "_id",
     "content",
@@ -49,46 +48,44 @@ function pinSvc(
     "auto_show"
   ];
 
-  svc.addChapter = function() {
+  svc.addChapter = () => {
     svc.pins.push([]);
   };
 
-  svc.createStoryPinLayer = function() {
-    return featureManagerSvc.createVectorLayer(
-      featureManagerSvc.storyPinLayerMetadata
-    );
-  };
+  svc.createStoryPinLayer = () => featureManagerSvc.createVectorLayer(
+    featureManagerSvc.storyPinLayerMetadata
+  );
 
   svc.pinLayer = svc.createStoryPinLayer();
 
-  svc.addEmptyPinToCurrentChapter = function() {
+  svc.addEmptyPinToCurrentChapter = () => {
     svc.pins[stateSvc.getChapter() - 1].push({});
     $rootScope.$broadcast("pin-added", stateSvc.getChapter() - 1);
   };
 
-  svc.removeChapter = function(chapter_index) {
+  svc.removeChapter = chapter_index => {
     svc.pins.splice(chapter_index, 1);
   };
 
-  svc.getFeaturesFromServer = function(config) {
-    var defer = $q.defer();
+  svc.getFeaturesFromServer = config => {
+    const defer = $q.defer();
     $http({
-      url: "/maps/" + config.id + "/annotations",
+      url: `/maps/${config.id}/annotations`,
       method: "GET"
-    }).then(function(result) {
+    }).then(result => {
       defer.resolve(result.data);
     });
     return defer.promise;
   };
 
-  svc.addPinsFromGeojsonObj = function(geojson, chapter) {
-    geojson.features.map(function(feature) {
+  svc.addPinsFromGeojsonObj = (geojson, chapter) => {
+    geojson.features.map(feature => {
       svc.addPinFromGeojsonObj(feature, chapter);
     });
   };
 
-  svc.addPinFromGeojsonObj = function(feature, chapter) {
-    var props = feature.properties;
+  svc.addPinFromGeojsonObj = (feature, chapter) => {
+    const props = feature.properties;
     props.geometry = $.parseJSON(feature.geometry);
     props.geometry.coordinates = ol.proj.transform(
       props.geometry.coordinates,
@@ -98,15 +95,15 @@ function pinSvc(
     props.id = feature.id;
     props.start_time = props.start_time * 1000;
     props.end_time = props.end_time * 1000;
-    var storyPin = new svc.Pin(props);
+    const storyPin = new svc.Pin(props);
     storyPin.setId(feature.id);
     svc.pins[chapter].push(storyPin);
   };
 
-  svc.addGetterAndSetterToPinPrototype = function(prop) {
+  svc.addGetterAndSetterToPinPrototype = prop => {
     Object.defineProperty(svc.Pin.prototype, prop, {
       get: function() {
-        var val = this.get(prop);
+        const val = this.get(prop);
         return typeof val === "undefined" ? null : val;
       },
       set: function(val) {
@@ -115,24 +112,22 @@ function pinSvc(
     });
   };
 
-  svc.addMultipleGettersAndSettersToPinPrototype = function(props) {
-    props.forEach(function(prop) {
+  svc.addMultipleGettersAndSettersToPinPrototype = props => {
+    props.forEach(prop => {
       svc.addGetterAndSetterToPinPrototype(prop);
     });
   };
 
-  svc.getPins = function(chapter_index) {
-    return svc.pins[chapter_index] || [];
-  };
+  svc.getPins = chapter_index => svc.pins[chapter_index] || [];
 
-  svc.reorderPins = function(from_index, to_index) {
+  svc.reorderPins = (from_index, to_index) => {
     svc.pins.splice(to_index, 0, svc.pins.splice(from_index, 1)[0]);
   };
 
-  svc.removePin = function(storyPin, chapter_index) {
-    for (var i = 0; i < svc.pins[chapter_index].length; i++) {
+  svc.removePin = (storyPin, chapter_index) => {
+    for (let i = 0; i < svc.pins[chapter_index].length; i++) {
       if (storyPin.id_ == svc.pins[chapter_index][i].id_) {
-        var splice_index = i;
+        const splice_index = i;
         if (splice_index === 0) {
           svc.pins[chapter_index].splice(0, 1);
         } else {
@@ -144,25 +139,21 @@ function pinSvc(
     }
   };
 
-  svc.removePinByIndex = function(pin_index, chapter_index) {
+  svc.removePinByIndex = (pin_index, chapter_index) => {
     svc.pins[chapter_index].splice(pin_index, 1);
     $rootScope.$broadcast("pin-removed", chapter_index);
   };
 
-  svc.validatePinProperty = function(pinInstantiationObj, propertyName) {
-    return (
-      pinInstantiationObj.hasOwnProperty(propertyName) &&
-      (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
-        !goog.string.isEmptySafe(pinInstantiationObj[propertyName]))
-    );
-  };
+  svc.validatePinProperty = (pinInstantiationObj, propertyName) => pinInstantiationObj.hasOwnProperty(propertyName) &&
+  (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
+    !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
 
-  svc.validateAllPinProperties = function(pinInstantiationObj) {
-    var missingProperties = [];
-    var copy_attribs = angular.copy(model_attributes);
+  svc.validateAllPinProperties = pinInstantiationObj => {
+    const missingProperties = [];
+    const copy_attribs = angular.copy(model_attributes);
     copy_attribs.push("geometry");
-    for (var iProp = 0; iProp < copy_attribs.length; iProp += 1) {
-      var property = copy_attribs[iProp];
+    for (let iProp = 0; iProp < copy_attribs.length; iProp += 1) {
+      const property = copy_attribs[iProp];
       if (
         !svc.validatePinProperty(pinInstantiationObj, property) &&
         !goog.array.contains(filterPropertiesFromValidation, property)
@@ -176,13 +167,13 @@ function pinSvc(
     return true;
   };
 
-  svc.handleInvalidPin = function(invalidProperties) {
-    $translate(invalidProperties).then(function(translations) {
-      var invalid_string =
+  svc.handleInvalidPin = invalidProperties => {
+    $translate(invalidProperties).then(translations => {
+      let invalid_string =
         "These properties must be set before saving a StoryPin: ";
-      for (var iProp = 0; iProp < invalidProperties.length; iProp += 1) {
-        var property = invalidProperties[iProp];
-        var translatedProp = translations[property];
+      for (let iProp = 0; iProp < invalidProperties.length; iProp += 1) {
+        const property = invalidProperties[iProp];
+        let translatedProp = translations[property];
         translatedProp = translatedProp.concat(", ");
         invalid_string = invalid_string.concat(translatedProp);
       }
@@ -191,7 +182,7 @@ function pinSvc(
   };
 
   svc.addPin = function(props, chapter_index) {
-    var pinValidated = svc.validateAllPinProperties(props);
+    const pinValidated = svc.validateAllPinProperties(props);
     if (pinValidated !== true) {
       svc.handleInvalidPin(pinValidated);
       return false;
@@ -203,30 +194,30 @@ function pinSvc(
     }
     //TODO: Check media whitelist and sanitize embed size.
     if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
-      props.media = props.media.replace(/width="\d+"/i, "width=" + embed_width);
+      props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
       props.media = props.media.replace(
         /height="\d+"/i,
-        "height=" + embed_height
+        `height=${embed_height}`
       );
     }
-    var storyPin = new svc.Pin(props);
+    const storyPin = new svc.Pin(props);
     svc.pins[chapter_index].push(storyPin);
     $rootScope.$broadcast("pin-added", chapter_index);
     return true;
   };
 
   // @TODO: write test for this after mapService functions are ported over
-  svc.updatePin = function(pin, chapter_index) {
+  svc.updatePin = (pin, chapter_index) => {
     //Only set new geometry if location was saved on pin object
     if (goog.isDefAndNotNull(pin.geometry)) {
       // mapService_.removeDraw();
       // mapService_.removeSelect();
       // mapService_.removeModify();
       // mapService_.map.removeLayer(mapService_.editLayer);
-      var newGeom = new ol.geom.Point(pin.geometry.coordinates);
+      const newGeom = new ol.geom.Point(pin.geometry.coordinates);
       pin.setGeometry(newGeom);
     }
-    for (var iPin = 0; iPin < svc.pins.length; iPin += 1) {
+    for (let iPin = 0; iPin < svc.pins.length; iPin += 1) {
       if (pin.id === svc.pins[iPin].id) {
         svc.pins[iPin] = pin;
       }
@@ -235,15 +226,15 @@ function pinSvc(
   };
 
   //@TODO: move to another service
-  svc.isUrl = function(str) {
+  svc.isUrl = str => {
     if (!/^(f|ht)tps?:\/\//i.test(str)) {
       return false;
     }
     return true;
   };
 
-  svc.defaultPinValues = function(pin) {
-    Object.keys(pin).forEach(function(key, index) {
+  svc.defaultPinValues = pin => {
+    Object.keys(pin).forEach((key, index) => {
       if (pin[key] === "") {
         if (
           key === "in_timeline" ||
@@ -267,10 +258,10 @@ function pinSvc(
     return pin;
   };
 
-  svc.bulkPinAdd = function(pinConfigs, chapter_index) {
-    var failedToAdd = 0;
-    for (var iPin = 0; iPin < pinConfigs.length; iPin += 1) {
-      var pin = pinConfigs[iPin];
+  svc.bulkPinAdd = (pinConfigs, chapter_index) => {
+    let failedToAdd = 0;
+    for (let iPin = 0; iPin < pinConfigs.length; iPin += 1) {
+      let pin = pinConfigs[iPin];
       pin = svc.defaultPinValues(pin);
 
       pin.id = new Date().getUTCMilliseconds();
@@ -292,46 +283,46 @@ function pinSvc(
       }
 
       if (goog.isDefAndNotNull(pin.media) && !svc.isUrl(pin.media)) {
-        pin.media = pin.media.replace(/width="\d+"/i, "width=" + embed_width);
+        pin.media = pin.media.replace(/width="\d+"/i, `width=${embed_width}`);
         pin.media = pin.media.replace(
           /height="\d+"/i,
-          "height=" + embed_height
+          `height=${embed_height}`
         );
       }
 
-      var storyPin = new svc.Pin(pin);
+      const storyPin = new svc.Pin(pin);
       svc.pins[chapter_index].push(storyPin);
     }
     $rootScope.$broadcast("pin-added", chapter_index);
   };
 
-  svc.addChaptersAndPins = function(config) {
-    var defer = $q.defer();
-    angular.forEach(config.chapters, function(chapterConfig, index) {
+  svc.addChaptersAndPins = config => {
+    const defer = $q.defer();
+    angular.forEach(config.chapters, (chapterConfig, index) => {
       if (!goog.isDefAndNotNull(svc.pins[index])) {
         svc.addChapter();
       }
-      svc.getFeaturesAndConvertToPins(chapterConfig).then(function(complete) {
+      svc.getFeaturesAndConvertToPins(chapterConfig).then(complete => {
         defer.resolve(complete);
       });
     });
     return defer.promise;
   };
 
-  svc.getFeaturesAndConvertToPins = function(chapterConfig) {
-    var defer = $q.defer();
-    svc.getFeaturesFromServer(chapterConfig).then(function(geojson) {
+  svc.getFeaturesAndConvertToPins = chapterConfig => {
+    const defer = $q.defer();
+    svc.getFeaturesFromServer(chapterConfig).then(geojson => {
       addPinsFromGeojsonObj(geojson);
       defer.resolve(true);
     });
     return defer.promise;
   };
 
-  svc.initPinSvc = function() {
-    var defer = $q.defer();
-    var config = stateSvc.getConfig();
+  svc.initPinSvc = () => {
+    const defer = $q.defer();
+    const config = stateSvc.getConfig();
     if (goog.isDefAndNotNull(config.chapters)) {
-      svc.addChaptersAndPins(config).then(function(complete) {
+      svc.addChaptersAndPins(config).then(complete => {
         defer.resolve(complete);
       });
     }

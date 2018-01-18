@@ -1,6 +1,6 @@
 'use strict';
 
-var angular = require('angular');
-var pinSvc = require('./pinSvc.js');
+const angular = require('angular');
+const pinSvc = require('./pinSvc.js');
 
 angular.module('composer').factory('pinSvc', pinSvc);
