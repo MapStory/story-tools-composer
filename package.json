@@ -2,7 +2,7 @@
   "name": "story-tools-composer",
   "version": "0.0.1",
   "description": "",
-  "main": "js/composer.js",
+  "main": "app/app.js",
   "scripts": {
     "bundle": "webpack",
     "changepaths": "./scripts/change_paths.sh",
@@ -15,12 +15,26 @@
     "angular": "^1.5.0",
     "angular-mocks": "^1.6.5",
     "angular-translate": "^2.15.2",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.3",
+    "babel-loader": "^7.1.2",
+    "babel-polyfill": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
+    "babel-preset-stage-3": "^6.24.1",
     "css-loader": "^0.28.4",
+    "eslint": "^4.3.0",
+    "eslint-config-airbnb-base": "^11.3.0",
+    "eslint-config-prettier": "^2.3.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-prettier": "^2.1.2",
     "extract-text-webpack-plugin": "^2.1.2",
     "gulp-connect": "^5.0.0",
     "jasmine": "^2.6.0",
     "jquery": "^3.2.1",
     "karma": "^1.7.1",
+    "karma-babel-preprocessor": "^7.0.0",
     "karma-chrome-launcher": "^2.2.0",
     "karma-jasmine": "^1.1.0",
     "karma-mocha": "^1.3.0",
@@ -31,6 +45,7 @@
     "karma-webpack": "^2.0.6",
     "less": "^2.7.2",
     "less-loader": "^4.0.4",
+    "prettier": "^1.5.3",
     "proxy-middleware": "^0.15.0",
     "story-tools": "git+https://git@github.com/mapstory/story-tools.git#composer",
     "style-loader": "^0.18.2",
@@ -39,5 +54,8 @@
   },
   "dependencies": {
     "time-controls": "git+https://git@github.com/mapstory/story-tools.git"
-  }
+  },
+  "repository": "https://github.com/MapStory/story-tools-composer",
+  "author": "Darin Acosta <darinjacosta@gmail.com>",
+  "license": "MIT"
 }

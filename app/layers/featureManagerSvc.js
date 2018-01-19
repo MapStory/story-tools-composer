@@ -1,5 +1,5 @@
 function featureManagerSvc($rootScope, $http, $translate, $q, timeSvc, stateSvc) {
-  var svc = {};
+  const svc = {};
 
   svc.storyPinLayerMetadata = {
     StoryPinLayer: true,
@@ -11,8 +11,8 @@ function featureManagerSvc($rootScope, $http, $translate, $q, timeSvc, stateSvc)
     vectorEditLayer: true
   };
 
-  svc.createVectorLayer = function(metadata) {
-    var meta = !metadata ? svc.vectorEditLayerMetadata : metadata;
+  svc.createVectorLayer = metadata => {
+    const meta = !metadata ? svc.vectorEditLayerMetadata : metadata;
     return new ol.layer.Vector({
       metadata: meta,
       source: new ol.source.Vector({

@@ -1,8 +1,8 @@
 function timeSvc() {
-  var svc = {};
+  const svc = {};
 
-  svc.getTime = function(arg) {
-      var type = typeof arg;
+  svc.getTime = arg => {
+      const type = typeof arg;
       if (type === 'number') {
           return arg;
       }
@@ -20,7 +20,7 @@ function timeSvc() {
           /*jshint eqnull:true */
           return getTime(arg.start != null ? arg.start : arg.end);
       }
-      throw new Error('cannot call getTime with ' + type + ", : " + arg);
+      throw new Error(`cannot call getTime with ${type}, : ${arg}`);
   };
 
   return svc;

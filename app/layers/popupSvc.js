@@ -1,11 +1,11 @@
 "use strict";
 
 function popupSvc(olpopup) {
-  var svc = {};
+  const svc = {};
   olpopup.init();
-  svc.displayInfo = function(pixel, pin) {
-    var feature = null;
-    var embed_params = {
+  svc.displayInfo = (pixel, pin) => {
+    let feature = null;
+    const embed_params = {
       nowrap: "on",
       maxwidth: 250,
       maxheight: 250
@@ -13,37 +13,32 @@ function popupSvc(olpopup) {
     if (typeof pin == "undefined" || pin == null) {
       feature = window.storyMap
         .getMap()
-        .forEachFeatureAtPixel(pixel, function(feature, layer) {
-          return feature;
-        });
+        .forEachFeatureAtPixel(pixel, (feature, layer) => feature);
     } else {
       feature = pin;
     }
     if (feature) {
-      var overlays = window.storyMap
+      const overlays = window.storyMap
         .getMap()
         .getOverlays()
         .getArray();
-      var popup = null;
-      var titleDescrip =
-        '<div style="text-align:center;"><h4>' +
-        feature.get("title") +
-        "</h4></div><hr>" +
-        feature.get("content");
-      var geometry = feature.getGeometry();
-      var coord = geometry.getCoordinates();
-      for (var iOverlay = 0; iOverlay < overlays.length; iOverlay += 1) {
-        var overlay = overlays[iOverlay];
-        if (overlay.getId && overlay.getId() == "popup-" + feature.id) {
+      let popup = null;
+      const titleDescrip =
+        `<div style="text-align:center;"><h4>${feature.get("title")}</h4></div><hr>${feature.get("content")}`;
+      const geometry = feature.getGeometry();
+      const coord = geometry.getCoordinates();
+      for (let iOverlay = 0; iOverlay < overlays.length; iOverlay += 1) {
+        const overlay = overlays[iOverlay];
+        if (overlay.getId && overlay.getId() == `popup-${feature.id}`) {
           popup = overlay;
           break;
         }
       }
 
       if (popup === null) {
-        var popupOptions = {
+        const popupOptions = {
           insertFirst: false,
-          id: "popup-" + feature.id,
+          id: `popup-${feature.id}`,
           positioning: "bottom-center",
           stopEvent: false
         };
@@ -55,8 +50,8 @@ function popupSvc(olpopup) {
       if (feature.get("media")) {
         mediaService
           .getEmbedContent(feature.get("media"), embed_params)
-          .then(function(result) {
-            var cont = result ? titleDescrip + result : titleDescrip;
+          .then(result => {
+            const cont = result ? titleDescrip + result : titleDescrip;
             popup.show(coord, cont);
           });
       } else {

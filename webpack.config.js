@@ -12,13 +12,15 @@ module.exports = {
     }
   },
   module: {
-    loaders: [
+    rules: [
       {
-        test: /\.css$/,
-        loader: ExtractTextPlugin.extract({
-          fallback: "style-loader",
-          use: "css-loader"
-        })
+        test: /\.spec\.js$/,
+        exclude: /(bower_components|node_modules)/,
+        loader: "babel-loader",
+        query: {
+          presets: ["es2015", "stage-0"],
+          cacheDirectory: true
+        }
       },
       {
         test: /\.less$/,
@@ -26,11 +28,26 @@ module.exports = {
           fallback: "style-loader",
           use: "css-loader!less-loader"
         })
+      },
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: "babel-loader",
+        query: {
+          presets: ["es2015", "stage-0"]
+        }
+      },
+      {
+        test: /\.css$/,
+        loader: ExtractTextPlugin.extract({
+          fallback: "style-loader",
+          use: "css-loader"
+        })
       }
     ]
   },
   entry: {
-    app: "./app/app.js",
+    app: ["babel-polyfill", "./app/app.js"],
     style: "./style/style.js",
     vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate"]
   },

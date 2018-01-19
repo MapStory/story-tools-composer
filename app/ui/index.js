@@ -1,9 +1,9 @@
 'use strict';
 
-var angular = require('angular');
-var composerController = require('./composerController.js');
-var navigationSvc = require('./navigationSvc.js');
-var uiHelperSvc = require('./uiHelperSvc.js');
+const angular = require('angular');
+const composerController = require('./composerController.js');
+const navigationSvc = require('./navigationSvc.js');
+const uiHelperSvc = require('./uiHelperSvc.js');
 
 angular.module('composer').controller('composerController', composerController);
 angular.module('composer').factory('navigationSvc', navigationSvc);
