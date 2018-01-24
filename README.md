@@ -16,6 +16,7 @@
 - `rm -rf node_modules/story-tools`
 - Symlink your parallel `story-tools` directory to the `story-tools` directory in `story-tools-composer/node_modules`:
   - From `story-tools-composer` directory: `ln -s /absolute/path/to/story-tools node_modules/story-tools`
+- `git checkout` the `composer` branch of `story-tools`
 - After making any changes to Story-tools, run `gulp scripts` from the `story-tools` directory and they should appear in composer.
 
 ### Adding layers
