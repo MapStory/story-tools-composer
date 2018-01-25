@@ -53,7 +53,7 @@ module.constant("appConfig", {
 
 module.run(() => {
   // install a watchers debug loop
-  ((() => {
+  (() => {
     const root = angular.element(document.getElementsByTagName("body"));
     let last;
     let watchers = 0;
@@ -76,7 +76,7 @@ module.run(() => {
       }
       last = watchers;
     }, 1000);
-  }))();
+  })();
 });
 
 module.config([

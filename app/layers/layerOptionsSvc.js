@@ -3,7 +3,14 @@
 function layerOptionsSvc() {
   const svc = {};
 
-  svc.getLayerOptions = (name, settings, server, fitExtent, styleName, title) => {
+  svc.getLayerOptions = (
+    name,
+    settings,
+    server,
+    fitExtent,
+    styleName,
+    title
+  ) => {
     if (window.storyMap) {
       window.storyMap.setAllowZoom(settings.allowZoom || true);
       window.storyMap.setAllowPan(settings.allowPan || true);
@@ -34,7 +41,8 @@ function layerOptionsSvc() {
       canStyleWMS: server.canStyleWMS,
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
       type: settings.asVector === true ? "VECTOR" : "WMS",
-      settings: settings
+      settings: settings,
+      metadata: {}
     };
     return options;
   };
