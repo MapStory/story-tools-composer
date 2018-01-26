@@ -137,7 +137,6 @@ function composerController(
       .getLayers()
       .forEach(layer => {
         if (layer.get("name") === "boundingBox") {
-          $log.log(layer.get("name"));
           MapManager.storyMap.getMap().removeLayer(layer);
         }
       });
@@ -147,7 +146,6 @@ function composerController(
   let layerList = [];
 
   MapManager.storyMap.getMap().addEventListener("click", event => {
-    $log.log(event);
     MapManager.storyMap
       .getMap()
       .getLayers()
@@ -164,7 +162,6 @@ function composerController(
   $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
     layerList = [];
-
     const bbVector = new ol.source.Vector({ wrapX: false });
     const vector = new ol.layer.Vector({
       source: bbVector
@@ -212,6 +209,24 @@ function composerController(
     $scope.frameSettings.endDate = $scope.frameSettings[index].endDate;
     $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
     $scope.frameSettings.radius = $scope.frameSettings[index].radius;
+
+    $scope.frameSettings.bb1 = transformCoords([
+      $scope.coords[0][0][0],
+      $scope.coords[0][0][1]
+    ]);
+    $scope.frameSettings.bb2 = transformCoords([
+      $scope.coords[0][1][0],
+      $scope.coords[0][1][1]
+    ]);
+    $scope.frameSettings.bb3 = transformCoords([
+      $scope.coords[0][2][0],
+      $scope.coords[0][2][1]
+    ]);
+    $scope.frameSettings.bb4 = transformCoords([
+      $scope.coords[0][3][0],
+      $scope.coords[0][3][1]
+    ]);
+
     $scope.currentIndex = index;
     $scope.disableButton = false;
     $scope.disableButton = !$scope.disableButton;
@@ -230,6 +245,12 @@ function composerController(
       $scope.frameSettings.endTime;
     $scope.frameSettings[$scope.currentIndex].radius =
       $scope.frameSettings.radius;
+
+    $scope.frameSettings[$scope.currentIndex].bb1 = $scope.frameSettings.bb1;
+    $scope.frameSettings[$scope.currentIndex].bb2 = $scope.frameSettings.bb2;
+    $scope.frameSettings[$scope.currentIndex].bb3 = $scope.frameSettings.bb3;
+    $scope.frameSettings[$scope.currentIndex].bb4 = $scope.frameSettings.bb4;
+
     $scope.disableButton = true;
     $scope.disableButton = !$scope.disableButton;
   };

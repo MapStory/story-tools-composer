@@ -62,7 +62,7 @@
 
     <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="storyDetails(frameSettings)">Save</button>
     <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframeRecord(frameSettings, $index)">Update</button>
-    <button class="btn btn-inverse" type="reset">Reset</button>
+    <button class="btn btn-inverse" type="reset" ng-click="clearBoundingBox()">Reset</button>
 </form>
 </section>
 <br/><br/>
