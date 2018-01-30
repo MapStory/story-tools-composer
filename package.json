@@ -10,14 +10,12 @@
     "test": "webpack && karma start karma.config.js",
     "continuous": "webpack && karma start karma.config.js"
   },
-  "browserify": {
-    "transform": [["babelify", { "presets": ["es2015"] }]]
-  },
   "keywords": [],
   "devDependencies": {
     "angular": "^1.6.8",
     "angular-mocks": "^1.6.5",
     "angular-translate": "^2.15.2",
+    "angular-ui-bootstrap": "^2.5.6",
     "babel-core": "^6.26.0",
     "babel-eslint": "^8.0.3",
     "babel-loader": "^7.1.2",
