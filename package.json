@@ -10,9 +10,12 @@
     "test": "webpack && karma start karma.config.js",
     "continuous": "webpack && karma start karma.config.js"
   },
+  "browserify": {
+    "transform": [["babelify", { "presets": ["es2015"] }]]
+  },
   "keywords": [],
   "devDependencies": {
-    "angular": "^1.5.0",
+    "angular": "^1.6.8",
     "angular-mocks": "^1.6.5",
     "angular-translate": "^2.15.2",
     "babel-core": "^6.26.0",
@@ -47,13 +50,16 @@
     "less-loader": "^4.0.4",
     "prettier": "^1.5.3",
     "proxy-middleware": "^0.15.0",
-    "story-tools": "git+https://git@github.com/mapstory/story-tools.git#composer",
+    "story-tools":
+      "git+https://git@github.com/mapstory/story-tools.git#composer",
     "style-loader": "^0.18.2",
+    "vis": "^4.21.0",
     "webpack": "^2.6.1",
     "webpack-dev-server": "^2.4.5",
     "x2js": "^3.1.1"
   },
   "dependencies": {
+    "bootstrap": "^4.0.0",
     "time-controls": "git+https://git@github.com/mapstory/story-tools.git"
   },
   "repository": "https://github.com/MapStory/story-tools-composer",

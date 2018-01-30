@@ -1,9 +1,7 @@
 {
   "name": "story-tools-composer",
   "version": "0.0.1",
-  "main": [
-    "app/app.js"
-  ],
+  "main": ["app/app.js"],
   "description": "time slider and timeline controls for maps",
   "homepage": "",
   "repository": {
