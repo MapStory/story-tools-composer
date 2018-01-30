@@ -120,6 +120,10 @@ function composerController(
     $event.currentTarget.parentNode.classList.add("isDefault");
   };
 
+  function transformCoords(loc) {
+    return ol.proj.transform(loc, "EPSG:3857", "EPSG:4326");
+  }
+
   $scope.clearLayers = () => {
     MapManager.storyMap
       .getMap()
@@ -151,8 +155,13 @@ function composerController(
       .getLayers()
       .forEach(layer => {
         if (layer.get("name") === "boundingBox") {
+          const extent = layer.getSource().getExtent();
           layerList.push(layer.get("name"));
           if (layerList.length > 1) {
+            MapManager.storyMap
+              .getMap()
+              .getView()
+              .fit(extent, MapManager.storyMap.getMap().getSize());
             MapManager.storyMap.getMap().removeInteraction(draw);
           }
         }
@@ -181,10 +190,6 @@ function composerController(
     MapManager.storyMap.getMap().addLayer(vector);
     MapManager.storyMap.getMap().addInteraction(draw);
   };
-
-  function transformCoords(loc) {
-    return ol.proj.transform(loc, "EPSG:3857", "EPSG:4326");
-  }
 
   $scope.storyDetails = frameSettings => {
     $scope.frameSettings.push({
