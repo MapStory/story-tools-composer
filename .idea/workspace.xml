@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="28db5c83-1d21-4785-ba27-1ce200a1244a" name="Default" comment="" />
+    <list default="true" id="28db5c83-1d21-4785-ba27-1ce200a1244a" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/app/ui/composerController.js" afterPath="$PROJECT_DIR$/app/ui/composerController.js" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -17,8 +19,8 @@
       <file leaf-file-name="composerController.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="618">
-              <caret line="163" column="67" lean-forward="false" selection-start-line="163" selection-start-column="67" selection-end-line="163" selection-end-column="67" />
+            <state relative-caret-position="421">
+              <caret line="173" column="34" lean-forward="true" selection-start-line="173" selection-start-column="34" selection-end-line="173" selection-end-column="34" />
               <folding />
             </state>
           </provider>
@@ -48,7 +50,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>default</find>
       <find>showDetails</find>
       <find>check</find>
       <find>home</find>
@@ -78,6 +79,7 @@
       <find>update</find>
       <find>updateStoryframeRecord</find>
       <find>vis.js</find>
+      <find>ol.view</find>
     </findStrings>
     <replaceStrings>
       <replace />
@@ -137,7 +139,7 @@
   <component name="PackageJsonUpdateNotifier">
     <dismissed value="$PROJECT_DIR$/package.json" />
   </component>
-  <component name="ProjectFrameBounds" extendedState="1">
+  <component name="ProjectFrameBounds">
     <option name="x" value="1" />
     <option name="y" value="23" />
     <option name="width" value="1421" />
@@ -242,15 +244,15 @@
       <workItem from="1516224547180" duration="4567000" />
       <workItem from="1516309267559" duration="24007000" />
       <workItem from="1517235621811" duration="591000" />
-      <workItem from="1517251931178" duration="11327000" />
+      <workItem from="1517251931178" duration="15432000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="338662000" />
+    <option name="totallyTimeSpent" value="342767000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="1" y="23" width="1421" height="819" extended-state="1" />
+    <frame x="1" y="23" width="1421" height="819" extended-state="0" />
     <editor active="true" />
     <layout>
       <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.18719211" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
@@ -605,8 +607,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="618">
-          <caret line="163" column="67" lean-forward="false" selection-start-line="163" selection-start-column="67" selection-end-line="163" selection-end-column="67" />
+        <state relative-caret-position="421">
+          <caret line="173" column="34" lean-forward="true" selection-start-line="173" selection-start-column="34" selection-end-line="173" selection-end-column="34" />
           <folding />
         </state>
       </provider>

@@ -150,22 +150,25 @@ function composerController(
   let layerList = [];
 
   MapManager.storyMap.getMap().addEventListener("click", event => {
-    MapManager.storyMap
-      .getMap()
-      .getLayers()
-      .forEach(layer => {
-        if (layer.get("name") === "boundingBox") {
-          const extent = layer.getSource().getExtent();
-          layerList.push(layer.get("name"));
-          if (layerList.length > 1) {
-            MapManager.storyMap
+    const map = MapManager.storyMap.getMap();
+    map.getLayers().forEach(layer => {
+      if (layer.get("name") === "boundingBox") {
+        const extent = layer.getSource().getExtent();
+        layerList.push(layer.get("name"));
+        if (layerList.length > 1) {
+          const zoom = ol.animation.zoom({
+            resolution: MapManager.storyMap
               .getMap()
               .getView()
-              .fit(extent, MapManager.storyMap.getMap().getSize());
-            MapManager.storyMap.getMap().removeInteraction(draw);
-          }
+              .getResolution()
+          });
+          map.beforeRender(zoom);
+          map.getView().setCenter(extent);
+          map.getView().setResolution(map.getView().getResolution() * 0.2);
+          MapManager.storyMap.getMap().removeInteraction(draw);
         }
-      });
+      }
+    });
   });
 
   $scope.drawBoundingBox = () => {
