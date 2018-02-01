@@ -11,6 +11,7 @@ function pinSvc(
   const svc = {};
   svc.pins = [[]];
   svc.currentPin = null;
+  svc.isDrawing = false;
 
   svc.Pin = function(data) {
     const copyData = angular.copy(data);
@@ -357,6 +358,10 @@ function pinSvc(
     If the user presses `esc` the mode will be cancelled.
    */
   svc.placeNewPinOnMap = (pinName, latitude, longitude) => {
+    const pointFeature = new ol.Feature(
+      new ol.geom.Point([latitude, longitude])
+    );
+
     const iconFeature = new ol.Feature({
       geometry: new ol.geom.Point([latitude, longitude]),
       name: pinName
@@ -386,6 +391,111 @@ function pinSvc(
     });
   };
 
+  /**
+   * Drag functionality for PINS
+   */
+  svc.coordinate = null;
+  svc.cursor = "pointer";
+  svc.feature = null;
+  svc.previousCursor = undefined;
+  /**
+   * Drag constructor. Inherits from OpenLayers interaction.Pointer
+   */
+  svc.Drag = () => {
+    // Call conscructor and pass in custom handler functions for mouse events.
+    ol.interaction.Pointer.call(this, {
+      handleDownEvent: svc.Drag.prototype.handleDownEvent,
+      handleDragEvent: svc.Drag.prototype.handleDragEvent,
+      handleMoveEvent: svc.Drag.prototype.handleMoveEvent,
+      handleUpEvent: svc.Drag.prototype.handleUpEvent
+    });
+  };
+  ol.inherits(svc.Drag, ol.interaction.Pointer);
+
+  /**
+   * Handles the mouseDown event
+   */
+  svc.Drag.prototype.handleDownEvent = evt => {
+    const map = evt.map;
+    const feature = map.forEachFeatureAtPixel(evt.pixel, feature_ => {
+      return feature_;
+    });
+
+    if (feature) {
+      svc.coordinate = evt.coordinate;
+      svc.feature = feature;
+    }
+
+    return !!feature;
+  };
+
+  /**
+   * Handles the Drag event
+   */
+  svc.Drag.prototype.handleDragEvent = evt => {
+    const deltaX = evt.coordinate[0] - svc.coordinate[0];
+    const deltaY = evt.coordinate[1] - svc.coordinate[1];
+
+    const geometry = svc.feature.getGeometry();
+    geometry.translate(deltaX, deltaY);
+
+    svc.coordinate[0] = evt.coordinate[0];
+    svc.coordinate[1] = evt.coordinate[1];
+  };
+
+  svc.Drag.prototype.handleMoveEvent = evt => {
+    if (svc.cursor) {
+      const map = evt.map;
+      const feature = map.forEachFeatureAtPixel(evt.pixel, feature_ => {
+        return feature_;
+      });
+
+      const element = evt.map.getTargetElement();
+      if (feature) {
+        if (element.style.cursor !== svc.cursor) {
+          svc.previousCursor = element.style.cursor;
+          element.style.cursor = svc.cursor;
+        }
+      } else if (svc.previousCursor !== undefined) {
+        element.style.cursor = svc.previousCursor;
+        svc.previousCursor = undefined;
+      }
+    }
+  };
+
+  svc.Drag.prototype.handleUpEvent = () => {
+    svc.coordinate = null;
+    svc.feature = null;
+    return false;
+  };
+
+  svc.turnPinDrawModeOn = () => {
+    svc.isDrawing = !svc.isDrawing;
+    // register an event handler for the click event
+    const map = MapManager.storyMap.getMap();
+    const overlay = new ol.Overlay({
+      element: document.getElementById('overlay'),
+      positioning: 'bottom-center'
+    });
+
+    map.on("click", event => {
+      if (svc.isDrawing === true) {
+        // extract the spatial coordinate of the click event in map projection units
+        const coord = event.coordinate;
+        // transform it to decimal degrees
+        const degrees = ol.proj.transform(coord, "EPSG:3857", "EPSG:4326");
+        // format a human readable version
+        const hdms = ol.coordinate.toStringHDMS(degrees);
+        // update the overlay element's content
+        const element = overlay.getElement();
+        element.innerHTML = hdms;
+        // position the element (using the coordinate in the map's projection)
+        overlay.setPosition(coord);
+        // and add it to the map
+        map.addOverlay(overlay);
+      }
+    });
+  };
   return svc;
 }
 

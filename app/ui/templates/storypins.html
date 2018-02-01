@@ -9,50 +9,39 @@
 
         <!-- Pin List -->
         <accordion-group heading="StoryPins" is-open="open.chooser">
-
             <!-- TODO: Implement bulk upload-->
             <button class="btn btn-inverse">Bulk Upload</button>
             <!-- TODO: Send event that notifies that we are in "create new pin" state.-->
             <button class="btn btn-inverse" ng-click="open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">Add a
                 StoryPin
             </button>
+
+            <button class="btn btn-inverse" ng-click="pinSvc.turnPinDrawModeOn()">{{pinSvc.isDrawing ? "Cancel" : "Draw Pin"}}
+            </button>
             <!-- TODO: What is this doing? -->
             <pin-chooser pin-selected="open.editor=true"></pin-chooser>
 
         </accordion-group>
-
-        <!-- Pin details -->
-        <!--<accordion-group is-open="open.editor">-->
-            <!--<accordion-heading>-->
-                <!--&lt;!&ndash; Displays title according to state &ndash;&gt;-->
-                <!--<div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinSvc.currentPin.title : 'Add StoryPin'"></div>-->
-            <!--</accordion-heading>-->
-
-
-            <!--<div pin-editor>-->
-                <!--&lt;!&ndash; PIN EDITOR FORM &ndash;&gt;-->
-                <!--<pin-editor-form></pin-editor-form>-->
-                <!--&lt;!&ndash; ~~PIN EDITOR FORM~~ &ndash;&gt;-->
-
-                <!--<button class="btn btn-inverse" ng-disabled="!pinCtrl.isFormValid()"-->
-                        <!--ng-click="pinSvc.saveStoryPin()">Save-->
-                <!--</button>-->
-            <!--</div>-->
-        <!--</accordion-group>-->
-
-        <!-- Pin details -->
-        <!---->
-        <!--<accordion-group is-open="open.editor">-->
-            <!--<accordion-heading>-->
-                <!--<p>Old One</p>-->
-                <!--&lt;!&ndash; Displays title according to state &ndash;&gt;-->
-                <!--<div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinsCtrl.currentPin.title : 'Add StoryPin'"></div>-->
-            <!--</accordion-heading>-->
+         Pin details
+        <accordion-group is-open="open.editor">
+            <accordion-heading>
+                <!-- Displays title according to state -->
+                <div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinsCtrl.currentPin.title : 'Add StoryPin'"></div>
+            </accordion-heading>
 
 
-        <!--</accordion-group>-->
+            <div pin-editor>
+                <!-- PIN EDITOR FORM -->
+                <pin-editor-form></pin-editor-form>
+                <!-- ~~PIN EDITOR FORM~~ -->
 
+                <button class="btn btn-inverse" ng-disabled="!pinCtrl.isFormValid()"
+                        ng-click="pinsCtrl.saveStoryPin()">Save
+                </button>
+            </div>
+        </accordion-group>
     </accordion>
+    <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;"></div>
 </div>
 
 <section id="pin-list">
@@ -67,12 +56,12 @@
                 <i class="fa fa-trash delete"
                    ng-click="pinSvc.removePinByIndex({$index},
                          stateSvc.getChapterIndex())"></i>
-                <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === {{$index}},
-                         'fa-caret-down': uiHelperSvc.activePin !== {{$index}}}"
+                <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === $index,
+                         'fa-caret-down': uiHelperSvc.activePin !== $index}"
                    class="fa float-right"></i>
             </div>
         </section>
-        <section class="pin-form" ng-show="uiHelperSvc.activePin === {{$index}}"
+        <section class="pin-form" ng-show="uiHelperSvc.activePin === $index"
                  id="pin-form-{{$index}}">
             <form>
                 <div class="form-field">
@@ -150,8 +139,16 @@
                     <label for="play_embedded">
                         Play embedded StoryPin media automatically
                     </label>
+                    <hr>
+                    <input type="number" name="lat" ng-model="pin.lat" placeholder="Lat">
+                    <input type="number" name="long" ng-model="pin.long" placeholder="Long">
+
+                    <hr>
+                    <button>Save</button>
+
                 </div>
             </form>
+
         </section>
     </section>
 </section>
