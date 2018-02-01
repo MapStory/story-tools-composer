@@ -5,7 +5,8 @@ function pinSvc(
   $q,
   timeSvc,
   featureManagerSvc,
-  stateSvc
+  stateSvc,
+  MapManager
 ) {
   const svc = {};
   svc.pins = [[]];
@@ -52,9 +53,10 @@ function pinSvc(
     svc.pins.push([]);
   };
 
-  svc.createStoryPinLayer = () => featureManagerSvc.createVectorLayer(
-    featureManagerSvc.storyPinLayerMetadata
-  );
+  svc.createStoryPinLayer = () =>
+    featureManagerSvc.createVectorLayer(
+      featureManagerSvc.storyPinLayerMetadata
+    );
 
   svc.pinLayer = svc.createStoryPinLayer();
 
@@ -144,9 +146,10 @@ function pinSvc(
     $rootScope.$broadcast("pin-removed", chapter_index);
   };
 
-  svc.validatePinProperty = (pinInstantiationObj, propertyName) => pinInstantiationObj.hasOwnProperty(propertyName) &&
-  (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
-    !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
+  svc.validatePinProperty = (pinInstantiationObj, propertyName) =>
+    pinInstantiationObj.hasOwnProperty(propertyName) &&
+    (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
+      !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
 
   svc.validateAllPinProperties = pinInstantiationObj => {
     const missingProperties = [];
@@ -330,6 +333,57 @@ function pinSvc(
   };
 
   svc.addMultipleGettersAndSettersToPinPrototype(model_attributes);
+
+  /*
+    When a user starts creating a new pin, this creates the default pin.
+   */
+  svc.onNewStoryPin = chapterIndex => {
+    const defaults = {
+      title: "unnamed story-pin",
+      start_time: "1/1/2018",
+      end_time: "1/1/2018",
+      geometry: {
+        coordinates: [0, 0]
+      }
+    };
+    this.currentPin = svc.addPin(defaults, chapterIndex);
+  };
+
+  /*
+    Starts "Place new Pin" mode.
+    The mouse cursor should change to a Pin.
+    When the user clicks on the map it places the pin and fills the Lat,Long on the form.
+    If the user presses `esc` the mode will be cancelled.
+   */
+  svc.placeNewPinOnMap = (pinName, latitude, longitude) => {
+    const iconFeature = new ol.Feature({
+      geometry: new ol.geom.Point([latitude, longitude]),
+      name: pinName
+    });
+
+    const iconStyle = new ol.style.Style({
+      image: new ol.style.Icon({
+        anchor: [0, 0],
+        anchorXUnits: "fraction",
+        anchorYUnits: "pixels",
+        opacity: 0.75,
+        src: "data/icon.png"
+      })
+    });
+
+    iconFeature.setStyle(iconStyle);
+    const vectorSource = new ol.source.Vector({
+      features: [iconFeature]
+    });
+
+    const vectorLayer = new ol.layer.Vector({
+      source: vectorSource
+    });
+    // TODO: Add layers to map
+    let map = new ol.Map({
+      layers: [vectorLayer]
+    });
+  };
 
   return svc;
 }
