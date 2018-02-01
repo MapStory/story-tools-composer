@@ -5,7 +5,7 @@
      pins-overlay="mapManager.storyMap.overlay">
 
     <!-- Pin Accordion -->
-    <accordion close-others="false" ng-init="open={chooser:true,editor:false}">
+    <accordion close-others="false" ng-init="open={chooser:true, editor:false}">
 
         <!-- Pin List -->
         <accordion-group heading="StoryPins" is-open="open.chooser">
@@ -22,43 +22,23 @@
         </accordion-group>
 
         <!-- Pin details -->
-        <accordion-group is-open="open.editor">
-            <accordion-heading>
-                <!-- Displays title according to state -->
-                <div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinsCtrl.currentPin.title : 'Add StoryPin'"></div>
-            </accordion-heading>
-
-            <div class="new-pin-editor">
-                <!-- TODO: New Editor Form goes here -->
-                <!--<storypin-form></storypin-form>-->
-                <form>
-                    Title:<br>
-                    <input type="text" name="title" ng-model="pinSvc.currentPin.title">
-                    Content:<br>
-                    <input type="text" name="content" ng-model="pinSvc.currentPin.content">
-                    <hr>
-                    Location:<br>
-                    <input type="text" name="latitude" placeholder="lat">
-                    <input type="text" name="longitude" placeholder="long">
-                    <br>
-                    <button class="btn btn-inverse" ng-disabled="false"
-                        ng-click="pinSvc.placeNewPinOnMap();">Place on map
-                    </button>
-                    <hr>
-                    Start time:<br>
-                    <input type="text" name="start">
-                    End time:<br>
-                    <input type="text" name="end">
-                    <hr>
-                    Options:<br>
-                    <button class="btn btn-inverse" ng-disabled="false"
-                        ng-click="pinSvc.saveCurrentPin();">Save
-                </button>
-                </form>
+        <!--<accordion-group is-open="open.editor">-->
+            <!--<accordion-heading>-->
+                <!--&lt;!&ndash; Displays title according to state &ndash;&gt;-->
+                <!--<div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinSvc.currentPin.title : 'Add StoryPin'"></div>-->
+            <!--</accordion-heading>-->
 
 
-            </div>
-        </accordion-group>
+            <!--<div pin-editor>-->
+                <!--&lt;!&ndash; PIN EDITOR FORM &ndash;&gt;-->
+                <!--<pin-editor-form></pin-editor-form>-->
+                <!--&lt;!&ndash; ~~PIN EDITOR FORM~~ &ndash;&gt;-->
+
+                <!--<button class="btn btn-inverse" ng-disabled="!pinCtrl.isFormValid()"-->
+                        <!--ng-click="pinSvc.saveStoryPin()">Save-->
+                <!--</button>-->
+            <!--</div>-->
+        <!--</accordion-group>-->
 
         <!-- Pin details -->
         <!---->
@@ -69,15 +49,7 @@
                 <!--<div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinsCtrl.currentPin.title : 'Add StoryPin'"></div>-->
             <!--</accordion-heading>-->
 
-            <!--<div pin-editor>-->
-                <!--&lt;!&ndash; PIN EDITOR FORM &ndash;&gt;-->
-                <!--<pin-editor-form></pin-editor-form>-->
-                <!--&lt;!&ndash; ~~PIN EDITOR FORM~~ &ndash;&gt;-->
 
-                <!--<button class="btn btn-inverse" ng-disabled="!pinCtrl.isFormValid()"-->
-                        <!--ng-click="pinsCtrl.saveStoryPin()">Save-->
-                <!--</button>-->
-            <!--</div>-->
         <!--</accordion-group>-->
 
     </accordion>

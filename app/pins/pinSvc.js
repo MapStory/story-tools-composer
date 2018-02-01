@@ -10,6 +10,7 @@ function pinSvc(
 ) {
   const svc = {};
   svc.pins = [[]];
+  svc.currentPin = null;
 
   svc.Pin = function(data) {
     const copyData = angular.copy(data);
