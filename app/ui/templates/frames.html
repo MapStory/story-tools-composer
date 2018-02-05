@@ -37,10 +37,10 @@
 </div>
 
 <form ng-show="showForm == true" id="storySettings">
-    <label for="storyframe_title">Title</label>
+    <label for="storyframe_title">*Title</label>
     <input id="storypin_title" type="text" ng-model="frameSettings.title"/>
 
-    <label for="start_date">Start Date</label>
+    <label for="start_date">*Start Date</label>
     <div>
         <input type="date" ng-model="frameSettings.startDate">
         <span class="fa fa-calendar input-icons"></span>
@@ -48,7 +48,7 @@
         <span class="fa fa-clock-o input-icons"></span>
     </div>
 
-    <label for="end_date">End Date</label>
+    <label for="end_date">*End Date</label>
     <div>
         <input type="date" ng-model="frameSettings.endDate">
         <span class="fa fa-calendar input-icons"></span>
@@ -57,11 +57,11 @@
     </div>
 
     <div id="setPlacement">
-        <p href="#" ng-click="drawBoundingBox()">Click to set bounding box for Storyframe on map.</p>
+        <p href="#" ng-click="drawBoundingBox()">*Click to set bounding box for Storyframe on map.</p>
     </div>
 
     <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="storyDetails(frameSettings)">Save</button>
-    <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframeRecord(frameSettings, $index)">Update</button>
+    <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframe(frameSettings, $index)">Update</button>
     <button class="btn btn-inverse" type="reset" ng-click="clearBoundingBox()">Reset</button>
 </form>
 </section>

@@ -2,7 +2,9 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="28db5c83-1d21-4785-ba27-1ce200a1244a" name="Default" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
       <change beforePath="$PROJECT_DIR$/app/ui/composerController.js" afterPath="$PROJECT_DIR$/app/ui/composerController.js" />
+      <change beforePath="$PROJECT_DIR$/app/ui/templates/frames.html" afterPath="$PROJECT_DIR$/app/ui/templates/frames.html" />
     </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
@@ -19,8 +21,8 @@
       <file leaf-file-name="composerController.js" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="421">
-              <caret line="173" column="34" lean-forward="true" selection-start-line="173" selection-start-column="34" selection-end-line="173" selection-end-column="34" />
+            <state relative-caret-position="718">
+              <caret line="143" column="11" lean-forward="true" selection-start-line="143" selection-start-column="11" selection-end-line="143" selection-end-column="11" />
               <folding />
             </state>
           </provider>
@@ -29,8 +31,8 @@
       <file leaf-file-name="frames.html" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/app/ui/templates/frames.html">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="517">
-              <caret line="57" column="0" lean-forward="true" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+            <state relative-caret-position="533">
+              <caret line="64" column="64" lean-forward="false" selection-start-line="64" selection-start-column="59" selection-end-line="64" selection-end-column="64" />
               <folding />
             </state>
           </provider>
@@ -50,9 +52,6 @@
   </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>showDetails</find>
-      <find>check</find>
-      <find>home</find>
       <find>title</find>
       <find>eonasdan</find>
       <find>angular.element</find>
@@ -75,17 +74,21 @@
       <find>click</find>
       <find>name</find>
       <find>log.log</find>
-      <find>clear</find>
-      <find>update</find>
       <find>updateStoryframeRecord</find>
       <find>vis.js</find>
       <find>ol.view</find>
+      <find>MapManager.storyMap.getMap()</find>
+      <find>update</find>
+      <find>updateStoryframe</find>
+      <find>clearlayers</find>
+      <find>clear</find>
     </findStrings>
     <replaceStrings>
       <replace />
       <replace>$log.</replace>
       <replace>storyFeature</replace>
       <replace>$scope.coords[0]</replace>
+      <replace>map</replace>
     </replaceStrings>
     <dirStrings>
       <dir>$PROJECT_DIR$</dir>
@@ -108,8 +111,8 @@
         <option value="$PROJECT_DIR$/.jshintrc" />
         <option value="$PROJECT_DIR$/webpack.config.js" />
         <option value="$PROJECT_DIR$/app/frames/style/frames.less" />
-        <option value="$PROJECT_DIR$/app/ui/templates/frames.html" />
         <option value="$PROJECT_DIR$/app/time/style/time.less" />
+        <option value="$PROJECT_DIR$/app/ui/templates/frames.html" />
         <option value="$PROJECT_DIR$/app/ui/composerController.js" />
       </list>
     </option>
@@ -172,12 +175,23 @@
               <item name="story-tools-composer-develop" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
             </path>
+            <path>
+              <item name="story-tools-composer-develop" type="b2602c69:ProjectViewProjectNode" />
+              <item name="story-tools-composer-develop" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="time" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="story-tools-composer-develop" type="b2602c69:ProjectViewProjectNode" />
+              <item name="story-tools-composer-develop" type="462c0819:PsiDirectoryNode" />
+              <item name="img" type="462c0819:PsiDirectoryNode" />
+            </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
       <pane id="Scope" />
+      <pane id="Scratches" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -244,12 +258,13 @@
       <workItem from="1516224547180" duration="4567000" />
       <workItem from="1516309267559" duration="24007000" />
       <workItem from="1517235621811" duration="591000" />
-      <workItem from="1517251931178" duration="15432000" />
+      <workItem from="1517251931178" duration="26753000" />
+      <workItem from="1517519608035" duration="8406000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="342767000" />
+    <option name="totallyTimeSpent" value="362494000" />
   </component>
   <component name="ToolWindowManager">
     <frame x="1" y="23" width="1421" height="819" extended-state="0" />
@@ -561,7 +576,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="45">
           <caret line="3" column="14" lean-forward="false" selection-start-line="3" selection-start-column="14" selection-end-line="3" selection-end-column="14" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -569,7 +583,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -577,7 +590,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -585,7 +597,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="-713">
           <caret line="141" column="6" lean-forward="true" selection-start-line="141" selection-start-column="6" selection-end-line="141" selection-end-column="6" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -593,22 +604,21 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/ui/templates/frames.html">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="517">
-          <caret line="57" column="0" lean-forward="true" selection-start-line="57" selection-start-column="0" selection-end-line="57" selection-end-column="0" />
+        <state relative-caret-position="533">
+          <caret line="64" column="64" lean-forward="false" selection-start-line="64" selection-start-column="59" selection-end-line="64" selection-end-column="64" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/ui/composerController.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="421">
-          <caret line="173" column="34" lean-forward="true" selection-start-line="173" selection-start-column="34" selection-end-line="173" selection-end-column="34" />
+        <state relative-caret-position="718">
+          <caret line="143" column="11" lean-forward="true" selection-start-line="143" selection-start-column="11" selection-end-line="143" selection-end-column="11" />
           <folding />
         </state>
       </provider>

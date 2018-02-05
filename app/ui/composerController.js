@@ -111,6 +111,7 @@ function composerController(
   $scope.previousChapter = navigationSvc.previousChapter;
 
   $scope.frameSettings = [];
+  const map = MapManager.storyMap.getMap();
 
   $scope.isDefault = ($event, index) => {
     const elem = document.querySelectorAll(".isDefault");
@@ -124,24 +125,18 @@ function composerController(
     return ol.proj.transform(loc, "EPSG:3857", "EPSG:4326");
   }
 
-  $scope.clearLayers = () => {
-    MapManager.storyMap
-      .getMap()
-      .getLayers()
-      .forEach(layer => {
-        if (layer instanceof ol.layer.Vector) {
-          MapManager.storyMap.getMap().removeLayer(layer);
-        }
-      });
-  };
-
   $scope.clearBoundingBox = () => {
     MapManager.storyMap
       .getMap()
       .getLayers()
       .forEach(layer => {
         if (layer.get("name") === "boundingBox") {
-          MapManager.storyMap.getMap().removeLayer(layer);
+          map.removeLayer(layer);
+          const zoom = ol.animation.zoom({
+            resolution: map.getView().getResolution()
+          });
+          map.beforeRender(zoom);
+          map.getView().setZoom(map.getView().getZoom() * 0.0);
         }
       });
   };
@@ -149,23 +144,19 @@ function composerController(
   let draw;
   let layerList = [];
 
-  MapManager.storyMap.getMap().addEventListener("click", event => {
-    const map = MapManager.storyMap.getMap();
+  map.addEventListener("click", event => {
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
         const extent = layer.getSource().getExtent();
         layerList.push(layer.get("name"));
         if (layerList.length > 1) {
           const zoom = ol.animation.zoom({
-            resolution: MapManager.storyMap
-              .getMap()
-              .getView()
-              .getResolution()
+            resolution: map.getView().getResolution()
           });
           map.beforeRender(zoom);
           map.getView().setCenter(extent);
           map.getView().setResolution(map.getView().getResolution() * 0.2);
-          MapManager.storyMap.getMap().removeInteraction(draw);
+          map.removeInteraction(draw);
         }
       }
     });
@@ -190,8 +181,8 @@ function composerController(
     });
     vector.set("name", "boundingBox");
 
-    MapManager.storyMap.getMap().addLayer(vector);
-    MapManager.storyMap.getMap().addInteraction(draw);
+    map.addLayer(vector);
+    map.addInteraction(draw);
   };
 
   $scope.storyDetails = frameSettings => {
@@ -240,7 +231,7 @@ function composerController(
     $scope.disableButton = !$scope.disableButton;
   };
 
-  $scope.updateStoryframeRecord = () => {
+  $scope.updateStoryframe = () => {
     $scope.frameSettings[$scope.currentIndex].title =
       $scope.frameSettings.title;
     $scope.frameSettings[$scope.currentIndex].startDate =
@@ -261,6 +252,8 @@ function composerController(
 
     $scope.disableButton = true;
     $scope.disableButton = !$scope.disableButton;
+
+    $log.log($scope.frameSettings.bb1);
   };
 
   $scope.deleteStoryframe = index => {
