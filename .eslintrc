@@ -20,7 +20,9 @@
     "game": true,
     "ol": true,
     "angular": true,
-    "inject": true
+    "inject": true,
+    "toastr": true,
+    "goog": true
   },
   "plugins": [
     "prettier"
