@@ -62,6 +62,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
     }
     const cfg = {
       id: id,
+      map_id: data.map_id,
       about: {
         abstract: data.abstract,
         owner: data.owner,
