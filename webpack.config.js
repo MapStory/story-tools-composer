@@ -6,7 +6,7 @@ var serverHost = "https://mapstory.org"; //"https://docker";
 module.exports = {
   context: __dirname,
   resolve: {
-    modules: ["node_modules", "bower_components"],
+    modules: ["node_modules"],
     alias: {
       jquery: Path.join(__dirname, "node_modules/jquery/dist/jquery")
     }
@@ -15,7 +15,7 @@ module.exports = {
     rules: [
       {
         test: /\.spec\.js$/,
-        exclude: /(bower_components|node_modules)/,
+        exclude: /(node_modules)/,
         loader: "babel-loader",
         query: {
           presets: ["es2015", "stage-0"],

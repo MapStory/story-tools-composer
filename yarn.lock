@@ -147,9 +147,21 @@ amdefine@>=0.1.0:
   version "1.0.1"
   resolved "https://registry.yarnpkg.com/amdefine/-/amdefine-1.0.1.tgz#4a5282ac164729e93619bcfd3ad151f817ce91f5"
 
+angular-bootstrap-colorpicker@3.0.32:
+  version "3.0.32"
+  resolved "https://registry.yarnpkg.com/angular-bootstrap-colorpicker/-/angular-bootstrap-colorpicker-3.0.32.tgz#1080b1ab9802c1bae1919badb26417de6758ef3d"
+
+angular-bootstrap@0.12.2:
+  version "0.12.2"
+  resolved "https://registry.yarnpkg.com/angular-bootstrap/-/angular-bootstrap-0.12.2.tgz#de9900a7db087a7e9da47304a9c2f77f9c069827"
+
 angular-mocks@^1.6.5:
   version "1.6.8"
   resolved "https://registry.yarnpkg.com/angular-mocks/-/angular-mocks-1.6.8.tgz#ba2120057b4edaa56492d8789ddfbc8f18afa3c5"
+
+angular-sortable-view@0.0.17:
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/angular-sortable-view/-/angular-sortable-view-0.0.17.tgz#99e2679951a86b6ee6ff27b099022943c683fb4f"
 
 angular-translate@^2.15.2:
   version "2.17.0"
@@ -1221,6 +1233,10 @@ boom@5.x.x:
   dependencies:
     hoek "4.x.x"
 
+bootstrap@3.3.7, bootstrap@^3.3:
+  version "3.3.7"
+  resolved "https://registry.yarnpkg.com/bootstrap/-/bootstrap-3.3.7.tgz#5a389394549f23330875a3b150656574f8a9eb71"
+
 brace-expansion@^1.1.7:
   version "1.1.8"
   resolved "https://registry.yarnpkg.com/brace-expansion/-/brace-expansion-1.1.8.tgz#c07b211c7c952ec1f8efd51a77ef0d1d3990a292"
@@ -2280,6 +2296,15 @@ enhanced-resolve@^3.3.0:
 ent@~2.2.0:
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/ent/-/ent-2.2.0.tgz#e964219325a21d05f44466a2f686ed6ce5f5dd1d"
+
+eonasdan-bootstrap-datetimepicker@^4.17.47:
+  version "4.17.47"
+  resolved "https://registry.yarnpkg.com/eonasdan-bootstrap-datetimepicker/-/eonasdan-bootstrap-datetimepicker-4.17.47.tgz#7a49970044065276e7965efd16f822735219e735"
+  dependencies:
+    bootstrap "^3.3"
+    jquery "^1.8.3 || ^2.0 || ^3.0"
+    moment "^2.10"
+    moment-timezone "^0.4.0"
 
 errno@^0.1.1, errno@^0.1.3:
   version "0.1.6"
@@ -3685,6 +3710,10 @@ jest-docblock@^21.0.0:
   version "21.2.0"
   resolved "https://registry.yarnpkg.com/jest-docblock/-/jest-docblock-21.2.0.tgz#51529c3b30d5fd159da60c27ceedc195faf8d414"
 
+"jquery@^1.8.3 || ^2.0 || ^3.0":
+  version "3.3.1"
+  resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.3.1.tgz#958ce29e81c9790f31be7792df5d4d95fc57fbca"
+
 jquery@^3.2.1:
   version "3.2.1"
   resolved "https://registry.yarnpkg.com/jquery/-/jquery-3.2.1.tgz#5c4d9de652af6cd0a770154a631bba12b015c787"
@@ -4094,6 +4123,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
+materialize@1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/materialize/-/materialize-1.0.0.tgz#3e91c8a8c25475a7324e062ba34baf71c4a334aa"
+
 math-expression-evaluator@^1.2.14:
   version "1.2.17"
   resolved "https://registry.yarnpkg.com/math-expression-evaluator/-/math-expression-evaluator-1.2.17.tgz#de819fdbcd84dccd8fae59c6aeb79615b9d266ac"
@@ -4266,7 +4299,13 @@ mkdirp@0.5.x, "mkdirp@>=0.5 0", mkdirp@^0.5.0, mkdirp@^0.5.1, mkdirp@~0.5.0, mkd
   dependencies:
     minimist "0.0.8"
 
-moment@^2.10.2, moment@^2.18.1:
+moment-timezone@^0.4.0:
+  version "0.4.1"
+  resolved "https://registry.yarnpkg.com/moment-timezone/-/moment-timezone-0.4.1.tgz#81f598c3ad5e22cdad796b67ecd8d88d0f5baa06"
+  dependencies:
+    moment ">= 2.6.0"
+
+"moment@>= 2.6.0", moment@^2.10, moment@^2.10.2, moment@^2.18.1:
   version "2.20.1"
   resolved "https://registry.yarnpkg.com/moment/-/moment-2.20.1.tgz#d6eb1a46cbcc14a2b2f9434112c1ff8907f313fd"
 
@@ -4428,6 +4467,10 @@ normalize-url@^1.4.0:
     prepend-http "^1.0.0"
     query-string "^4.1.0"
     sort-keys "^1.0.0"
+
+nouislider@9.2.0:
+  version "9.2.0"
+  resolved "https://registry.yarnpkg.com/nouislider/-/nouislider-9.2.0.tgz#e87c507de2b0b4d075038b5a42547c7dbbebaf69"
 
 npmlog@^4.0.2:
   version "4.1.2"

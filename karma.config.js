@@ -21,9 +21,9 @@ module.exports = function(config) {
     files: [
       "./build/vendor.bundle.js",
       "./js/test_config.js",
-      "./bower_components/jquery/dist/jquery.min.js",
+      "./node_modules/jquery/dist/jquery.min.js",
       "./node_modules/time-controls/dist/story-tools-vendor-all.js",
-      "./bower_components/angular-sortable-view/src/angular-sortable-view.js",
+      "./node_modules/angular-sortable-view/src/angular-sortable-view.js",
       "./node_modules/time-controls/dist/story-tools-core-all.js",
       "./node_modules/time-controls/dist/story-tools-edit-tpls.js",
       "./node_modules/time-controls/dist/story-tools-edit.js",

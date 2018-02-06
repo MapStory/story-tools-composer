@@ -2,8 +2,8 @@
 <head>
   <link href="https://fonts.googleapis.com/css?family=Lato:400,400i,700,900" rel="stylesheet">
   <link href="node_modules/time-controls/dist/story-tools-core-all.css" rel="stylesheet">
-  <link href="bower_components/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="bower_components/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
+  <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="node_modules/eonasdan-bootstrap-datetimepicker/build/css/bootstrap-datetimepicker.min.css" />
   <link href="build/bundle.css" rel="stylesheet">
 </head>
 <body ng-controller="composerController as composer">
@@ -35,12 +35,12 @@
   console.log(config);
 </script>
   <script src="js/modernizr.js"></script>
-  <script src="bower_components/jquery/dist/jquery.min.js"></script>
+  <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <script src="build/vendor.bundle.js"></script>
-  <script src="bower_components/moment/min/moment.min.js"></script>
-  <script src="bower_components/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
+  <script src="node_modules/moment/min/moment.min.js"></script>
+  <script src="node_modules/eonasdan-bootstrap-datetimepicker/build/js/bootstrap-datetimepicker.min.js"></script>
   <script src="node_modules/time-controls/dist/story-tools-vendor-all.js"></script>
-  <script src="bower_components/angular-sortable-view/src/angular-sortable-view.js"></script>
+  <script src="node_modules/angular-sortable-view/src/angular-sortable-view.js"></script>
   <script src="node_modules/time-controls/dist/story-tools-core-all.js"></script>
   <script src="node_modules/time-controls/dist/story-tools-edit-tpls.js"></script>
   <script src="node_modules/time-controls/dist/story-tools-edit.js"></script>
