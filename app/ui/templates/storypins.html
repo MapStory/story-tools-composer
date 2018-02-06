@@ -22,26 +22,7 @@
             <pin-chooser pin-selected="open.editor=true"></pin-chooser>
 
         </accordion-group>
-         Pin details
-        <accordion-group is-open="open.editor">
-            <accordion-heading>
-                <!-- Displays title according to state -->
-                <div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinsCtrl.currentPin.title : 'Add StoryPin'"></div>
-            </accordion-heading>
-
-
-            <div pin-editor>
-                <!-- PIN EDITOR FORM -->
-                <pin-editor-form></pin-editor-form>
-                <!-- ~~PIN EDITOR FORM~~ -->
-
-                <button class="btn btn-inverse" ng-disabled="!pinCtrl.isFormValid()"
-                        ng-click="pinsCtrl.saveStoryPin()">Save
-                </button>
-            </div>
-        </accordion-group>
-    </accordion>
-    <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;"></div>
+    <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;" ng-show="pinSvc.isDrawing"></div>
 </div>
 
 <section id="pin-list">
