@@ -4,9 +4,10 @@
      pins-editor
      pins-overlay="mapManager.storyMap.overlay">
 
+
+
     <!-- Pin Accordion -->
     <accordion close-others="false" ng-init="open={chooser:true, editor:false}">
-
         <!-- Pin List -->
         <accordion-group heading="StoryPins" is-open="open.chooser">
             <!-- TODO: Implement bulk upload-->
@@ -15,12 +16,10 @@
             <button class="btn btn-inverse" ng-click="open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">Add a
                 StoryPin
             </button>
-
             <button class="btn btn-inverse" ng-click="pinSvc.turnPinDrawModeOn()">{{pinSvc.isDrawing ? "Cancel" : "Draw Pin"}}
             </button>
-            <!-- TODO: What is this doing? -->
-            <pin-chooser pin-selected="open.editor=true"></pin-chooser>
 
+            <!--<pin-chooser pin-selected="open.editor=true"></pin-chooser>-->
         </accordion-group>
         <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;" ng-show="pinSvc.isDrawing"></div>
 </div>
@@ -112,8 +111,8 @@
                                 Play embedded StoryPin media automatically
                             </label>
                             <hr>
-                            <input type="number" name="lat" ng-model="pin.lat" placeholder="Lat">
-                            <input type="number" name="long" ng-model="pin.long" placeholder="Long">
+                            <input type="number" name="lat" ng-model="pin.coords[0]" placeholder="{{pin.coords[0]}}">
+                            <input type="number" name="long" ng-model="pin.coords[1]" placeholder="{{pin.coords[1]}}">
 
                             <hr>
                             <button>Save</button>

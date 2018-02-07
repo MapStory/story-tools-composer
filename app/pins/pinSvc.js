@@ -264,7 +264,7 @@ function pinSvc(
    * Adds a new Pin with the given properties to the given chapter.
    * @param props The pin's properties.
    * @param chapter_index The chapter's index.
-   * @returns {boolean} True when OK.
+   * @returns {Pin} The Pin created.
    */
   svc.addPin = (props, chapter_index) => {
     // Check if data is OK
@@ -288,12 +288,12 @@ function pinSvc(
       );
     }
     // Create the new storypin
-    const storyPin = new svc.Pin(props);
+    let storyPin = new svc.Pin(props);
     // Push to the chapter
     svc.pins[chapter_index].push(storyPin);
     // Broadcast event
     $rootScope.$broadcast("pin-added", chapter_index);
-    return true;
+    return storyPin;
   };
 
   /**
@@ -457,14 +457,45 @@ function pinSvc(
    */
   svc.onNewStoryPin = chapterIndex => {
     const defaults = {
-      title: "unnamed story-pin",
+      title: "New StoryPin",
       start_time: "1/1/2018",
       end_time: "1/1/2018",
       geometry: {
-        coordinates: [0, 0]
+        coordinates: [16.3725, 48.208889]
       }
     };
-    this.currentPin = svc.addPin(defaults, chapterIndex);
+    if (svc.addPin(defaults, chapterIndex) !== false){
+      const pins = svc.getPins(chapterIndex);
+      svc.currentPin = pins[pins.length - 1];
+      svc.currentPin.coords = [16.3725, 48.208889];
+      svc.dropPinOverlay(svc.currentPin);
+    } else {
+      alert("No pin was created");
+    };
+
+
+  };
+
+  svc.dropPinOverlay = pin => {
+    const popup = new ol.Overlay({
+      element: document.getElementById("popup")
+    });
+    const pos = ol.proj.fromLonLat(pin.coords);
+    popup.setPosition(pos);
+    const map = MapManager.storyMap.getMap();
+    map.addOverlay(popup);
+    const element = popup.getElement();
+    const coordinate = pin.coords;
+    $(element).popover("destroy");
+    popup.setPosition(coordinate);
+    // the keys are quoted to prevent renaming in ADVANCED mode.
+    $(element).popover({
+      'placement': 'top',
+      'animation': false,
+      'html': true,
+      'content': "Hello!!!"
+    });
+    $(element).popover("show");
   };
 
   /*
@@ -609,6 +640,7 @@ function pinSvc(
         overlay.setPosition(coord);
         // and add it to the map
         map.addOverlay(overlay);
+        svc.currentPin.coords = coord;
       }
     });
   };
