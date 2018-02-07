@@ -22,26 +22,26 @@
             <pin-chooser pin-selected="open.editor=true"></pin-chooser>
 
         </accordion-group>
-    <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;" ng-show="pinSvc.isDrawing"></div>
+        <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;" ng-show="pinSvc.isDrawing"></div>
 </div>
 
 <section id="pin-list">
     <!--<script type="text/ng-template" id="group-template.html">-->
-        <!--<div>-->
-        <!--<div class="panel-heading">-->
-          <!--<h4 class="panel-title">-->
-            <!--<a href tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" uib-accordion-transclude="heading">-->
-              <!--<span uib-accordion-header ng-class="{'text-muted': isDisabled}">-->
-                <!--{{heading}}-->
-              <!--</span>-->
-            <!--</a>-->
-          <!--</h4>-->
-        <!--</div>-->
-        <!--<div class="panel-collapse collapse" uib-collapse="!isOpen">-->
-          <!--<div class="panel-body" style="text-align: right" ng-transclude></div>-->
-        <!--</div>-->
-        <!--</div>-->
-  <!--</script>-->
+    <!--<div>-->
+    <!--<div class="panel-heading">-->
+    <!--<h4 class="panel-title">-->
+    <!--<a href tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" uib-accordion-transclude="heading">-->
+    <!--<span uib-accordion-header ng-class="{'text-muted': isDisabled}">-->
+    <!--{{heading}}-->
+    <!--</span>-->
+    <!--</a>-->
+    <!--</h4>-->
+    <!--</div>-->
+    <!--<div class="panel-collapse collapse" uib-collapse="!isOpen">-->
+    <!--<div class="panel-body" style="text-align: right" ng-transclude></div>-->
+    <!--</div>-->
+    <!--</div>-->
+    <!--</script>-->
 
     <uib-accordion close-others=true>
         <!-- Gets pins from pin service-->
@@ -60,6 +60,80 @@
                             <br/>
                             <input id="storypin_title" type="text" name="storypin_title" ng-model="pin.title"/>
                         </div>
+                        <div class="form-field">
+                            <label for="storypin_text">StoryPin Text</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <br/>
+                            <input id="storypin_text" type="text" name="storypin_text"
+                                   ng-model="pin.content"/>
+                        </div>
+                        <div class="form-field">
+                            <label for="storypin_media">StoryPin Media</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <br/>
+                            <!-- TODO: Empty text areas don't work in all browsers-->
+                            <textarea id="storypin_media" rows="10"  name="storypin_media" required/></textarea>
+                        </div>
+                        <div class="form-field">
+                            <label for="start_time">Start Time</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <br/>
+                            <datetimepicker date-object="pin.start_time"
+                                            default-date="inserting"
+                                            id="start_time"></datetimepicker>
+                        </div>
+                        <div class="form-field">
+                            <label for="end_time">End Time</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <br/>
+                            <datetimepicker date-object="pin.end_time"
+                                            default-date="inserting"
+                                            id="end_time"></datetimepicker>
+                        </div>
+                        <div class="form-field">
+                            <label for="storypin_playback_options">
+                                StoryPin Playback Options
+                            </label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="timeline"
+                                       ng-init="pin.in_timeline = false"
+                                       ng-model="pin.in_timeline">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="timeline">Show StoryPin on Timeline</label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="map"
+                                       ng-init="pin.in_map = true"
+                                       ng-model="pin.in_map">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="map">Show StoryPin on Map</label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="pause_playback">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="pause_playback">
+                                Pause playback when StoryPin appears
+                            </label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="play_embedded"
+                                       ng-init="pin.auto_show = false"
+                                       ng-model="pin.auto_show">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="play_embedded">
+                                Play embedded StoryPin media automatically
+                            </label>
+                            <hr>
+                            <input type="number" name="lat" ng-model="pin.lat" placeholder="Lat">
+                            <input type="number" name="long" ng-model="pin.long" placeholder="Long">
+
+                            <hr>
+                            <button>Save</button>
                     </form>
                 </div>
             </div>
