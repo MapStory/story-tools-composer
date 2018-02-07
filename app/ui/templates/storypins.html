@@ -26,31 +26,14 @@
 </div>
 
 <section id="pin-list">
-    <!--<script type="text/ng-template" id="group-template.html">-->
-    <!--<div>-->
-    <!--<div class="panel-heading">-->
-    <!--<h4 class="panel-title">-->
-    <!--<a href tabindex="0" class="accordion-toggle" ng-click="toggleOpen()" uib-accordion-transclude="heading">-->
-    <!--<span uib-accordion-header ng-class="{'text-muted': isDisabled}">-->
-    <!--{{heading}}-->
-    <!--</span>-->
-    <!--</a>-->
-    <!--</h4>-->
-    <!--</div>-->
-    <!--<div class="panel-collapse collapse" uib-collapse="!isOpen">-->
-    <!--<div class="panel-body" style="text-align: right" ng-transclude></div>-->
-    <!--</div>-->
-    <!--</div>-->
-    <!--</script>-->
-
     <uib-accordion close-others=true>
         <!-- Gets pins from pin service-->
         <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
-            <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index" ng-click=" uiHelperSvc.activePin === $index ? true : uiHelperSvc.togglePinForm({$index})">
-                <uib-accordion-heading >
+            <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index" ng-click="uiHelperSvc.activePin === $index ? true : uiHelperSvc.togglePinForm({$index})">
+                <uib-accordion-heading>
                     {{pin.title}}
                     <i class="fa fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>
-                    <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === $index,'fa-caret-down': uiHelperSvc.activePin !== $index}" class="fa float-right"></i>
+                    <i ng-click="uiHelperSvc.togglePinForm({$index})" ng-class="{'fa-caret-up': uiHelperSvc.activePin === $index,'fa-caret-down': uiHelperSvc.activePin !== $index}" class="fa float-right"></i>
                 </uib-accordion-heading>
                 <div id="pin-form-{{$index}}">
                     <form>
