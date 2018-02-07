@@ -27,7 +27,6 @@
 
 <section id="pin-list">
     <!-- Gets pins from pin service-->
-    <!-- TODO: Check that this is working -->
     <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
         <section ng-class="{active: uiHelperSvc.activePin === $index}"
                  class="accordion-item pin-list-header"
@@ -78,7 +77,7 @@
                     <label for="end_time">End Time</label>
                     <strong><abbr title="required">*</abbr></strong>
                     <br/>
-                    <datetimepicker date-object="pin.start_time"
+                    <datetimepicker date-object="pin.end_time"
                                     default-date="inserting"
                                     id="storyPinStartTime"></datetimepicker>
                 </div>
@@ -126,10 +125,8 @@
 
                     <hr>
                     <button>Save</button>
-
                 </div>
             </form>
-
         </section>
     </section>
 </section>
