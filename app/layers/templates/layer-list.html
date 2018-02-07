@@ -1,14 +1,14 @@
-<accordion close-others="true" sv-root sv-part="layers" sv-on-sort="onSort($item, $partFrom, $partTo, $indexFrom, $indexTo)">
+<uib-accordion close-others="true" sv-root sv-part="layers" sv-on-sort="onSort($item, $partFrom, $partTo, $indexFrom, $indexTo)">
 
-    <accordion-group is-open="status.open">
-        <accordion-heading>
+    <div uib-accordion-group is-open="status.open">
+        <uib-accordion-heading>
             Add a StoryLayer <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-        </accordion-heading>
+        </uib-accordion-heading>
         <add-layers map="map"></add-layers>
-    </accordion-group>
+    </div>
 
-    <accordion-group sv-element ng-repeat="layer in layers" is-open="accordianOpen" ng-init="accordianOpen = $first">
-        <accordion-heading>
+    <div uib-accordion-group sv-element ng-repeat="layer in layers" is-open="accordianOpen" ng-init="accordianOpen = $first">
+        <uib-accordion-heading>
             {{layer.get('title')}}
             <div class="pull-right">
                 <button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
@@ -22,7 +22,7 @@
                     <i class="glyphicon glyphicon-trash"></i>
                 </button>
             </div>
-        </accordion-heading>
+        </uib-accordion-heading>
 
         <div class="row">
             <div class="col-sm-12">
@@ -60,15 +60,15 @@
             </div>
         </div>
 
-    </accordion-group>
-    <accordion-group>
-        <accordion-heading>
+    </div>
+    <div uib-accordion-group>
+        <uib-accordion-heading>
             Basemaps <i class="pull-right glyphicon" ng-class="{'glyphicon-chevron-down': status.open, 'glyphicon-chevron-right': !status.open}"></i>
-        </accordion-heading>
+        </uib-accordion-heading>
         <div>
             <button style="height: 100px; border:1px white solid; color:#2C3E50; background-image:url('img/{{ baseLayer.name}}.png');" class="btn col-xs-4" ng-repeat="baseLayer in baseLayers" ng-click="onChange(baseLayer)">{{baseLayer.title}}</button>
         </div>
-    </accordion-group>
-</accordion>
+    </div>
+</uib-accordion>
 
 </div>
