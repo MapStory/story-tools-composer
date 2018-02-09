@@ -468,7 +468,8 @@ function pinSvc(
       const pins = svc.getPins(chapterIndex);
       svc.currentPin = pins[pins.length - 1];
       svc.currentPin.coords = [16.3725, 48.208889];
-      svc.dropPinOverlay(svc.currentPin);
+      // svc.dropPinOverlay(svc.currentPin);
+      $rootScope.$broadcast("pin-added", svc.currentPin);
     } else {
       alert("No pin was created");
     };
@@ -478,23 +479,29 @@ function pinSvc(
 
   svc.dropPinOverlay = pin => {
     const popup = new ol.Overlay({
-      element: document.getElementById("popup")
+      element: document.getElementById("storypin-popup")
     });
-    const pos = ol.proj.fromLonLat(pin.coords);
-    popup.setPosition(pos);
+    // const pos = ol.proj.fromLonLat(pin.coords);
+    const pos = ol.proj.transform(pin.coords, 'EPSG:4326', 'EPSG:3857');
     const map = MapManager.storyMap.getMap();
-    map.addOverlay(popup);
     const element = popup.getElement();
-    const coordinate = pin.coords;
-    $(element).popover("destroy");
-    popup.setPosition(coordinate);
-    // the keys are quoted to prevent renaming in ADVANCED mode.
-    $(element).popover({
-      'placement': 'top',
-      'animation': false,
-      'html': true,
-      'content': "Hello!!!"
+    // $(element).popover("destroy");
+    // Center view on Pin
+    const view = new ol.View({
+      center: pos,
+      zoom: 7
     });
+    map.setView(view);
+    map.addOverlay(popup);
+    popup.setPosition(pos);
+
+    // the keys are quoted to prevent renaming in ADVANCED mode.
+    // $(element).popover({
+    //   'placement': 'top',
+    //   'animation': false,
+    //   'html': true,
+    //   'content': "Hello!!!"
+    // });
     $(element).popover("show");
   };
 
