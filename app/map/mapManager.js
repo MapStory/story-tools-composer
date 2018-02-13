@@ -193,23 +193,15 @@ function MapManager(
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(a => {
         svc.storyMap.addStoryLayer(a);
-        if (options.fitExtent === true) {
-          a.get("latlonBBOX");
-          const extent = ol.proj.transformExtent(
-            a.get("latlonBBOX"),
-            "EPSG:4326",
-            svc.storyMap
-              .getMap()
-              .getView()
-              .getProjection()
-          );
+        if (options.settings.fitExtent === true) {
+          const extent = a.get('extent');
           // prevent getting off the earth
           extent[1] = Math.max(-20037508.34, Math.min(extent[1], 20037508.34));
           extent[3] = Math.max(-20037508.34, Math.min(extent[3], 20037508.34));
           svc.storyMap
             .getMap()
             .getView()
-            .fitExtent(extent, svc.storyMap.getMap().getSize());
+            .fit(extent, svc.storyMap.getMap().getSize());
         }
       });
 
