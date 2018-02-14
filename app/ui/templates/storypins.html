@@ -28,12 +28,15 @@
     <uib-accordion close-others=true>
         <!-- Gets pins from pin service-->
         <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
-            <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index" ng-click="uiHelperSvc.activePin === $index ? true : uiHelperSvc.togglePinForm({$index})">
+            <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index">
                 <uib-accordion-heading>
-                    {{pin.title}}
-                    <i class="fa fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>
-                    <i ng-click="uiHelperSvc.togglePinForm({$index})" ng-class="{'fa-caret-up': uiHelperSvc.activePin === $index,'fa-caret-down': uiHelperSvc.activePin !== $index}" class="fa float-right"></i>
+                    <span ng-click="uiHelperSvc.togglePinForm({$index})">
+                        {{pin.title}}
+                        <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === $index,'fa-caret-down': uiHelperSvc.activePin !== $index}" class="fa"></i>
+                    </span>
+                    <i class="fa float-right fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>
                 </uib-accordion-heading>
+
                 <div id="pin-form-{{$index}}">
                     <form>
                         <div class="form-field">
@@ -54,13 +57,9 @@
                             <strong><abbr title="required">*</abbr></strong>
                             <br/>
                             <!-- TODO: Empty text areas don't work in all browsers-->
-                            <textarea id="storypin_media" rows="10"  name="storypin_media" required/></textarea>
+                            <input id="storypin_media" rows="10"  name="storypin_media" ng-model="pin.media" ng-change="" required/>
                         </div>
 
-                        <!-- DATE PICKERS -->
-                        <div>
-                            <pre>Selected date is: <em>{{pinSvc.dt | date:'fullDate' }}</em></pre>
-                        </div>
                         <!-- START DATE-->
                         <div class="form-field">
 
@@ -70,18 +69,24 @@
                             <!--<datetimepicker date-object="pin.start_time"-->
                                             <!--default-date="inserting"-->
                                             <!--id="start_time"></datetimepicker>-->
-                            <input type="text"
-                                   class="form-control"
-                                   uib-datepicker-popup="{{pinSvc.format}}"
-                                   ng-model="pinSvc.dt"
-                                   is-open="pinSvc.startdate_popup.opened"
-                                   datepicker-options="pinSvc.dateOptions"
-                                   ng-required="true"
-                                   close-text="Close"
-                                   alt-input-formats="pinSvc.altInputFormats" />
-                            <span class="input-group-btn">
+
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        class="form-control"
+                                        uib-datepicker-popup="{{pinSvc.format}}"
+                                        ng-model="pin.start_time"
+                                        is-open="pinSvc.startdate_popup.opened"
+                                        datepicker-options="pinSvc.dateOptions"
+                                        uib-init-date="false"
+                                        init-date="false"
+                                        ng-required="true"
+                                        close-text="Close"
+                                        alt-input-formats="pinSvc.altInputFormats" />
+                                <span class="input-group-btn">
                                 <button type="button" class="btn btn-default" ng-click="pinSvc.open_startdate()"><i class="glyphicon glyphicon-calendar"></i></button>
                             </span>
+                            </div>
 
                         </div>
                         <!-- END DATE -->
@@ -89,6 +94,25 @@
                             <label for="end_time">End Time</label>
                             <strong><abbr title="required">*</abbr></strong>
                             <br/>
+
+                            <div class="input-group">
+                                <input
+                                        type="text"
+                                        class="form-control"
+                                        uib-datepicker-popup="{{pinSvc.format}}"
+                                        ng-model="pin.end_time"
+                                        is-open="pinSvc.enddate_popup.opened"
+                                        datepicker-options="pinSvc.dateOptions"
+                                        uib-init-date="false"
+                                        init-date="false"
+                                        ng-required="true"
+                                        close-text="Close"
+                                        alt-input-formats="pinSvc.altInputFormats" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="pinSvc.open_enddate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </div>
+
                             <!--<datetimepicker date-object="pin.end_time"-->
                                             <!--default-date="inserting"-->
                                             <!--id="end_time"></datetimepicker>-->

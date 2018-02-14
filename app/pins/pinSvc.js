@@ -26,6 +26,8 @@ function pinSvc(
     opened: false
   };
 
+  svc.dt2 = new Date();
+
   svc.formats = ["dd-MMMM-yyyy", "yyyy/MM/dd", "dd.MM.yyyy", "shortDate"];
   svc.format = svc.formats[0];
   svc.altInputFormats = ["M!/d!/yyyy"];
@@ -38,29 +40,17 @@ function pinSvc(
   svc.dateOptions = {
     dateDisabled: svc.disabled,
     formatYear: "yy",
-    maxDate: new Date(2020, 5, 22),
-    minDate: new Date(),
+    // maxDate: new Date(2020, 5, 22),
+    // minDate: new Date(),
     startingDay: 1
   };
   svc.disabled = data => {
     var date = data.date;
     var mode = data.mode;
     return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
-  }
-
-  /**
-   * Sets current date to today.
-   */
-  svc.today = () => {
-    svc.dt = new Date();
   };
 
-  /**
-   * Clears the date.
-   */
-  svc.clear = () => {
-    svc.dt = null;
-  };
+
 
   svc.open_startdate = () => {
     svc.startdate_popup.opened = true;
@@ -111,12 +101,18 @@ function pinSvc(
     this.properties = data;
     this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
     // Sets the time with the time service.
-    this.start_time = timeSvc.getTime(this.start_time);
-    this.end_time = timeSvc.getTime(this.end_time);
+    // this.start_time = timeSvc.getTime(this.start_time);
+    // this.end_time = timeSvc.getTime(this.end_time);
+    this.start_time = new Date();
+    this.end_time = new Date();
   };
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
   svc.Pin.prototype.constructor = svc.Pin;
+  svc.Pin.prototype.drawOverlay = (pin) => {
+    return `<div>-${pin.title}-</div>`;
+  };
+
 
   const embed_width = '"180"';
   const embed_height = '"180"';
@@ -372,6 +368,7 @@ function pinSvc(
     svc.pins[chapter_index].push(storyPin);
     // Broadcast event
     $rootScope.$broadcast("pin-added", chapter_index);
+
     return storyPin;
   };
 
@@ -543,16 +540,17 @@ function pinSvc(
         coordinates: [16.3725, 48.208889]
       }
     };
-    if (svc.addPin(defaults, chapterIndex) !== false){
-      const pins = svc.getPins(chapterIndex);
-      svc.currentPin = pins[pins.length - 1];
-      svc.currentPin.coords = [16.3725, 48.208889];
-      svc.dropPinOverlay(svc.currentPin);
-      $rootScope.$broadcast("pin-added", svc.currentPin);
-    } else {
+    const pin = svc.addPin(defaults, chapterIndex);
+    if(!pin){
       alert("No pin was created");
-    };
+    }
 
+    // const pins = svc.getPins(chapterIndex);
+    // svc.currentPin = pins[pins.length - 1];
+    svc.currentPin = pin;
+    svc.currentPin.coords = [16.3725, 48.208889];
+    svc.dropPinOverlay(svc.currentPin);
+    $rootScope.$broadcast("pin-added", svc.currentPin);
 
   };
 
@@ -568,6 +566,10 @@ function pinSvc(
     const pos = ol.proj.transform(pin.coords, 'EPSG:4326', 'EPSG:3857');
     const map = MapManager.storyMap.getMap();
     const element = popup.getElement();
+    element.innerHTML = pin.drawOverlay(pin);
+    //`<div>${pin.title}</div>`
+
+
     // $(element).popover("destroy");
     // Center view on Pin
     const view = new ol.View({
@@ -576,6 +578,7 @@ function pinSvc(
     });
     map.setView(view);
     map.addOverlay(popup);
+    svc.isDrawing = true;
     popup.setPosition(pos);
 
     // the keys are quoted to prevent renaming in ADVANCED mode.
@@ -727,7 +730,6 @@ function pinSvc(
         const element = overlay.getElement();
         element.innerHTML = hdms;
         // position the element (using the coordinate in the map's projection)
-        overlay.setPosition(coord);
         // and add it to the map
         map.addOverlay(overlay);
         svc.currentPin.coords = coord;
