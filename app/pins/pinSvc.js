@@ -17,6 +17,85 @@ function pinSvc(
   svc.cursor = "pointer";
   svc.feature = null;
   svc.previousCursor = undefined;
+  // For Date selection widgets
+  svc.dt = new Date(); // The DT
+  svc.startdate_popup = {
+    opened: false // Controlls open/close of popup
+  };
+  svc.enddate_popup = {
+    opened: false
+  };
+
+  svc.formats = ["dd-MMMM-yyyy", "yyyy/MM/dd", "dd.MM.yyyy", "shortDate"];
+  svc.format = svc.formats[0];
+  svc.altInputFormats = ["M!/d!/yyyy"];
+  svc.inlineOptions = {
+    customClass: svc.getDayClass,
+    minDate: new Date(),
+    showWeeks: true
+  };
+
+  svc.dateOptions = {
+    dateDisabled: svc.disabled,
+    formatYear: "yy",
+    maxDate: new Date(2020, 5, 22),
+    minDate: new Date(),
+    startingDay: 1
+  };
+  svc.disabled = data => {
+    var date = data.date;
+    var mode = data.mode;
+    return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
+  }
+
+  /**
+   * Sets current date to today.
+   */
+  svc.today = () => {
+    svc.dt = new Date();
+  };
+
+  /**
+   * Clears the date.
+   */
+  svc.clear = () => {
+    svc.dt = null;
+  };
+
+  svc.open_startdate = () => {
+    svc.startdate_popup.opened = true;
+  };
+
+  svc.open_enddate = () => {
+    svc.enddate_popup.opened = true;
+  };
+
+  svc.setDate = function(year, month, day) {
+    svc.dt = new Date(year, month, day);
+  };
+
+  /**
+   * Gets the current day
+   * @param data
+   * @returns {string}
+   */
+  svc.getDayClass = (data) => {
+    var date = data.date;
+    var mode = data.mode;
+    if (mode === "day") {
+      const dayToCheck = new Date(date).setHours(0, 0, 0, 0);
+
+      for (var i = 0; i < svc.events.length; i++) {
+        const currentDay = new Date(svc.events[i].date).setHours(0, 0, 0, 0);
+
+        if (dayToCheck === currentDay) {
+          return svc.events[i].status;
+        }
+      }
+    }
+
+    return "";
+  };
 
   /**
    * Creates a new Pin from data
@@ -468,7 +547,7 @@ function pinSvc(
       const pins = svc.getPins(chapterIndex);
       svc.currentPin = pins[pins.length - 1];
       svc.currentPin.coords = [16.3725, 48.208889];
-      // svc.dropPinOverlay(svc.currentPin);
+      svc.dropPinOverlay(svc.currentPin);
       $rootScope.$broadcast("pin-added", svc.currentPin);
     } else {
       alert("No pin was created");
@@ -478,8 +557,12 @@ function pinSvc(
   };
 
   svc.dropPinOverlay = pin => {
-    const popup = new ol.Overlay({
-      element: document.getElementById("storypin-popup")
+    // const popup = new ol.Overlay({
+    //   element: document.getElementById("storypin-popup")
+    // });
+    var popup = new ol.Overlay({
+      element: document.getElementById("overlay"),
+      positioning: "bottom-center"
     });
     // const pos = ol.proj.fromLonLat(pin.coords);
     const pos = ol.proj.transform(pin.coords, 'EPSG:4326', 'EPSG:3857');

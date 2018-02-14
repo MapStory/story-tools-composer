@@ -5,6 +5,7 @@ var serverHost = "https://mapstory.org"; //"https://docker";
 
 module.exports = {
   context: __dirname,
+  devtool: 'inline-source-map',
   resolve: {
     modules: ["node_modules"],
     alias: {

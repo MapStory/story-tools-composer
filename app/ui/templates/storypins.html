@@ -56,21 +56,42 @@
                             <!-- TODO: Empty text areas don't work in all browsers-->
                             <textarea id="storypin_media" rows="10"  name="storypin_media" required/></textarea>
                         </div>
+
+                        <!-- DATE PICKERS -->
+                        <div>
+                            <pre>Selected date is: <em>{{pinSvc.dt | date:'fullDate' }}</em></pre>
+                        </div>
+                        <!-- START DATE-->
                         <div class="form-field">
+
                             <label for="start_time">Start Time</label>
                             <strong><abbr title="required">*</abbr></strong>
                             <br/>
-                            <datetimepicker date-object="pin.start_time"
-                                            default-date="inserting"
-                                            id="start_time"></datetimepicker>
+                            <!--<datetimepicker date-object="pin.start_time"-->
+                                            <!--default-date="inserting"-->
+                                            <!--id="start_time"></datetimepicker>-->
+                            <input type="text"
+                                   class="form-control"
+                                   uib-datepicker-popup="{{pinSvc.format}}"
+                                   ng-model="pinSvc.dt"
+                                   is-open="pinSvc.startdate_popup.opened"
+                                   datepicker-options="pinSvc.dateOptions"
+                                   ng-required="true"
+                                   close-text="Close"
+                                   alt-input-formats="pinSvc.altInputFormats" />
+                            <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="pinSvc.open_startdate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+
                         </div>
+                        <!-- END DATE -->
                         <div class="form-field">
                             <label for="end_time">End Time</label>
                             <strong><abbr title="required">*</abbr></strong>
                             <br/>
-                            <datetimepicker date-object="pin.end_time"
-                                            default-date="inserting"
-                                            id="end_time"></datetimepicker>
+                            <!--<datetimepicker date-object="pin.end_time"-->
+                                            <!--default-date="inserting"-->
+                                            <!--id="end_time"></datetimepicker>-->
                         </div>
                         <div class="form-field">
                             <label for="storypin_playback_options">
