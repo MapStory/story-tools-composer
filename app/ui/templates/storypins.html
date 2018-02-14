@@ -4,12 +4,10 @@
      pins-editor
      pins-overlay="mapManager.storyMap.overlay">
 
-
-
     <!-- Pin Accordion -->
-    <accordion close-others="false" ng-init="open={chooser:true, editor:false}">
+    <uib-accordion close-others="false" ng-init="open={chooser:true, editor:false}">
         <!-- Pin List -->
-        <accordion-group heading="StoryPins" is-open="open.chooser">
+        <div uib-accordion-group heading="StoryPins" is-open="open.chooser">
             <!-- TODO: Implement bulk upload-->
             <button class="btn btn-inverse">Bulk Upload</button>
             <!-- TODO: Send event that notifies that we are in "create new pin" state.-->
@@ -20,8 +18,11 @@
             </button>
 
             <!--<pin-chooser pin-selected="open.editor=true"></pin-chooser>-->
-        </accordion-group>
-        <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;" ng-show="pinSvc.isDrawing"></div>
+        </div>
+        <div id="overlay" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;" ng-show="pinSvc.isDrawing">
+      </div>
+    </uib-accordion>
+
 </div>
 
 <section id="pin-list">
