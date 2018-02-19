@@ -6,12 +6,12 @@ function pinSvc(
   timeSvc,
   featureManagerSvc,
   stateSvc,
-  MapManager
+  MapManager,
+  $uibModal
 ) {
   const svc = {}; // this
   svc.pins = [[]]; // The collection of pins
   svc.currentPin = null; // The current Pin being edited
-  svc.isDrawing = false; // Draw Pin Mode flag
   // For Drag functionality:
   svc.coordinate = null;
   svc.cursor = "pointer";
@@ -532,12 +532,14 @@ function pinSvc(
     When a user starts creating a new pin, this creates the default pin.
    */
   svc.onNewStoryPin = chapterIndex => {
+    const map = MapManager.storyMap.getMap();
+    const center = map.getView().getCenter();
     const defaults = {
       title: "New StoryPin",
       start_time: "1/1/2018",
       end_time: "1/1/2018",
       geometry: {
-        coordinates: [16.3725, 48.208889]
+        coordinates: center
       }
     };
     const pin = svc.addPin(defaults, chapterIndex);
@@ -548,47 +550,30 @@ function pinSvc(
     // const pins = svc.getPins(chapterIndex);
     // svc.currentPin = pins[pins.length - 1];
     svc.currentPin = pin;
-    svc.currentPin.coords = [16.3725, 48.208889];
-    svc.dropPinOverlay(svc.currentPin);
+    svc.currentPin.coords = center;
+    const pin_index = svc.pins[chapterIndex].length - 1;
+    svc.dropPinOverlay(svc.currentPin, pin_index);
     $rootScope.$broadcast("pin-added", svc.currentPin);
-
   };
 
-  svc.dropPinOverlay = pin => {
-    // const popup = new ol.Overlay({
-    //   element: document.getElementById("storypin-popup")
-    // });
-    var popup = new ol.Overlay({
-      element: document.getElementById("overlay"),
+  /**
+   * Drops the Pin on the map.
+   * @param pin The Pin.
+   * @param pin_index The pin's index.
+   */
+  svc.dropPinOverlay = (pin, pin_index) => {
+    const element_id = `pin-${pin_index}`;
+    const popup = new ol.Overlay({
+      element: document.getElementById(element_id),
       positioning: "bottom-center"
     });
-    // const pos = ol.proj.fromLonLat(pin.coords);
-    const pos = ol.proj.transform(pin.coords, 'EPSG:4326', 'EPSG:3857');
+    const pos = pin.coords;
     const map = MapManager.storyMap.getMap();
     const element = popup.getElement();
-    element.innerHTML = pin.drawOverlay(pin);
-    //`<div>${pin.title}</div>`
-
-
-    // $(element).popover("destroy");
-    // Center view on Pin
-    const view = new ol.View({
-      center: pos,
-      zoom: 7
-    });
-    map.setView(view);
     map.addOverlay(popup);
-    svc.isDrawing = true;
-    popup.setPosition(pos);
-
-    // the keys are quoted to prevent renaming in ADVANCED mode.
-    // $(element).popover({
-    //   'placement': 'top',
-    //   'animation': false,
-    //   'html': true,
-    //   'content': "Hello!!!"
-    // });
+    svc.doBounceAnim(pos);
     $(element).popover("show");
+    popup.setPosition(pos);
   };
 
   /*
@@ -710,7 +695,6 @@ function pinSvc(
    * a Pin will be placed and the coordinates for currentPin updated.
    */
   svc.turnPinDrawModeOn = () => {
-    svc.isDrawing = !svc.isDrawing;
     // register an event handler for the click event
     const map = MapManager.storyMap.getMap();
     const overlay = new ol.Overlay({
@@ -737,7 +721,53 @@ function pinSvc(
     });
   };
 
+  svc.onBulkPinAdd = () => {
+    // Open modal and start the upload wizard
+    const parentElem = undefined;
+    const modalInstance = $uibModal.open({
+      animation: true,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: 'myModalContent.html',
+      // controller: 'pinSvc',
+      // controllerAs: '$ctrl',
+      resolve: {
+        items: function () {
+          return "hello";
+        }
+      }
+    });
+    modalInstance.result.then(function (resolved) {
+      svc.selected = resolved;
+    }, function () {
+      let x = 3;
+    });
+  };
+
+  svc.onBulkModalOK = () => {
+    $uibModalInstance.close($ctrl.selected.item);
+  };
+
+  svc.doBounceAnim = location => {
+    const map = MapManager.storyMap.getMap();
+    // bounce by zooming out one level and back in
+    const bounce = ol.animation.bounce({
+      resolution: map.getView().getResolution() * 2
+    });
+    // start the pan at the current center of the map
+    const pan = ol.animation.pan({
+      source: map.getView().getCenter()
+    });
+    map.beforeRender(bounce);
+    map.beforeRender(pan);
+    // when we set the center to the new location, the animated move will
+    // trigger the bounce and pan effects
+    map.getView().setCenter(location);
+  };
+
   return svc;
 }
+
+
 
 module.exports = pinSvc;
