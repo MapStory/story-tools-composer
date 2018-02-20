@@ -5,28 +5,42 @@
      pins-overlay="mapManager.storyMap.overlay">
 
     <!-- Pin Accordion -->
-    <uib-accordion close-others="false" ng-init="open={chooser:true, editor:false}">
+    <!-- TODO: FIX THIS NG-INIT -->
+    <uib-accordion close-others="false" ng-init="pinSvc.open.editor = false; pinSvc.open.chooser = true;">
+
+
         <!-- Pin List -->
-        <div uib-accordion-group heading="StoryPins" is-open="open.chooser">
+        <div uib-accordion-group heading="StoryPins" is-open="pinSvc.open.chooser">
+
             <!-- TODO: Implement bulk upload-->
             <button class="btn btn-inverse" ng-click="pinSvc.onBulkPinAdd()">Bulk Upload</button>
-            <!-- TODO: Send event that notifies that we are in "create new pin" state.-->
-            <button class="btn btn-inverse" ng-click="open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">Add a
-                StoryPin
+
+            <button class="btn btn-inverse"
+                    ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
+                Add a StoryPin
             </button>
+
         </div>
 
+        <!-- Pin Overlays -->
         <div ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
-            <div id="pin-{{$index}}" style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
+
+            <div id="pin-{{$index}}"
+                 style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
+
                 {{ pin.title }}
                 <p>{{ pin.content }}</p>
                 <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
                 <a href="{{pin.media}}">{{ pin.media }}</a>
+
             </div>
+
         </div>
+
     </uib-accordion>
 
 </div>
+
 
 <section id="pin-list">
     <!-- TODO: Move this to a template -->
@@ -62,6 +76,9 @@
                 </uib-accordion-heading>
 
                 <div id="pin-form-{{$index}}">
+                    <button class="btn btn-inverse" ng-click="pinSvc.turnPinDrawModeOn($index)">
+                        {{pinSvc.isDrawing ? "Done" : "Place Pin"}}
+                    </button>
                     <form>
                         <div class="form-field">
                             <label for="storypin_title">StoryPin Title</label>
@@ -185,6 +202,7 @@
 
                             <hr>
                             <button>Save</button>
+                        </div>
                     </form>
                 </div>
             </div>

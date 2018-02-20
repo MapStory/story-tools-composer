@@ -17,6 +17,8 @@ function pinSvc(
   svc.cursor = "pointer";
   svc.feature = null;
   svc.previousCursor = undefined;
+  svc.has_added_overlay = false;
+  svc.isDrawing = false;
   // For Date selection widgets
   svc.dt = new Date(); // The DT
   svc.startdate_popup = {
@@ -29,7 +31,8 @@ function pinSvc(
   svc.dt2 = new Date();
 
   svc.formats = ["dd-MMMM-yyyy", "yyyy/MM/dd", "dd.MM.yyyy", "shortDate"];
-  svc.format = svc.formats[0];
+  const [first_format] = svc.formats;
+  svc.format = first_format;
   svc.altInputFormats = ["M!/d!/yyyy"];
   svc.inlineOptions = {
     customClass: svc.getDayClass,
@@ -44,13 +47,19 @@ function pinSvc(
     // minDate: new Date(),
     startingDay: 1
   };
+
+  // Controlls the accordions
+  // TODO: Move this to a form controller
+  svc.open = {
+    editor: false,
+    chooser: false
+  };
+
   svc.disabled = data => {
     var date = data.date;
     var mode = data.mode;
     return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
   };
-
-
 
   svc.open_startdate = () => {
     svc.startdate_popup.opened = true;
@@ -562,13 +571,25 @@ function pinSvc(
    * @param pin_index The pin's index.
    */
   svc.dropPinOverlay = (pin, pin_index) => {
+    const map = MapManager.storyMap.getMap();
+    const new_popup = new ol.Overlay({
+      element: document.getElementById("storypin-popup")
+    });
+
+    if (svc.has_added_overlay === false) {
+      svc.has_added_overlay = true;
+      // Do the new overlay thing only once
+      map.addOverlay(new_popup);
+    }
+
+    //----------------------
     const element_id = `pin-${pin_index}`;
     const popup = new ol.Overlay({
       element: document.getElementById(element_id),
       positioning: "bottom-center"
     });
     const pos = pin.coords;
-    const map = MapManager.storyMap.getMap();
+
     const element = popup.getElement();
     map.addOverlay(popup);
     svc.doBounceAnim(pos);
@@ -694,7 +715,9 @@ function pinSvc(
    * Turns Pin Draw Mode. On the user's next click,
    * a Pin will be placed and the coordinates for currentPin updated.
    */
-  svc.turnPinDrawModeOn = () => {
+  svc.turnPinDrawModeOn = index => {
+    svc.isDrawing = !svc.isDrawing;
+
     // register an event handler for the click event
     const map = MapManager.storyMap.getMap();
     const overlay = new ol.Overlay({
@@ -702,21 +725,38 @@ function pinSvc(
       positioning: "bottom-center"
     });
 
+    let popup = new ol.Overlay({
+      element: document.getElementById("storypin-popup")
+    });
+
+    popup.setPosition(map.getView().getCenter());
+    map.addOverlay(popup);
+
     map.on("click", event => {
+
       if (svc.isDrawing === true) {
-        // extract the spatial coordinate of the click event in map projection units
-        const coord = event.coordinate;
-        // transform it to decimal degrees
-        const degrees = ol.proj.transform(coord, "EPSG:3857", "EPSG:4326");
-        // format a human readable version
-        const hdms = ol.coordinate.toStringHDMS(degrees);
-        // update the overlay element's content
-        const element = overlay.getElement();
-        element.innerHTML = hdms;
-        // position the element (using the coordinate in the map's projection)
-        // and add it to the map
-        map.addOverlay(overlay);
-        svc.currentPin.coords = coord;
+        // // extract the spatial coordinate of the click event in map projection units
+        // const coord = event.coordinate;
+        // // transform it to decimal degrees
+        // const degrees = ol.proj.transform(coord, "EPSG:3857", "EPSG:4326");
+        // // format a human readable version
+        // const hdms = ol.coordinate.toStringHDMS(degrees);
+        // // update the overlay element's content
+        // const element = overlay.getElement();
+        // element.innerHTML = hdms;
+        // // position the element (using the coordinate in the map's projection)
+        // // and add it to the map
+        // map.addOverlay(overlay);
+        // svc.currentPin.coords = coord;
+
+        var coordinate = event.coordinate;
+        popup.setPosition(map.getView().getCenter());
+        var hdms = ol.coordinate.toStringHDMS(
+          ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326")
+        );
+        // document.getElementById("storypin-content").innerHTML = '<p>It is working</p>';
+
+
       }
     });
   };

@@ -1,8 +1,11 @@
 "use strict";
 
 const angular = require("angular");
+const ngAnimate = require("angular-animate");
 
 const module = angular.module("composer", [
+  ngAnimate,
+  "ui.bootstrap",
   "storytools.core.time",
   "storytools.core.mapstory",
   "storytools.core.loading",
@@ -12,7 +15,6 @@ const module = angular.module("composer", [
   "storytools.edit.pins",
   "storytools.core.ogc",
   "colorpicker.module",
-  "ui.bootstrap",
   "pascalprecht.translate",
   "angular-sortable-view"
 ]);

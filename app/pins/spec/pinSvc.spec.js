@@ -142,7 +142,7 @@ describe("pinSvc", () => {
   describe("addPin", () => {
     it("should create a valid pin", () => {
       const test = pinSvc.addPin(validProperties, 0);
-      expect(test).toBe(true);
+      expect(test).not.toBe(null);
     });
 
     it("should push the pin to the correct svc.pin array", () => {
