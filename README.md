@@ -4,7 +4,6 @@
 
 ### Standalone
 - `yarn install`
-- `bower install`
 - `webpack`
 - `yarn run server`
 - `http://localhost:9090/`
