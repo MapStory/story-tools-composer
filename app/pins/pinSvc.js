@@ -20,7 +20,7 @@ function pinSvc(
   svc.has_added_overlay = false;
   svc.isDrawing = false;
   // This is the layer that stores all the pins
-  svc.pinLayer = null;
+  svc.pinLayerSource = null;
   // For Date selection widgets
   svc.dt = new Date(); // The DT
   svc.startdate_popup = {
@@ -564,6 +564,7 @@ function pinSvc(
     svc.currentPin.coords = center;
     const pin_index = svc.pins[chapterIndex].length - 1;
     svc.dropPinOverlay(svc.currentPin, pin_index);
+    svc.addPointToPinLayer(svc.currentPin);
     $rootScope.$broadcast("pin-added", svc.currentPin);
   };
 
@@ -819,19 +820,16 @@ function pinSvc(
    */
   svc.addPointToPinLayer = pin => {
     // Lazy instantiate the pin layer
-    if (svc.pinLayer === null) {
-      svc.pinLayer = new ol.layer.Vector({
-        source: new ol.source.Vector({})
+    if (svc.pinLayerSource === null) {
+      svc.pinLayerSource = new ol.source.Vector({
+        projection: "EPSG:4326"
+      });
+      const vectorLayer = new ol.layer.Vector({
+        source: svc.pinLayerSource
       });
 
       const map = MapManager.storyMap.getMap();
-      map.addLayer(
-        new ol.layer.Vector({
-          source: new ol.source.Vector({
-            features: [svc.pinLayer]
-          })
-        })
-      );
+      map.addLayer(vectorLayer);
     }
 
     // Builds a new point at the pin's location
@@ -840,35 +838,9 @@ function pinSvc(
     });
 
     // Add to the Pin layer.
-    svc.pinLayer.addFeature(point);
+    svc.pinLayerSource.addFeatures([point]);
   };
 
-  /**
-   * Adds a new point feature to the map
-   * @param coords The coordinates to place the feature in.
-   */
-  svc.drawPoints = pin_array => {
-    if (typeof pin_array === "undefined" || pin_array === null) {
-      alert("null coordinates");
-    }
-
-    const point_array = [];
-    pin_array.forEach(pin => {
-      const point = new ol.Feature({
-        geometry: new ol.geom.Point(pin.coords)
-      });
-      point_array.push(point);
-    });
-
-    const map = MapManager.storyMap.getMap();
-    map.addLayer(
-      new ol.layer.Vector({
-        source: new ol.source.Vector({
-          features: [point_array]
-        })
-      })
-    );
-  };
   return svc;
 }
 
