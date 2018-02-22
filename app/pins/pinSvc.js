@@ -1,3 +1,5 @@
+var Papa = require('papaparse');
+
 function pinSvc(
   $rootScope,
   $http,
@@ -600,45 +602,7 @@ function pinSvc(
     popup.setPosition(pos);
   };
 
-  /*
-    Starts "Place new Pin" mode.
-    The mouse cursor should change to a Pin.
-    When the user clicks on the map it places the pin and fills the Lat,Long on the form.
-    If the user presses `esc` the mode will be cancelled.
-   */
-  svc.placeNewPinOnMap = (pinName, latitude, longitude) => {
-    const pointFeature = new ol.Feature(
-      new ol.geom.Point([latitude, longitude])
-    );
 
-    const iconFeature = new ol.Feature({
-      geometry: new ol.geom.Point([latitude, longitude]),
-      name: pinName
-    });
-
-    const iconStyle = new ol.style.Style({
-      image: new ol.style.Icon({
-        anchor: [0, 0],
-        anchorXUnits: "fraction",
-        anchorYUnits: "pixels",
-        opacity: 0.75,
-        src: "data/icon.png"
-      })
-    });
-
-    iconFeature.setStyle(iconStyle);
-    const vectorSource = new ol.source.Vector({
-      features: [iconFeature]
-    });
-
-    const vectorLayer = new ol.layer.Vector({
-      source: vectorSource
-    });
-    // TODO: Add layers to map
-    const map = new ol.Map({
-      layers: [vectorLayer]
-    });
-  };
 
   /**
    * Drag constructor. Inherits from OpenLayers interaction.Pointer
@@ -841,8 +805,59 @@ function pinSvc(
     svc.pinLayerSource.addFeatures([point]);
   };
 
+  svc.createNewPin = (config, chapterIndex, lat, long) => {
+    const map = MapManager.storyMap.getMap();
+    const pin = svc.addPin(config, chapterIndex);
+    if (!pin) {
+      alert("No pin was created");
+    }
+    pin.coords = [lat, long];
+    const pin_index = svc.pins[chapterIndex].length - 1;
+    svc.dropPinOverlay(svc.currentPin, pin_index);
+    svc.addPointToPinLayer(svc.currentPin);
+    $rootScope.$broadcast("pin-added", svc.currentPin);
+    return pin;
+  };
+
   svc.createPinsWithCSV = data => {
-    console.log("yeag");
+    const parsed = Papa.parse(data, {
+      header: true,
+      dynamicTyping: true,
+      delimiter: ","
+      // skipEmptyLines: true
+    });
+
+    const pin_array = [];
+    parsed.data.forEach(element => {
+      pin_array.push(
+        svc.createNewPin(
+          {
+            title: element.title,
+            start_time: element.start_time,
+            end_time: element.end_time,
+            geometry: {
+              coordinates: [element.latitude, element.longitude]
+            }
+          },
+          stateSvc.getChapterIndex(),
+          element.latitude,
+          element.longitude
+        )
+      );
+    });
+
+    return pin_array;
+  };
+
+  svc.test_the_thing_remove_this_later = () => {
+    const csv_data = `title,content,media,start_time,end_time,latitude,longitude,in_map,in_timeline,pause_playback,auto_show
+Test Pin 1,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
+Test Pin 2,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
+Test Pin 3,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
+Test Pin 4,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
+Test Pin 5,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
+Test Pin 6,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE`;
+    const result = svc.createPinsWithCSV(csv_data);
   };
 
   return svc;

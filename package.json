@@ -57,7 +57,7 @@
   },
   "dependencies": {
     "angular-animate": "1.6.9",
-    "papaparse": "4.3.7",
+    "papaparse": "^4.3.7",
     "time-controls": "git+https://git@github.com/mapstory/story-tools.git"
   },
   "repository": "https://github.com/MapStory/story-tools-composer",
