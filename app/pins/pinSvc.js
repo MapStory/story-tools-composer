@@ -841,6 +841,10 @@ function pinSvc(
     svc.pinLayerSource.addFeatures([point]);
   };
 
+  svc.createPinsWithCSV = data => {
+    console.log("yeag");
+  };
+
   return svc;
 }
 

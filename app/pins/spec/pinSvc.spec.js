@@ -1,3 +1,12 @@
+// TODO: Remove this when done.
+const csv_data = `title,content,media,start_time,end_time,latitude,longitude,in_map,in_timeline,pause_playback,auto_show
+Test Pin 1,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
+Test Pin 2,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
+Test Pin 3,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
+Test Pin 4,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
+Test Pin 5,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
+Test Pin 6,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE`;
+
 describe("pinSvc", () => {
   let rootScope, httpBackend, pinSvc, stateSvc, pin, serverFeatures, validProperties, pinConfigs;
 
@@ -293,6 +302,13 @@ describe("pinSvc", () => {
       pinSvc.bulkPinAdd(pinConfigs, 0);
       expect(pinSvc.pins[0][0]).toBeDefined();
       expect(pinSvc.pins[0][1]).toBeDefined();
+    });
+
+    it("should create multiple pins when provided some csv data that is correct", () => {
+      const init_count = pinSvc.pins[0].length;
+      pinSvc.createPinsWithCSV(csv_data);
+      const fin_count = pinSvc.pins[0].length;
+      expect(fin_count).toBe(6);
     });
   });
 
