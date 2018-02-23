@@ -21,7 +21,7 @@ function pinSvc(
   svc.previousCursor = undefined;
   svc.has_added_overlay = false;
   svc.isDrawing = false;
-  // This is the layer that stores all the pins
+  // This is the openlayers source that stores all the features that are drawn on the map.
   svc.pinLayerSource = null;
   // For Date selection widgets
   svc.dt = new Date(); // The DT
@@ -295,11 +295,6 @@ function pinSvc(
     }
   };
 
-  svc.removePinByIndex = (pin_index, chapter_index) => {
-    svc.pins[chapter_index].splice(pin_index, 1);
-    $rootScope.$broadcast("pin-removed", chapter_index);
-  };
-
   /**
    * Validates pin config.
    * @param pinInstantiationObj
@@ -543,10 +538,12 @@ function pinSvc(
 
   /*
     When a user starts creating a new pin, this creates the default pin.
+    It then creates a map point feature and adds it to the pin.
    */
   svc.onNewStoryPin = chapterIndex => {
     const map = MapManager.storyMap.getMap();
-    const center = map.getView().getCenter();
+    const center = map.getView().getCenter(); // Creates it on the center of the current view.
+
     const defaults = {
       title: "New StoryPin",
       start_time: "1/1/2018",
@@ -555,19 +552,23 @@ function pinSvc(
         coordinates: center
       }
     };
+
+    // Create or alert
     const pin = svc.addPin(defaults, chapterIndex);
-    if(!pin){
+    if (!pin) {
       alert("No pin was created");
     }
 
-    // const pins = svc.getPins(chapterIndex);
-    // svc.currentPin = pins[pins.length - 1];
-    svc.currentPin = pin;
+    svc.currentPin = pin; // This behaves weird. Don't rely on currentPin :(
     svc.currentPin.coords = center;
+
     const pin_index = svc.pins[chapterIndex].length - 1;
-    svc.dropPinOverlay(svc.currentPin, pin_index);
-    svc.addPointToPinLayer(svc.currentPin);
-    $rootScope.$broadcast("pin-added", svc.currentPin);
+
+    // Update the map with the new Pin
+    svc.addPointToPinLayer(pin);
+    svc.dropPinOverlay(pin, pin_index);
+
+    $rootScope.$broadcast("pin-added", pin);
   };
 
   /**
@@ -780,6 +781,7 @@ function pinSvc(
 
   /**
    * Adds a new point feature to the layer.
+   * Adds this feature and associates it to the Pin.
    * @param pin The pin.
    */
   svc.addPointToPinLayer = pin => {
@@ -800,6 +802,9 @@ function pinSvc(
     const point = new ol.Feature({
       geometry: new ol.geom.Point(pin.coords)
     });
+
+    // Pin now has a feature:
+    pin.map_feature = point;
 
     // Add to the Pin layer.
     svc.pinLayerSource.addFeatures([point]);
@@ -849,6 +854,43 @@ function pinSvc(
     return pin_array;
   };
 
+  /**
+   * Removes a feature from the map for the given pin.
+   * @param pin_index The pin's index.
+   * @param chapter_index The chapter's index.
+   */
+  svc.removePinFeatureFromMap = (pin_index, chapter_index) => {
+    const chapterPins = svc.pins[chapter_index];
+    const pin = chapterPins[pin_index];
+
+    if (!pin) {
+      alert("Trying to remove something that isn't");
+    }
+
+    if (pin.map_feature) {
+      svc.pinLayerSource.removeFeature(pin.map_feature);
+    } else {
+      alert("no map feature to remove!");
+    }
+  };
+
+  /**
+   * Removes a pin.
+   * @param pin_index The index of the pin.
+   * @param chapter_index The chapter index of the pin.
+   */
+  svc.removePinByIndex = (pin_index, chapter_index) => {
+    // remove feature from map:
+    svc.removePinFeatureFromMap(pin_index.$index, chapter_index);
+
+    // Remove pin from list:
+    svc.pins[chapter_index].splice(pin_index, 1);
+    $rootScope.$broadcast("pin-removed", chapter_index);
+  };
+
+  /**
+   * Runs tests. TODO: remove this eventually.
+   */
   svc.test_the_thing_remove_this_later = () => {
     const csv_data = `title,content,media,start_time,end_time,latitude,longitude,in_map,in_timeline,pause_playback,auto_show
 Test Pin 1,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
