@@ -19,28 +19,23 @@
                     ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
                 Add a StoryPin
             </button>
-            <button class="btn btn-inverse" ng-click="pinSvc.test_the_thing_remove_this_later()">Test</button>
-
-
         </div>
 
-        <!-- Pin Overlays -->
-        <div ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
 
-            <div id="pin-{{$index}}"
-                 style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
-
-                {{ pin.title }}
-                <p>{{ pin.content }}</p>
-                <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
-                <a href="{{pin.media}}">{{ pin.media }}</a>
-
-            </div>
-
-        </div>
 
     </uib-accordion>
 
+</div>
+
+<!-- Pin Overlays -->
+<div ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())" style="display:none;">
+    <div id="pin-{{$index}}"
+         style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
+        {{ pin.title }}
+        <p>{{ pin.content }}</p>
+        <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
+        <a href="{{pin.media}}">{{ pin.media }}</a>
+    </div>
 </div>
 
 
@@ -77,6 +72,7 @@
     <uib-accordion close-others=true>
         <!-- Gets pins from pin service-->
         <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
+            <!-- TODO: Solve this with a controller     -->
             <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index">
                 <uib-accordion-heading>
                     <span ng-click="uiHelperSvc.togglePinForm({$index})">

@@ -1,4 +1,4 @@
-var Papa = require('papaparse');
+const Papa = require("papaparse"); // Used for CSV Parsing.
 
 function pinSvc(
   $rootScope,
@@ -26,7 +26,7 @@ function pinSvc(
   // For Date selection widgets
   svc.dt = new Date(); // The DT
   svc.startdate_popup = {
-    opened: false // Controlls open/close of popup
+    opened: false // Controls open/close of popup
   };
   svc.enddate_popup = {
     opened: false
@@ -122,6 +122,7 @@ function pinSvc(
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
   svc.Pin.prototype.constructor = svc.Pin;
+  // TODO: Remove this
   svc.Pin.prototype.drawOverlay = (pin) => {
     return `<div>-${pin.title}-</div>`;
   };
@@ -551,6 +552,8 @@ function pinSvc(
       title: "New StoryPin",
       start_time: "1/1/2018",
       end_time: "1/1/2018",
+      in_timeline: true,
+      in_map: true,
       geometry: {
         coordinates: center
       }
@@ -568,7 +571,9 @@ function pinSvc(
     const pin_index = svc.pins[chapterIndex].length - 1;
 
     // Update the map with the new Pin
-    svc.addPointToPinLayer(pin);
+    if (pin.in_map === true) {
+      svc.addPointToPinLayer(pin);
+    }
     svc.dropPinOverlay(pin, pin_index);
 
     $rootScope.$broadcast("pin-added", pin);
@@ -755,6 +760,9 @@ function pinSvc(
     }, function () {
       let x = 3;
     });
+
+    // TODO: Remove this later:
+    svc.test_the_thing_remove_this_later();
   };
 
   svc.onBulkModalOK = () => {
@@ -852,6 +860,8 @@ function pinSvc(
       );
       pin.content = element.content || "";
       pin.media = element.media || "";
+      pin.in_map = element.in_map || true;
+      pin.in_timeline = element.in_timeline || true;
       pin_array.push(pin);
     });
 
@@ -890,6 +900,39 @@ function pinSvc(
     // Remove pin from list:
     svc.pins[chapter_index].splice(pin_index, 1);
     $rootScope.$broadcast("pin-removed", chapter_index);
+  };
+
+  /**
+   * Builds a JSON object of all the StoryPins.
+   * @returns {Array} An array of StoryPins.
+   */
+  svc.getPinsJSON = () => {
+    const pin_list = [];
+    let chapter_count = 0;
+    // Loop chapters.
+    svc.pins.forEach(chapter => {
+      if (chapter) {
+        chapter.forEach(pin => {
+          pin_list.push({
+            chapter_index: chapter_count,
+            title: pin.title,
+            content: pin.content,
+            latitude: pin.coords[0],
+            longitude: pin.coords[1],
+            media: pin.media,
+            start_time: pin.start_time,
+            end_time: pin.end_time,
+            in_map: pin.in_map,
+            in_timeline: pin.in_timeline
+          });
+        });
+      } else {
+        alert("bad chapter!");
+      }
+
+      chapter_count += 1;
+    });
+    return pin_list;
   };
 
   /**
