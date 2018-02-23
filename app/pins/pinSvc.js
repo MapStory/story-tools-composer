@@ -373,6 +373,9 @@ function pinSvc(
     // Create the new storypin
     let storyPin = new svc.Pin(props);
     // Push to the chapter
+    if (!svc.pins[chapter_index]) {
+      svc.pins[chapter_index] = [];
+    }
     svc.pins[chapter_index].push(storyPin);
     // Broadcast event
     $rootScope.$broadcast("pin-added", chapter_index);
@@ -834,21 +837,22 @@ function pinSvc(
 
     const pin_array = [];
     parsed.data.forEach(element => {
-      pin_array.push(
-        svc.createNewPin(
-          {
-            title: element.title,
-            start_time: element.start_time,
-            end_time: element.end_time,
-            geometry: {
-              coordinates: [element.latitude, element.longitude]
-            }
-          },
-          stateSvc.getChapterIndex(),
-          element.latitude,
-          element.longitude
-        )
+      const pin = svc.createNewPin(
+        {
+          title: element.title,
+          start_time: element.start_time,
+          end_time: element.end_time,
+          geometry: {
+            coordinates: [element.latitude, element.longitude]
+          }
+        },
+        stateSvc.getChapterIndex(),
+        element.latitude,
+        element.longitude
       );
+      pin.content = element.content || "";
+      pin.media = element.media || "";
+      pin_array.push(pin);
     });
 
     return pin_array;
