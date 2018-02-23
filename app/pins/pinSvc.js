@@ -813,8 +813,8 @@ function pinSvc(
     }
     pin.coords = [lat, long];
     const pin_index = svc.pins[chapterIndex].length - 1;
-    svc.dropPinOverlay(svc.currentPin, pin_index);
-    svc.addPointToPinLayer(svc.currentPin);
+    svc.dropPinOverlay(pin, pin_index);
+    svc.addPointToPinLayer(pin);
     $rootScope.$broadcast("pin-added", svc.currentPin);
     return pin;
   };
