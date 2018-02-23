@@ -9,12 +9,20 @@
   },
   "env": {
       "browser": true,
-      "node": true
+      "node": true,
+      "jasmine": true,
+      "protractor": true,
+      "es6": true
   },
   "extends": [ "airbnb-base", "prettier" ],
   "globals": {
     "ol": true,
     "storytools": true
+    "ol": true,
+    "angular": true,
+    "inject": true,
+    "toastr": true,
+    "goog": true
   },
   "plugins": [
     "prettier"
@@ -28,7 +36,11 @@
     "camelcase": 0,
     "guard-for-in": 0,
     "no-restricted-syntax": 0,
+<<<<<<< HEAD
     "no-param-reassign": [2, { "props": false }],
     "no-underscore-dangle": 0
+=======
+    "no-param-reassign": [2, { "props": false }]
+>>>>>>> master
   }
 }
