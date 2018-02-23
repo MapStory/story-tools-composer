@@ -1,5 +1,6 @@
 <div id="pins-editor"
      ng-if="selected.pins"
+     ng-controller="bulkUploadCtrl"
      class="floating style-editor-item"
      pins-editor
      pins-overlay="mapManager.storyMap.overlay">
@@ -7,23 +8,42 @@
     <!-- Pin Accordion -->
     <!-- TODO: FIX THIS NG-INIT -->
     <uib-accordion close-others="false" ng-init="pinSvc.open.editor = false; pinSvc.open.chooser = true;">
-
-
         <!-- Pin List -->
         <div uib-accordion-group heading="StoryPins" is-open="pinSvc.open.chooser">
-
-            <!-- TODO: Implement bulk upload-->
             <button class="btn btn-inverse" ng-click="pinSvc.onBulkPinAdd()">Bulk Upload</button>
-
             <button class="btn btn-inverse"
                     ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
                 Add a StoryPin
             </button>
         </div>
-
-
-
     </uib-accordion>
+
+    <!--<bulk-upload-directive></bulk-upload-directive>-->
+
+    <!-- THE MODAL -->
+    <!-- TODO: Move this to a template -->
+    <!-- Change the ID's to something more unique -->
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <ul>
+                <!--TODO: Add the actual url for the template download-->
+                <a href="#">Download the template here</a>
+            </ul>
+            <br />
+
+            <!-- TODO: Add an action for parsing the file -->
+            <!--<form action="" enctype="multipart/form-data">-->
+                <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
+            <!--</form>-->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning" type="button">Cancel</button>
+            <button class="btn btn-primary" type="button" ng-click="$ctrl.processCSVFile()">OK</button>
+        </div>
+    </script>
 
 </div>
 
@@ -40,34 +60,6 @@
 
 
 <section id="pin-list">
-
-    <!-- THE MODAL -->
-    <!-- TODO: Move this to a template -->
-    <!-- Change the ID's to something more unique -->
-    <script type="text/ng-template" id="myModalContent.html">
-        <div class="modal-header">
-            <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
-        </div>
-        <div class="modal-body" id="modal-body">
-            <ul>
-                <!--TODO: Add the actual url for the template download-->
-                <a href="#">Download the template here</a>
-                <li ng-repeat="item in $ctrl.items">
-                    <a href="#" ng-click="$event.preventDefault(); $ctrl.selected.item = item">{{ item }}</a>
-                </li>
-            </ul>
-            <br />
-            <!-- TODO: Add an action for parsing the file -->
-            <form action="" method="post" enctype="multipart/form-data">
-                <input type="file" name="bulk" accept="text/csv">
-            </form>
-
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-warning" type="button" ng-click="$ctrl.cancel()">Cancel</button>
-            <button class="btn btn-primary" type="button" ng-click="$ctrl.ok()">OK</button>
-        </div>
-    </script>
 
     <uib-accordion close-others=true>
         <!-- Gets pins from pin service-->

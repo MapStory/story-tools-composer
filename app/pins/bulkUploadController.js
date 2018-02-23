@@ -3,20 +3,49 @@
  * @param $uibModalInstance
  * @param items
  */
-const storyPinController = ($uibModalInstance, items) => {
-  var $ctrl = this;
-  $ctrl.items = items;
-  $ctrl.selected = {
-    item: $ctrl.items[0]
+function bulkUploadCtrl($scope, $uibModal) {
+  // const $ctrl = {};
+  $scope.items = [];
+  $scope.selected = {
+    item: $scope.items[0]
   };
 
-  $ctrl.ok = function () {
-    $uibModalInstance.close($ctrl.selected.item);
+  $scope.test_me = "hiiiii";
+
+  $scope.ok = () => {
+    $scope.$uibModalInstance.close($scope.selected.item);
   };
 
-  $ctrl.cancel = function () {
-    $uibModalInstance.dismiss('cancel');
+  $scope.cancel = function () {
+    $scope.$uibModalInstance.dismiss("cancel");
+  };
+
+  $scope.onBulkPinAdd = () => {
+    alert("Hi");
+    // Open modal and start the upload wizard
+    $scope.$uibModalInstance = $uibModal.open({
+      animation: true,
+      ariaLabelledBy: 'modal-title',
+      ariaDescribedBy: 'modal-body',
+      templateUrl: 'myModalContent.html',
+      controller: this,
+      controllerAs: '$ctrl',
+      resolve: {
+        items: function () {
+          return "hello";
+        }
+      }
+    });
+
+    $scope.$uibModalInstance.result.then(
+      resolved => {
+        $scope.selected = resolved;
+      }, function () {
+        let x = 3;
+      });
   };
 };
+bulkUploadCtrl.$inject = ["$uibModal"];
 
-module.export = storyPinController;
+// TODO: Use es6
+module.exports = bulkUploadCtrl;

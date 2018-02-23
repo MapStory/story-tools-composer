@@ -718,22 +718,16 @@ function pinSvc(
   // TODO: Finish this
   svc.onBulkPinAdd = () => {
     // Open modal and start the upload wizard
-    const parentElem = undefined;
-    const modalInstance = $uibModal.open({
+    svc.modalInstance = $uibModal.open({
       animation: true,
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      templateUrl: 'myModalContent.html',
-      // controller: 'pinSvc',
+      ariaLabelledBy: "modal-title",
+      ariaDescribedBy: "modal-body",
+      templateUrl: "myModalContent.html",
+      // controller: svc,
       // controllerAs: '$ctrl',
-      resolve: {
-        items: function () {
-          return "hello";
-        }
-      }
     });
 
-    modalInstance.result.then( resolved => {
+    svc.modalInstance.result.then( resolved => {
       svc.selected = resolved;
     }, function () {
       let x = 3;
@@ -807,8 +801,8 @@ function pinSvc(
     }
     pin.coords = [lat, long];
     const pin_index = svc.pins[chapterIndex].length - 1;
-    svc.dropPinOverlay(pin, pin_index);
     svc.addPointToPinLayer(pin);
+    svc.dropPinOverlay(pin, pin_index);
     $rootScope.$broadcast("pin-added", svc.currentPin);
     return pin;
   };
@@ -911,6 +905,16 @@ function pinSvc(
       chapter_count += 1;
     });
     return pin_list;
+  };
+
+  svc.processCSVFile = () => {
+    const selectedFile = document.getElementById("bulk_pin_csv_file").files[0];
+    if (selectedFile) {
+      svc.createPinsWithCSV(selectedFile);
+    } else {
+      alert("No file selected!");
+    }
+    // svc.modalInstance.close();
   };
 
   /**
