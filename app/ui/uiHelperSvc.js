@@ -20,7 +20,6 @@ function uiHelperSvc($location, $rootScope, $log, stateSvc, pinSvc, appConfig) {
   };
 
   return svc;
-
 }
 
 module.exports = uiHelperSvc;

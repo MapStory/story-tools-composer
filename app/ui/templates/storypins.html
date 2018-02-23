@@ -1,132 +1,205 @@
-<!--section id="pin-section">
-    <h2 class="section-title float-left">Storypins</h2>
-    <button class="sidebar-button float-right">Bulk Upload</button>
-    <button class="sidebar-button float-right"
-            ng-click="uiHelperSvc.addNewPin()">
-      Add New StoryPin
-    </button>
-</section-->
+<div id="pins-editor"
+     ng-if="selected.pins"
+     ng-controller="bulkUploadCtrl"
+     class="floating style-editor-item"
+     pins-editor
+     pins-overlay="mapManager.storyMap.overlay">
 
-
-<div id="pins-editor" ng-if="selected.pins" class="floating style-editor-item" pins-editor
- pins-overlay="mapManager.storyMap.overlay">
-    <accordion close-others="false" ng-init="open={chooser:true,editor:false}">
-        <accordion-group heading="StoryPins" is-open="open.chooser">
-            <button class="btn btn-inverse">Bulk Upload</button>
-            <button class="btn btn-inverse" ng-click="pinsCtrl.editStoryPin(); open.editor=true">Add a
-                StoryPin
+    <!-- Pin Accordion -->
+    <!-- TODO: FIX THIS NG-INIT -->
+    <uib-accordion close-others="false" ng-init="pinSvc.open.editor = false; pinSvc.open.chooser = true;">
+        <!-- Pin List -->
+        <div uib-accordion-group heading="StoryPins" is-open="pinSvc.open.chooser">
+            <button class="btn btn-inverse" ng-click="pinSvc.onBulkPinAdd()">Bulk Upload</button>
+            <button class="btn btn-inverse"
+                    ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
+                Add a StoryPin
             </button>
-            <pin-chooser pin-selected="open.editor=true"></pin-chooser>
-        </accordion-group>
-        <accordion-group is-open="open.editor">
-            <accordion-heading>
-                <div ng-bind="pinsCtrl.isEditing() ? 'Edit StoryPin ' + pinsCtrl.currentPin.title : 'Add StoryPin'"></div>
-            </accordion-heading>
-            <div pin-editor>
-                <pin-editor-form></pin-editor-form>
-                <button class="btn btn-inverse" ng-disabled="!pinCtrl.isFormValid()"
-                        ng-click="pinsCtrl.saveStoryPin()">Save
-                </button>
-            </div>
-        </accordion-group>
-    </accordion>
+        </div>
+    </uib-accordion>
+
+    <!--<bulk-upload-directive></bulk-upload-directive>-->
+
+    <!-- THE MODAL -->
+    <!-- TODO: Move this to a template -->
+    <!-- Change the ID's to something more unique -->
+    <script type="text/ng-template" id="myModalContent.html">
+        <div class="modal-header">
+            <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
+        </div>
+        <div class="modal-body" id="modal-body">
+            <ul>
+                <!--TODO: Add the actual url for the template download-->
+                <a href="#">Download the template here</a>
+            </ul>
+            <br />
+
+            <!-- TODO: Add an action for parsing the file -->
+            <!--<form action="" enctype="multipart/form-data">-->
+                <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
+            <!--</form>-->
+        </div>
+        <div class="modal-footer">
+            <button class="btn btn-warning" type="button">Cancel</button>
+            <button class="btn btn-primary" type="button" ng-click="$ctrl.processCSVFile()">OK</button>
+        </div>
+    </script>
+
 </div>
 
+<!-- Pin Overlays -->
+<div ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())" style="display:none;">
+    <div id="pin-{{$index}}"
+         style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
+        {{ pin.title }}
+        <p>{{ pin.content }}</p>
+        <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
+        <a href="{{pin.media}}">{{ pin.media }}</a>
+    </div>
+</div>
+
+
 <section id="pin-list">
-  <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
-    <section ng-class="{active: uiHelperSvc.activePin === {{$index}}}"
-             class="accordion-item pin-list-header"
-             ng-click="uiHelperSvc.togglePinForm({$index})">
-        <div class="title-row">
-            <h2>{{pin.title}}</h2>
-            <i class="fa fa-trash delete"
-               ng-click="pinSvc.removePinByIndex({$index},
-                         stateSvc.getChapterIndex())"></i>
-            <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === {{$index}},
-                         'fa-caret-down': uiHelperSvc.activePin !== {{$index}}}"
-               class="fa float-right"></i>
-        </div>
-    </section>
-    <section class="pin-form" ng-show="uiHelperSvc.activePin === {{$index}}"
-             id="pin-form-{{$index}}">
-        <form>
-            <div class="form-field">
-                <label for="storypin_title">StoryPin Title</label>
-                <strong><abbr title="required">*</abbr></strong>
-                <br />
-                <input id="storypin_title" type="text" name="storypin_title"
-                 ng-model="pin.title"/>
+
+    <uib-accordion close-others=true>
+        <!-- Gets pins from pin service-->
+        <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
+            <!-- TODO: Solve this with a controller     -->
+            <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index">
+                <uib-accordion-heading>
+                    <span ng-click="uiHelperSvc.togglePinForm({$index})">
+                        {{pin.title}}
+                        <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === $index,'fa-caret-down': uiHelperSvc.activePin !== $index}" class="fa"></i>
+                    </span>
+                    <i class="fa float-right fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>
+                </uib-accordion-heading>
+
+                <div id="pin-form-{{$index}}">
+                    <button class="btn btn-inverse" ng-click="pinSvc.turnPinDrawModeOn($index)">
+                        {{pinSvc.isDrawing ? "Done" : "Move Pin"}}
+                    </button>
+                    <form>
+                        <div class="form-field">
+                            <label for="storypin_title">StoryPin Title</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <br/>
+                            <input id="storypin_title" type="text" name="storypin_title" ng-model="pin.title"/>
+                        </div>
+                        <div class="form-field">
+                            <label for="storypin_text">StoryPin Text</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <br/>
+                            <input id="storypin_text" type="text" name="storypin_text"
+                                   ng-model="pin.content"/>
+                        </div>
+                        <div class="form-field">
+                            <label for="storypin_media">StoryPin Media</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <br/>
+                            <!-- TODO: Empty text areas don't work in all browsers-->
+                            <input id="storypin_media" rows="10"  name="storypin_media" ng-model="pin.media" ng-change="" required/>
+                        </div>
+
+                        <!-- START DATE-->
+                        <div class="form-field">
+
+                            <label for="start_time">Start Time</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <div class="input-group">
+                                <input  id="start_time"
+                                        type="text"
+                                        class="form-control"
+                                        uib-datepicker-popup="{{pinSvc.format}}"
+                                        ng-model="pin.start_time"
+                                        is-open="pinSvc.startdate_popup.opened"
+                                        datepicker-options="pinSvc.dateOptions"
+                                        uib-init-date="false"
+                                        init-date="false"
+                                        ng-required="true"
+                                        close-text="Close"
+                                        alt-input-formats="pinSvc.altInputFormats" />
+                                <span class="input-group-btn">
+                                <button type="button" class="btn btn-default" ng-click="pinSvc.open_startdate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                            </span>
+                            </div>
+
+                        </div>
+                        <!-- END DATE -->
+                        <div class="form-field">
+                            <label for="end_time">End Time</label>
+                            <strong><abbr title="required">*</abbr></strong>
+                            <div class="input-group">
+                                <input
+                                        id="end_time"
+                                        type="text"
+                                        class="form-control"
+                                        uib-datepicker-popup="{{pinSvc.format}}"
+                                        ng-model="pin.end_time"
+                                        is-open="pinSvc.enddate_popup.opened"
+                                        datepicker-options="pinSvc.dateOptions"
+                                        uib-init-date="false"
+                                        init-date="false"
+                                        ng-required="true"
+                                        close-text="Close"
+                                        alt-input-formats="pinSvc.altInputFormats" />
+                                <span class="input-group-btn">
+                                    <button type="button" class="btn btn-default" ng-click="pinSvc.open_enddate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </div>
+
+                            <!--<datetimepicker date-object="pin.end_time"-->
+                                            <!--default-date="inserting"-->
+                                            <!--id="end_time"></datetimepicker>-->
+                        </div>
+
+                        <hr>
+                        <label for="lat-input">Latitude</label>
+                        <input id="lat-input" type="number" name="lat" ng-model="pin.coords[0]" placeholder="{{pin.coords[0]}}">
+                        <label for="long-input">Longitude</label>
+                        <input id="long-input" type="number" name="long" ng-model="pin.coords[1]" placeholder="{{pin.coords[1]}}">
+                        <hr>
+                        <div class="form-field">
+                            <label for="storypin_playback_options">
+                                StoryPin Playback Options
+                            </label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="timeline"
+                                       ng-init="pin.in_timeline = false"
+                                       ng-model="pin.in_timeline">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="timeline">Show StoryPin on Timeline</label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="map"
+                                       ng-init="pin.in_map = true"
+                                       ng-model="pin.in_map">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="map">Show StoryPin on Map</label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="pause_playback">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="pause_playback">
+                                Pause playback when StoryPin appears
+                            </label>
+                            <br/>
+                            <label class="switch">
+                                <input type="checkbox" for="play_embedded"
+                                       ng-init="pin.auto_show = false"
+                                       ng-model="pin.auto_show">
+                                <div class="slider round"></div>
+                            </label>
+                            <label for="play_embedded">
+                                Play embedded StoryPin media automatically
+                            </label>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="form-field">
-                <label for="storypin_text">StoryPin Text</label>
-                <strong><abbr title="required">*</abbr></strong>
-                <br />
-                <input id="storypin_text" type="text" name="storypin_text"
-                 ng-model="pin.content" />
-            </div>
-            <div class="form-field">
-                <label for="storypin_media">StoryPin Media</label>
-                <strong><abbr title="required">*</abbr></strong>
-                <br />
-                <textarea id="storypin_media" rows="10" name="storypin_media"
-                 required /></textarea>
-            </div>
-            <div class="form-field">
-                <label for="start_time">Start Time</label>
-                <strong><abbr title="required">*</abbr></strong>
-                <br />
-                <datetimepicker date-object="pin.start_time"
-                                default-date="inserting"
-                id="storyPinStartTime"></datetimepicker>
-            </div>
-            <div class="form-field">
-                <label for="end_time">End Time</label>
-                <strong><abbr title="required">*</abbr></strong>
-                <br />
-                <datetimepicker date-object="pin.start_time"
-                                default-date="inserting"
-                id="storyPinStartTime"></datetimepicker>
-            </div>
-            <div class="form-field">
-                <label for="storypin_playback_options">
-                  StoryPin Playback Options
-                </label>
-                <br />
-                <label class="switch">
-                    <input type="checkbox" for="timeline"
-                           ng-init="pin.in_timeline = false"
-                           ng-model="pin.in_timeline">
-                    <div class="slider round"></div>
-                </label>
-                <label for="timeline">Show StoryPin on Timeline</label>
-                <br />
-                <label class="switch">
-                    <input type="checkbox" for="map"
-                           ng-init="pin.in_map = true"
-                           ng-model="pin.in_map">
-                    <div class="slider round"></div>
-                </label>
-                <label for="map">Show StoryPin on Map</label>
-                <br />
-                <label class="switch">
-                    <input type="checkbox" for="pause_playback">
-                    <div class="slider round"></div>
-                </label>
-                <label for="pause_playback">
-                  Pause playback when StoryPin appears
-                </label>
-                <br />
-                <label class="switch">
-                    <input type="checkbox" for="play_embedded"
-                           ng-init="pin.auto_show = false"
-                           ng-model="pin.auto_show">
-                    <div class="slider round"></div>
-                </label>
-                <label for="play_embedded">
-                  Play embedded StoryPin media automatically
-                </label>
-            </div>
-        </form>
-    </section>
-  </section>
+        </section>
+    </uib-accordion>
 </section>
