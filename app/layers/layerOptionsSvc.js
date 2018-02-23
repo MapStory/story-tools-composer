@@ -3,7 +3,14 @@
 function layerOptionsSvc() {
   const svc = {};
 
-  svc.getLayerOptions = (name, settings, server, fitExtent, styleName, title) => {
+  svc.getLayerOptions = (
+    name,
+    settings,
+    server,
+    fitExtent,
+    styleName,
+    title
+  ) => {
     if (window.storyMap) {
       window.storyMap.setAllowZoom(settings.allowZoom || true);
       window.storyMap.setAllowPan(settings.allowPan || true);
@@ -23,16 +30,18 @@ function layerOptionsSvc() {
     const url = `${server.path + workspace}/${name}/wms`;
     const id = `${workspace}:${name}`;
     const options = {
-      id: id,
+      id,
       uuid: new Date().getTime(),
-      name: name,
+      name,
       title: title || name,
-      url: url,
+      url,
       path: server.path,
       canStyleWMS: server.canStyleWMS,
+      styleName: `geonode_${name}`,
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
       type: settings.asVector === true ? "VECTOR" : "WMS",
-      settings: settings
+      geomType: "point",
+      settings
     };
     return options;
   };

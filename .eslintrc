@@ -13,8 +13,8 @@
   },
   "extends": [ "airbnb-base", "prettier" ],
   "globals": {
-    "Phaser": false,
-    "game": true
+    "ol": true,
+    "storytools": true
   },
   "plugins": [
     "prettier"
@@ -27,6 +27,8 @@
     "no-unused-vars": "warn",
     "camelcase": 0,
     "guard-for-in": 0,
-    "no-restricted-syntax": 0
+    "no-restricted-syntax": 0,
+    "no-param-reassign": [2, { "props": false }],
+    "no-underscore-dangle": 0
   }
 }

@@ -25,6 +25,13 @@ function layerList(
         scope.baseLayer = MapManager.storyMap.get("baselayer").get("title");
       });
 
+      scope.styleChanged = layer => {
+        layer.on("change:type", evt => {
+          styleUpdater.updateStyle(evt.target);
+        });
+        styleUpdater.updateStyle(layer);
+      };
+
       scope.toggleStyle = layer => {
         scope.styleSvc.setCurrentLayer(layer);
         scope.styleActivated = scope.styleActivated !== true;
