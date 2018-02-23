@@ -84,7 +84,7 @@
 
                 <div id="pin-form-{{$index}}">
                     <button class="btn btn-inverse" ng-click="pinSvc.turnPinDrawModeOn($index)">
-                        {{pinSvc.isDrawing ? "Done" : "Place Pin"}}
+                        {{pinSvc.isDrawing ? "Done" : "Move Pin"}}
                     </button>
                     <form>
                         <div class="form-field">
@@ -113,13 +113,8 @@
 
                             <label for="start_time">Start Time</label>
                             <strong><abbr title="required">*</abbr></strong>
-                            <br/>
-                            <!--<datetimepicker date-object="pin.start_time"-->
-                                            <!--default-date="inserting"-->
-                                            <!--id="start_time"></datetimepicker>-->
-
                             <div class="input-group">
-                                <input
+                                <input  id="start_time"
                                         type="text"
                                         class="form-control"
                                         uib-datepicker-popup="{{pinSvc.format}}"
@@ -141,10 +136,9 @@
                         <div class="form-field">
                             <label for="end_time">End Time</label>
                             <strong><abbr title="required">*</abbr></strong>
-                            <br/>
-
                             <div class="input-group">
                                 <input
+                                        id="end_time"
                                         type="text"
                                         class="form-control"
                                         uib-datepicker-popup="{{pinSvc.format}}"
@@ -165,6 +159,13 @@
                                             <!--default-date="inserting"-->
                                             <!--id="end_time"></datetimepicker>-->
                         </div>
+
+                        <hr>
+                        <label for="lat-input">Latitude</label>
+                        <input id="lat-input" type="number" name="lat" ng-model="pin.coords[0]" placeholder="{{pin.coords[0]}}">
+                        <label for="long-input">Longitude</label>
+                        <input id="long-input" type="number" name="long" ng-model="pin.coords[1]" placeholder="{{pin.coords[1]}}">
+                        <hr>
                         <div class="form-field">
                             <label for="storypin_playback_options">
                                 StoryPin Playback Options
@@ -203,12 +204,6 @@
                             <label for="play_embedded">
                                 Play embedded StoryPin media automatically
                             </label>
-                            <hr>
-                            <input type="number" name="lat" ng-model="pin.coords[0]" placeholder="{{pin.coords[0]}}">
-                            <input type="number" name="long" ng-model="pin.coords[1]" placeholder="{{pin.coords[1]}}">
-
-                            <hr>
-                            <button>Save</button>
                         </div>
                     </form>
                 </div>

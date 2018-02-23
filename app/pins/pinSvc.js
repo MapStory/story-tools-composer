@@ -179,8 +179,8 @@ function pinSvc(
    * Adds an empty pin to the current chapter.
    */
   svc.addEmptyPinToCurrentChapter = () => {
-    svc.pins[stateSvc.getChapter() - 1].push({});
-    $rootScope.$broadcast("pin-added", stateSvc.getChapter() - 1);
+    svc.pins[stateSvc.getChapterIndex() - 1].push({});
+    $rootScope.$broadcast("pin-added", stateSvc.getChapterIndex() - 1);
   };
 
   /**
@@ -628,7 +628,7 @@ function pinSvc(
   ol.inherits(svc.Drag, ol.interaction.Pointer);
 
   /**
-   * Handles the mouseDown event
+   * Handles the mouseDown event for drag
    */
   svc.Drag.prototype.handleDownEvent = evt => {
     const map = evt.map;
@@ -654,6 +654,10 @@ function pinSvc(
 
     svc.coordinate[0] = evt.coordinate[0];
     svc.coordinate[1] = evt.coordinate[1];
+
+    // Update the coordinates for the currentPin:
+    svc.currentPin.coords[0] = evt.coordinate[0];
+    svc.currentPin.coords[1] = evt.coordinate[1];
   };
 
   svc.Drag.prototype.handleMoveEvent = evt => {
@@ -679,6 +683,8 @@ function pinSvc(
    * @return {boolean}
    */
   svc.Drag.prototype.handleUpEvent = () => {
+
+
     svc.coordinate = null;
     svc.feature = null;
     return false;
@@ -693,48 +699,20 @@ function pinSvc(
    */
   svc.turnPinDrawModeOn = index => {
     svc.isDrawing = !svc.isDrawing;
-
-    // register an event handler for the click event
+    const pin = svc.pins[stateSvc.getChapterIndex()][index];
+    svc.currentPin = pin;
     const map = MapManager.storyMap.getMap();
-    const overlay = new ol.Overlay({
-      element: document.getElementById("overlay"),
-      positioning: "bottom-center"
-    });
-
-    let popup = new ol.Overlay({
-      element: document.getElementById("storypin-popup")
-    });
-
-    popup.setPosition(map.getView().getCenter());
-    map.addOverlay(popup);
-
-    map.on("click", event => {
-
-      if (svc.isDrawing === true) {
-        // // extract the spatial coordinate of the click event in map projection units
-        // const coord = event.coordinate;
-        // // transform it to decimal degrees
-        // const degrees = ol.proj.transform(coord, "EPSG:3857", "EPSG:4326");
-        // // format a human readable version
-        // const hdms = ol.coordinate.toStringHDMS(degrees);
-        // // update the overlay element's content
-        // const element = overlay.getElement();
-        // element.innerHTML = hdms;
-        // // position the element (using the coordinate in the map's projection)
-        // // and add it to the map
-        // map.addOverlay(overlay);
-        // svc.currentPin.coords = coord;
-
-        var coordinate = event.coordinate;
-        popup.setPosition(map.getView().getCenter());
-        var hdms = ol.coordinate.toStringHDMS(
-          ol.proj.transform(coordinate, "EPSG:3857", "EPSG:4326")
-        );
-        // document.getElementById("storypin-content").innerHTML = '<p>It is working</p>';
-
-
-      }
-    });
+    // TODO: Start drag and drop here.
+    if (svc.isDrawing === true) {
+      svc.doBounceAnim(pin.coords);
+      // Add the drag interaction
+      svc.drag_instance = new svc.Drag();
+      map.addInteraction(svc.drag_instance);
+    } else {
+      // Remove the drag interaction
+      map.removeInteraction(svc.drag_instance);
+      svc.drag_instance = null;
+    }
   };
 
   // TODO: Finish this
