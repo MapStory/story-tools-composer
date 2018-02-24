@@ -1,9 +1,12 @@
 /**
  * Controls the bulk upload behavior.
- * @param $uibModalInstance
- * @param items
+ * @param $scope
+ * @param $uibModal
  */
+
 function bulkUploadCtrl($scope, $uibModal) {
+
+  $scope.testb = "yes it works";
   // const $ctrl = {};
   $scope.items = [];
   $scope.selected = {
@@ -25,13 +28,13 @@ function bulkUploadCtrl($scope, $uibModal) {
     // Open modal and start the upload wizard
     $scope.$uibModalInstance = $uibModal.open({
       animation: true,
-      ariaLabelledBy: 'modal-title',
-      ariaDescribedBy: 'modal-body',
-      templateUrl: 'myModalContent.html',
+      ariaLabelledBy: "modal-title",
+      ariaDescribedBy: "modal-body",
+      templateUrl: "myModalContent.html",
       controller: this,
-      controllerAs: '$ctrl',
+      controllerAs: "$ctrl",
       resolve: {
-        items: function () {
+        items : function () {
           return "hello";
         }
       }
@@ -44,8 +47,8 @@ function bulkUploadCtrl($scope, $uibModal) {
         let x = 3;
       });
   };
-};
-bulkUploadCtrl.$inject = ["$uibModal"];
+}
+bulkUploadCtrl.$inject = ["$scope", "$uibModal"];
 
 // TODO: Use es6
 module.exports = bulkUploadCtrl;
