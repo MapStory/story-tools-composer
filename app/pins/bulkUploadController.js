@@ -24,15 +24,13 @@ function bulkUploadCtrl($scope, $uibModal) {
   };
 
   $scope.onBulkPinAdd = () => {
-    alert("Hi");
     // Open modal and start the upload wizard
     $scope.$uibModalInstance = $uibModal.open({
       animation: true,
       ariaLabelledBy: "modal-title",
       ariaDescribedBy: "modal-body",
       templateUrl: "myModalContent.html",
-      controller: this,
-      controllerAs: "$ctrl",
+      controller: "bulkUploadModalController",
       resolve: {
         items : function () {
           return "hello";

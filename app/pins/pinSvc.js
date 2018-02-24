@@ -302,10 +302,11 @@ function pinSvc(
    * @param propertyName
    * @returns {*|boolean}
    */
-  svc.validatePinProperty = (pinInstantiationObj, propertyName) =>
-    pinInstantiationObj.hasOwnProperty(propertyName) &&
+  svc.validatePinProperty = (pinInstantiationObj, propertyName) => {
+    return pinInstantiationObj.hasOwnProperty(propertyName) &&
     (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
       !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
+  }
 
   svc.validateAllPinProperties = pinInstantiationObj => {
     const missingProperties = [];
@@ -352,33 +353,44 @@ function pinSvc(
    */
   svc.addPin = (props, chapter_index) => {
     // Check if data is OK
+
+
+    // TODO: do actual validation !
+    /*
     const pinValidated = svc.validateAllPinProperties(props);
     if (pinValidated !== true) {
+      console.log("invalid pin!!!");
       svc.handleInvalidPin(pinValidated);
       return false;
     }
+    */
+
     // Check time is OK
     if (timeSvc.getTime(props.start_time) > timeSvc.getTime(props.end_time)) {
       console.log("Start Time must be before End Time", "Invalid Time");
       toastr.error("Start Time must be before End Time", "Invalid Time");
       return false;
     }
+
     //TODO: Check media whitelist and sanitize embed size.
-    if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
-      props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
-      props.media = props.media.replace(
-        /height="\d+"/i,
-        `height=${embed_height}`
-      );
-    }
+    // if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
+    //   props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
+    //   props.media = props.media.replace(
+    //     /height="\d+"/i,
+    //     `height=${embed_height}`
+    //   );
+    // }
+
     // Create the new storypin
-    let storyPin = new svc.Pin(props);
+    const storyPin = new svc.Pin(props);
     // Push to the chapter
     if (!svc.pins[chapter_index]) {
       svc.pins[chapter_index] = [];
     }
     svc.pins[chapter_index].push(storyPin);
     // Broadcast event
+
+    console.log("story pin suposed to be added",storyPin);
     $rootScope.$broadcast("pin-added", chapter_index);
 
     return storyPin;
@@ -391,6 +403,7 @@ function pinSvc(
    * @ TODO: write test for this after mapService functions are ported over
    */
   svc.updatePin = (pin, chapter_index) => {
+    console.log("about to update pin");
     // Only set new geometry if location was saved on pin object
     if (goog.isDefAndNotNull(pin.geometry)) {
       // mapService_.removeDraw();
@@ -798,6 +811,7 @@ function pinSvc(
     const pin = svc.addPin(config, chapterIndex);
     if (!pin) {
       alert("No pin was created");
+      return;
     }
     pin.coords = [lat, long];
     const pin_index = svc.pins[chapterIndex].length - 1;
@@ -808,36 +822,45 @@ function pinSvc(
   };
 
   svc.createPinsWithCSV = data => {
-    const parsed = Papa.parse(data, {
+
+    Papa.parse(data, {
       header: true,
       dynamicTyping: true,
-      delimiter: ","
+      delimiter: ",",
+      complete : onComplete
       // skipEmptyLines: true
     });
 
-    const pin_array = [];
-    parsed.data.forEach(element => {
-      const pin = svc.createNewPin(
-        {
-          title: element.title,
-          start_time: element.start_time,
-          end_time: element.end_time,
-          geometry: {
-            coordinates: [element.latitude, element.longitude]
-          }
-        },
-        stateSvc.getChapterIndex(),
-        element.latitude,
-        element.longitude
-      );
-      pin.content = element.content || "";
-      pin.media = element.media || "";
-      pin.in_map = element.in_map || true;
-      pin.in_timeline = element.in_timeline || true;
-      pin_array.push(pin);
-    });
+    function onComplete(results){
+      const pin_array = [];
+      results.data.forEach(element => {
+        const pin = svc.createNewPin(
+          {
+            title: element.title,
+            start_time: element.start_time,
+            end_time: element.end_time,
+            geometry: {
+              coordinates: [element.latitude, element.longitude]
+            }
+          },
+          stateSvc.getChapterIndex(),
+          element.latitude,
+          element.longitude
+        );
+        pin.content = element.content || "";
+        pin.media = element.media || "";
+        pin.in_map = element.in_map || true;
+        pin.in_timeline = element.in_timeline || true;
+        pin_array.push(pin);
+      });
+      console.log("pin_array is", pin_array);
+      return pin_array;
+    }
 
-    return pin_array;
+
+
+
+
   };
 
   /**
@@ -910,6 +933,7 @@ function pinSvc(
   svc.processCSVFile = () => {
     const selectedFile = document.getElementById("bulk_pin_csv_file").files[0];
     if (selectedFile) {
+      console.log("selectedFile",selectedFile);
       svc.createPinsWithCSV(selectedFile);
     } else {
       alert("No file selected!");

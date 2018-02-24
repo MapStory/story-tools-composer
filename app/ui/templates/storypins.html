@@ -4,8 +4,6 @@
      pins-editor
      pins-overlay="mapManager.storyMap.overlay">
 
-    <h1>works? [{{testb}}]</h1>
-
     <!-- Pin Accordion -->
     <!-- TODO: FIX THIS NG-INIT -->
     <uib-accordion close-others="false" ng-init="pinSvc.open.editor = false; pinSvc.open.chooser = true;">
@@ -27,6 +25,7 @@
     <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
             <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
+            <h1>works? [{{testb}}]</h1>
         </div>
         <div class="modal-body" id="modal-body">
             <ul>
@@ -42,7 +41,7 @@
         </div>
         <div class="modal-footer">
             <button class="btn btn-warning" type="button">Cancel</button>
-            <button class="btn btn-primary" type="button" ng-click="$ctrl.processCSVFile()">OK</button>
+            <button class="btn btn-primary" type="button" ng-click="processCSVFile()">OK</button>
         </div>
     </script>
 

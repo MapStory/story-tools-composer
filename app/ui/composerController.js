@@ -28,9 +28,9 @@ function composerController(
 
   $rootScope.$on("configInitialized", () => $scope.mapManager.initMapLoad());
 
-  $rootScope.$on("pin-added", (event, chapter_index) =>
-    $log.log($scope.pinSvc.getPins(0))
-  );
+  $rootScope.$on("pin-added", (event, chapter_index) =>{
+    // $log.log($scope.pinSvc.getPins(0))
+  });
 
   $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
 
