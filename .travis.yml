@@ -2,17 +2,42 @@ branches:
   only:
     - master
 
-sudo: false
+sudo: true
 dist: trusty
 
 language: node_js
 node_js:
-  - "node"
-  - "8"
+  - "9"
+
+services:
+  - docker
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+env:
+  - DOCKER_COMPOSE_VERSION=1.19.0
+
+before_install:
+  - sudo rm /usr/local/bin/docker-compose
+  - curl -L https://github.com/docker/compose/releases/download/${DOCKER_COMPOSE_VERSION}/docker-compose-`uname -s`-`uname -m` > docker-compose
+  - chmod +x docker-compose
+  - sudo mv docker-compose /usr/local/bin
+  - docker --version
+  - docker-compose --version
 
 install:
+  # Standard deployment
   - yarn install
   - webpack
+  # Docker deployment
+  - docker-compose build
 
 script:
+  # Standard deployment
   - yarn test
+  # Docker deployment
+  - docker-compose run composer --test
+

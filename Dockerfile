@@ -29,7 +29,7 @@ RUN yarn install
 COPY . ./
 RUN set -ex; \
     yarn install; \
-    yarn run bundle
+    yarn run bundle;
 
 EXPOSE 9090
 ENTRYPOINT ["./docker/run.sh"]
