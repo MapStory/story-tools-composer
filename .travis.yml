@@ -1,0 +1,18 @@
+branches:
+  only:
+    - master
+
+sudo: false
+dist: trusty
+
+language: node_js
+node_js:
+  - "node"
+  - "8"
+
+install:
+  - yarn install
+  - webpack
+
+script:
+  - yarn test

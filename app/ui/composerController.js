@@ -126,6 +126,7 @@ function composerController(
         $log.info("Modal dismissed at: " + new Date());
       }
     );
+  };
 
   $scope.frameSettings = [];
   const map = MapManager.storyMap.getMap();
