@@ -1,20 +1,12 @@
-/**
- * Controls the bulk upload behavior.
- * @param $scope
- * @param $uibModal
- */
-
 function bulkUploadModalController($scope, pinSvc) {
-
-  $scope.testb = "Hi it works!";
-
   $scope.processCSVFile = () => {
-    console.log("invoking processCSVFile()");
     pinSvc.processCSVFile();
   };
 
+  $scope.cancel = () => {
+    pinSvc.$uibModalInstance.close();
+  };
 }
 
 bulkUploadModalController.$inject = ["$scope", "pinSvc"];
-
 module.exports = bulkUploadModalController;

@@ -6,7 +6,6 @@ const bulkUploadCtrl = require("./bulkUploadController.js");
 const bulkUploadDirective = require("./bulkUpload.directive");
 const bulkUploadModalController = require("./bulkUploadModal.controller");
 
-
 angular.module("composer").factory("pinSvc", pinSvc);
 angular.module("composer").controller("bulkUploadCtrl", bulkUploadCtrl);
 angular.module("composer").controller("bulkUploadModalController", bulkUploadModalController);

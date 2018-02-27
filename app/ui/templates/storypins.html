@@ -25,22 +25,14 @@
     <script type="text/ng-template" id="myModalContent.html">
         <div class="modal-header">
             <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
-            <h1>works? [{{testb}}]</h1>
         </div>
         <div class="modal-body" id="modal-body">
-            <ul>
-                <!--TODO: Add the actual url for the template download-->
-                <a href="#">Download the template here</a>
-            </ul>
+            <a href="#">Download the template here</a>
             <br />
-
-            <!-- TODO: Add an action for parsing the file -->
-            <!--<form action="" enctype="multipart/form-data">-->
-                <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
-            <!--</form>-->
+            <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
         </div>
         <div class="modal-footer">
-            <button class="btn btn-warning" type="button">Cancel</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
             <button class="btn btn-primary" type="button" ng-click="processCSVFile()">OK</button>
         </div>
     </script>

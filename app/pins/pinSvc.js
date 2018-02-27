@@ -270,8 +270,6 @@ function pinSvc(
    * @returns {Array|*} An array of Pins
    */
   svc.getPins = chapter_index => svc.pins[chapter_index] || [];
-
-
   svc.reorderPins = (from_index, to_index) => {
     svc.pins.splice(to_index, 0, svc.pins.splice(from_index, 1)[0]);
   };
@@ -735,7 +733,7 @@ function pinSvc(
       animation: true,
       ariaLabelledBy: "modal-title",
       ariaDescribedBy: "modal-body",
-      templateUrl: "myModalContent.html",
+      templateUrl: "myModalContent.html"
       // controller: svc,
       // controllerAs: '$ctrl',
     });
@@ -750,9 +748,6 @@ function pinSvc(
     svc.test_the_thing_remove_this_later();
   };
 
-  svc.onBulkModalOK = () => {
-    // $uibModalInstance.close($ctrl.selected.item);
-  };
 
   /**
    * A map animation that bounces to a location
@@ -811,7 +806,6 @@ function pinSvc(
     const pin = svc.addPin(config, chapterIndex);
     if (!pin) {
       alert("No pin was created");
-      return;
     }
     pin.coords = [lat, long];
     const pin_index = svc.pins[chapterIndex].length - 1;
@@ -821,46 +815,41 @@ function pinSvc(
     return pin;
   };
 
-  svc.createPinsWithCSV = data => {
+  svc.onBulkPinComplete = results => {
+    const pin_array = [];
+    results.data.forEach(element => {
+      const pin = svc.createNewPin(
+        {
+          title: element.title,
+          start_time: element.start_time,
+          end_time: element.end_time,
+          geometry: {
+            coordinates: [element.latitude, element.longitude]
+          }
+        },
+        stateSvc.getChapterIndex(),
+        element.latitude,
+        element.longitude
+      );
+      pin.content = element.content || "";
+      pin.media = element.media || "";
+      pin.in_map = element.in_map || true;
+      pin.in_timeline = element.in_timeline || true;
+      pin_array.push(pin);
+    });
+    console.log("pin_array is", pin_array);
+    svc.modalInstance.close();
+    return pin_array;
+  };
 
+  svc.createPinsWithCSV = data => {
     Papa.parse(data, {
       header: true,
       dynamicTyping: true,
       delimiter: ",",
-      complete : onComplete
-      // skipEmptyLines: true
+      complete: svc.onBulkPinComplete,
+      skipEmptyLines: true
     });
-
-    function onComplete(results){
-      const pin_array = [];
-      results.data.forEach(element => {
-        const pin = svc.createNewPin(
-          {
-            title: element.title,
-            start_time: element.start_time,
-            end_time: element.end_time,
-            geometry: {
-              coordinates: [element.latitude, element.longitude]
-            }
-          },
-          stateSvc.getChapterIndex(),
-          element.latitude,
-          element.longitude
-        );
-        pin.content = element.content || "";
-        pin.media = element.media || "";
-        pin.in_map = element.in_map || true;
-        pin.in_timeline = element.in_timeline || true;
-        pin_array.push(pin);
-      });
-      console.log("pin_array is", pin_array);
-      return pin_array;
-    }
-
-
-
-
-
   };
 
   /**
@@ -933,12 +922,10 @@ function pinSvc(
   svc.processCSVFile = () => {
     const selectedFile = document.getElementById("bulk_pin_csv_file").files[0];
     if (selectedFile) {
-      console.log("selectedFile",selectedFile);
       svc.createPinsWithCSV(selectedFile);
     } else {
       alert("No file selected!");
     }
-    // svc.modalInstance.close();
   };
 
   /**
