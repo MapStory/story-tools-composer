@@ -21,6 +21,7 @@ function pinSvc(
   svc.previousCursor = undefined;
   svc.has_added_overlay = false;
   svc.isDrawing = false;
+  svc.selected_feature = null;
   // This is the openlayers source that stores all the features that are drawn on the map.
   svc.pinLayerSource = null;
   // For Date selection widgets
@@ -304,7 +305,7 @@ function pinSvc(
     return pinInstantiationObj.hasOwnProperty(propertyName) &&
     (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
       !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
-  }
+  };
 
   svc.validateAllPinProperties = pinInstantiationObj => {
     const missingProperties = [];
@@ -350,24 +351,20 @@ function pinSvc(
    * @returns {Pin} The Pin created.
    */
   svc.addPin = (props, chapter_index) => {
-    // Check if data is OK
+    // TODO: Validate the pin!
 
-
-    // TODO: do actual validation !
-    /*
     const pinValidated = svc.validateAllPinProperties(props);
     if (pinValidated !== true) {
       console.log("invalid pin!!!");
       svc.handleInvalidPin(pinValidated);
-      return false;
+      return null;
     }
-    */
 
     // Check time is OK
     if (timeSvc.getTime(props.start_time) > timeSvc.getTime(props.end_time)) {
       console.log("Start Time must be before End Time", "Invalid Time");
       toastr.error("Start Time must be before End Time", "Invalid Time");
-      return false;
+      return null;
     }
 
     //TODO: Check media whitelist and sanitize embed size.
@@ -780,15 +777,39 @@ function pinSvc(
   svc.addPointToPinLayer = pin => {
     // Lazy instantiate the pin layer
     if (svc.pinLayerSource === null) {
+      const map = MapManager.storyMap.getMap();
+
+      // Create the layer
       svc.pinLayerSource = new ol.source.Vector({
         projection: "EPSG:4326"
       });
-      const vectorLayer = new ol.layer.Vector({
+      svc.sp_vectorLayer = new ol.layer.Vector({
         source: svc.pinLayerSource
       });
+      map.addLayer(svc.sp_vectorLayer);
 
-      const map = MapManager.storyMap.getMap();
-      map.addLayer(vectorLayer);
+      // Register the overlay
+      const sp_overlay = new ol.Overlay({
+        element: document.getElementById("sp-overlay")
+      });
+      svc.sp_overlay = sp_overlay;
+      map.addOverlay(sp_overlay);
+
+      // Add interaction
+      const select_storypin_interaction = new ol.interaction.Select({
+        condition: ol.events.condition.click,
+        layers: [svc.sp_vectorLayer]
+      });
+      map.addInteraction(select_storypin_interaction);
+      select_storypin_interaction.on("select", event => {
+        svc.selected_feature = event.selected[0];
+        if (svc.selected_feature) {
+          const pos = svc.selected_feature.getGeometry().getCoordinates();
+          svc.sp_overlay.setPosition(pos);
+        } else {
+          svc.sp_overlay.setPosition(undefined);
+        }
+      })
     }
 
     // Builds a new point at the pin's location
