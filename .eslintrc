@@ -36,11 +36,7 @@
     "camelcase": 0,
     "guard-for-in": 0,
     "no-restricted-syntax": 0,
-<<<<<<< HEAD
     "no-param-reassign": [2, { "props": false }],
     "no-underscore-dangle": 0
-=======
-    "no-param-reassign": [2, { "props": false }]
->>>>>>> master
   }
 }
