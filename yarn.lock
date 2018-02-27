@@ -6515,9 +6515,8 @@ statuses@~1.3.1:
   version "1.3.1"
   resolved "https://registry.yarnpkg.com/statuses/-/statuses-1.3.1.tgz#faf51b9eb74aaef3b3acf4ad5f61abf24cb7b93e"
 
-"story-tools@git+https://git@github.com/mapstory/story-tools.git#composer":
+story-tools@./deps/story-tools:
   version "0.0.1"
-  resolved "git+https://git@github.com/mapstory/story-tools.git#6e5bd59a2d0ee831cefc4b5fdcef1d2c8ad5a47d"
 
 stream-browserify@^2.0.0, stream-browserify@^2.0.1:
   version "2.0.1"

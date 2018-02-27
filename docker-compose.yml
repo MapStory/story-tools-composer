@@ -1,0 +1,15 @@
+version: '3.6'
+services:
+
+  composer:
+    build: .
+    networks:
+      internal:
+    volumes:
+      - .:/srv/story-tools-composer
+    ports:
+      - "9090:9090"
+    command: [--bundle-dev, --serve-dev]
+
+networks:
+  internal:

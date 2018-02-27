@@ -2,15 +2,26 @@
 
 ## Deployment
 
-### Standalone
+### Local Standalone
 - `yarn install`
 - `webpack`
 - `yarn run server`
 - `http://localhost:9090/`
 
+### Docker
+- `docker-compose build`
+- `docker-compose up -d`
+- `http://localhost:9090`
+- To test: `docker-compose run --rm composer --test
+- To upgrade dependencies: `docker-compose run --rm composer --dep-upgrade`
+- Interactive shell:
+  - In a new container: `docker-compose run --rm composer --shell`
+  - In the container with the running server: `docker-compose attach composer /bin/bash`
+
 ## Development
 
 ### Adding Story-tools to your development environment
+These steps are unnecessary when using the Docker deployment.
 - Ensure that [story-tools](https://github.com/MapStory/story-tools) is a parallel directory to `story-tools-composer`.
 - `rm -rf node_modules/story-tools`
 - Symlink your parallel `story-tools` directory to the `story-tools` directory in `story-tools-composer/node_modules`:

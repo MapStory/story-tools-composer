@@ -50,7 +50,7 @@
     "less-loader": "4.0.5",
     "prettier": "1.10.2",
     "proxy-middleware": "0.15.0",
-    "story-tools": "git+https://git@github.com/mapstory/story-tools.git#composer",
+    "story-tools": "./deps/story-tools",
     "style-loader": "0.20.1",
     "webpack": "3.10.0",
     "webpack-dev-server": "2.11.1"
