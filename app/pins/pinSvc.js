@@ -281,7 +281,7 @@ function pinSvc(
    */
   svc.removePin = (storyPin, chapter_index) => {
     for (let i = 0; i < svc.pins[chapter_index].length; i++) {
-      if (storyPin.id_ == svc.pins[chapter_index][i].id_) {
+      if (storyPin.id_ === svc.pins[chapter_index][i].id_) {
         const splice_index = i;
         if (splice_index === 0) {
           svc.pins[chapter_index].splice(0, 1);
@@ -738,16 +738,18 @@ function pinSvc(
       // controllerAs: '$ctrl',
     });
 
-    svc.modalInstance.result.then( resolved => {
-      svc.selected = resolved;
-    }, function () {
-      let x = 3;
-    });
+    svc.modalInstance.result.then(
+      resolved => {
+        svc.selected = resolved;
+      },
+      () => {
+        let x = 3;
+      }
+    );
 
     // TODO: Remove this later:
-    svc.test_the_thing_remove_this_later();
+    // svc.test_the_thing_remove_this_later();
   };
-
 
   /**
    * A map animation that bounces to a location
@@ -815,6 +817,11 @@ function pinSvc(
     return pin;
   };
 
+  /**
+   * Callback for StoryPin bulk upload.
+   * @param results The Storypins from the CSV
+   * @returns {Array} An Array of pins.
+   */
   svc.onBulkPinComplete = results => {
     const pin_array = [];
     results.data.forEach(element => {
@@ -863,6 +870,7 @@ function pinSvc(
 
     if (!pin) {
       alert("Trying to remove something that isn't");
+      return;
     }
 
     if (pin.map_feature) {

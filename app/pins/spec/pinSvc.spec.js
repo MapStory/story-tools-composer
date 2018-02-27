@@ -305,10 +305,10 @@ describe("pinSvc", () => {
     });
 
     it("should create multiple pins when provided some csv data that is correct", () => {
-      // const init_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
+      const init_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
       pinSvc.createPinsWithCSV(csv_data);
-      // const fin_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
-      // expect(fin_count).toBe(6);
+      const fin_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
+      expect(fin_count).toBe(6);
     });
   });
 
