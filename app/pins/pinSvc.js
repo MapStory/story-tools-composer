@@ -572,53 +572,16 @@ function pinSvc(
     if (!pin) {
       alert("No pin was created");
     }
-
+    const pin_index = svc.pins[chapterIndex].length - 1;
+    pin.index_id = pin_index;
     svc.currentPin = pin; // This behaves weird. Don't rely on currentPin :(
     svc.currentPin.coords = center;
-
-    const pin_index = svc.pins[chapterIndex].length - 1;
-
     // Update the map with the new Pin
     if (pin.in_map === true) {
       svc.addPointToPinLayer(pin);
     }
-    svc.dropPinOverlay(pin, pin_index);
-
     $rootScope.$broadcast("pin-added", pin);
   };
-
-  /**
-   * Drops the Pin on the map.
-   * @param pin The Pin.
-   * @param pin_index The pin's index.
-   */
-  svc.dropPinOverlay = (pin, pin_index) => {
-    const map = MapManager.storyMap.getMap();
-    const new_popup = new ol.Overlay({
-      element: document.getElementById("storypin-popup")
-    });
-
-    if (svc.has_added_overlay === false) {
-      svc.has_added_overlay = true;
-      // Do the new overlay thing only once
-      map.addOverlay(new_popup);
-    }
-
-    //----------------------
-    const element_id = `pin-${pin_index}`;
-    const popup = new ol.Overlay({
-      element: document.getElementById(element_id),
-      positioning: "bottom-center"
-    });
-    const pos = pin.coords;
-
-    const element = popup.getElement();
-    map.addOverlay(popup);
-    svc.doBounceAnim(pos);
-    $(element).popover("show");
-    popup.setPosition(pos);
-  };
-
 
 
   /**
@@ -770,6 +733,62 @@ function pinSvc(
   };
 
   /**
+   * Creates a storypin overlay and sets its position.
+   * @param pin The pin.
+   */
+  svc.createPinOverlay = pin => {
+    const map = MapManager.storyMap.getMap();
+
+    // Create a new overlay for this pin
+    const sp_overlay = new ol.Overlay({
+      element: document.getElementById(`sp-overlay`)
+    });
+
+    if(!sp_overlay) {
+      alert("no overlay found!");
+    }
+    // svc.sp_overlay = sp_overlay;
+    map.addOverlay(sp_overlay);
+    sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
+  };
+
+  svc.init_edit_pin_overlay = () => {
+    const map = MapManager.storyMap.getMap();
+
+    // Create the layer
+    svc.pinLayerSource = new ol.source.Vector({
+      projection: "EPSG:4326"
+    });
+    svc.sp_vectorLayer = new ol.layer.Vector({
+      source: svc.pinLayerSource
+    });
+    map.addLayer(svc.sp_vectorLayer);
+
+    // Register the overlay
+    const sp_overlay = new ol.Overlay({
+      element: document.getElementById("sp-overlay")
+    });
+    svc.sp_overlay = sp_overlay;
+    map.addOverlay(sp_overlay);
+
+    // Add interaction
+    const select_storypin_interaction = new ol.interaction.Select({
+      condition: ol.events.condition.click,
+      layers: [svc.sp_vectorLayer]
+    });
+    map.addInteraction(select_storypin_interaction);
+    select_storypin_interaction.on("select", event => {
+      svc.selected_feature = event.selected[0];
+      if (svc.selected_feature) {
+        const pos = svc.selected_feature.getGeometry().getCoordinates();
+        svc.sp_overlay.setPosition(pos);
+      } else {
+        svc.sp_overlay.setPosition(undefined);
+      }
+    });
+  };
+
+  /**
    * Adds a new point feature to the layer.
    * Adds this feature and associates it to the Pin.
    * @param pin The pin.
@@ -777,39 +796,7 @@ function pinSvc(
   svc.addPointToPinLayer = pin => {
     // Lazy instantiate the pin layer
     if (svc.pinLayerSource === null) {
-      const map = MapManager.storyMap.getMap();
-
-      // Create the layer
-      svc.pinLayerSource = new ol.source.Vector({
-        projection: "EPSG:4326"
-      });
-      svc.sp_vectorLayer = new ol.layer.Vector({
-        source: svc.pinLayerSource
-      });
-      map.addLayer(svc.sp_vectorLayer);
-
-      // Register the overlay
-      const sp_overlay = new ol.Overlay({
-        element: document.getElementById("sp-overlay")
-      });
-      svc.sp_overlay = sp_overlay;
-      map.addOverlay(sp_overlay);
-
-      // Add interaction
-      const select_storypin_interaction = new ol.interaction.Select({
-        condition: ol.events.condition.click,
-        layers: [svc.sp_vectorLayer]
-      });
-      map.addInteraction(select_storypin_interaction);
-      select_storypin_interaction.on("select", event => {
-        svc.selected_feature = event.selected[0];
-        if (svc.selected_feature) {
-          const pos = svc.selected_feature.getGeometry().getCoordinates();
-          svc.sp_overlay.setPosition(pos);
-        } else {
-          svc.sp_overlay.setPosition(undefined);
-        }
-      })
+      svc.init_edit_pin_overlay();
     }
 
     // Builds a new point at the pin's location
@@ -822,6 +809,9 @@ function pinSvc(
 
     // Add to the Pin layer.
     svc.pinLayerSource.addFeatures([point]);
+
+    // Draw the overlay on top of this pin
+    svc.createPinOverlay(pin);
   };
 
   svc.createNewPin = (config, chapterIndex, lat, long) => {
@@ -833,7 +823,6 @@ function pinSvc(
     pin.coords = [lat, long];
     const pin_index = svc.pins[chapterIndex].length - 1;
     svc.addPointToPinLayer(pin);
-    svc.dropPinOverlay(pin, pin_index);
     $rootScope.$broadcast("pin-added", svc.currentPin);
     return pin;
   };

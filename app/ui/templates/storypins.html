@@ -39,21 +39,25 @@
 
 </div>
 
-<!-- Pin Overlays -->
-<div id="sp-overlay">
-    <button id="sp-move">Move</button>
-    <button id="sp-remove">Remove</button>
-</div>
 
-<div ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())" style="display:none;">
-    <div id="pin-{{$index}}"
-         style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
-        {{ pin.title }}
-        <p>{{ pin.content }}</p>
-        <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
-        <a href="{{pin.media}}">{{ pin.media }}</a>
+<div style="display:none;">
+    <!-- Pin Overlays -->
+    <div id="sp-overlay">
+        <button id="sp-move">Move</button>
+        <button id="sp-remove">Remove</button>
+    </div>
+
+    <div ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
+        <div id="pin-{{$index}}"
+             style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
+            {{ pin.title }}
+            <p>{{ pin.content }}</p>
+            <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
+            <a href="{{pin.media}}">{{ pin.media }}</a>
+        </div>
     </div>
 </div>
+
 
 
 <section id="pin-list">
