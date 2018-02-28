@@ -39,4 +39,4 @@ script:
   # Standard deployment
   - ./docker/run.sh --test # Doesn't actually use docker, just standardizing the script
   # Docker deployment
-  - docker-compose run composer --bundle --test
+  #- docker-compose run composer --bundle --test
