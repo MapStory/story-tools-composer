@@ -1,3 +1,6 @@
+const moment = require("moment");
+const $ = require("jquery");
+
 function composerController(
   $scope,
   $rootScope,
@@ -7,6 +10,7 @@ function composerController(
   styleUpdater,
   appConfig,
   TimeControlsManager,
+  TimeMachine,
   navigationSvc,
   pinSvc,
   uiHelperSvc,
@@ -136,35 +140,70 @@ function composerController(
             resolution: map.getView().getResolution()
           });
           map.beforeRender(zoom);
-          map.getView().setZoom(map.getView().getZoom() * 0.0);
+          map.getView().setZoom(map.getView().getZoom() * 1);
         }
       });
   };
 
   let draw;
-  let layerList = [];
+  const layerList = [];
 
-  map.addEventListener("click", event => {
+  $scope.zoomToExtent = () => {
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
-        const extent = layer.getSource().getExtent();
-        layerList.push(layer.get("name"));
-        if (layerList.length > 1) {
-          const zoom = ol.animation.zoom({
-            resolution: map.getView().getResolution()
-          });
-          map.beforeRender(zoom);
-          map.getView().setCenter(extent);
-          map.getView().setResolution(map.getView().getResolution() * 0.2);
-          map.removeInteraction(draw);
-        }
+        map.beforeRender(
+          ol.animation.pan({
+            source: map.getView().getCenter(),
+            duration: 500
+          }),
+          ol.animation.zoom({
+            resolution: map.getView().getResolution(),
+            duration: 1000,
+            easing: ol.easing.easeIn
+          })
+        );
+        map.getView().fit(layer.getSource().getExtent(), map.getSize());
       }
     });
-  });
+  };
+
+  $scope.zoomOutExtent = () => {
+    const zoom = ol.animation.zoom({
+      resolution: map.getView().getResolution(),
+      duration: 1000,
+      easing: ol.easing.easeOut
+    });
+    map.beforeRender(zoom);
+    map.getView().setZoom(map.getView().getZoom() * 1);
+  };
+
+  window.onMoveCallback = data => {
+    $scope.checkTimes(data);
+  };
+
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
+    const formattedDate = preFormatDate.format("YYYY-MM-DD");
+    return formattedDate;
+  };
+
+  let dateCount = 0;
+
+  $scope.checkTimes = date => {
+    const startDate = $scope.formatDates($scope.frameSettings.startDate);
+    const endDate = $scope.formatDates($scope.frameSettings.endDate);
+    const storyLayerStartDate = $scope.formatDates(date);
+
+    if (moment(storyLayerStartDate).isSameOrAfter(startDate) && dateCount < 1) {
+      $scope.zoomToExtent();
+      dateCount = 1;
+    } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
+      $scope.zoomOutExtent();
+    }
+  };
 
   $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
-    layerList = [];
     const bbVector = new ol.source.Vector({ wrapX: false });
     const vector = new ol.layer.Vector({
       source: bbVector
@@ -252,8 +291,6 @@ function composerController(
 
     $scope.disableButton = true;
     $scope.disableButton = !$scope.disableButton;
-
-    $log.log($scope.frameSettings.bb1);
   };
 
   $scope.deleteStoryframe = index => {
