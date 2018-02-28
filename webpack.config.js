@@ -5,6 +5,7 @@ var serverHost = "https://mapstory.org"; //"https://docker";
 
 module.exports = {
   context: __dirname,
+  devtool: 'inline-source-map',
   resolve: {
     modules: ["node_modules"],
     alias: {
@@ -49,7 +50,7 @@ module.exports = {
   entry: {
     app: ["babel-polyfill", "./app/app.js"],
     style: "./style/style.js",
-    vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate"]
+    vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate", "angular-animate", "papaparse"]
   },
   output: {
     path: __dirname + "/build",

@@ -1,7 +1,9 @@
 <header>
     <div class="story-info">
-        <h1>{{ mapManager.title}}</h1>
-        <a href="#">Edit story info</a>
+        <h1>{{ stateSvc.config.about.title }}</h1>
+        <div>
+            <a ng-click="openStoryModal()">Edit Story Info</a>
+        </div>
     </div>
     <div class="preview">
         <div class="form-field">
