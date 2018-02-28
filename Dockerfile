@@ -20,6 +20,9 @@ RUN set -ex; \
         ; \
     rm -rf /var/lib/apt/lists/*;
 
+# Install Gulp for story-tools
+RUN yarn global add gulp-cli
+
 WORKDIR /srv/story-tools-composer
 COPY package.json ./
 COPY yarn.lock ./
@@ -27,9 +30,7 @@ COPY deps ./deps
 RUN yarn install
 
 COPY . ./
-RUN set -ex; \
-    yarn install; \
-    yarn run bundle;
+RUN ./docker/run.sh --bundle
 
 EXPOSE 9090
 ENTRYPOINT ["./docker/run.sh"]

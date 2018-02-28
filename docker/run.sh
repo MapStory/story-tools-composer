@@ -7,20 +7,29 @@ for i do # loop over $@
     echo "Executing $i"
 
     if [ "$i" = "--bundle" ]; then
+        cd deps/story-tools
+        yarn install
+        gulp build
+        cd ../..
         yarn install
         yarn run bundle
     fi
 
     if [ "$i" = "--bundle-dev" ]; then
-        yarn install
         cd deps/story-tools
+        yarn install
+        gulp build watch &
         yarn link
         cd ../..
+        yarn install
         yarn link story-tools
         yarn run bundle
     fi
 
     if [ "$i" = "--dep-upgrade" ]; then
+        cd deps/story-tools
+        yarn upgrade
+        cd ../..
         yarn upgrade
     fi
 

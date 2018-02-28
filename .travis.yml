@@ -39,5 +39,5 @@ script:
   # Standard deployment
   - yarn test
   # Docker deployment
-  - docker-compose run composer --test
+  - docker-compose run composer --bundle --test
 
