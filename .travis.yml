@@ -27,17 +27,16 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - docker --version
   - docker-compose --version
+  - yarn global add gulp-cli
 
 install:
   # Standard deployment
-  - yarn install
-  - webpack
+  - ./docker/run.sh --bundle # Doesn't actually use docker, just standardizing the script
   # Docker deployment
   - docker-compose build
 
 script:
   # Standard deployment
-  - yarn test
+  - ./docker/run.sh --test # Doesn't actually use docker, just standardizing the script
   # Docker deployment
   - docker-compose run composer --bundle --test
-
