@@ -669,7 +669,6 @@ function pinSvc(
    * a Pin will be placed and the coordinates for currentPin updated.
    */
   svc.turnPinDrawModeOn = index => {
-    svc.isDrawing = !svc.isDrawing;
     const pin = svc.pins[stateSvc.getChapterIndex()][index];
     svc.currentPin = pin;
     const map = MapManager.storyMap.getMap();
@@ -684,6 +683,7 @@ function pinSvc(
       map.removeInteraction(svc.drag_instance);
       svc.drag_instance = null;
     }
+    svc.startEditingPin(index);
   };
 
   // TODO: Finish this
@@ -737,19 +737,20 @@ function pinSvc(
    * @param pin The pin.
    */
   svc.createPinOverlay = pin => {
+    //TODO: Fix this
     const map = MapManager.storyMap.getMap();
 
-    // Create a new overlay for this pin
-    const sp_overlay = new ol.Overlay({
-      element: document.getElementById(`sp-overlay`)
-    });
-
-    if(!sp_overlay) {
-      alert("no overlay found!");
-    }
-    // svc.sp_overlay = sp_overlay;
-    map.addOverlay(sp_overlay);
-    sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
+    // // Create a new overlay for this pin
+    // const sp_overlay = new ol.Overlay({
+    //   element: document.getElementById(`sp-overlay`)
+    // });
+    //
+    // if(!sp_overlay) {
+    //   alert("no overlay found!");
+    // }
+    // // svc.sp_overlay = sp_overlay;
+    // map.addOverlay(sp_overlay);
+    // sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
   };
 
   svc.init_edit_pin_overlay = () => {
@@ -770,7 +771,7 @@ function pinSvc(
       element: document.getElementById("sp-overlay")
     });
     svc.sp_overlay = sp_overlay;
-    map.addOverlay(sp_overlay);
+    map.addOverlay(svc.sp_overlay);
 
     // Add interaction
     const select_storypin_interaction = new ol.interaction.Select({
@@ -843,6 +844,7 @@ function pinSvc(
 
   /**
    * Callback for StoryPin bulk upload.
+   * This gets run when Papa parse finishes parsing a CSV.
    * @param results The Storypins from the CSV
    * @returns {Array} An Array of pins.
    */
@@ -873,6 +875,10 @@ function pinSvc(
     return pin_array;
   };
 
+  /**
+   * Parses and creates StoryPins with a CSV
+   * @param data
+   */
   svc.createPinsWithCSV = data => {
     Papa.parse(data, {
       header: true,
@@ -951,6 +957,9 @@ function pinSvc(
     return pin_list;
   };
 
+  /**
+   * Triggered when the user presses OK on the StoryPin Bulk Upload dialog window.
+   */
   svc.processCSVFile = () => {
     const selectedFile = document.getElementById("bulk_pin_csv_file").files[0];
     if (selectedFile) {
@@ -960,6 +969,22 @@ function pinSvc(
     }
   };
 
+  svc.startEditingPin = index => {
+    const pin = svc.pins[stateSvc.getChapterIndex()][index];
+    if (!pin) {
+      alert("No pin!");
+    }
+    // Create a new overlay for this pin
+
+    svc.sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
+  };
+
+  /**
+   * This defines the style for each StoryPin.
+   * This function is supposed to be passed to the Layer that contains them.
+   * @param feature The storypin.map_feature
+   * @returns {*[]} Some CSS
+   */
   svc.getStyle = feature => [
     new ol.style.Style({
       text: new ol.style.Text({
@@ -971,7 +996,7 @@ function pinSvc(
           color: [255, 255, 255, 0.8],
           width: 2
         }),
-        font: "26px 'Helvetica Neue', Arial"
+        font: "18px 'Helvetica Neue', Arial"
       }),
       image: new ol.style.Circle({
         fill: new ol.style.Fill({
@@ -981,25 +1006,10 @@ function pinSvc(
           color: [51, 153, 204, 0.4],
           width: 1.5
         }),
-        radius: 15
+        radius: 10
       })
     })
   ];
-
-  /**
-   * Runs tests. TODO: remove this eventually.
-   */
-  svc.test_the_thing_remove_this_later = () => {
-    const csv_data = `title,content,media,start_time,end_time,latitude,longitude,in_map,in_timeline,pause_playback,auto_show
-Test Pin 1,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 2,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 3,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 4,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 5,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 6,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE`;
-    const result = svc.createPinsWithCSV(csv_data);
-  };
-
   return svc;
 }
 
