@@ -760,7 +760,8 @@ function pinSvc(
       projection: "EPSG:4326"
     });
     svc.sp_vectorLayer = new ol.layer.Vector({
-      source: svc.pinLayerSource
+      source: svc.pinLayerSource,
+      style: svc.getStyle
     });
     map.addLayer(svc.sp_vectorLayer);
 
@@ -806,6 +807,7 @@ function pinSvc(
 
     // Pin now has a feature:
     pin.map_feature = point;
+    pin.map_feature.set("label", pin.title);
 
     // Add to the Pin layer.
     svc.pinLayerSource.addFeatures([point]);
@@ -814,6 +816,14 @@ function pinSvc(
     svc.createPinOverlay(pin);
   };
 
+  /**
+   * Creates a new pin. This is the function that gets called from the template.
+   * @param config
+   * @param chapterIndex
+   * @param lat
+   * @param long
+   * @returns {Pin}
+   */
   svc.createNewPin = (config, chapterIndex, lat, long) => {
     const map = MapManager.storyMap.getMap();
     const pin = svc.addPin(config, chapterIndex);
@@ -821,9 +831,13 @@ function pinSvc(
       alert("No pin was created");
     }
     pin.coords = [lat, long];
-    const pin_index = svc.pins[chapterIndex].length - 1;
+    // Set the label.
+    // const pin_index = svc.pins[chapterIndex].length - 1;
+
     svc.addPointToPinLayer(pin);
+
     $rootScope.$broadcast("pin-added", svc.currentPin);
+
     return pin;
   };
 
@@ -945,6 +959,32 @@ function pinSvc(
       alert("No file selected!");
     }
   };
+
+  svc.getStyle = feature => [
+    new ol.style.Style({
+      text: new ol.style.Text({
+        text: feature.get("label"),
+        fill: new ol.style.Fill({
+          color: "#333"
+        }),
+        stroke: new ol.style.Stroke({
+          color: [255, 255, 255, 0.8],
+          width: 2
+        }),
+        font: "26px 'Helvetica Neue', Arial"
+      }),
+      image: new ol.style.Circle({
+        fill: new ol.style.Fill({
+          color: [255, 255, 255, 0.3]
+        }),
+        stroke: new ol.style.Stroke({
+          color: [51, 153, 204, 0.4],
+          width: 1.5
+        }),
+        radius: 15
+      })
+    })
+  ];
 
   /**
    * Runs tests. TODO: remove this eventually.

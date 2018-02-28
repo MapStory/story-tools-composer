@@ -1,15 +1,6 @@
 /**
  * Controls the bulk upload behavior.
  * @param $scope
- *
- *
- * fdsafds
- * afdsa
- * fdsa
- * fds
- * afdsa
- * fdsa
- * fdsa
  * @param $uibModal
  */
 
