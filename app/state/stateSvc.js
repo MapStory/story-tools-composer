@@ -171,20 +171,6 @@ function stateSvc(
 
   svc.getChapterCount = () => svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
 
-  // svc.save = () => {
-  //   const config = window.storyMap.getState();
-  //   const layers = window.storyMap.getStoryLayers();
-  //   layers.forEach(lyr => {});
-  //   stLocalStorageSvc.saveConfig(config);
-  //   if (window.storyMap.get("id") === undefined) {
-  //     window.storyMap.set("id", config.id);
-  //   }
-  //   stAnnotationsStore.saveAnnotations(
-  //     window.storyMap.get("id"),
-  //     StoryPinLayerManager.storyPins
-  //   );
-  // };
-
   svc.initConfig();
   svc.save = function() {
     console.log(svc.config);
@@ -198,23 +184,6 @@ function stateSvc(
       console.log("MAP FAILED TO SAVE");
     });
   };
-
-  // svc.save = function() {
-  //   var config = window.storyMap.getState();
-  //   console.log(" CONFIG ON SAVE ---- >", config);
-  //   var layers = window.storyMap.getStoryLayers();
-  //   layers.forEach(function(lyr) {
-  //     console.log("    LAYER CONFIG -- >", svc.getLayerSaveConfig(lyr));
-  //   });
-  //   stLocalStorageSvc.saveConfig(config);
-  //   if (window.storyMap.get("id") === undefined) {
-  //     window.storyMap.set("id", config.id);
-  //   }
-  //   stAnnotationsStore.saveAnnotations(
-  //     window.storyMap.get("id"),
-  //     StoryPinLayerManager.storyPins
-  //   );
-  // };
 
   return svc;
 }

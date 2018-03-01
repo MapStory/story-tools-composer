@@ -3,6 +3,7 @@ function composerController(
   $rootScope,
   $log,
   $injector,
+  $uibModal,
   MapManager,
   styleUpdater,
   appConfig,
@@ -28,9 +29,9 @@ function composerController(
 
   $rootScope.$on("configInitialized", () => $scope.mapManager.initMapLoad());
 
-  $rootScope.$on("pin-added", (event, chapter_index) =>
-    $log.log($scope.pinSvc.getPins(0))
-  );
+  $rootScope.$on("pin-added", (event, chapter_index) =>{
+    // $log.log($scope.pinSvc.getPins(0))
+  });
 
   $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
 
@@ -102,6 +103,23 @@ function composerController(
 
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
+
+  $scope.openStoryModal = function(size) {
+    const uibmodalInstance = $uibModal.open({
+      templateUrl: "app/ui/templates/storyInfoModal.html",
+      size,
+      scope: $scope
+    });
+
+    uibmodalInstance.result.then(
+      (selectedItem) => {
+        $scope.selected = selectedItem;
+      },
+      () => {
+        $log.info("Modal dismissed at: " + new Date());
+      }
+    );
+  };
 
   $scope.frameSettings = [];
   const map = MapManager.storyMap.getMap();
