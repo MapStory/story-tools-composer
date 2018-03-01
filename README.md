@@ -4,13 +4,13 @@
 
 ### Local Standalone
 
-- `yarn install`
-- `webpack`
-- `yarn run server`
+- `git submodule update --init --recursive`
+- `./scripts/run.sh --bundle-dev --test --serve-dev`
 - `http://localhost:9090/`
 
 ### Docker
 
+- `git submodule update --init --recursive`
 - `docker-compose build`
 - `docker-compose up -d`
 - `http://localhost:9090`
@@ -21,16 +21,6 @@
   - In the container with the running server: `docker-compose attach composer /bin/bash`
 
 ## Development
-
-### Adding Story-tools to your development environment
-
-These steps are unnecessary when using the Docker deployment.
-
-- Ensure that [story-tools](https://github.com/MapStory/story-tools) is a parallel directory to `story-tools-composer`.
-- `rm -rf node_modules/story-tools`
-- Symlink your parallel `story-tools` directory to the `story-tools` directory in `story-tools-composer/node_modules`:
-  - From `story-tools-composer` directory: `ln -s /absolute/path/to/story-tools node_modules/story-tools`
-- After making any changes to Story-tools, run `gulp scripts` from the `story-tools` directory and they should appear in composer.
 
 ### Adding layers
 
@@ -49,7 +39,7 @@ Global configuration constants are set in the `app/app.js` module constant `appC
 
 ### Testing
 
-`npm run test`
+`yarn run test`
 
 ### <a name="developers">Developers!</a>
 

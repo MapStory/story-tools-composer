@@ -30,8 +30,8 @@ COPY deps ./deps
 RUN yarn install
 
 COPY . ./
-RUN ./docker/run.sh --bundle
+RUN ./scripts/run.sh --bundle
 
 EXPOSE 9090
-ENTRYPOINT ["./docker/run.sh"]
+ENTRYPOINT ["./scripts/run.sh"]
 CMD ["--bundle-dev", "--serve-dev"]
