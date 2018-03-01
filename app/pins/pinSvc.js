@@ -871,7 +871,9 @@ function pinSvc(
       pin_array.push(pin);
     });
     console.log("pin_array is", pin_array);
-    svc.modalInstance.close();
+    // This is null:
+    // TODO: Fix this null object
+    // svc.modalInstance.close();
     return pin_array;
   };
 

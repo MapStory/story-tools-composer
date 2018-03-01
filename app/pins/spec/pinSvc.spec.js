@@ -304,7 +304,7 @@ describe("pinSvc", () => {
       expect(pinSvc.pins[0][1]).toBeDefined();
     });
 
-    xit("should create multiple pins when provided some csv data that is correct", () => {
+    it("should create multiple pins when provided some csv data that is correct", () => {
       // TODO: WIP
       const init_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
       pinSvc.createPinsWithCSV(csv_data);
