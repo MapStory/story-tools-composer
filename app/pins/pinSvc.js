@@ -21,6 +21,7 @@ function pinSvc(
   svc.previousCursor = undefined;
   svc.has_added_overlay = false;
   svc.isDrawing = false;
+  svc.selected_feature = null;
   // This is the openlayers source that stores all the features that are drawn on the map.
   svc.pinLayerSource = null;
   // For Date selection widgets
@@ -270,8 +271,6 @@ function pinSvc(
    * @returns {Array|*} An array of Pins
    */
   svc.getPins = chapter_index => svc.pins[chapter_index] || [];
-
-
   svc.reorderPins = (from_index, to_index) => {
     svc.pins.splice(to_index, 0, svc.pins.splice(from_index, 1)[0]);
   };
@@ -283,7 +282,7 @@ function pinSvc(
    */
   svc.removePin = (storyPin, chapter_index) => {
     for (let i = 0; i < svc.pins[chapter_index].length; i++) {
-      if (storyPin.id_ == svc.pins[chapter_index][i].id_) {
+      if (storyPin.id_ === svc.pins[chapter_index][i].id_) {
         const splice_index = i;
         if (splice_index === 0) {
           svc.pins[chapter_index].splice(0, 1);
@@ -302,10 +301,11 @@ function pinSvc(
    * @param propertyName
    * @returns {*|boolean}
    */
-  svc.validatePinProperty = (pinInstantiationObj, propertyName) =>
-    pinInstantiationObj.hasOwnProperty(propertyName) &&
+  svc.validatePinProperty = (pinInstantiationObj, propertyName) => {
+    return pinInstantiationObj.hasOwnProperty(propertyName) &&
     (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
       !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
+  };
 
   svc.validateAllPinProperties = pinInstantiationObj => {
     const missingProperties = [];
@@ -351,34 +351,41 @@ function pinSvc(
    * @returns {Pin} The Pin created.
    */
   svc.addPin = (props, chapter_index) => {
-    // Check if data is OK
+    // TODO: Validate the pin!
+
     const pinValidated = svc.validateAllPinProperties(props);
     if (pinValidated !== true) {
+      console.log("invalid pin!!!");
       svc.handleInvalidPin(pinValidated);
-      return false;
+      return null;
     }
+
     // Check time is OK
     if (timeSvc.getTime(props.start_time) > timeSvc.getTime(props.end_time)) {
       console.log("Start Time must be before End Time", "Invalid Time");
       toastr.error("Start Time must be before End Time", "Invalid Time");
-      return false;
+      return null;
     }
+
     //TODO: Check media whitelist and sanitize embed size.
-    if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
-      props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
-      props.media = props.media.replace(
-        /height="\d+"/i,
-        `height=${embed_height}`
-      );
-    }
+    // if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
+    //   props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
+    //   props.media = props.media.replace(
+    //     /height="\d+"/i,
+    //     `height=${embed_height}`
+    //   );
+    // }
+
     // Create the new storypin
-    let storyPin = new svc.Pin(props);
+    const storyPin = new svc.Pin(props);
     // Push to the chapter
     if (!svc.pins[chapter_index]) {
       svc.pins[chapter_index] = [];
     }
     svc.pins[chapter_index].push(storyPin);
     // Broadcast event
+
+    console.log("story pin suposed to be added",storyPin);
     $rootScope.$broadcast("pin-added", chapter_index);
 
     return storyPin;
@@ -391,6 +398,7 @@ function pinSvc(
    * @ TODO: write test for this after mapService functions are ported over
    */
   svc.updatePin = (pin, chapter_index) => {
+    console.log("about to update pin");
     // Only set new geometry if location was saved on pin object
     if (goog.isDefAndNotNull(pin.geometry)) {
       // mapService_.removeDraw();
@@ -564,53 +572,16 @@ function pinSvc(
     if (!pin) {
       alert("No pin was created");
     }
-
+    const pin_index = svc.pins[chapterIndex].length - 1;
+    pin.index_id = pin_index;
     svc.currentPin = pin; // This behaves weird. Don't rely on currentPin :(
     svc.currentPin.coords = center;
-
-    const pin_index = svc.pins[chapterIndex].length - 1;
-
     // Update the map with the new Pin
     if (pin.in_map === true) {
       svc.addPointToPinLayer(pin);
     }
-    svc.dropPinOverlay(pin, pin_index);
-
     $rootScope.$broadcast("pin-added", pin);
   };
-
-  /**
-   * Drops the Pin on the map.
-   * @param pin The Pin.
-   * @param pin_index The pin's index.
-   */
-  svc.dropPinOverlay = (pin, pin_index) => {
-    const map = MapManager.storyMap.getMap();
-    const new_popup = new ol.Overlay({
-      element: document.getElementById("storypin-popup")
-    });
-
-    if (svc.has_added_overlay === false) {
-      svc.has_added_overlay = true;
-      // Do the new overlay thing only once
-      map.addOverlay(new_popup);
-    }
-
-    //----------------------
-    const element_id = `pin-${pin_index}`;
-    const popup = new ol.Overlay({
-      element: document.getElementById(element_id),
-      positioning: "bottom-center"
-    });
-    const pos = pin.coords;
-
-    const element = popup.getElement();
-    map.addOverlay(popup);
-    svc.doBounceAnim(pos);
-    $(element).popover("show");
-    popup.setPosition(pos);
-  };
-
 
 
   /**
@@ -698,7 +669,6 @@ function pinSvc(
    * a Pin will be placed and the coordinates for currentPin updated.
    */
   svc.turnPinDrawModeOn = index => {
-    svc.isDrawing = !svc.isDrawing;
     const pin = svc.pins[stateSvc.getChapterIndex()][index];
     svc.currentPin = pin;
     const map = MapManager.storyMap.getMap();
@@ -713,6 +683,7 @@ function pinSvc(
       map.removeInteraction(svc.drag_instance);
       svc.drag_instance = null;
     }
+    svc.startEditingPin(index);
   };
 
   // TODO: Finish this
@@ -722,23 +693,22 @@ function pinSvc(
       animation: true,
       ariaLabelledBy: "modal-title",
       ariaDescribedBy: "modal-body",
-      templateUrl: "myModalContent.html",
+      templateUrl: "myModalContent.html"
       // controller: svc,
       // controllerAs: '$ctrl',
     });
 
-    svc.modalInstance.result.then( resolved => {
-      svc.selected = resolved;
-    }, function () {
-      let x = 3;
-    });
+    svc.modalInstance.result.then(
+      resolved => {
+        svc.selected = resolved;
+      },
+      () => {
+        let x = 3;
+      }
+    );
 
     // TODO: Remove this later:
-    svc.test_the_thing_remove_this_later();
-  };
-
-  svc.onBulkModalOK = () => {
-    // $uibModalInstance.close($ctrl.selected.item);
+    // svc.test_the_thing_remove_this_later();
   };
 
   /**
@@ -763,6 +733,64 @@ function pinSvc(
   };
 
   /**
+   * Creates a storypin overlay and sets its position.
+   * @param pin The pin.
+   */
+  svc.createPinOverlay = pin => {
+    //TODO: Fix this
+    const map = MapManager.storyMap.getMap();
+
+    // // Create a new overlay for this pin
+    // const sp_overlay = new ol.Overlay({
+    //   element: document.getElementById(`sp-overlay`)
+    // });
+    //
+    // if(!sp_overlay) {
+    //   alert("no overlay found!");
+    // }
+    // // svc.sp_overlay = sp_overlay;
+    // map.addOverlay(sp_overlay);
+    // sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
+  };
+
+  svc.init_edit_pin_overlay = () => {
+    const map = MapManager.storyMap.getMap();
+
+    // Create the layer
+    svc.pinLayerSource = new ol.source.Vector({
+      projection: "EPSG:4326"
+    });
+    svc.sp_vectorLayer = new ol.layer.Vector({
+      source: svc.pinLayerSource,
+      style: svc.getStyle
+    });
+    map.addLayer(svc.sp_vectorLayer);
+
+    // Register the overlay
+    const sp_overlay = new ol.Overlay({
+      element: document.getElementById("sp-overlay")
+    });
+    svc.sp_overlay = sp_overlay;
+    map.addOverlay(svc.sp_overlay);
+
+    // Add interaction
+    const select_storypin_interaction = new ol.interaction.Select({
+      condition: ol.events.condition.click,
+      layers: [svc.sp_vectorLayer]
+    });
+    map.addInteraction(select_storypin_interaction);
+    select_storypin_interaction.on("select", event => {
+      svc.selected_feature = event.selected[0];
+      if (svc.selected_feature) {
+        const pos = svc.selected_feature.getGeometry().getCoordinates();
+        svc.sp_overlay.setPosition(pos);
+      } else {
+        svc.sp_overlay.setPosition(undefined);
+      }
+    });
+  };
+
+  /**
    * Adds a new point feature to the layer.
    * Adds this feature and associates it to the Pin.
    * @param pin The pin.
@@ -770,15 +798,7 @@ function pinSvc(
   svc.addPointToPinLayer = pin => {
     // Lazy instantiate the pin layer
     if (svc.pinLayerSource === null) {
-      svc.pinLayerSource = new ol.source.Vector({
-        projection: "EPSG:4326"
-      });
-      const vectorLayer = new ol.layer.Vector({
-        source: svc.pinLayerSource
-      });
-
-      const map = MapManager.storyMap.getMap();
-      map.addLayer(vectorLayer);
+      svc.init_edit_pin_overlay();
     }
 
     // Builds a new point at the pin's location
@@ -788,11 +808,23 @@ function pinSvc(
 
     // Pin now has a feature:
     pin.map_feature = point;
+    pin.map_feature.set("label", pin.title);
 
     // Add to the Pin layer.
     svc.pinLayerSource.addFeatures([point]);
+
+    // Draw the overlay on top of this pin
+    svc.createPinOverlay(pin);
   };
 
+  /**
+   * Creates a new pin. This is the function that gets called from the template.
+   * @param config
+   * @param chapterIndex
+   * @param lat
+   * @param long
+   * @returns {Pin}
+   */
   svc.createNewPin = (config, chapterIndex, lat, long) => {
     const map = MapManager.storyMap.getMap();
     const pin = svc.addPin(config, chapterIndex);
@@ -800,23 +832,25 @@ function pinSvc(
       alert("No pin was created");
     }
     pin.coords = [lat, long];
-    const pin_index = svc.pins[chapterIndex].length - 1;
+    // Set the label.
+    // const pin_index = svc.pins[chapterIndex].length - 1;
+
     svc.addPointToPinLayer(pin);
-    svc.dropPinOverlay(pin, pin_index);
+
     $rootScope.$broadcast("pin-added", svc.currentPin);
+
     return pin;
   };
 
-  svc.createPinsWithCSV = data => {
-    const parsed = Papa.parse(data, {
-      header: true,
-      dynamicTyping: true,
-      delimiter: ","
-      // skipEmptyLines: true
-    });
-
+  /**
+   * Callback for StoryPin bulk upload.
+   * This gets run when Papa parse finishes parsing a CSV.
+   * @param results The Storypins from the CSV
+   * @returns {Array} An Array of pins.
+   */
+  svc.onBulkPinComplete = results => {
     const pin_array = [];
-    parsed.data.forEach(element => {
+    results.data.forEach(element => {
       const pin = svc.createNewPin(
         {
           title: element.title,
@@ -836,8 +870,23 @@ function pinSvc(
       pin.in_timeline = element.in_timeline || true;
       pin_array.push(pin);
     });
-
+    console.log("pin_array is", pin_array);
+    svc.modalInstance.close();
     return pin_array;
+  };
+
+  /**
+   * Parses and creates StoryPins with a CSV
+   * @param data
+   */
+  svc.createPinsWithCSV = data => {
+    Papa.parse(data, {
+      header: true,
+      dynamicTyping: true,
+      delimiter: ",",
+      complete: svc.onBulkPinComplete,
+      skipEmptyLines: true
+    });
   };
 
   /**
@@ -851,6 +900,7 @@ function pinSvc(
 
     if (!pin) {
       alert("Trying to remove something that isn't");
+      return;
     }
 
     if (pin.map_feature) {
@@ -907,6 +957,9 @@ function pinSvc(
     return pin_list;
   };
 
+  /**
+   * Triggered when the user presses OK on the StoryPin Bulk Upload dialog window.
+   */
   svc.processCSVFile = () => {
     const selectedFile = document.getElementById("bulk_pin_csv_file").files[0];
     if (selectedFile) {
@@ -914,23 +967,49 @@ function pinSvc(
     } else {
       alert("No file selected!");
     }
-    // svc.modalInstance.close();
+  };
+
+  svc.startEditingPin = index => {
+    const pin = svc.pins[stateSvc.getChapterIndex()][index];
+    if (!pin) {
+      alert("No pin!");
+    }
+    // Create a new overlay for this pin
+
+    svc.sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
   };
 
   /**
-   * Runs tests. TODO: remove this eventually.
+   * This defines the style for each StoryPin.
+   * This function is supposed to be passed to the Layer that contains them.
+   * @param feature The storypin.map_feature
+   * @returns {*[]} Some CSS
    */
-  svc.test_the_thing_remove_this_later = () => {
-    const csv_data = `title,content,media,start_time,end_time,latitude,longitude,in_map,in_timeline,pause_playback,auto_show
-Test Pin 1,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 2,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 3,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 4,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 5,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE 
-Test Pin 6,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE`;
-    const result = svc.createPinsWithCSV(csv_data);
-  };
-
+  svc.getStyle = feature => [
+    new ol.style.Style({
+      text: new ol.style.Text({
+        text: feature.get("label"),
+        fill: new ol.style.Fill({
+          color: "#333"
+        }),
+        stroke: new ol.style.Stroke({
+          color: [255, 255, 255, 0.8],
+          width: 2
+        }),
+        font: "18px 'Helvetica Neue', Arial"
+      }),
+      image: new ol.style.Circle({
+        fill: new ol.style.Fill({
+          color: [255, 255, 255, 0.3]
+        }),
+        stroke: new ol.style.Stroke({
+          color: [51, 153, 204, 0.4],
+          width: 1.5
+        }),
+        radius: 10
+      })
+    })
+  ];
   return svc;
 }
 

@@ -304,11 +304,12 @@ describe("pinSvc", () => {
       expect(pinSvc.pins[0][1]).toBeDefined();
     });
 
-    it("should create multiple pins when provided some csv data that is correct", () => {
-      // const init_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
+    xit("should create multiple pins when provided some csv data that is correct", () => {
+      // TODO: WIP
+      const init_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
       pinSvc.createPinsWithCSV(csv_data);
-      // const fin_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
-      // expect(fin_count).toBe(6);
+      const fin_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
+      expect(fin_count).toBe(6);
     });
   });
 

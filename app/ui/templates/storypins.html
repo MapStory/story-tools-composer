@@ -1,5 +1,4 @@
 <div id="pins-editor"
-     ng-if="selected.pins"
      ng-controller="bulkUploadCtrl"
      class="floating style-editor-item"
      pins-editor
@@ -10,7 +9,7 @@
     <uib-accordion close-others="false" ng-init="pinSvc.open.editor = false; pinSvc.open.chooser = true;">
         <!-- Pin List -->
         <div uib-accordion-group heading="StoryPins" is-open="pinSvc.open.chooser">
-            <button class="btn btn-inverse" ng-click="pinSvc.onBulkPinAdd()">Bulk Upload</button>
+            <button class="btn btn-inverse" ng-click="onBulkPinAdd()">Bulk Upload</button>
             <button class="btn btn-inverse"
                     ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
                 Add a StoryPin
@@ -28,42 +27,44 @@
             <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
         </div>
         <div class="modal-body" id="modal-body">
-            <ul>
-                <!--TODO: Add the actual url for the template download-->
-                <a href="#">Download the template here</a>
-            </ul>
+            <a href="#">Download the template here</a>
             <br />
-
-            <!-- TODO: Add an action for parsing the file -->
-            <!--<form action="" enctype="multipart/form-data">-->
-                <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
-            <!--</form>-->
+            <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
         </div>
         <div class="modal-footer">
-            <button class="btn btn-warning" type="button">Cancel</button>
-            <button class="btn btn-primary" type="button" ng-click="$ctrl.processCSVFile()">OK</button>
+            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+            <button class="btn btn-primary" type="button" ng-click="processCSVFile()">OK</button>
         </div>
     </script>
 
 </div>
 
-<!-- Pin Overlays -->
-<div ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())" style="display:none;">
-    <div id="pin-{{$index}}"
-         style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
-        {{ pin.title }}
-        <p>{{ pin.content }}</p>
-        <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
-        <a href="{{pin.media}}">{{ pin.media }}</a>
+
+<div style="display:none;">
+    <!-- Pin Overlays -->
+    <div id="sp-overlay">
+        <button id="sp-move">Move</button>
+        <button id="sp-remove">Remove</button>
+    </div>
+
+    <div ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
+        <div id="pin-{{$index}}"
+             style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
+            {{ pin.title }}
+            <p>{{ pin.content }}</p>
+            <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
+            <a href="{{pin.media}}">{{ pin.media }}</a>
+        </div>
     </div>
 </div>
+
 
 
 <section id="pin-list">
 
     <uib-accordion close-others=true>
         <!-- Gets pins from pin service-->
-        <section ng-repeat="pin in pinSvc.getPins(stateSvc.getChapterIndex())">
+        <section ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
             <!-- TODO: Solve this with a controller     -->
             <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index">
                 <uib-accordion-heading>
