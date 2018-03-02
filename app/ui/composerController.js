@@ -33,7 +33,7 @@ function composerController(
 
   $rootScope.$on("configInitialized", () => $scope.mapManager.initMapLoad());
 
-  $rootScope.$on("pin-added", (event, chapter_index) =>{
+  $rootScope.$on("pin-added", (event, chapter_index) => {
     // $log.log($scope.pinSvc.getPins(0))
   });
 
@@ -123,11 +123,11 @@ function composerController(
     });
 
     uibmodalInstance.result.then(
-      (selectedItem) => {
+      selectedItem => {
         $scope.selected = selectedItem;
       },
       () => {
-        $log.info("Modal dismissed at: " + new Date());
+        $log.info(`Modal dismissed at: ${new Date()}`);
       }
     );
   };
@@ -192,7 +192,7 @@ function composerController(
       easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
-    map.getView().setZoom(map.getView().getZoom() * 1);
+    map.getView().setZoom(map.getView().getZoom() * 0);
   };
 
   window.onMoveCallback = data => {
@@ -237,7 +237,6 @@ function composerController(
       geometryFunction
     });
     vector.set("name", "boundingBox");
-
     map.addLayer(vector);
     map.addInteraction(draw);
   };
