@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 set -e
 
 echo "Starting"
@@ -7,29 +7,29 @@ for i do # loop over $@
     echo "Executing $i"
 
     if [ "$i" = "--bundle" ]; then
-        cd deps/story-tools
+        pushd deps/story-tools
         yarn install
         gulp build
-        cd ../..
+        popd
         yarn install
         yarn run bundle
     fi
 
     if [ "$i" = "--bundle-dev" ]; then
-        cd deps/story-tools
+        pushd deps/story-tools
         yarn install
         gulp build watch &
         yarn link
-        cd ../..
+        popd
         yarn install
         yarn link story-tools
         yarn run bundle
     fi
 
     if [ "$i" = "--dep-upgrade" ]; then
-        cd deps/story-tools
+        pushd deps/story-tools
         yarn upgrade
-        cd ../..
+        popd
         yarn upgrade
     fi
 
