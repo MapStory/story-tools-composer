@@ -29,8 +29,15 @@ COPY yarn.lock ./
 COPY deps ./deps
 RUN yarn install
 
+ENV COMPOSER_BUNDLE_ARGS=
+
 COPY . ./
-RUN ./scripts/run.sh --bundle
+RUN set -ex; \
+    ./scripts/run.sh --bundle; \
+    mkdir /tmp/story-tools-composer/; \
+    mv ./node_modules /tmp/story-tools-composer/; \
+    mkdir /tmp/story-tools/; \
+    mv ./deps/story-tools/node_modules /tmp/story-tools/;
 
 EXPOSE 9090
 ENTRYPOINT ["./scripts/run.sh"]
