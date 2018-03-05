@@ -5,7 +5,7 @@
 ### Local Standalone
 
 - `git submodule update --init --recursive`
-- `./scripts/run.sh --bundle-dev --test --serve-dev`
+- `yarn build-serve`
 - `http://localhost:9090/`
 
 ### Docker

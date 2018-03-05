@@ -4,6 +4,8 @@
   "description": "",
   "main": "app/app.js",
   "scripts": {
+    "build-serve": "./scripts/run.sh --bundle-dev --serve-dev",
+    "serve": "./scripts/run.sh --serve-dev",
     "bundle": "webpack",
     "bundle-watch": "webpack --watch",
     "changepaths": "./scripts/change_paths.sh",
