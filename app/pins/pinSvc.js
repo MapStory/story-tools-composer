@@ -15,15 +15,12 @@ function pinSvc(
   svc.pins = [[]]; // The collection of pins
   svc.currentPin = null; // The current Pin being edited
   // For Drag functionality:
-  svc.coordinate = null;
-  svc.cursor = "pointer";
-  svc.feature = null;
-  svc.previousCursor = undefined;
-  svc.has_added_overlay = false;
   svc.isDrawing = false;
   svc.selected_feature = null;
+  svc.drag_control = null;
   // This is the openlayers source that stores all the features that are drawn on the map.
   svc.pinLayerSource = null;
+  svc.old_interactions = [];
   // For Date selection widgets
   svc.dt = new Date(); // The DT
   svc.startdate_popup = {
@@ -583,84 +580,6 @@ function pinSvc(
     $rootScope.$broadcast("pin-added", pin);
   };
 
-
-  /**
-   * Drag constructor. Inherits from OpenLayers interaction.Pointer
-   */
-  svc.Drag = () => {
-    // Call conscructor and pass in custom handler functions for mouse events.
-    ol.interaction.Pointer.call(this, {
-      handleDownEvent: svc.Drag.prototype.handleDownEvent,
-      handleDragEvent: svc.Drag.prototype.handleDragEvent,
-      handleMoveEvent: svc.Drag.prototype.handleMoveEvent,
-      handleUpEvent: svc.Drag.prototype.handleUpEvent
-    });
-  };
-  ol.inherits(svc.Drag, ol.interaction.Pointer);
-
-  /**
-   * Handles the mouseDown event for drag
-   */
-  svc.Drag.prototype.handleDownEvent = evt => {
-    const map = evt.map;
-    const feature = map.forEachFeatureAtPixel(evt.pixel, feature_ => feature_);
-
-    if (feature) {
-      svc.coordinate = evt.coordinate;
-      svc.feature = feature;
-    }
-
-    return !!feature;
-  };
-
-  /**
-   * Handles the Drag event
-   */
-  svc.Drag.prototype.handleDragEvent = evt => {
-    const deltaX = evt.coordinate[0] - svc.coordinate[0];
-    const deltaY = evt.coordinate[1] - svc.coordinate[1];
-
-    const geometry = svc.feature.getGeometry();
-    geometry.translate(deltaX, deltaY);
-
-    svc.coordinate[0] = evt.coordinate[0];
-    svc.coordinate[1] = evt.coordinate[1];
-
-    // Update the coordinates for the currentPin:
-    svc.currentPin.coords[0] = evt.coordinate[0];
-    svc.currentPin.coords[1] = evt.coordinate[1];
-  };
-
-  svc.Drag.prototype.handleMoveEvent = evt => {
-    if (svc.cursor) {
-      const map = evt.map;
-      const feature = map.forEachFeatureAtPixel(evt.pixel, feature_ => feature_);
-
-      const element = evt.map.getTargetElement();
-      if (feature) {
-        if (element.style.cursor !== svc.cursor) {
-          svc.previousCursor = element.style.cursor;
-          element.style.cursor = svc.cursor;
-        }
-      } else if (svc.previousCursor !== undefined) {
-        element.style.cursor = svc.previousCursor;
-        svc.previousCursor = undefined;
-      }
-    }
-  };
-
-  /**
-   * Callback for the mouse up event for placing Storypins.
-   * @return {boolean}
-   */
-  svc.Drag.prototype.handleUpEvent = () => {
-
-
-    svc.coordinate = null;
-    svc.feature = null;
-    return false;
-  };
-
   /**
    * turnPinDrawModeOn
    * -----------------
@@ -672,18 +591,24 @@ function pinSvc(
     const pin = svc.pins[stateSvc.getChapterIndex()][index];
     svc.currentPin = pin;
     const map = MapManager.storyMap.getMap();
-    // TODO: Start drag and drop here.
+
+    svc.isDrawing = !svc.isDrawing;
+
     if (svc.isDrawing === true) {
       svc.doBounceAnim(pin.coords);
       // Add the drag interaction
-      svc.drag_instance = new svc.Drag();
-      map.addInteraction(svc.drag_instance);
+      // TODO: Start drag and drop here.
+      svc.start_drag_interaction();
     } else {
       // Remove the drag interaction
-      map.removeInteraction(svc.drag_instance);
-      svc.drag_instance = null;
+      // TODO: Stop drag interaction here
+      svc.stop_drag_interaction();
     }
-    svc.startEditingPin(index);
+    if (!pin) {
+      alert("No pin!");
+    }
+    // Create a new overlay for this pin
+    // svc.sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
   };
 
   // TODO: Finish this
@@ -773,21 +698,22 @@ function pinSvc(
     svc.sp_overlay = sp_overlay;
     map.addOverlay(svc.sp_overlay);
 
-    // Add interaction
-    const select_storypin_interaction = new ol.interaction.Select({
-      condition: ol.events.condition.click,
-      layers: [svc.sp_vectorLayer]
-    });
-    map.addInteraction(select_storypin_interaction);
-    select_storypin_interaction.on("select", event => {
-      svc.selected_feature = event.selected[0];
-      if (svc.selected_feature) {
-        const pos = svc.selected_feature.getGeometry().getCoordinates();
-        svc.sp_overlay.setPosition(pos);
-      } else {
-        svc.sp_overlay.setPosition(undefined);
-      }
-    });
+    // // Add interaction
+    // const select_storypin_interaction = new ol.interaction.Select({
+    //   condition: ol.events.condition.click,
+    //   layers: [svc.sp_vectorLayer]
+    // });
+    // map.addInteraction(select_storypin_interaction);
+    // select_storypin_interaction.on("select", event => {
+    //   svc.selected_feature = event.selected[0];
+    //   if (svc.selected_feature) {
+    //     const pos = svc.selected_feature.getGeometry().getCoordinates();
+    //     // svc.sp_overlay.setPosition(pos);
+    //     alert("selected");
+    //   } else {
+    //     // svc.sp_overlay.setPosition(undefined);
+    //   }
+    // });
   };
 
   /**
@@ -972,13 +898,7 @@ function pinSvc(
   };
 
   svc.startEditingPin = index => {
-    const pin = svc.pins[stateSvc.getChapterIndex()][index];
-    if (!pin) {
-      alert("No pin!");
-    }
-    // Create a new overlay for this pin
 
-    svc.sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
   };
 
   /**
@@ -1012,6 +932,44 @@ function pinSvc(
       })
     })
   ];
+
+  /**
+   * Gets called when the user clicks on the move button for a StoryPin.
+   */
+  svc.movePin = () => {
+    if (!svc.currentPin) {
+      alert("No pin!");
+    } else {
+      alert(svc.currentPin.title);
+    }
+  };
+
+  svc.start_drag_interaction = () => {
+    const map = MapManager.storyMap.getMap();
+    // Remove previous interaction
+    if (svc.drag_control !== null) {
+      map.removeInteraction(svc.drag_control);
+      svc.drag_control = null;
+    }
+    // Save old interactions
+    svc.old_interactions = map.getInteractions();
+    svc.drag_control = new ol.interaction.Modify({
+      features: new ol.Collection(svc.pinLayerSource.getFeatures())
+    });
+    map.addInteraction(svc.drag_control);
+  };
+
+  svc.stop_drag_interaction = () => {
+    const map = MapManager.storyMap.getMap();
+    if (svc.drag_control !== null) {
+      map.removeInteraction(svc.drag_control);
+      svc.drag_control = null;
+    }
+    // Restore old interactions
+    svc.old_interactions.forEach(interaction => {
+      map.addInteraction(interaction);
+    });
+  };
   return svc;
 }
 
