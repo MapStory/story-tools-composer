@@ -43,7 +43,7 @@
 <div style="display:none;">
     <!-- Pin Overlays -->
     <div id="sp-overlay">
-        <button id="sp-move" ng-click="pinSvc.movePin()">Move</button>
+        <button id="sp-move">Move</button>
         <button id="sp-remove">Remove</button>
     </div>
 
@@ -78,6 +78,9 @@
                 <div id="pin-form-{{$index}}">
                     <button class="btn btn-inverse" ng-click="pinSvc.turnPinDrawModeOn($index)">
                         {{pinSvc.isDrawing ? "Done" : "Move Pin"}}
+                    </button>
+                    <button class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave($index)">
+                        Save
                     </button>
                     <form>
                         <div class="form-field">
@@ -155,9 +158,9 @@
 
                         <hr>
                         <label for="lat-input">Latitude</label>
-                        <input id="lat-input" type="number" name="lat" ng-model="pin.coords[0]" placeholder="{{pin.coords[0]}}">
+                        <input id="lat-input" type="number" name="lat" ng-model="pin.map_feature.getGeometry().getCoordinates()[0]" placeholder="{{pin.coords[0]}}">
                         <label for="long-input">Longitude</label>
-                        <input id="long-input" type="number" name="long" ng-model="pin.coords[1]" placeholder="{{pin.coords[1]}}">
+                        <input id="long-input" type="number" name="long" ng-model="pin.map_feature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">
                         <hr>
                         <div class="form-field">
                             <label for="storypin_playback_options">

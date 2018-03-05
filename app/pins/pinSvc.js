@@ -603,6 +603,7 @@ function pinSvc(
       // Remove the drag interaction
       // TODO: Stop drag interaction here
       svc.stop_drag_interaction();
+      pin.coords = pin.map_feature.getGeometry().getCoordinates();
     }
     if (!pin) {
       alert("No pin!");
@@ -698,22 +699,7 @@ function pinSvc(
     svc.sp_overlay = sp_overlay;
     map.addOverlay(svc.sp_overlay);
 
-    // // Add interaction
-    // const select_storypin_interaction = new ol.interaction.Select({
-    //   condition: ol.events.condition.click,
-    //   layers: [svc.sp_vectorLayer]
-    // });
-    // map.addInteraction(select_storypin_interaction);
-    // select_storypin_interaction.on("select", event => {
-    //   svc.selected_feature = event.selected[0];
-    //   if (svc.selected_feature) {
-    //     const pos = svc.selected_feature.getGeometry().getCoordinates();
-    //     // svc.sp_overlay.setPosition(pos);
-    //     alert("selected");
-    //   } else {
-    //     // svc.sp_overlay.setPosition(undefined);
-    //   }
-    // });
+    
   };
 
   /**
@@ -897,10 +883,6 @@ function pinSvc(
     }
   };
 
-  svc.startEditingPin = index => {
-
-  };
-
   /**
    * This defines the style for each StoryPin.
    * This function is supposed to be passed to the Layer that contains them.
@@ -934,16 +916,8 @@ function pinSvc(
   ];
 
   /**
-   * Gets called when the user clicks on the move button for a StoryPin.
+   * Start StoryPin Drag
    */
-  svc.movePin = () => {
-    if (!svc.currentPin) {
-      alert("No pin!");
-    } else {
-      alert(svc.currentPin.title);
-    }
-  };
-
   svc.start_drag_interaction = () => {
     const map = MapManager.storyMap.getMap();
     // Remove previous interaction
@@ -959,6 +933,9 @@ function pinSvc(
     map.addInteraction(svc.drag_control);
   };
 
+  /**
+   * The user is Done moving the StoryPin
+   */
   svc.stop_drag_interaction = () => {
     const map = MapManager.storyMap.getMap();
     if (svc.drag_control !== null) {
@@ -968,6 +945,21 @@ function pinSvc(
     // Restore old interactions
     svc.old_interactions.forEach(interaction => {
       map.addInteraction(interaction);
+    });
+  };
+
+  /**
+   * When the user clicks on save it will reflect his changes on the map.
+   */
+  svc.onStoryPinSave = () => {
+    // Update information from features, and remove form map.
+    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+      svc.pinLayerSource.removeFeature(pin.map_feature);
+    });
+
+    // Add to the map with the new info.
+    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+      svc.addPointToPinLayer(pin);
     });
   };
   return svc;
