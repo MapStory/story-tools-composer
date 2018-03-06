@@ -1,4 +1,9 @@
-function styleService($http, ol3StyleConverter, stEditableStoryMapBuilder) {
+function styleService(
+  $http,
+  $cookies,
+  ol3StyleConverter,
+  stEditableStoryMapBuilder
+) {
   const svc = {};
 
   svc.currentLayer = null;
@@ -43,12 +48,17 @@ function styleService($http, ol3StyleConverter, stEditableStoryMapBuilder) {
           layer.getSource().getParams().LAYERS,
           true
         );
+        const csrfToken = $cookies.getAll().csrftoken;
+        // @TODO: POST before PUT
         $http({
-          url: `/gslocal/rest/styles/${storyLayer.get("styleName")}.xml`,
+          url:
+            "/gs/rest/styles/" + storyLayer.get("styleName") + ".xml?raw=true",
           method: "PUT",
-          data: xml,
+          data: "xml",
           headers: {
-            "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8"
+            "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
+            "X-CSRFToken": csrfToken,
+            "X-Requested-With": "XMLHttpRequest"
           }
         }).then(() => {
           layer.getSource().updateParams({ _olSalt: Math.random() });
