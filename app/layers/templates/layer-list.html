@@ -1,3 +1,7 @@
+<div ng-if="styleActivated">
+  <ng-include src="'app/layers/templates/style-bar.html'"></ng-include>
+</div>
+<div ng-if="!styleActivated">
 <uib-accordion close-others="true" sv-root sv-part="layers" sv-on-sort="onSort($item, $partFrom, $partTo, $indexFrom, $indexTo)">
 
     <div uib-accordion-group is-open="status.open">
@@ -27,6 +31,9 @@
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
+                  <div class="col-sm-12">
+                    <a ng-click="toggleStyle(layer);$event.preventDefault();">STYLE</a>
+                  </div>
                     <div class="col-sm-2">
                       <strong>Name:</strong>
                     </div>
