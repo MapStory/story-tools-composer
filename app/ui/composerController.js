@@ -17,6 +17,7 @@ function composerController(
   uiHelperSvc,
   searchSvc,
   stateSvc,
+  newConfigSvc,
   $location
 ) {
   $scope.mapManager = MapManager;
@@ -195,6 +196,9 @@ function composerController(
     map.getView().setZoom(map.getView().getZoom() * 0);
   };
 
+  // need to use obj,array when timeline is scrubbed
+  $log.log(TimeMachine.lastComputedTicks);
+
   window.onMoveCallback = data => {
     $scope.checkTimes(data);
   };
@@ -249,12 +253,12 @@ function composerController(
       startTime: frameSettings.startTime,
       endDate: frameSettings.endDate,
       endTime: frameSettings.endTime,
-      radius: frameSettings.radius,
       bb1: transformCoords([$scope.coords[0][0][0], $scope.coords[0][0][1]]),
       bb2: transformCoords([$scope.coords[0][1][0], $scope.coords[0][1][1]]),
       bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
       bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
     });
+    newConfigSvc.getStoryframeDetails(frameSettings);
   };
 
   $scope.editStoryframe = index => {
@@ -263,8 +267,6 @@ function composerController(
     $scope.frameSettings.startTime = $scope.frameSettings[index].startTime;
     $scope.frameSettings.endDate = $scope.frameSettings[index].endDate;
     $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
-    $scope.frameSettings.radius = $scope.frameSettings[index].radius;
-
     $scope.frameSettings.bb1 = transformCoords([
       $scope.coords[0][0][0],
       $scope.coords[0][0][1]
@@ -298,8 +300,6 @@ function composerController(
       $scope.frameSettings.endDate;
     $scope.frameSettings[$scope.currentIndex].endTime =
       $scope.frameSettings.endTime;
-    $scope.frameSettings[$scope.currentIndex].radius =
-      $scope.frameSettings.radius;
 
     $scope.frameSettings[$scope.currentIndex].bb1 = $scope.frameSettings.bb1;
     $scope.frameSettings[$scope.currentIndex].bb2 = $scope.frameSettings.bb2;
