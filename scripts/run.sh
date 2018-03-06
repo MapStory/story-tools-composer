@@ -12,7 +12,7 @@ for i do # loop over $@
         gulp build
         popd
         yarn install
-        yarn run bundle
+        yarn run bundle $COMPOSER_BUNDLE_ARGS
     fi
 
     if [ "$i" = "--bundle-dev" ]; then
@@ -23,7 +23,7 @@ for i do # loop over $@
         popd
         yarn install
         yarn link story-tools
-        yarn run bundle
+        yarn run bundle-watch $COMPOSER_BUNDLE_ARGS &
     fi
 
     if [ "$i" = "--dep-upgrade" ]; then
