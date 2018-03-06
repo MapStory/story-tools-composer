@@ -52,23 +52,6 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
     return cfg;
   };
 
-  svc.getStoryframeDetails = frameSettings => {
-    const savedFrame = {
-      title: frameSettings.title,
-      startDate: frameSettings.startDate,
-      endDate: frameSettings.endDate,
-      startTime: frameSettings.startTime,
-      endTime: frameSettings.endTime,
-      boundingBox: [
-        [frameSettings[0].bb1[0], frameSettings[0].bb1[0]],
-        [frameSettings[0].bb2[0], frameSettings[0].bb2[1]],
-        [frameSettings[0].bb3[0], frameSettings[0].bb3[1]],
-        [frameSettings[0].bb4[0], frameSettings[0].bb4[1]]
-      ]
-    };
-    return savedFrame;
-  };
-
   svc.getChapterConfig = (id, data) => {
     if (!data) {
       data = {
