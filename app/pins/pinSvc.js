@@ -1,5 +1,18 @@
 const Papa = require("papaparse"); // Used for CSV Parsing.
 
+/**
+ * StoryPin Service
+ * @param $rootScope .
+ * @param $http .
+ * @param $translate .
+ * @param $q .
+ * @param timeSvc .
+ * @param featureManagerSvc .
+ * @param stateSvc .
+ * @param MapManager .
+ * @param $uibModal .
+ * @returns {{}} pinSvc.
+ */
 function pinSvc(
   $rootScope,
   $http,
@@ -699,7 +712,7 @@ function pinSvc(
     svc.sp_overlay = sp_overlay;
     map.addOverlay(svc.sp_overlay);
 
-    
+
   };
 
   /**
@@ -721,6 +734,7 @@ function pinSvc(
     // Pin now has a feature:
     pin.map_feature = point;
     pin.map_feature.set("label", pin.title);
+    // TODO: Set other custom feature properties here.
 
     // Add to the Pin layer.
     svc.pinLayerSource.addFeatures([point]);
@@ -744,13 +758,8 @@ function pinSvc(
       alert("No pin was created");
     }
     pin.coords = [lat, long];
-    // Set the label.
-    // const pin_index = svc.pins[chapterIndex].length - 1;
-
     svc.addPointToPinLayer(pin);
-
     $rootScope.$broadcast("pin-added", svc.currentPin);
-
     return pin;
   };
 
@@ -784,7 +793,7 @@ function pinSvc(
     });
     console.log("pin_array is", pin_array);
     // This is null:
-    // TODO: Fix this null object
+    // TODO: Fix this null object. This should close the modal dialog.
     // svc.modalInstance.close();
     return pin_array;
   };
@@ -952,6 +961,11 @@ function pinSvc(
    * When the user clicks on save it will reflect his changes on the map.
    */
   svc.onStoryPinSave = () => {
+    if (svc.isDrawing) {
+      alert("Finish moving StoryPin first!");
+      return;
+    }
+
     // Update information from features, and remove form map.
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
       svc.pinLayerSource.removeFeature(pin.map_feature);

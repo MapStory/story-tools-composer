@@ -14,10 +14,11 @@
                     ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
                 Add a StoryPin
             </button>
+            <button class="btn btn-inverse" ng-click="alert('Work in Progress');">
+                Export StoryPins
+            </button>
         </div>
     </uib-accordion>
-
-    <!--<bulk-upload-directive></bulk-upload-directive>-->
 
     <!-- THE MODAL -->
     <!-- TODO: Move this to a template -->
@@ -159,6 +160,7 @@
                         <hr>
                         <label for="lat-input">Latitude</label>
                         <input id="lat-input" type="number" name="lat" ng-model="pin.map_feature.getGeometry().getCoordinates()[0]" placeholder="{{pin.coords[0]}}">
+                        <br/>
                         <label for="long-input">Longitude</label>
                         <input id="long-input" type="number" name="long" ng-model="pin.map_feature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">
                         <hr>
