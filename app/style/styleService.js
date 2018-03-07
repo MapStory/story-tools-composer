@@ -36,7 +36,9 @@ function styleService(
   svc.handleCanStyleWMSFalseEvent = storyLayer => {
     // this case will happen if canStyleWMS is false for the server
     const style = storyLayer.get("style");
+    style.name = storyLayer.get("styleName");
     const layer = storyLayer.getLayer();
+    let layerSource = layer.getSource();
     const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
       style
     );
@@ -45,24 +47,52 @@ function styleService(
         const sld = new storytools.edit.SLDStyleConverter.SLDStyleConverter();
         const xml = sld.generateStyle(
           style,
-          layer.getSource().getParams().LAYERS,
+          layerSource.getParams().LAYERS,
           true
         );
         const csrfToken = $cookies.getAll().csrftoken;
-        // @TODO: POST before PUT
+        // @TODO: Use GET request to verify existence of style before POST
         $http({
-          url:
-            "/gs/rest/styles/" + storyLayer.get("styleName") + ".xml?raw=true",
-          method: "PUT",
-          data: "xml",
+          url: "/gs/rest/styles?name=" + style.name,
+          method: "POST",
+          data: xml,
           headers: {
             "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
             "X-CSRFToken": csrfToken,
             "X-Requested-With": "XMLHttpRequest"
           }
-        }).then(() => {
-          layer.getSource().updateParams({ _olSalt: Math.random() });
-        });
+        }).then(
+          function(result) {
+            layerSource.updateParams({
+              _dc: new Date().getTime(),
+              _olSalt: Math.random(),
+              STYLES: style.name
+            });
+          },
+          function errorCallback(response) {
+            console.log("Style Create Error Response ", response);
+            if (response.status === 403 || response.status === 500) {
+              $http
+                .put("/gs/rest/styles/" + style.name + ".xml", xml, {
+                  headers: {
+                    "Content-Type":
+                      "application/vnd.ogc.sld+xml; charset=UTF-8",
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                  }
+                })
+                .then(function(result) {
+                  layerSource.updateParams({
+                    _dc: new Date().getTime(),
+                    _olSalt: Math.random(),
+                    STYLES: style.name
+                  });
+                });
+            }
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
+          }
+        );
       }
     }
   };
