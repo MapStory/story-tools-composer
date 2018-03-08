@@ -208,7 +208,7 @@ function composerController(
       id: Date.now(),
       title: frameSettings.title,
       startDate: frameSettings.startDate,
-      startTime: frameSettings.startTime,
+      startTime : frameSettings.startTime,
       endDate: frameSettings.endDate,
       endTime: frameSettings.endTime,
       radius: frameSettings.radius,

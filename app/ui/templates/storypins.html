@@ -14,7 +14,7 @@
                     ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
                 Add a StoryPin
             </button>
-            <button class="btn btn-inverse" ng-click="alert('Work in Progress');">
+            <button class="btn btn-inverse" ng-click="pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()])">
                 Export StoryPins
             </button>
         </div>

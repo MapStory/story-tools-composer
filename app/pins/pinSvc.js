@@ -71,8 +71,8 @@ function pinSvc(
   };
 
   svc.disabled = data => {
-    var date = data.date;
-    var mode = data.mode;
+    const date = data.date;
+    const mode = data.mode;
     return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
   };
 
@@ -93,13 +93,13 @@ function pinSvc(
    * @param data
    * @returns {string}
    */
-  svc.getDayClass = (data) => {
-    var date = data.date;
-    var mode = data.mode;
+  svc.getDayClass = data => {
+    const date = data.date;
+    const mode = data.mode;
     if (mode === "day") {
       const dayToCheck = new Date(date).setHours(0, 0, 0, 0);
 
-      for (var i = 0; i < svc.events.length; i++) {
+      for (let i = 0; i < svc.events.length; i++) {
         const currentDay = new Date(svc.events[i].date).setHours(0, 0, 0, 0);
 
         if (dayToCheck === currentDay) {
@@ -134,10 +134,7 @@ function pinSvc(
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
   svc.Pin.prototype.constructor = svc.Pin;
   // TODO: Remove this
-  svc.Pin.prototype.drawOverlay = (pin) => {
-    return `<div>-${pin.title}-</div>`;
-  };
-
+  svc.Pin.prototype.drawOverlay = pin => `<div>-${pin.title}-</div>`;
 
   const embed_width = '"180"';
   const embed_height = '"180"';
@@ -259,11 +256,11 @@ function pinSvc(
    */
   svc.addGetterAndSetterToPinPrototype = prop => {
     Object.defineProperty(svc.Pin.prototype, prop, {
-      get: function() {
+      get() {
         const val = this.get(prop);
         return typeof val === "undefined" ? null : val;
       },
-      set: function(val) {
+      set(val) {
         this.set(prop, val);
       }
     });
@@ -311,11 +308,10 @@ function pinSvc(
    * @param propertyName
    * @returns {*|boolean}
    */
-  svc.validatePinProperty = (pinInstantiationObj, propertyName) => {
-    return pinInstantiationObj.hasOwnProperty(propertyName) &&
+  svc.validatePinProperty = (pinInstantiationObj, propertyName) =>
+    pinInstantiationObj.hasOwnProperty(propertyName) &&
     (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
       !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
-  };
 
   svc.validateAllPinProperties = pinInstantiationObj => {
     const missingProperties = [];
@@ -377,7 +373,7 @@ function pinSvc(
       return null;
     }
 
-    //TODO: Check media whitelist and sanitize embed size.
+    // TODO: Check media whitelist and sanitize embed size.
     // if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
     //   props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
     //   props.media = props.media.replace(
@@ -395,7 +391,7 @@ function pinSvc(
     svc.pins[chapter_index].push(storyPin);
     // Broadcast event
 
-    console.log("story pin suposed to be added",storyPin);
+    console.log("story pin suposed to be added", storyPin);
     $rootScope.$broadcast("pin-added", chapter_index);
 
     return storyPin;
@@ -427,7 +423,7 @@ function pinSvc(
     $rootScope.$broadcast("pin-added", chapter_index);
   };
 
-  //@ TODO: move to another service
+  // @ TODO: move to another service
   svc.isUrl = str => {
     if (!/^(f|ht)tps?:\/\//i.test(str)) {
       return false;
@@ -642,7 +638,7 @@ function pinSvc(
         svc.selected = resolved;
       },
       () => {
-        let x = 3;
+        const x = 3;
       }
     );
 
@@ -676,7 +672,7 @@ function pinSvc(
    * @param pin The pin.
    */
   svc.createPinOverlay = pin => {
-    //TODO: Fix this
+    // TODO: Fix this
     const map = MapManager.storyMap.getMap();
 
     // // Create a new overlay for this pin
@@ -711,8 +707,6 @@ function pinSvc(
     });
     svc.sp_overlay = sp_overlay;
     map.addOverlay(svc.sp_overlay);
-
-
   };
 
   /**
@@ -975,6 +969,74 @@ function pinSvc(
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
       svc.addPointToPinLayer(pin);
     });
+  };
+
+  svc.exportPinsToJSON = pinArray => {
+    pinArray.forEach(pin => {
+      console.log(pin);
+    });
+    return [];
+  };
+
+  svc.onBulkPinComplete = results => {
+    const pin_array = [];
+    results.data.forEach(element => {
+      const pin = svc.createNewPin(
+        {
+          title: element.title,
+          start_time: element.start_time,
+          end_time: element.end_time,
+          geometry: {
+            coordinates: [element.latitude, element.longitude]
+          }
+        },
+        stateSvc.getChapterIndex(),
+        element.latitude,
+        element.longitude
+      );
+      pin.content = element.content || "";
+      pin.media = element.media || "";
+      pin.in_map = element.in_map || true;
+      pin.in_timeline = element.in_timeline || true;
+      pin_array.push(pin);
+    });
+    console.log("pin_array is", pin_array);
+    // This is null:
+    // TODO: Fix this null object. This should close the modal dialog.
+    // svc.modalInstance.close();
+    return pin_array;
+  };
+
+  svc.downloadCSV = pinArray => {
+    const data = svc.exportPinsToCSV(pinArray);
+    const hidden_element = document.createElement("a");
+    const uri_encoded = encodeURI(data);
+    hidden_element.href = `data:text/csv;charset=utf8,${uri_encoded}`;
+    hidden_element.target = "_blank";
+    hidden_element.download = "storypins.csv";
+    hidden_element.click();
+  };
+
+  svc.exportPinsToCSV = pinArray => {
+    const csv_objects = []; // Holds objects with the CSV format
+
+    pinArray.forEach(pin => {
+      const csv_pin = {};
+      csv_pin.title = pin.title;
+      csv_pin.content = pin.content;
+      csv_pin.media = pin.media;
+      csv_pin.start_time = pin.start_time;
+      csv_pin.end_time = pin.end_time;
+      const coords = pin.map_feature.getGeometry().getCoordinates();
+      csv_pin.latitude = coords[0];
+      csv_pin.longitude = coords[1];
+      csv_pin.in_map = pin.in_map;
+      csv_pin.in_timeline = pin.in_timeline;
+      csv_objects.push(csv_pin);
+    });
+
+    // Convert to CSV
+    return Papa.unparse(csv_objects);
   };
   return svc;
 }
