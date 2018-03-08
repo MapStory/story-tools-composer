@@ -4,7 +4,10 @@
   "description": "",
   "main": "app/app.js",
   "scripts": {
+    "build-serve": "./scripts/run.sh --bundle-dev --serve-dev",
+    "serve": "./scripts/run.sh --serve-dev",
     "bundle": "webpack",
+    "bundle-watch": "webpack --watch",
     "changepaths": "./scripts/change_paths.sh",
     "server": "node_modules/.bin/webpack-dev-server",
     "test": "webpack && karma start karma.config.js",
@@ -56,6 +59,7 @@
     "angular-translate": "2.17.0",
     "bootstrap": "3.3.7",
     "jquery": "3.3.1",
+    "moment": "^2.20.1",
     "papaparse": "^4.3.7",
     "story-tools": "./deps/story-tools"
   },

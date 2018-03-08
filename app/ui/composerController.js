@@ -1,3 +1,6 @@
+const moment = require("moment");
+const $ = require("jquery");
+
 function composerController(
   $scope,
   $rootScope,
@@ -8,11 +11,13 @@ function composerController(
   styleUpdater,
   appConfig,
   TimeControlsManager,
+  TimeMachine,
   navigationSvc,
   pinSvc,
   uiHelperSvc,
   searchSvc,
   stateSvc,
+  newConfigSvc,
   $location
 ) {
   $scope.mapManager = MapManager;
@@ -29,7 +34,7 @@ function composerController(
 
   $rootScope.$on("configInitialized", () => $scope.mapManager.initMapLoad());
 
-  $rootScope.$on("pin-added", (event, chapter_index) =>{
+  $rootScope.$on("pin-added", (event, chapter_index) => {
     // $log.log($scope.pinSvc.getPins(0))
   });
 
@@ -119,11 +124,11 @@ function composerController(
     });
 
     uibmodalInstance.result.then(
-      (selectedItem) => {
+      selectedItem => {
         $scope.selected = selectedItem;
       },
       () => {
-        $log.info("Modal dismissed at: " + new Date());
+        $log.info(`Modal dismissed at: ${new Date()}`);
       }
     );
   };
@@ -154,35 +159,73 @@ function composerController(
             resolution: map.getView().getResolution()
           });
           map.beforeRender(zoom);
-          map.getView().setZoom(map.getView().getZoom() * 0.0);
+          map.getView().setZoom(map.getView().getZoom() * 1);
         }
       });
   };
 
   let draw;
-  let layerList = [];
+  const layerList = [];
 
-  map.addEventListener("click", event => {
+  $scope.zoomToExtent = () => {
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
-        const extent = layer.getSource().getExtent();
-        layerList.push(layer.get("name"));
-        if (layerList.length > 1) {
-          const zoom = ol.animation.zoom({
-            resolution: map.getView().getResolution()
-          });
-          map.beforeRender(zoom);
-          map.getView().setCenter(extent);
-          map.getView().setResolution(map.getView().getResolution() * 0.2);
-          map.removeInteraction(draw);
-        }
+        map.beforeRender(
+          ol.animation.pan({
+            source: map.getView().getCenter(),
+            duration: 500
+          }),
+          ol.animation.zoom({
+            resolution: map.getView().getResolution(),
+            duration: 1000,
+            easing: ol.easing.easeIn
+          })
+        );
+        map.getView().fit(layer.getSource().getExtent(), map.getSize());
       }
     });
-  });
+  };
+
+  $scope.zoomOutExtent = () => {
+    const zoom = ol.animation.zoom({
+      resolution: map.getView().getResolution(),
+      duration: 1000,
+      easing: ol.easing.easeOut
+    });
+    map.beforeRender(zoom);
+    map.getView().setZoom(map.getView().getZoom() * 0);
+  };
+
+  // need to use obj,array when timeline is scrubbed
+  $log.log(TimeMachine.lastComputedTicks);
+
+  window.onMoveCallback = data => {
+    $scope.checkTimes(data);
+  };
+
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
+    const formattedDate = preFormatDate.format("YYYY-MM-DD");
+    return formattedDate;
+  };
+
+  let dateCount = 0;
+
+  $scope.checkTimes = date => {
+    const startDate = $scope.formatDates($scope.frameSettings.startDate);
+    const endDate = $scope.formatDates($scope.frameSettings.endDate);
+    const storyLayerStartDate = $scope.formatDates(date);
+
+    if (moment(storyLayerStartDate).isSameOrAfter(startDate) && dateCount < 1) {
+      $scope.zoomToExtent();
+      dateCount = 1;
+    } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
+      $scope.zoomOutExtent();
+    }
+  };
 
   $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
-    layerList = [];
     const bbVector = new ol.source.Vector({ wrapX: false });
     const vector = new ol.layer.Vector({
       source: bbVector
@@ -198,7 +241,6 @@ function composerController(
       geometryFunction
     });
     vector.set("name", "boundingBox");
-
     map.addLayer(vector);
     map.addInteraction(draw);
   };
@@ -211,12 +253,12 @@ function composerController(
       startTime : frameSettings.startTime,
       endDate: frameSettings.endDate,
       endTime: frameSettings.endTime,
-      radius: frameSettings.radius,
       bb1: transformCoords([$scope.coords[0][0][0], $scope.coords[0][0][1]]),
       bb2: transformCoords([$scope.coords[0][1][0], $scope.coords[0][1][1]]),
       bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
       bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
     });
+    newConfigSvc.getStoryframeDetails(frameSettings);
   };
 
   $scope.editStoryframe = index => {
@@ -225,8 +267,6 @@ function composerController(
     $scope.frameSettings.startTime = $scope.frameSettings[index].startTime;
     $scope.frameSettings.endDate = $scope.frameSettings[index].endDate;
     $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
-    $scope.frameSettings.radius = $scope.frameSettings[index].radius;
-
     $scope.frameSettings.bb1 = transformCoords([
       $scope.coords[0][0][0],
       $scope.coords[0][0][1]
@@ -260,8 +300,6 @@ function composerController(
       $scope.frameSettings.endDate;
     $scope.frameSettings[$scope.currentIndex].endTime =
       $scope.frameSettings.endTime;
-    $scope.frameSettings[$scope.currentIndex].radius =
-      $scope.frameSettings.radius;
 
     $scope.frameSettings[$scope.currentIndex].bb1 = $scope.frameSettings.bb1;
     $scope.frameSettings[$scope.currentIndex].bb2 = $scope.frameSettings.bb2;
@@ -270,8 +308,6 @@ function composerController(
 
     $scope.disableButton = true;
     $scope.disableButton = !$scope.disableButton;
-
-    $log.log($scope.frameSettings.bb1);
   };
 
   $scope.deleteStoryframe = index => {
