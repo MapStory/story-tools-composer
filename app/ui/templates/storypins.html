@@ -1,44 +1,44 @@
 <div id="pins-editor"
-     ng-controller="bulkUploadCtrl"
-     class="floating style-editor-item"
-     pins-editor
-     pins-overlay="mapManager.storyMap.overlay">
+     ng-controller="storypinController"
+     class="floating style-editor-item">
 
-    <!-- Pin Accordion -->
-    <!-- TODO: FIX THIS NG-INIT -->
-    <uib-accordion close-others="false" ng-init="pinSvc.open.editor = false; pinSvc.open.chooser = true;">
-        <!-- Pin List -->
-        <div uib-accordion-group heading="StoryPins" is-open="pinSvc.open.chooser">
-            <button class="btn btn-inverse" ng-click="onBulkPinAdd()">Bulk Upload</button>
-            <button class="btn btn-inverse"
-                    ng-click="pinSvc.open.editor = true; pinSvc.onNewStoryPin(stateSvc.getChapterIndex());">
-                Add a StoryPin
-            </button>
-            <button class="btn btn-inverse" ng-click="pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()])">
-                Export StoryPins
-            </button>
-        </div>
-    </uib-accordion>
+    <div ng-controller="bulkUploadCtrl">
+        <!-- Pin Accordion -->
+        <uib-accordion close-others="false" ng-init="is_open.editor = false; is_open.chooser = true;">
+            <!-- Pin List -->
+            <div uib-accordion-group heading="StoryPins" is-open="is_open.chooser">
+                <button class="btn btn-inverse" ng-click="onBulkPinAdd()">Bulk Upload</button>
+                <button class="btn btn-inverse"
+                        ng-click="on_add_storypin()">
+                    Add a StoryPin
+                </button>
+                <button class="btn btn-inverse" ng-click="on_export_pins()">
+                    Export StoryPins
+                </button>
+            </div>
+        </uib-accordion>
 
-    <!-- THE MODAL -->
-    <!-- TODO: Move this to a template -->
-    <!-- Change the ID's to something more unique -->
-    <script type="text/ng-template" id="myModalContent.html">
-        <div class="modal-header">
-            <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
-        </div>
-        <div class="modal-body" id="modal-body">
-            <a href="#">Download the template here</a>
-            <br />
-            <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
-        </div>
-        <div class="modal-footer">
-            <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
-            <button class="btn btn-primary" type="button" ng-click="processCSVFile()">OK</button>
-        </div>
-    </script>
+        <!-- THE MODAL -->
+        <!-- TODO: Move this to a template -->
+        <!-- Change the ID's to something more unique -->
+        <script type="text/ng-template" id="myModalContent.html">
+            <div class="modal-header">
+                <h3 class="modal-title" id="modal-title">Bulk Pin upload</h3>
+            </div>
+            <div class="modal-body" id="modal-body">
+                <a href="#">Download the template here</a>
+                <br />
+                <input type="file" name="bulk" accept="text/csv" id="bulk_pin_csv_file">
+            </div>
+            <div class="modal-footer">
+                <button class="btn btn-warning" type="button" ng-click="cancel()">Cancel</button>
+                <button class="btn btn-primary" type="button" ng-click="processCSVFile()">OK</button>
+            </div>
+        </script>
+    </div>
 
 </div>
+
 
 
 <div style="display:none;">
@@ -47,27 +47,15 @@
         <button id="sp-move">Move</button>
         <button id="sp-remove">Remove</button>
     </div>
-
-    <div ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
-        <div id="pin-{{$index}}"
-             style="background-color: white; border-radius: 10px; border: 1px solid black; padding: 5px 10px;">
-            {{ pin.title }}
-            <p>{{ pin.content }}</p>
-            <p>{{ pin.coords[0] }} , {{ pin.coords[1] }}</p>
-            <a href="{{pin.media}}">{{ pin.media }}</a>
-        </div>
-    </div>
 </div>
 
 
 
 <section id="pin-list">
-
     <uib-accordion close-others=true>
         <!-- Gets pins from pin service-->
         <section ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
-            <!-- TODO: Solve this with a controller     -->
-            <div uib-accordion-group class="panel-default" is-open="uiHelperSvc.activePin === $index">
+            <div uib-accordion-group class="panel-default" is-open="pin.is_open">
                 <uib-accordion-heading>
                     <span ng-click="uiHelperSvc.togglePinForm({$index})">
                         {{pin.title}}
@@ -124,8 +112,11 @@
                                         close-text="Close"
                                         alt-input-formats="pinSvc.altInputFormats" />
                                 <span class="input-group-btn">
-                                <button type="button" class="btn btn-default" ng-click="pinSvc.open_startdate()"><i class="glyphicon glyphicon-calendar"></i></button>
-                            </span>
+                                    <button type="button" class="btn btn-default" ng-click="pinSvc.open_startdate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                </span>
+                            </div>
+                            <div class="row">
+                                <div uib-timepicker ng-model="pinSvc.pin_start_time" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
                             </div>
 
                         </div>
@@ -152,9 +143,9 @@
                                 </span>
                             </div>
 
-                            <!--<datetimepicker date-object="pin.end_time"-->
-                                            <!--default-date="inserting"-->
-                                            <!--id="end_time"></datetimepicker>-->
+                            <div class="row">
+                                <div uib-timepicker ng-model="pinSvc.pin_end_time" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
+                            </div>
                         </div>
 
                         <hr>

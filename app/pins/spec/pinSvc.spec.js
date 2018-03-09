@@ -340,4 +340,10 @@ describe("pinSvc", () => {
 
     });
   });
+
+  describe("StoryPin Overlay", () => {
+    it("has an overlay for each StoryPin in the DOM", () => {
+
+    });
+  });
 });

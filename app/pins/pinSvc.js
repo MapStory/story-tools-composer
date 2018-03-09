@@ -42,6 +42,8 @@ function pinSvc(
   svc.enddate_popup = {
     opened: false
   };
+  svc.pin_start_time = Date.now();
+  svc.pin_end_time = Date.now();
 
   svc.dt2 = new Date();
 
@@ -133,8 +135,6 @@ function pinSvc(
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
   svc.Pin.prototype.constructor = svc.Pin;
-  // TODO: Remove this
-  svc.Pin.prototype.drawOverlay = pin => `<div>-${pin.title}-</div>`;
 
   const embed_width = '"180"';
   const embed_height = '"180"';
@@ -562,6 +562,7 @@ function pinSvc(
     const map = MapManager.storyMap.getMap();
     const center = map.getView().getCenter(); // Creates it on the center of the current view.
 
+    // TODO: Insert current timeline times here
     const defaults = {
       title: "New StoryPin",
       start_time: "1/1/2018",
@@ -581,12 +582,13 @@ function pinSvc(
     const pin_index = svc.pins[chapterIndex].length - 1;
     pin.index_id = pin_index;
     svc.currentPin = pin; // This behaves weird. Don't rely on currentPin :(
-    svc.currentPin.coords = center;
+    svc.currentPin.coords = center; // TODO: Use the geometry coords!
     // Update the map with the new Pin
     if (pin.in_map === true) {
       svc.addPointToPinLayer(pin);
     }
     $rootScope.$broadcast("pin-added", pin);
+    return pin;
   };
 
   /**
@@ -1037,6 +1039,10 @@ function pinSvc(
 
     // Convert to CSV
     return Papa.unparse(csv_objects);
+  };
+
+  svc.onChangedTime = () => {
+    console.log(svc.pin_start_time);
   };
   return svc;
 }

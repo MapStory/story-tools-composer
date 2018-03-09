@@ -200,6 +200,7 @@ function composerController(
   $log.log(TimeMachine.lastComputedTicks);
 
   window.onMoveCallback = data => {
+    // TODO: Add the thing here!!!
     $scope.checkTimes(data);
   };
 
