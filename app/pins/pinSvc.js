@@ -609,7 +609,7 @@ function pinSvc(
       svc.doBounceAnim(pin.coords);
       // Add the drag interaction
       // TODO: Start drag and drop here.
-      svc.start_drag_interaction();
+      svc.start_drag_interaction([pin.map_feature]);
     } else {
       // Remove the drag interaction
       // TODO: Stop drag interaction here
@@ -923,7 +923,7 @@ function pinSvc(
   /**
    * Start StoryPin Drag
    */
-  svc.start_drag_interaction = () => {
+  svc.start_drag_interaction = features => {
     const map = MapManager.storyMap.getMap();
     // Remove previous interaction
     if (svc.drag_control !== null) {
@@ -933,7 +933,7 @@ function pinSvc(
     // Save old interactions
     svc.old_interactions = map.getInteractions();
     svc.drag_control = new ol.interaction.Modify({
-      features: new ol.Collection(svc.pinLayerSource.getFeatures())
+      features: new ol.Collection(features)
     });
     map.addInteraction(svc.drag_control);
   };

@@ -5,9 +5,11 @@
  * @param stateSvc State Service.
  */
 function storypinController($scope, pinSvc, stateSvc) {
+  // Services
   $scope.pinSvc = pinSvc;
   $scope.stateSvc = stateSvc;
 
+  // Properties
   $scope.selected_pin = null;
   $scope.pin_array = [];
   $scope.is_open = {
@@ -33,7 +35,9 @@ function storypinController($scope, pinSvc, stateSvc) {
     pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()])
   }
 
-
+  $scope.get_chapter_pins = () => {
+    return pinSvc.getPins(stateSvc.getChapterIndex());
+  }
 }
 
 module.exports = storypinController;
