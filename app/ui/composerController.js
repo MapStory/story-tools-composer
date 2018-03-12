@@ -56,13 +56,6 @@ function composerController(
 
   $scope.newMap = () => $location.path("/new");
 
-  $scope.styleChanged = layer => {
-    layer.on("change:type", evt => {
-      styleUpdater.updateStyle(evt.target);
-    });
-    styleUpdater.updateStyle(layer);
-  };
-
   $scope.showLoadMapDialog = () => {
     const promise = loadMapDialog.show();
     promise.then(result => {
