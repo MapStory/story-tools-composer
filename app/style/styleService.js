@@ -2,7 +2,8 @@ function styleService(
   $http,
   $cookies,
   ol3StyleConverter,
-  stEditableStoryMapBuilder
+  stEditableStoryMapBuilder,
+  stateSvc
 ) {
   const svc = {};
 
@@ -34,6 +35,17 @@ function styleService(
   };
 
   svc.handleCanStyleWMSFalseEvent = storyLayer => {
+    const config = stateSvc.getConfig();
+    const idParts = {
+      user: config.about.owner.username,
+      slug: config.about.slug,
+      chapter: stateSvc.getChapter(),
+      layerName: storyLayer.get("name")
+    };
+    const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
+      idParts.chapter
+    }-${idParts.layerName}`;
+
     // this case will happen if canStyleWMS is false for the server
     const style = storyLayer.get("style");
     style.name = storyLayer.get("styleName");

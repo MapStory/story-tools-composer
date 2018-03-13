@@ -37,7 +37,8 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         owner: data.owner,
         username: data.owner.username,
         abstract: data.abstract,
-        title: data.title
+        title: data.title,
+        slug: data.slug
       },
       thumbnail_url: data.thumbnail_url,
       id: data.id,
