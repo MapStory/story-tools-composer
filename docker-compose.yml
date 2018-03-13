@@ -6,7 +6,7 @@ services:
     networks:
       internal:
     volumes:
-      - .:/srv/story-tools-composer
+      - .:/srv/story-tools-composer:cached
     ports:
       - "9090:9090"
     command: [--bundle-dev, --serve-dev]
