@@ -5,7 +5,7 @@ function composerController(
   $injector,
   $uibModal,
   MapManager,
-  styleUpdater,
+  styleService,
   appConfig,
   TimeControlsManager,
   navigationSvc,

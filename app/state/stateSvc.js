@@ -92,6 +92,19 @@ function stateSvc(
       }).done(data => {
         svc.config = newConfigSvc.getMapstoryConfig(data);
         window.config = svc.config;
+        window.config.getTempStyleName = storyLayerName => {
+          const config = window.config;
+          const idParts = {
+            user: config.about.owner.username,
+            slug: config.about.slug,
+            chapter: svc.getChapter(),
+            layerName: storyLayerName
+          };
+          const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
+            idParts.chapter
+          }-${idParts.layerName}`;
+          return tempStyleName;
+        };
         svc.originalConfig = data;
         $rootScope.$broadcast("configInitialized");
       });
@@ -169,20 +182,24 @@ function stateSvc(
     return config.chapters;
   };
 
-  svc.getChapterCount = () => svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
+  svc.getChapterCount = () =>
+    svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
 
   svc.initConfig();
   svc.save = function() {
     console.log(svc.config);
     $http({
-      url:'/mapstory/save',
-      method:'POST',
+      url: "/mapstory/save",
+      method: "POST",
       data: JSON.stringify(svc.config)
-    }).then(function successCallback(response) {
-      console.log("MAP SAVED");
-    }, function errorCallback(response) {
-      console.log("MAP FAILED TO SAVE");
-    });
+    }).then(
+      function successCallback(response) {
+        console.log("MAP SAVED");
+      },
+      function errorCallback(response) {
+        console.log("MAP FAILED TO SAVE");
+      }
+    );
   };
 
   return svc;

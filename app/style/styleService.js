@@ -34,8 +34,8 @@ function styleService(
     );
   };
 
-  svc.handleCanStyleWMSFalseEvent = storyLayer => {
-    const config = stateSvc.getConfig();
+  window.config.getTempStyleName = storyLayer => {
+    const config = window.config;
     const idParts = {
       user: config.about.owner.username,
       slug: config.about.slug,
@@ -45,6 +45,13 @@ function styleService(
     const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
       idParts.chapter
     }-${idParts.layerName}`;
+    return tempStyleName;
+  };
+
+  svc.handleCanStyleWMSFalseEvent = storyLayer => {
+    const tempStyleName = window.config.getTempStyleName(
+      storyLayer.get("name")
+    );
 
     // this case will happen if canStyleWMS is false for the server
     const style = storyLayer.get("style");
