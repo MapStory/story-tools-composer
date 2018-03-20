@@ -323,25 +323,30 @@ function composerController(
 
   /**
    * Updates the Storypins on timeline.
+   * Loops the current chapter's StoryPins and determines if they should be shown or hidden.
    * @param date The date for the layer.
    */
   $scope.updateStorypinTimeline = date => {
+    // TODO: Use pre-cooked timeframe objects to optimize this?
     const pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
-
     pinArray.forEach( pin => {
       const startDate = $scope.formatDates(pin.start_time);
       const endDate = $scope.formatDates(pin.end_time);
-
       const storyLayerStartDate = $scope.formatDates(date);
 
+      let should_show = false;
       if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
         // TODO: Show StoryPin.
-        pin.show();
-      } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
-        // TODO: Hide Storypin.
-        pin.hide();
+        should_show = true;
       }
-      else {
+      if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
+        // TODO: Hide Storypin.
+        should_show = false;
+      }
+
+      if (should_show) {
+        pin.show();
+      } else {
         pin.hide();
       }
     });
