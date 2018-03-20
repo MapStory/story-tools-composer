@@ -199,9 +199,15 @@ function composerController(
   // need to use obj,array when timeline is scrubbed
   $log.log(TimeMachine.lastComputedTicks);
 
+  /**
+   * Callback for timeline update.
+   * @param data Data from the timeline.
+   */
   window.onMoveCallback = data => {
-    // TODO: Add the thing here!!!
+    // Checks times for storyframes.
     $scope.checkTimes(data);
+    // Updates StoryPins.
+    $scope.updateStorypinTimeline(data);
   };
 
   $scope.formatDates = date => {
@@ -313,6 +319,32 @@ function composerController(
 
   $scope.deleteStoryframe = index => {
     $scope.frameSettings.splice(index, 1);
+  };
+
+  /**
+   * Updates the Storypins on timeline.
+   * @param date The date for the layer.
+   */
+  $scope.updateStorypinTimeline = date => {
+    const pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+
+    pinArray.forEach( pin => {
+      const startDate = $scope.formatDates(pin.start_time);
+      const endDate = $scope.formatDates(pin.end_time);
+
+      const storyLayerStartDate = $scope.formatDates(date);
+
+      if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
+        // TODO: Show StoryPin.
+        pin.show();
+      } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
+        // TODO: Hide Storypin.
+        pin.hide();
+      }
+      else {
+        pin.hide();
+      }
+    });
   };
 }
 

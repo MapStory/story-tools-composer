@@ -33,11 +33,15 @@ function storypinController($scope, pinSvc, stateSvc) {
    */
   $scope.on_export_pins = () => {
     pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()])
-  }
+  };
 
+  /**
+   * Returns the given chapter's pins.
+   * @returns {Array|*} An array of StoryPins.
+   */
   $scope.get_chapter_pins = () => {
     return pinSvc.getPins(stateSvc.getChapterIndex());
-  }
+  };
 }
 
 module.exports = storypinController;
