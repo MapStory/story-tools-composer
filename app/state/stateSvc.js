@@ -129,7 +129,7 @@ function stateSvc(
     }
   };
 
-  svc.getStoryframeDetails = frameSettings => {
+  svc.setStoryframeDetails = frameSettings => {
     const savedFrame = {
       title: frameSettings.title,
       startDate: frameSettings.startDate,

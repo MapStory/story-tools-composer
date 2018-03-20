@@ -17,7 +17,6 @@ function composerController(
   uiHelperSvc,
   searchSvc,
   stateSvc,
-  newConfigSvc,
   $location
 ) {
   $scope.mapManager = MapManager;
@@ -251,7 +250,7 @@ function composerController(
       bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
       bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
     });
-    newConfigSvc.getStoryframeDetails(frameSettings);
+    stateSvc.setStoryframeDetails(frameSettings);
   };
 
   $scope.editStoryframe = index => {
