@@ -61,7 +61,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       };
     }
     const cfg = {
-      id: id,
+      id,
       map_id: data.map_id,
       about: {
         abstract: data.abstract,
@@ -107,7 +107,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         }
       },
       map: {
-        id: id,
+        id,
         center: [-11046067.8315474, 4153282.36890334],
         units: "m",
         maxResolution: 156543.03390625,
