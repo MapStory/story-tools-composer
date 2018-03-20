@@ -203,6 +203,20 @@ function stateSvc(
     );
   };
 
+  svc.save_storypins = storypins => {
+    svc.config.storypins = storypins;
+  };
+
+  svc.get_storypins = () => {
+    if (svc.config.storypins) {
+      return svc.config.storypins;
+    } else {
+      // Lazy init an array of arrays to hold chapters with storypins.
+      svc.config.storypins = [[]];
+      return svc.config.storypins;
+    }
+  };
+
   return svc;
 }
 

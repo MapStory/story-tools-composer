@@ -65,8 +65,6 @@ function pinSvc(
   svc.dateOptions = {
     dateDisabled: svc.disabled,
     formatYear: "yy",
-    // maxDate: new Date(2020, 5, 22),
-    // minDate: new Date(),
     startingDay: 1
   };
 
@@ -131,9 +129,6 @@ function pinSvc(
     ol.Feature.call(this, data);
     this.properties = data;
     this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
-    // Sets the time with the time service.
-    // this.start_time = timeSvc.getTime(this.start_time);
-    // this.end_time = timeSvc.getTime(this.end_time);
     this.start_time = new Date();
     this.end_time = new Date();
   };
@@ -1024,6 +1019,9 @@ function pinSvc(
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
       svc.add_storypin_to_map(pin);
     });
+
+    // Save to state service
+    stateSvc.save_storypins(svc.pins);
   };
 
   svc.exportPinsToJSON = pinArray => {
@@ -1062,6 +1060,11 @@ function pinSvc(
     return pin_array;
   };
 
+  /**
+   * Starts the downloading of a CSV file.
+   * Creates a hidden element with the file as a URI and clicks it to start the download.
+   * @param pinArray
+   */
   svc.downloadCSV = pinArray => {
     const data = svc.exportPinsToCSV(pinArray);
     const hidden_element = document.createElement("a");
@@ -1072,6 +1075,11 @@ function pinSvc(
     hidden_element.click();
   };
 
+  /**
+   * Exoports the current chapter's storypins into comma separated values (CSV).
+   * @param pinArray
+   * @returns {""} An array of objects in CSV format.
+   */
   svc.exportPinsToCSV = pinArray => {
     const csv_objects = []; // Holds objects with the CSV format
 
@@ -1090,7 +1098,7 @@ function pinSvc(
       csv_objects.push(csv_pin);
     });
 
-    // Convert to CSV
+    // Convert to CSV using Papa.
     return Papa.unparse(csv_objects);
   };
 
