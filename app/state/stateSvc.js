@@ -82,8 +82,9 @@ function stateSvc(
     const mapID = /\/story\/(\d+)/.exec(path)
       ? /\/story\/(\d+)/.exec(path)[1]
       : null;
-    const mapJsonUrl = `/api/mapstories/${mapID}`;
+    const mapJsonUrl = `/api/mapstories?slug=${mapID}`;
     if (svc.config) {
+      return;
     } else if (mapID) {
       $.ajax({
         dataType: "json",

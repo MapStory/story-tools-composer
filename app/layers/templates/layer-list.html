@@ -15,10 +15,10 @@
         <uib-accordion-heading>
             {{layer.get('title')}}
             <div class="pull-right">
-                <button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
+                <!--button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
                     <div class="stLoading" spinner-radius="16" spinner-hidden="!swapping"></div>
                     <i class="glyphicon glyphicon-cog"></i>
-                </button>
+                </button!-->
                 <button type="button" data-toggle="button" ng-click="toggleVisibleLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
                     <i class="glyphicon" ng-class="{'glyphicon-eye-open': layer.get('visibility'), 'glyphicon-eye-close': !layer.get('visibility')}"></i>
                 </button>
@@ -49,7 +49,7 @@
                         {{layer.getProperties().type}}
                     </div>
                 </div>
-                <div class="row">
+                <!--div class="row">
                     <div class="col-sm-2">
                       <strong>Visibility:</strong>
                     </div>
@@ -63,7 +63,7 @@
                       </span>
                       </label>
                     </div>
-                </div>
+                </div-->
             </div>
         </div>
 
