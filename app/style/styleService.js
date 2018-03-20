@@ -40,7 +40,7 @@ function styleService(
       user: config.about.owner.username,
       slug: config.about.slug,
       chapter: stateSvc.getChapter(),
-      layerName: storyLayer.get("name")
+      layerName: storyLayer
     };
     const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
       idParts.chapter
