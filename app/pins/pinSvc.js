@@ -685,22 +685,26 @@ function pinSvc(
    * // TODO: create a function that removes the div when a storypin is deleted.
    */
   svc.insert_new_overlay_into_DOM_for_pin = pin => {
+    const txt_title = pin.title || "";
+    const txt_content = pin.content || "";
+    const txt_media = pin.media || "http://#";
+
     // Creates a new div with a unique ID.
     const element = document.createElement("div");
     element.setAttribute("id", `pin-overlay-${pin.index_id}`);
 
     // Create dynamic content and append to parent element.
     const heading = document.createElement("div");
-    const title = document.createTextNode(`${pin.title}`);
+    const title = document.createTextNode(`${txt_title}`);
     heading.appendChild(title);
 
     const body = document.createElement("div");
-    const content = document.createTextNode(`${pin.content}`);
+    const content = document.createTextNode(`${txt_content}`);
     body.appendChild(content);
 
     // TODO: Create dynamic content for media if it whitelists OK here:
     const link = document.createElement("a");
-    link.setAttribute("href", `${pin.media}`);
+    link.setAttribute("href", `${txt_media}`);
     body.appendChild(link);
 
     element.appendChild(heading);
@@ -743,6 +747,21 @@ function pinSvc(
     map.addLayer(svc.sp_vectorLayer);
   };
 
+  svc.remove_overlay_from_DOM_for_pin = pin => {
+    let element = document.getElementById(`pin-overlay-${pin.index_id}`);
+    if(element) {
+      element.remove();
+    }
+  };
+
+  svc.destroyOverlay = pin => {
+      const map = MapManager.storyMap.getMap();
+      // Create overlay in DOM.
+      map.removeOverlay(pin.overlay);
+      svc.remove_overlay_from_DOM_for_pin(pin);
+      pin.overlay = null;
+  };
+
   /**
    * Adds a new point feature to the layer.
    * Adds this feature and associates it to the Pin.
@@ -769,9 +788,11 @@ function pinSvc(
     svc.pinLayerSource.addFeatures([point]);
 
     // Create an overlay if it doesnt exist.
-    if (!pin.overlay) {
-      svc.createPinOverlay(pin);
+    if (pin.overlay) {
+      // Remove overlay
+      svc.destroyOverlay(pin);
     }
+    svc.createPinOverlay(pin);
 
     // Add functionality for the pin to show and hide itself from the map:
     pin.show = () => {
@@ -1012,12 +1033,16 @@ function pinSvc(
 
     // Update information from features, and remove form map.
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+
       svc.pinLayerSource.removeFeature(pin.map_feature);
+      svc.remove_overlay_from_DOM_for_pin(pin);
     });
 
     // Add to the map with the new info.
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+      pin.coords = pin.map_feature.getGeometry().getCoordinates();
       svc.add_storypin_to_map(pin);
+      pin.overlay.setPosition(pin.coords);
     });
 
     // Save to state service
