@@ -84,7 +84,6 @@ function stateSvc(
       : null;
     const mapJsonUrl = `/api/mapstories/${mapID}`;
     if (svc.config) {
-      return;
     } else if (mapID) {
       $.ajax({
         dataType: "json",
@@ -130,6 +129,23 @@ function stateSvc(
     }
   };
 
+  svc.getStoryframeDetails = frameSettings => {
+    const savedFrame = {
+      title: frameSettings.title,
+      startDate: frameSettings.startDate,
+      endDate: frameSettings.endDate,
+      startTime: frameSettings.startTime,
+      endTime: frameSettings.endTime,
+      boundingBox: [
+        [frameSettings[0].bb1[0], frameSettings[0].bb1[0]],
+        [frameSettings[0].bb2[0], frameSettings[0].bb2[1]],
+        [frameSettings[0].bb3[0], frameSettings[0].bb3[1]],
+        [frameSettings[0].bb4[0], frameSettings[0].bb4[1]]
+      ]
+    };
+    svc.config.frameSettings = frameSettings;
+  };
+
   svc.getChapter = () => {
     let chapter = 1;
     const path = $location.path();
@@ -154,12 +170,10 @@ function stateSvc(
     if (config.chapters && chapter > 0 && chapter <= config.chapters.length) {
       if (config.chapters[i]) {
         return config.chapters[i];
-      } else {
-        return config.chapters[0];
       }
-    } else {
-      return config;
+      return config.chapters[0];
     }
+    return config;
   };
 
   svc.getChapterAbout = () => svc.getChapterConfig().about;
@@ -169,20 +183,24 @@ function stateSvc(
     return config.chapters;
   };
 
-  svc.getChapterCount = () => svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
+  svc.getChapterCount = () =>
+    svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
 
   svc.initConfig();
   svc.save = function() {
-    console.log(svc.config);
+    console.log("svc.config: ", svc.config);
     $http({
-      url:'/mapstory/save',
-      method:'POST',
+      url: "/mapstory/save",
+      method: "POST",
       data: JSON.stringify(svc.config)
-    }).then(function successCallback(response) {
-      console.log("MAP SAVED");
-    }, function errorCallback(response) {
-      console.log("MAP FAILED TO SAVE");
-    });
+    }).then(
+      response => {
+        console.log("MAP SAVED");
+      },
+      response => {
+        console.log("MAP FAILED TO SAVE");
+      }
+    );
   };
 
   return svc;
