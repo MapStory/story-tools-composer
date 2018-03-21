@@ -1,0 +1,8 @@
+<a ng-click="toggleStyle()"><i class="fa fa-arrow-left" ng-class="selected.layers && 'active'"></i></a>
+Style {{styleSvc.currentLayer.get('title')}}
+
+<div class="editorForm">
+    <style-editor class="minheight"
+                  control="{carousel:true, default:false}" layer="styleSvc.currentLayer" ng-show="true"
+                  on-change="styleChanged"></style-editor>
+</div>

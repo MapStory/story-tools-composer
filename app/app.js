@@ -1,11 +1,11 @@
-"use strict";
-
-const angular = require("angular");
-const ngAnimate = require("angular-animate");
+import angular from "angular";
+import ngAnimate from "angular-animate";
+import ngCookies from "angular-cookies";
 
 const module = angular.module("composer", [
   ngAnimate,
   "ui.bootstrap",
+  ngCookies,
   "storytools.core.time",
   "storytools.core.mapstory",
   "storytools.core.loading",
@@ -55,7 +55,7 @@ module.constant("appConfig", {
 
 module.run(() => {
   // install a watchers debug loop
-  ((() => {
+  (() => {
     const root = angular.element(document.getElementsByTagName("body"));
     let last;
     let watchers = 0;
@@ -78,7 +78,7 @@ module.run(() => {
       }
       last = watchers;
     }, 1000);
-  }))();
+  })();
 });
 
 module.config([

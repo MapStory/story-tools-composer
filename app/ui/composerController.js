@@ -61,13 +61,6 @@ function composerController(
 
   $scope.newMap = () => $location.path("/new");
 
-  $scope.styleChanged = layer => {
-    layer.on("change:type", evt => {
-      styleUpdater.updateStyle(evt.target);
-    });
-    styleUpdater.updateStyle(layer);
-  };
-
   $scope.showLoadMapDialog = () => {
     const promise = loadMapDialog.show();
     promise.then(result => {
@@ -265,7 +258,7 @@ function composerController(
       bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
       bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
     });
-    newConfigSvc.getStoryframeDetails(frameSettings);
+    stateSvc.setStoryframeDetails(frameSettings);
   };
 
   $scope.editStoryframe = index => {

@@ -17,16 +17,15 @@ function addLayers(
       map: "="
     },
     templateUrl: "./app/layers/templates/add-layers.html",
-    link: function(scope, el, atts) {
+    link: (scope, el, atts) => {
       let nameIndex;
       let names;
       scope.server = {
         active: appConfig.servers[0]
       };
       scope.servers = appConfig.servers;
-      scope.results = layerName => searchSvc
-        .getSearchBarResultsIndex(layerName)
-        .then(res => {
+      scope.results = layerName =>
+        searchSvc.getSearchBarResultsIndex(layerName).then(res => {
           nameIndex = res;
           names = layerSvc.compileLayerNamesFromSearchIndex(res);
           return limitToFilter(names, 15);
