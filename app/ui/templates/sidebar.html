@@ -1,7 +1,7 @@
-<div class="sidebar" ng-init="selected = {toc:true}" ng-hide="mode.preview">
+<div class="sidebar" ng-hide="mode.preview">
     <div class="sidebar-header">
         <div class="chapter-header">
-            <a ng-click="selected = {toc:true}" class="toc-link">Table of Contents</a>
+            <a ng-click="updateSelected('toc')" class="toc-link">Table of Contents</a>
             <div class="chapter-nav">
                 <a ng-click="previousChapter()" ng-disabled="mapManager.storyChapter == 1" class="arrow"><i class="fa fa-caret-left"></i></a>
                 <h1 class="sidebar-title">{{stateSvc.getChapter()}} <strong>{{ mapManager.storyMap.getStoryTitle()  }}</strong></h1>
@@ -11,12 +11,12 @@
     </div>
     <div class="sidebar-main">
         <nav class="sidebar-nav">
-            <a ng-click="selected = {info:true}"><i class="fa fa-info-circle" ng-class="selected.info && 'active'"></i></a>
+            <a ng-click="updateSelected('info')"><i class="fa fa-info-circle" ng-class="selected.info && 'active'"></i></a>
             <!--a ng-click="selected = {settings:true}"><i class="fa fa-play-circle-o" ng-class="selected.settings && 'active'"></i></a-->
             <!--a ng-click="selected = {legend:true}"><i class="fa fa-list-alt" ng-class="selected.legend && 'active'"></i></a-->
-            <a ng-click="selected = {layers:true}"><i class="fa fa-clone" ng-class="selected.layers && 'active'"></i></a>
-            <a ng-click="selected = {pins:true}"><i class="fa fa-map-pin" ng-class="selected.pins && 'active'"></i></a>
-            <a ng-click="selected = {frames:true}"><i class="fa fa-object-group" ng-class="selected.frames && 'active'"></i></a>
+            <a ng-click="updateSelected('layers')"><i class="fa fa-clone" ng-class="selected.layers && 'active'"></i></a>
+            <a ng-click="updateSelected('pins')"><i class="fa fa-map-pin" ng-class="selected.pins && 'active'"></i></a>
+            <a ng-click="updateSelected('frames')"><i class="fa fa-object-group" ng-class="selected.frames && 'active'"></i></a>
         </nav>
         <div class="sidebar-content">
             <div ng-if="selected.toc">
