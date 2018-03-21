@@ -748,18 +748,18 @@ function pinSvc(
   };
 
   svc.remove_overlay_from_DOM_for_pin = pin => {
-    let element = document.getElementById(`pin-overlay-${pin.index_id}`);
-    if(element) {
+    const element = document.getElementById(`pin-overlay-${pin.index_id}`);
+    if (element) {
       element.remove();
     }
   };
 
   svc.destroyOverlay = pin => {
-      const map = MapManager.storyMap.getMap();
-      // Create overlay in DOM.
-      map.removeOverlay(pin.overlay);
-      svc.remove_overlay_from_DOM_for_pin(pin);
-      pin.overlay = null;
+    const map = MapManager.storyMap.getMap();
+    // Create overlay in DOM.
+    map.removeOverlay(pin.overlay);
+    svc.remove_overlay_from_DOM_for_pin(pin);
+    pin.overlay = null;
   };
 
   /**
