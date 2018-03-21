@@ -24,6 +24,16 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
     }
   };
 
+  svc.goToChapter = number => {
+    if (number > 0) {
+      $log.info("Going to the Chapter ", number);
+      $rootScope.$broadcast("updateTimeValues", values);
+      $location.path(appConfig.routes.chapter + number);
+    } else {
+      $location.path("");
+    }
+  };
+
   return svc;
 }
 
