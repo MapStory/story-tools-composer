@@ -10,6 +10,11 @@ function layerSvc(stateSvc) {
       name: "world-light"
     },
     {
+      title: "World Dark",
+      type: "MapBox",
+      name: "world-dark"
+    },
+    {
       title: "Geography Class",
       type: "MapBox",
       name: "geography-class"
@@ -38,10 +43,6 @@ function layerSvc(stateSvc) {
       title: "World Topo Map",
       type: "ESRI",
       name: "world-topo-map"
-    },
-    {
-      title: "No background",
-      type: "None"
     }
   ];
 

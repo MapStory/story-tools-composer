@@ -8,7 +8,7 @@ function composerController(
   $injector,
   $uibModal,
   MapManager,
-  styleUpdater,
+  styleService,
   appConfig,
   TimeControlsManager,
   TimeMachine,

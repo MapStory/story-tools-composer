@@ -6,7 +6,7 @@
         <label for="typename">Layer Name</label>
         <input autocomplete="off" ng-model="layerName" type="text" class="form-control" id="typename" uib-typeahead="suggestion for suggestion in results($viewValue)" placeholder="Layer name in mapstory">
     </div>
-    <label class="checkbox" for="vector">
+    <!--label class="checkbox" for="vector">
         <input type="checkbox" ng-model="asVector" value="" id="vector" data-toggle="checkbox" class="custom-checkbox">
         <span class="icons">
         <span class="icon-unchecked"></span>
@@ -29,6 +29,6 @@
         <span class="icon-checked"></span>
     </span>
         Allow Pan
-    </label>
-    <button type="submit" ng-disabled="!layerName" class="btn btn-primary"> <span ng-if="loading">Loading...</span> <span ng-if="!loading">Add</span></button>
+    </label-->
+    <button type="submit" ng-disabled="!layerName"> <span ng-if="loading">Loading...</span> <span ng-if="!loading">Add</span></button>
 </form>
