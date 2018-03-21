@@ -14,26 +14,10 @@
     <div uib-accordion-group sv-element ng-repeat="layer in layers" is-open="accordianOpen" ng-init="accordianOpen = $first">
         <uib-accordion-heading>
             {{layer.get('title')}}
-            <div class="pull-right">
-                <button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
-                    <div class="stLoading" spinner-radius="16" spinner-hidden="!swapping"></div>
-                    <i class="glyphicon glyphicon-cog"></i>
-                </button>
-                <button type="button" data-toggle="button" ng-click="toggleVisibleLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
-                    <i class="glyphicon" ng-class="{'glyphicon-eye-open': layer.get('visibility'), 'glyphicon-eye-close': !layer.get('visibility')}"></i>
-                </button>
-                <button type="button" data-toggle="button" ng-click="removeLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
-                    <i class="glyphicon glyphicon-trash"></i>
-                </button>
-            </div>
         </uib-accordion-heading>
-
         <div class="row">
             <div class="col-sm-12">
                 <div class="row">
-                  <div class="col-sm-12">
-                    <a ng-click="toggleStyle(layer);$event.preventDefault();">STYLE</a>
-                  </div>
                     <div class="col-sm-2">
                       <strong>Name:</strong>
                     </div>
@@ -49,7 +33,7 @@
                         {{layer.getProperties().type}}
                     </div>
                 </div>
-                <div class="row">
+                <!--div class="row">
                     <div class="col-sm-2">
                       <strong>Visibility:</strong>
                     </div>
@@ -63,8 +47,23 @@
                       </span>
                       </label>
                     </div>
-                </div>
+                </div-->
             </div>
+        </div>
+        <div class="pull-right">
+            <!--button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
+                <div class="stLoading" spinner-radius="16" spinner-hidden="!swapping"></div>
+                <i class="glyphicon glyphicon-cog"></i>
+            </button!-->
+            <button type="button" data-toggle="button" ng-click="toggleStyle(layer);$event.preventDefault(); $event.preventDefault();" class="btn btn-xs btn-inverse" uib-tooltip="Style">
+                <i class="fa fa-paint-brush"></i>
+            </button>
+            <button type="button" data-toggle="button" ng-click="toggleVisibleLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse" uib-tooltip="Visibility">
+                <i class="glyphicon" ng-class="{'glyphicon-eye-open': layer.get('visibility'), 'glyphicon-eye-close': !layer.get('visibility')}"></i>
+            </button>
+            <button type="button" data-toggle="button" ng-click="removeLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse" uib-tooltip="Delete">
+                <i class="glyphicon glyphicon-trash"></i>
+            </button>
         </div>
 
     </div>
