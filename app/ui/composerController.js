@@ -160,6 +160,10 @@ function composerController(
   const layerList = [];
 
   $scope.zoomToExtent = () => {
+    console.log("zoom to extent");
+
+    // need to add and go to correct BB
+
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
         map.beforeRender(
@@ -179,6 +183,7 @@ function composerController(
   };
 
   $scope.zoomOutExtent = () => {
+    console.log("zoom out extent");
     const zoom = ol.animation.zoom({
       resolution: map.getView().getResolution(),
       duration: 1000,
@@ -187,9 +192,6 @@ function composerController(
     map.beforeRender(zoom);
     map.getView().setZoom(map.getView().getZoom() * 0);
   };
-
-  // need to use obj,array when timeline is scrubbed
-  $log.log(TimeMachine.lastComputedTicks);
 
   window.onMoveCallback = data => {
     $scope.checkTimes(data);
@@ -201,20 +203,66 @@ function composerController(
     return formattedDate;
   };
 
-  let dateCount = 0;
+
+
+
+
+
+
+
+
+
+  let zoomedIn = false;
+  let frameCount =  0;
 
   $scope.checkTimes = date => {
-    const startDate = $scope.formatDates($scope.frameSettings.startDate);
-    const endDate = $scope.formatDates($scope.frameSettings.endDate);
-    const storyLayerStartDate = $scope.formatDates(date);
 
-    if (moment(storyLayerStartDate).isSameOrAfter(startDate) && dateCount < 1) {
-      $scope.zoomToExtent();
-      dateCount = 1;
-    } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
-      $scope.zoomOutExtent();
-    }
+
+
+    $scope.frameSettings.forEach(function(item) {
+
+
+      console.log(item[0]);
+
+
+
+      if (item.startDate || item.endDate){
+        const startDate = $scope.formatDates(item.startDate);
+        const endDate = $scope.formatDates(item.endDate);
+        const storyLayerCurrentDate = $scope.formatDates(date);
+
+        frameCount = frameCount + 1;
+
+        $scope.zoomInOut(storyLayerCurrentDate, startDate, endDate);
+      }
+    });
   };
+
+
+  $scope.zoomInOut = (storyLayerCurrentDate, startDate, endDate) => {
+      if (moment(storyLayerCurrentDate).isSameOrAfter(startDate) && moment(storyLayerCurrentDate).isSameOrBefore(endDate) && zoomedIn === false) {
+          $scope.zoomToExtent();
+          zoomedIn = true;
+      } else if (moment(storyLayerCurrentDate).isAfter(endDate) && zoomedIn === true) {
+          $scope.zoomOutExtent();
+          zoomedIn = false;
+      }
+  }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
   $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
@@ -250,6 +298,7 @@ function composerController(
       bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
       bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
     });
+
     stateSvc.setStoryframeDetails(frameSettings);
   };
 
