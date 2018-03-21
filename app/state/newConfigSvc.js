@@ -27,7 +27,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         owner: "",
         username: "",
         title: "Mapstory title",
-        id: 0,
+        id: 1,
         chapters: [{}]
       };
     }
@@ -41,7 +41,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         slug: data.slug
       },
       thumbnail_url: data.thumbnail_url,
-      id: data.id,
+      id: data.id || 1,
       chapters: data.chapters
     };
 
@@ -54,11 +54,14 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
   };
 
   svc.getChapterConfig = (id, data) => {
+    if (!id) {
+      id = 1;
+    }
     if (!data) {
       data = {
-        abstract: "New chapter description",
+        abstract: "",
         owner: "",
-        title: "New Chapter"
+        title: `Chapter ${id}`
       };
     }
     const cfg = {
@@ -67,7 +70,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       about: {
         abstract: data.abstract,
         owner: data.owner,
-        title: data.title
+        title: data.title || `Chapter ${id}`
       },
       layers: svc.getLayerListFromServerData(data.layers),
       sources: {
