@@ -215,16 +215,18 @@ function composerController(
   let zoomedIn = false;
   let frameCount =  0;
 
+
+  // need to only check each object in object once
+  // maybe pass objects by indice: $scope.frameSettings[0] ??
+
+
+  // console.log("0: " , $scope.frameSettings[0]);
+  // console.log("1: " , $scope.frameSettings[1]);
+
+
   $scope.checkTimes = date => {
 
-
-
-    $scope.frameSettings.forEach(function(item) {
-
-
-      console.log(item[0]);
-
-
+    $scope.frameSettings[0].forEach(function(item) {
 
       if (item.startDate || item.endDate){
         const startDate = $scope.formatDates(item.startDate);
@@ -238,7 +240,6 @@ function composerController(
     });
   };
 
-
   $scope.zoomInOut = (storyLayerCurrentDate, startDate, endDate) => {
       if (moment(storyLayerCurrentDate).isSameOrAfter(startDate) && moment(storyLayerCurrentDate).isSameOrBefore(endDate) && zoomedIn === false) {
           $scope.zoomToExtent();
@@ -248,6 +249,27 @@ function composerController(
           zoomedIn = false;
       }
   }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
