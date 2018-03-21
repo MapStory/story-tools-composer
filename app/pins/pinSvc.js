@@ -692,9 +692,11 @@ function pinSvc(
     // Creates a new div with a unique ID.
     const element = document.createElement("div");
     element.setAttribute("id", `pin-overlay-${pin.index_id}`);
+    element.setAttribute("class", "storypin-overlay");
 
     // Create dynamic content and append to parent element.
     const heading = document.createElement("div");
+    heading.setAttribute("class", "heading");
     const title = document.createTextNode(`${txt_title}`);
     heading.appendChild(title);
 
