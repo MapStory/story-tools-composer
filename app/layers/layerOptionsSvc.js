@@ -1,16 +1,7 @@
-"use strict";
-
 function layerOptionsSvc() {
   const svc = {};
 
-  svc.getLayerOptions = (
-    name,
-    settings,
-    server,
-    fitExtent,
-    styleName,
-    title
-  ) => {
+  svc.getLayerOptions = (name, settings, server, fitExtent, title) => {
     if (window.storyMap) {
       window.storyMap.setAllowZoom(settings.allowZoom || true);
       window.storyMap.setAllowPan(settings.allowPan || true);
@@ -27,6 +18,9 @@ function layerOptionsSvc() {
       workspace = parts[0];
       name = parts[1];
     }
+    let styleName = window.config.getTempStyleName
+      ? window.config.getTempStyleName(name)
+      : null;
     const url = `${server.path + workspace}/${name}/wms`;
     const id = `${workspace}:${name}`;
     const options = {
@@ -37,7 +31,7 @@ function layerOptionsSvc() {
       url,
       path: server.path,
       canStyleWMS: server.canStyleWMS,
-      styleName: `geonode_${name}`,
+      styleName,
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
       type: settings.asVector === true ? "VECTOR" : "WMS",
       geomType: "point",

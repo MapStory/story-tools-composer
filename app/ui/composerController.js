@@ -8,7 +8,7 @@ function composerController(
   $injector,
   $uibModal,
   MapManager,
-  styleUpdater,
+  styleService,
   appConfig,
   TimeControlsManager,
   TimeMachine,
@@ -25,9 +25,17 @@ function composerController(
   $scope.pinSvc = pinSvc;
   $scope.uiHelperSvc = uiHelperSvc;
   $scope.searchSvc = searchSvc;
+  $scope.navigationSvc = navigationSvc;
   $scope.pin = {};
 
+  $scope.selected = { toc: true };
+
   $rootScope.$on("$locationChangeSuccess", () => {
+    const urlChapterId = $location.path().split("chapter/")[1];
+    const chapterCount = stateSvc.getChapterCount();
+    if (urlChapterId > chapterCount) {
+      $scope.navigationSvc.goToChapter(1);
+    }
     $scope.mapManager.initMapLoad();
     $scope.stateSvc.updateCurrentChapterConfig();
   });
@@ -102,8 +110,12 @@ function composerController(
     return props;
   };
 
-  $scope.updateSelected = selected => {
-    $scope.selected = { selected: true };
+  $scope.updateSelected = (selected, chapterId) => {
+    $scope.selected = {};
+    if ((chapterId !== null) & (chapterId !== undefined)) {
+      navigationSvc.goToChapter(chapterId);
+    }
+    $scope.selected[selected] = true;
   };
 
   $scope.nextChapter = navigationSvc.nextChapter;

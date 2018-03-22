@@ -3,7 +3,7 @@ function layerList(
   stEditableStoryMapBuilder,
   MapManager,
   layerSvc,
-  styleUpdater,
+  styleService,
   stateSvc
 ) {
   return {
@@ -15,7 +15,7 @@ function layerList(
     templateUrl: "./app/layers/templates/layer-list.html",
     link: (scope, el, atts) => {
       scope.baseLayers = layerSvc.baseLayers;
-      scope.styleSvc = styleUpdater;
+      scope.styleSvc = styleService;
       scope.styleActivated = false;
       const baseLayer = MapManager.storyMap.get("baselayer");
       if (baseLayer) {
@@ -27,9 +27,9 @@ function layerList(
 
       scope.styleChanged = layer => {
         layer.on("change:type", evt => {
-          styleUpdater.updateStyle(evt.target);
+          styleService.updateStyle(evt.target);
         });
-        styleUpdater.updateStyle(layer);
+        styleService.updateStyle(layer);
       };
 
       scope.toggleStyle = layer => {
