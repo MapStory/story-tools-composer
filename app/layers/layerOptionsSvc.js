@@ -18,9 +18,7 @@ function layerOptionsSvc() {
       workspace = parts[0];
       name = parts[1];
     }
-    let styleName = window.config.getTempStyleName
-      ? window.config.getTempStyleName(name)
-      : null;
+    let styleName = null;
     const url = `${server.path + workspace}/${name}/wms`;
     const id = `${workspace}:${name}`;
     const options = {
