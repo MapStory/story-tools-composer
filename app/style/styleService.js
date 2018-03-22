@@ -49,19 +49,18 @@ function styleService(
   };
 
   svc.handleCanStyleWMSFalseEvent = storyLayer => {
-    const tempStyleName = window.config.getTempStyleName(
-      storyLayer.get("name")
-    );
+    const layerName = storyLayer.get("name");
+    const tempStyleName = window.config.getTempStyleName(layerName);
 
     // this case will happen if canStyleWMS is false for the server
     const style = storyLayer.get("style");
-    style.name = storyLayer.get("styleName");
+    style.name = storyLayer.get("styleName") || tempStyleName;
     const layer = storyLayer.getLayer();
     let layerSource = layer.getSource();
     const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
       style
     );
-    if (storyLayer.get("styleName")) {
+    if (style.name) {
       if (isComplete) {
         const sld = new storytools.edit.SLDStyleConverter.SLDStyleConverter();
         const xml = sld.generateStyle(
@@ -87,6 +86,7 @@ function styleService(
               _olSalt: Math.random(),
               STYLES: style.name
             });
+            stateSvc.updateLayerStyle(layerName, style.name);
           },
           function errorCallback(response) {
             console.log("Style Create Error Response ", response);
@@ -106,6 +106,7 @@ function styleService(
                     _olSalt: Math.random(),
                     STYLES: style.name
                   });
+                  stateSvc.updateLayerStyle(layerName, style.name);
                 });
             }
             // called asynchronously if an error occurs

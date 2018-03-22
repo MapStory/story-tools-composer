@@ -92,6 +92,7 @@ function stateSvc(
       }).done(data => {
         svc.config = newConfigSvc.getMapstoryConfig(data);
         window.config = svc.config;
+        //@TODO: find a permanent home for this function
         window.config.getTempStyleName = storyLayerName => {
           const config = window.config;
           const idParts = {
@@ -128,6 +129,16 @@ function stateSvc(
 
   svc.addLayer = layerOptions => {
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
+  };
+
+  svc.updateLayerStyle = (layerName, styleName) => {
+    const chapter = svc.config.chapters[svc.getChapterIndex()];
+    const layerCount = chapter.layers.length;
+    for (let i = 0; i < layerCount; i += 1) {
+      if (chapter.layers[i].name === layerName) {
+        chapter.layers[i].styleName = styleName;
+      }
+    }
   };
 
   // !DJA @TODO: write test
