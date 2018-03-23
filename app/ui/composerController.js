@@ -168,26 +168,52 @@ function composerController(
       });
   };
 
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
+    return preFormatDate.format("YYYY-MM-DD");
+  };
+
   let draw;
   const layerList = [];
 
+  $scope.currentFrame = 0;
+  $scope.zoomedIn = false;
+
+  window.onMoveCallback = date => {
+    $scope.getCurrentFrame(date);
+  };
+
+  $scope.getCurrentFrame = date => {
+    if ($scope.currentFrame < $scope.frameSettings.length) {
+      const start = $scope.frameSettings[$scope.currentFrame].startDate;
+      const end = $scope.frameSettings[$scope.currentFrame].endDate;
+      $scope.checkTimes(date, start, end);
+    } else {
+      console.log("All Story Frames have been played.");
+    }
+  };
+
+  $scope.checkTimes = (date, start, end) => {
+    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end)) {
+      $scope.zoomToExtent();
+    } else if (moment(date).isAfter(end)) {
+      $scope.zoomOutExtent();
+    }
+  };
+
   $scope.zoomToExtent = () => {
-    console.log("zoom to extent");
-
-    // need to add and go to correct BB
-
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
         map.beforeRender(
-          ol.animation.pan({
-            source: map.getView().getCenter(),
-            duration: 500
-          }),
-          ol.animation.zoom({
-            resolution: map.getView().getResolution(),
-            duration: 1000,
-            easing: ol.easing.easeIn
-          })
+            ol.animation.pan({
+                source: map.getView().getCenter(),
+                duration: 500
+            }),
+            ol.animation.zoom({
+                resolution: map.getView().getResolution(),
+                duration: 1000,
+                easing: ol.easing.easeIn
+            })
         );
         map.getView().fit(layer.getSource().getExtent(), map.getSize());
       }
@@ -195,108 +221,15 @@ function composerController(
   };
 
   $scope.zoomOutExtent = () => {
-    console.log("zoom out extent");
     const zoom = ol.animation.zoom({
-      resolution: map.getView().getResolution(),
-      duration: 1000,
-      easing: ol.easing.easeOut
+        resolution: map.getView().getResolution(),
+        duration: 1000,
+        easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
     map.getView().setZoom(map.getView().getZoom() * 0);
+    $scope.currentFrame = $scope.currentFrame + 1;
   };
-
-  window.onMoveCallback = data => {
-    $scope.checkTimes(data);
-  };
-
-  $scope.formatDates = date => {
-    const preFormatDate = moment(date);
-    const formattedDate = preFormatDate.format("YYYY-MM-DD");
-    return formattedDate;
-  };
-
-
-
-
-
-
-
-
-
-
-  let zoomedIn = false;
-  let frameCount =  0;
-
-
-  // need to only check each object in object once
-  // maybe pass objects by indice: $scope.frameSettings[0] ??
-
-
-  // console.log("0: " , $scope.frameSettings[0]);
-  // console.log("1: " , $scope.frameSettings[1]);
-
-
-  $scope.checkTimes = date => {
-
-    $scope.frameSettings[0].forEach(function(item) {
-
-      if (item.startDate || item.endDate){
-        const startDate = $scope.formatDates(item.startDate);
-        const endDate = $scope.formatDates(item.endDate);
-        const storyLayerCurrentDate = $scope.formatDates(date);
-
-        frameCount = frameCount + 1;
-
-        $scope.zoomInOut(storyLayerCurrentDate, startDate, endDate);
-      }
-    });
-  };
-
-  $scope.zoomInOut = (storyLayerCurrentDate, startDate, endDate) => {
-      if (moment(storyLayerCurrentDate).isSameOrAfter(startDate) && moment(storyLayerCurrentDate).isSameOrBefore(endDate) && zoomedIn === false) {
-          $scope.zoomToExtent();
-          zoomedIn = true;
-      } else if (moment(storyLayerCurrentDate).isAfter(endDate) && zoomedIn === true) {
-          $scope.zoomOutExtent();
-          zoomedIn = false;
-      }
-  }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
