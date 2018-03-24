@@ -1,22 +1,21 @@
 <header>
     <div class="story-info">
         <h1>{{ stateSvc.config.about.title }}</h1>
-        <div>
+        <div ng-hide="viewerMode">
             <a ng-click="openStoryModal()">Edit Story Info</a>
         </div>
     </div>
     <div class="preview">
-        <div class="form-field">
+        <div ng-hide="viewerMode && !adminViewerMode" class="form-field">
             <label for="timeline">Preview mode</label>
             <label class="switch">
-                <input type="checkbox" ng-model="mode.preview" for="sidebar"
-                       ng-click="togglePreviewMode()">
+                <input type="checkbox" for="sidebar"
+                       ng-click="setPreviewMode();">
                 <div class="slider round"></div>
             </label>
         </div>
     </div>
-    <div class="autosave">
-        <p>Last edit was 6 days ago<p>
+    <div ng-hide="viewerMode" class="autosave">
         <button ng-click="saveMap()">Save</button>
         <button>Publish</button>
     </div>

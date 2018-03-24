@@ -1,7 +1,7 @@
-<div class="sidebar" ng-hide="mode.preview">
+<div class="sidebar">
     <div class="sidebar-header">
         <div class="chapter-header">
-            <a ng-click="updateSelected('toc')" class="toc-link">Table of Contents</a>
+            <a ng-hide="viewerMode" ng-click="updateSelected('toc')" class="toc-link">Table of Contents</a>
             <div class="chapter-nav">
                 <a ng-click="previousChapter()" ng-disabled="mapManager.storyChapter == 1" class="arrow"><i class="fa fa-caret-left"></i></a>
                 <h1 class="sidebar-title">{{stateSvc.getChapter()}} <strong>{{ mapManager.storyMap.getStoryTitle()  }}</strong></h1>
@@ -10,7 +10,7 @@
         </div>
     </div>
     <div class="sidebar-main">
-        <nav class="sidebar-nav">
+        <nav ng-hide="viewerMode" class="sidebar-nav">
             <a ng-click="updateSelected('info')"><i class="fa fa-info-circle" ng-class="selected.info && 'active'"></i></a>
             <!--a ng-click="selected = {settings:true}"><i class="fa fa-play-circle-o" ng-class="selected.settings && 'active'"></i></a-->
             <!--a ng-click="selected = {legend:true}"><i class="fa fa-list-alt" ng-class="selected.legend && 'active'"></i></a-->

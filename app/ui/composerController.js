@@ -20,6 +20,7 @@ function composerController(
   newConfigSvc,
   $location
 ) {
+  let lastSelectedTab = null;
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
@@ -27,8 +28,8 @@ function composerController(
   $scope.searchSvc = searchSvc;
   $scope.navigationSvc = navigationSvc;
   $scope.pin = {};
-
   $scope.selected = { toc: true };
+  $scope.viewerMode = $location.search().viewer;
 
   $rootScope.$on("$locationChangeSuccess", () => {
     const urlChapterId = $location.path().split("chapter/")[1];
@@ -53,6 +54,16 @@ function composerController(
   $rootScope.$on("chapter-removed", (event, chapter_index) =>
     pinSvc.removeChapter(chapter_index)
   );
+
+  $scope.setPreviewMode = () => {
+    $scope.viewerMode = $scope.viewerMode ? false : true;
+    $scope.adminViewerMode = $scope.adminViewerMode ? false : true;
+    if ($scope.viewerMode) {
+      $scope.updateSelected("toc", null, true);
+    } else {
+      $scope.updateSelected(lastSelectedTab);
+    }
+  };
 
   $scope.removeChapter = chapterId => {
     // @TODO: write tests
@@ -97,31 +108,6 @@ function composerController(
     });
   };
 
-  $scope.getMapWidth = preview => {
-    if (preview === true) {
-      return appConfig.dimensions.mapWidthPreviewMode;
-    }
-    return appConfig.dimensions.mapWidthEditMode;
-  };
-
-  $scope.togglePreviewMode = () => {
-    $scope.mapWidth = $scope.getMapWidth($scope.mode.preview);
-    $rootScope.mapWidth = $scope.mapWidth;
-    if ($scope.mode.preview) {
-      // @TODO: reimplement after style issues have been addressed (options appearing)
-      // outside of container
-      // $("[data-target='#playback-settings']").css("display", "inline-block");
-    } else {
-      $("[data-target='#playback-settings']").css("display", "none");
-    }
-    $rootScope.$broadcast("toggleMode", {
-      mapWidth: $scope.mapWidth
-    });
-    setTimeout(() => {
-      window.storyMap.getMap().updateSize();
-    });
-  };
-
   $scope.layerProperties = lyr => {
     const props = lyr.getProperties();
     const features = delete props.features;
@@ -129,12 +115,15 @@ function composerController(
     return props;
   };
 
-  $scope.updateSelected = (selected, chapterId) => {
+  $scope.updateSelected = (selected, chapterId, dontCache) => {
     $scope.selected = {};
     if ((chapterId !== null) & (chapterId !== undefined)) {
       navigationSvc.goToChapter(chapterId);
     }
     $scope.selected[selected] = true;
+    if (!dontCache) {
+      lastSelectedTab = selected;
+    }
   };
 
   $scope.nextChapter = navigationSvc.nextChapter;

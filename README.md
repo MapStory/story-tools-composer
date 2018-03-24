@@ -41,6 +41,9 @@ Global configuration constants are set in the `app/app.js` module constant `appC
 
 `yarn run test`
 
+## Accessing Viewer Mode
+To view your Mapstory in viewer mode, add a hashbang (`#!`) followed by a query string with `viewer` set to `true`. ie, `#!?viewer=true`.
+
 ### <a name="developers">Developers!</a>
 
 This project is being created as a more lightweight and maintainable alternative to the [MapLoom](https://github.com/MapStory/MapLoom) client. The application is leveraging the Story-tools library, which broadly has two sections:
