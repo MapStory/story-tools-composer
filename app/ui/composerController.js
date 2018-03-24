@@ -182,72 +182,86 @@ function composerController(
             resolution: map.getView().getResolution()
           });
           map.beforeRender(zoom);
-          map.getView().setZoom(map.getView().getZoom() * 1);
+          map.getView().setZoom(5);
         }
       });
+  };
+
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
+    return preFormatDate.format("YYYY-MM-DD");
   };
 
   let draw;
   const layerList = [];
 
+  $scope.currentFrame = 0;
+  $scope.zoomedIn = false;
+
+  window.onMoveCallback = date => {
+    $scope.getCurrentFrame(date);
+  };
+
+  $scope.getCurrentFrame = date => {
+    if ($scope.currentFrame < $scope.frameSettings.length) {
+      const start = $scope.frameSettings[$scope.currentFrame].startDate;
+      const end = $scope.frameSettings[$scope.currentFrame].endDate;
+      $scope.checkTimes(date, start, end);
+    }
+  };
+
+  $scope.checkTimes = (date, start, end) => {
+    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
+      $scope.zoomToExtent();
+      $scope.zoomedIn = true;
+    } else if (moment(date).isAfter(end)) {
+      $scope.zoomOutExtent();
+      $scope.zoomedIn = false;
+    }
+  };
+
   $scope.zoomToExtent = () => {
-    map.getLayers().forEach(layer => {
-      if (layer.get("name") === "boundingBox") {
-        map.beforeRender(
+      var polygon = new ol.Feature(
+          new ol.geom.Polygon([[
+              $scope.frameSettings[$scope.currentFrame].bb1,
+              $scope.frameSettings[$scope.currentFrame].bb2,
+              $scope.frameSettings[$scope.currentFrame].bb3,
+              $scope.frameSettings[$scope.currentFrame].bb4
+          ]])
+      );
+      const vector = new ol.layer.Vector({
+          source: new ol.source.Vector({
+              features: [polygon]
+          })
+      });
+      map.addLayer(vector);
+      map.beforeRender(
           ol.animation.pan({
-            source: map.getView().getCenter(),
-            duration: 500
+              source: map.getView().getCenter(),
+              duration: 1000
           }),
           ol.animation.zoom({
-            resolution: map.getView().getResolution(),
-            duration: 1000,
-            easing: ol.easing.easeIn
+              resolution: map.getView().getResolution(),
+              duration: 1000,
+              easing: ol.easing.easeIn
           })
-        );
-        map.getView().fit(layer.getSource().getExtent(), map.getSize());
-      }
-    });
+      );
+      vector.set("name", $scope.frameSettings[$scope.currentFrame].title);
+      map.getView().fit(vector.getSource().getExtent(), map.getSize());
   };
 
   $scope.zoomOutExtent = () => {
     const zoom = ol.animation.zoom({
-      resolution: map.getView().getResolution(),
-      duration: 1000,
-      easing: ol.easing.easeOut
+        resolution: map.getView().getResolution(),
+        duration: 1000,
+        easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
-    map.getView().setZoom(map.getView().getZoom() * 0);
+    map.getView().setZoom(5);
+    $scope.currentFrame = $scope.currentFrame + 1;
   };
 
-  // need to use obj,array when timeline is scrubbed
-  $log.log(TimeMachine.lastComputedTicks);
-
-  window.onMoveCallback = data => {
-    $scope.checkTimes(data);
-  };
-
-  $scope.formatDates = date => {
-    const preFormatDate = moment(date);
-    const formattedDate = preFormatDate.format("YYYY-MM-DD");
-    return formattedDate;
-  };
-
-  let dateCount = 0;
-
-  $scope.checkTimes = date => {
-    const startDate = $scope.formatDates($scope.frameSettings.startDate);
-    const endDate = $scope.formatDates($scope.frameSettings.endDate);
-    const storyLayerStartDate = $scope.formatDates(date);
-
-    if (moment(storyLayerStartDate).isSameOrAfter(startDate) && dateCount < 1) {
-      $scope.zoomToExtent();
-      dateCount = 1;
-    } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
-      $scope.zoomOutExtent();
-    }
-  };
-
-  $scope.drawBoundingBox = () => {
+ $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
     const bbVector = new ol.source.Vector({ wrapX: false });
     const vector = new ol.layer.Vector({
@@ -276,10 +290,10 @@ function composerController(
       startTime: frameSettings.startTime,
       endDate: frameSettings.endDate,
       endTime: frameSettings.endTime,
-      bb1: transformCoords([$scope.coords[0][0][0], $scope.coords[0][0][1]]),
-      bb2: transformCoords([$scope.coords[0][1][0], $scope.coords[0][1][1]]),
-      bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
-      bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
+      bb1: [$scope.coords[0][0][0], $scope.coords[0][0][1]],
+      bb2: [$scope.coords[0][1][0], $scope.coords[0][1][1]],
+      bb3: [$scope.coords[0][2][0], $scope.coords[0][2][1]],
+      bb4: [$scope.coords[0][3][0], $scope.coords[0][3][1]]
     });
     stateSvc.setStoryframeDetails(frameSettings);
   };
