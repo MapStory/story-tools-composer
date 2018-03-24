@@ -77,42 +77,53 @@ function stateSvc(
     return config;
   };
 
+  function initializeNewConfig() {
+    svc.config = newConfigSvc.getMapstoryConfig();
+    window.config = svc.config;
+    svc.originalConfig = window.config;
+    $rootScope.$broadcast("configInitialized");
+  }
+
   svc.initConfig = () => {
     const path = window.location.pathname;
-    const mapID = /\/story\/(\d+)/.exec(path)
-      ? /\/story\/(\d+)/.exec(path)[1]
+    const mapID = /\/story\/([A-Za-z0-9]+)/.exec(path)
+      ? /\/story\/([A-Za-z0-9]+)/.exec(path)[1]
       : null;
-    const mapJsonUrl = `/api/mapstories?slug=${mapID}`;
+    const mapJsonUrl = isNaN(mapID)
+      ? `/api/mapstories/slug/${mapID}`
+      : `/api/mapstories/${mapID}`;
     if (svc.config) {
       return;
     } else if (mapID) {
       $.ajax({
         dataType: "json",
         url: mapJsonUrl
-      }).done(data => {
-        svc.config = newConfigSvc.getMapstoryConfig(data);
-        window.config = svc.config;
-        window.config.getTempStyleName = storyLayerName => {
-          const config = window.config;
-          const idParts = {
-            user: config.about.owner.username,
-            slug: config.about.slug,
-            chapter: svc.getChapter(),
-            layerName: storyLayerName
+      })
+        .done(data => {
+          svc.config = newConfigSvc.getMapstoryConfig(data);
+          window.config = svc.config;
+          //@TODO: find a permanent home for this function
+          window.config.getTempStyleName = storyLayerName => {
+            const config = window.config;
+            const idParts = {
+              user: config.about.owner.username,
+              slug: config.about.slug,
+              chapter: svc.getChapter(),
+              layerName: storyLayerName
+            };
+            const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
+              idParts.chapter
+            }-${idParts.layerName}`;
+            return tempStyleName;
           };
-          const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
-            idParts.chapter
-          }-${idParts.layerName}`;
-          return tempStyleName;
-        };
-        svc.originalConfig = data;
-        $rootScope.$broadcast("configInitialized");
-      });
+          svc.originalConfig = data;
+          $rootScope.$broadcast("configInitialized");
+        })
+        .fail(() => {
+          initializeNewConfig();
+        });
     } else {
-      svc.config = newConfigSvc.getMapstoryConfig();
-      window.config = svc.config;
-      svc.originalConfig = window.config;
-      $rootScope.$broadcast("configInitialized");
+      initializeNewConfig();
     }
   };
 
@@ -128,6 +139,16 @@ function stateSvc(
 
   svc.addLayer = layerOptions => {
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
+  };
+
+  svc.updateLayerStyle = (layerName, styleName) => {
+    const chapter = svc.config.chapters[svc.getChapterIndex()];
+    const layerCount = chapter.layers.length;
+    for (let i = 0; i < layerCount; i += 1) {
+      if (chapter.layers[i].name === layerName) {
+        chapter.layers[i].styleName = styleName;
+      }
+    }
   };
 
   // !DJA @TODO: write test
@@ -197,8 +218,12 @@ function stateSvc(
     return config.chapters;
   };
 
-  svc.getChapterCount = () =>
-    svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
+  svc.getChapterCount = () => {
+    if (!svc.getConfig()) {
+      return false;
+    }
+    return svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
+  };
 
   svc.initConfig();
   svc.save = function() {
