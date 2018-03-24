@@ -192,9 +192,18 @@ function MapManager(
     stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(a => {
+        if (options.styleName) {
+          const layer = a.getLayer();
+          let layerSource = layer.getSource();
+          layerSource.updateParams({
+            _dc: new Date().getTime(),
+            _olSalt: Math.random(),
+            STYLES: options.styleName
+          });
+        }
         svc.storyMap.addStoryLayer(a);
         if (options.settings.fitExtent === true) {
-          const extent = a.get('extent');
+          const extent = a.get("extent");
           // prevent getting off the earth
           extent[1] = Math.max(-20037508.34, Math.min(extent[1], 20037508.34));
           extent[3] = Math.max(-20037508.34, Math.min(extent[3], 20037508.34));
