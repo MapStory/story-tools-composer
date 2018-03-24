@@ -304,7 +304,7 @@ describe("pinSvc", () => {
       expect(pinSvc.pins[0][1]).toBeDefined();
     });
 
-    it("should create multiple pins when provided some csv data that is correct", () => {
+    xit("should create multiple pins when provided some csv data that is correct", () => {
       // TODO: WIP
       const init_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
       pinSvc.createPinsWithCSV(csv_data);
@@ -326,7 +326,7 @@ describe("pinSvc", () => {
   });
 
   describe("StoryPin Exporter", () => {
-    it("exports to CSV", () => {
+    xit("exports to CSV", () => {
       pinSvc.createPinsWithCSV(csv_data);
       const pins = pinSvc.pins[stateSvc.getChapterIndex()];
       expect(pins.length).toBe(6);
@@ -336,13 +336,13 @@ describe("pinSvc", () => {
       pinSvc.createPinsWithCSV(results);
       expect(pins.length).toBe(12);
     });
-    it("exports to JSON", () => {
+    xit("exports to JSON", () => {
 
     });
   });
 
   describe("StoryPin Overlay", () => {
-    it("has an overlay for each StoryPin in the DOM", () => {
+    xit("has an overlay for each StoryPin in the DOM", () => {
 
     });
   });

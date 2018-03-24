@@ -16,9 +16,9 @@
                         ng-click="on_add_storypin()">
                     Add a StoryPin
                 </button>
-                <button class="btn btn-inverse" ng-click="on_export_pins()">
-                    Export StoryPins
-                </button>
+                <!--<button class="btn btn-inverse" ng-click="on_export_pins()">-->
+                    <!--Export StoryPins-->
+                <!--</button>-->
             </div>
         </uib-accordion>
 
@@ -158,49 +158,49 @@
                         <input id="long-input" type="number" name="long" ng-model="pin.map_feature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">
                         <hr>
                         <!-- Playback Options -->
-                        <div class="form-field">
-                            <label for="storypin_playback_options">
-                                StoryPin Playback Options
-                            </label>
-                            <br/>
-                            <!-- Show in timeline -->
-                            <label class="switch">
-                                <input type="checkbox" for="timeline"
-                                       ng-init="pin.in_timeline = false"
-                                       ng-model="pin.in_timeline">
-                                <div class="slider round"></div>
-                            </label>
-                            <label for="timeline">Show StoryPin on Timeline</label>
-                            <br/>
-                            <!-- Show on map -->
-                            <label class="switch">
-                                <input type="checkbox" for="map"
-                                       ng-init="pin.in_map = true"
-                                       ng-model="pin.in_map">
-                                <div class="slider round"></div>
-                            </label>
-                            <label for="map">Show StoryPin on Map</label>
-                            <br/>
-                            <!-- Pause playback -->
-                            <label class="switch">
-                                <input type="checkbox" for="pause_playback">
-                                <div class="slider round"></div>
-                            </label>
-                            <label for="pause_playback">
-                                Pause playback when StoryPin appears
-                            </label>
-                            <br/>
-                            <!-- autoplay embedded-->
-                            <label class="switch">
-                                <input type="checkbox" for="play_embedded"
-                                       ng-init="pin.auto_show = false"
-                                       ng-model="pin.auto_show">
-                                <div class="slider round"></div>
-                            </label>
-                            <label for="play_embedded">
-                                Play embedded StoryPin media automatically
-                            </label>
-                        </div>
+                        <!--<div class="form-field">-->
+                            <!--<label for="storypin_playback_options">-->
+                                <!--StoryPin Playback Options-->
+                            <!--</label>-->
+                            <!--<br/>-->
+                            <!--&lt;!&ndash; Show in timeline &ndash;&gt;-->
+                            <!--<label class="switch">-->
+                                <!--<input type="checkbox" for="timeline"-->
+                                       <!--ng-init="pin.in_timeline = false"-->
+                                       <!--ng-model="pin.in_timeline">-->
+                                <!--<div class="slider round"></div>-->
+                            <!--</label>-->
+                            <!--<label for="timeline">Show StoryPin on Timeline</label>-->
+                            <!--<br/>-->
+                            <!--&lt;!&ndash; Show on map &ndash;&gt;-->
+                            <!--<label class="switch">-->
+                                <!--<input type="checkbox" for="map"-->
+                                       <!--ng-init="pin.in_map = true"-->
+                                       <!--ng-model="pin.in_map">-->
+                                <!--<div class="slider round"></div>-->
+                            <!--</label>-->
+                            <!--<label for="map">Show StoryPin on Map</label>-->
+                            <!--<br/>-->
+                            <!--&lt;!&ndash; Pause playback &ndash;&gt;-->
+                            <!--<label class="switch">-->
+                                <!--<input type="checkbox" for="pause_playback">-->
+                                <!--<div class="slider round"></div>-->
+                            <!--</label>-->
+                            <!--<label for="pause_playback">-->
+                                <!--Pause playback when StoryPin appears-->
+                            <!--</label>-->
+                            <!--<br/>-->
+                            <!--&lt;!&ndash; autoplay embedded&ndash;&gt;-->
+                            <!--<label class="switch">-->
+                                <!--<input type="checkbox" for="play_embedded"-->
+                                       <!--ng-init="pin.auto_show = false"-->
+                                       <!--ng-model="pin.auto_show">-->
+                                <!--<div class="slider round"></div>-->
+                            <!--</label>-->
+                            <!--<label for="play_embedded">-->
+                                <!--Play embedded StoryPin media automatically-->
+                            <!--</label>-->
+                        <!--</div>-->
                     </form>
                 </div>
             </div>
