@@ -188,39 +188,50 @@ function composerController(
       const start = $scope.frameSettings[$scope.currentFrame].startDate;
       const end = $scope.frameSettings[$scope.currentFrame].endDate;
       $scope.checkTimes(date, start, end);
-    } else {
-      console.log("All Story Frames have been played.");
     }
   };
 
   $scope.checkTimes = (date, start, end) => {
-    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end)) {
+    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
       $scope.zoomToExtent();
+      $scope.zoomedIn = true;
     } else if (moment(date).isAfter(end)) {
       $scope.zoomOutExtent();
+      $scope.zoomedIn = false;
     }
   };
 
   $scope.zoomToExtent = () => {
-    map.getLayers().forEach(layer => {
-      if (layer.get("name") === "boundingBox") {
-        map.beforeRender(
-            ol.animation.pan({
-                source: map.getView().getCenter(),
-                duration: 500
-            }),
-            ol.animation.zoom({
-                resolution: map.getView().getResolution(),
-                duration: 1000,
-                easing: ol.easing.easeIn
-            })
-        );
-        map.getView().fit(layer.getSource().getExtent(), map.getSize());
-      }
-    });
+      var polygon = new ol.Feature(
+          new ol.geom.Polygon([[
+              $scope.frameSettings[$scope.currentFrame].bb1,
+              $scope.frameSettings[$scope.currentFrame].bb2,
+              $scope.frameSettings[$scope.currentFrame].bb3,
+              $scope.frameSettings[$scope.currentFrame].bb4
+          ]])
+      );
+      const vector = new ol.layer.Vector({
+          source: new ol.source.Vector({
+              features: [polygon]
+          })
+      });
+      map.addLayer(vector);
+      map.beforeRender(
+          ol.animation.pan({
+              source: map.getView().getCenter(),
+              duration: 500
+          }),
+          ol.animation.zoom({
+              resolution: map.getView().getResolution(),
+              duration: 1000,
+              easing: ol.easing.easeIn
+          })
+      );
+      map.getView().fit(vector.getSource().getExtent(), map.getSize());
   };
 
   $scope.zoomOutExtent = () => {
+    // zoom out BB
     const zoom = ol.animation.zoom({
         resolution: map.getView().getResolution(),
         duration: 1000,
@@ -231,7 +242,7 @@ function composerController(
     $scope.currentFrame = $scope.currentFrame + 1;
   };
 
-  $scope.drawBoundingBox = () => {
+ $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
     const bbVector = new ol.source.Vector({ wrapX: false });
     const vector = new ol.layer.Vector({
@@ -260,12 +271,11 @@ function composerController(
       startTime: frameSettings.startTime,
       endDate: frameSettings.endDate,
       endTime: frameSettings.endTime,
-      bb1: transformCoords([$scope.coords[0][0][0], $scope.coords[0][0][1]]),
-      bb2: transformCoords([$scope.coords[0][1][0], $scope.coords[0][1][1]]),
-      bb3: transformCoords([$scope.coords[0][2][0], $scope.coords[0][2][1]]),
-      bb4: transformCoords([$scope.coords[0][3][0], $scope.coords[0][3][1]])
+      bb1: [$scope.coords[0][0][0], $scope.coords[0][0][1]],
+      bb2: [$scope.coords[0][1][0], $scope.coords[0][1][1]],
+      bb3: [$scope.coords[0][2][0], $scope.coords[0][2][1]],
+      bb4: [$scope.coords[0][3][0], $scope.coords[0][3][1]]
     });
-
     stateSvc.setStoryframeDetails(frameSettings);
   };
 
