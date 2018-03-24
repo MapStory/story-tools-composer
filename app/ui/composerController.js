@@ -166,7 +166,7 @@ function composerController(
             resolution: map.getView().getResolution()
           });
           map.beforeRender(zoom);
-          map.getView().setZoom(map.getView().getZoom() * 1);
+          map.getView().setZoom(5);
         }
       });
   };
@@ -222,7 +222,7 @@ function composerController(
       map.beforeRender(
           ol.animation.pan({
               source: map.getView().getCenter(),
-              duration: 500
+              duration: 1000
           }),
           ol.animation.zoom({
               resolution: map.getView().getResolution(),
@@ -230,18 +230,18 @@ function composerController(
               easing: ol.easing.easeIn
           })
       );
+      vector.set("name", $scope.frameSettings[$scope.currentFrame].title);
       map.getView().fit(vector.getSource().getExtent(), map.getSize());
   };
 
   $scope.zoomOutExtent = () => {
-    // zoom out BB
     const zoom = ol.animation.zoom({
         resolution: map.getView().getResolution(),
         duration: 1000,
         easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
-    map.getView().setZoom(map.getView().getZoom() * 0);
+    map.getView().setZoom(5);
     $scope.currentFrame = $scope.currentFrame + 1;
   };
 
