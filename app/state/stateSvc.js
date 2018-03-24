@@ -20,6 +20,13 @@ function stateSvc(
     );
   };
 
+  svc.removeChapter = chapterId => {
+    svc.config.chapters.splice(chapterId - 1, 1);
+    for (let i = 0; i < svc.config.chapters.length; i += 1) {
+      svc.config.chapters[i].id = i + 1;
+    }
+  };
+
   svc.reorderLayer = (from, to) => {
     svc.config.chapters[svc.getChapterIndex()].layers.move(from, to);
   };

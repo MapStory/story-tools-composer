@@ -65,7 +65,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       data = {
         abstract: "",
         owner: "",
-        title: `Chapter ${id}`
+        title: `New Chapter`
       };
     }
     const cfg = {
@@ -74,7 +74,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       about: {
         abstract: data.abstract,
         owner: data.owner,
-        title: data.title || `Chapter ${id}`
+        title: data.title || `New Chapter`
       },
       layers: svc.getLayerListFromServerData(data.layers),
       sources: {

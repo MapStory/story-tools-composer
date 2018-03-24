@@ -53,6 +53,22 @@ function composerController(
     pinSvc.removeChapter(chapter_index)
   );
 
+  $scope.removeChapter = chapterId => {
+    // @TODO: write tests
+    const urlChapterId = parseInt($location.path().split("chapter/")[1]);
+    const chapterCount = stateSvc.getChapterCount();
+    const previousChapterId = urlChapterId - 1;
+    if (urlChapterId.toString() === chapterId.toString()) {
+      if (chapterCount >= urlChapterId) {
+        navigationSvc.goToChapter(chapterCount - 1);
+      } else {
+        navigationSvc.goToChapter(urlChapterId);
+      }
+    }
+    $scope.stateSvc.removeChapter(chapterId);
+    $scope.mapManager.initMapLoad();
+  };
+
   $scope.mode = {
     preview: false
   };
