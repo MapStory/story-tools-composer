@@ -39,7 +39,9 @@ function composerController(
     $scope.stateSvc.updateCurrentChapterConfig();
   });
 
-  $rootScope.$on("configInitialized", () => $scope.mapManager.initMapLoad());
+  $rootScope.$on("configInitialized", () => {
+    $scope.mapManager.initMapLoad();
+  });
 
   $rootScope.$on("pin-added", (event, chapter_index) => {
     // $log.log($scope.pinSvc.getPins(0))
@@ -62,7 +64,6 @@ function composerController(
   };
 
   $scope.saveMap = () => {
-    $log.log("STORY MAP LAYERS ---- > ", window.storyMap.getStoryLayers());
     stateSvc.save();
   };
 
@@ -90,7 +91,9 @@ function composerController(
     $scope.mapWidth = $scope.getMapWidth($scope.mode.preview);
     $rootScope.mapWidth = $scope.mapWidth;
     if ($scope.mode.preview) {
-      $("[data-target='#playback-settings']").css("display", "inline-block");
+      // @TODO: reimplement after style issues have been addressed (options appearing)
+      // outside of container
+      // $("[data-target='#playback-settings']").css("display", "inline-block");
     } else {
       $("[data-target='#playback-settings']").css("display", "none");
     }

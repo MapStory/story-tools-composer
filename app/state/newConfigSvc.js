@@ -49,6 +49,10 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       data.chapters[i].owner = data.owner;
       cfg.chapters[i] = svc.getChapterConfig(i, data.chapters[i]);
     }
+    if (data.chapters.length === 0) {
+      cfg.chapters[0] = svc.getChapterConfig();
+      config.chapters[0].owner = data.owner;
+    }
 
     return cfg;
   };
@@ -208,7 +212,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
             opacity: 1.0,
             group: "background",
             name: "NGS_Topo_US_2D",
-            title: "Esri NGS",
+            title: "Eri NGS",
             args: [
               "Worldmap",
               "https://services.arcgisonline.com/arcgis/rest/services/NGS_Topo_US_2D/MapServer/",
