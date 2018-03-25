@@ -171,6 +171,7 @@ function stateSvc(
     }
   };
 
+
   svc.setStoryframeDetails = frameSettings => {
     const savedFrame = {
       title: frameSettings.title,
@@ -247,6 +248,20 @@ function stateSvc(
         console.log("MAP FAILED TO SAVE");
       }
     );
+  };
+
+  svc.save_storypins = storypins => {
+    svc.config.storypins = storypins;
+  };
+
+  svc.get_storypins = () => {
+    if (svc.config.storypins) {
+      return svc.config.storypins;
+    } else {
+      // Lazy init an array of arrays to hold chapters with storypins.
+      svc.config.storypins = [[]];
+      return svc.config.storypins;
+    }
   };
 
   return svc;

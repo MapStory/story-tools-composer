@@ -1,5 +1,19 @@
 const Papa = require("papaparse"); // Used for CSV Parsing.
 
+/**
+ * StoryPin Service
+ * ==================
+ * @param $rootScope .
+ * @param $http .
+ * @param $translate .
+ * @param $q .
+ * @param timeSvc .
+ * @param featureManagerSvc .
+ * @param stateSvc .
+ * @param MapManager .
+ * @param $uibModal .
+ * @returns {{}} pinSvc.
+ */
 function pinSvc(
   $rootScope,
   $http,
@@ -12,29 +26,32 @@ function pinSvc(
   $uibModal
 ) {
   const svc = {}; // this
+
   svc.pins = [[]]; // The collection of pins
   svc.currentPin = null; // The current Pin being edited
+
   // For Drag functionality:
-  svc.coordinate = null;
-  svc.cursor = "pointer";
-  svc.feature = null;
-  svc.previousCursor = undefined;
-  svc.has_added_overlay = false;
   svc.isDrawing = false;
   svc.selected_feature = null;
+  svc.drag_control = null;
+
   // This is the openlayers source that stores all the features that are drawn on the map.
   svc.pinLayerSource = null;
+  svc.old_interactions = [];
+
   // For Date selection widgets
   svc.dt = new Date(); // The DT
   svc.startdate_popup = {
-    opened: false // Controls open/close of popup
+    opened: false // State for open/close popup
   };
   svc.enddate_popup = {
     opened: false
   };
 
+  // Start and end times.
+  svc.pin_start_time = Date.now();
+  svc.pin_end_time = Date.now();
   svc.dt2 = new Date();
-
   svc.formats = ["dd-MMMM-yyyy", "yyyy/MM/dd", "dd.MM.yyyy", "shortDate"];
   const [first_format] = svc.formats;
   svc.format = first_format;
@@ -48,8 +65,6 @@ function pinSvc(
   svc.dateOptions = {
     dateDisabled: svc.disabled,
     formatYear: "yy",
-    // maxDate: new Date(2020, 5, 22),
-    // minDate: new Date(),
     startingDay: 1
   };
 
@@ -61,8 +76,8 @@ function pinSvc(
   };
 
   svc.disabled = data => {
-    var date = data.date;
-    var mode = data.mode;
+    const date = data.date;
+    const mode = data.mode;
     return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
   };
 
@@ -83,13 +98,13 @@ function pinSvc(
    * @param data
    * @returns {string}
    */
-  svc.getDayClass = (data) => {
-    var date = data.date;
-    var mode = data.mode;
+  svc.getDayClass = data => {
+    const date = data.date;
+    const mode = data.mode;
     if (mode === "day") {
       const dayToCheck = new Date(date).setHours(0, 0, 0, 0);
 
-      for (var i = 0; i < svc.events.length; i++) {
+      for (let i = 0; i < svc.events.length; i++) {
         const currentDay = new Date(svc.events[i].date).setHours(0, 0, 0, 0);
 
         if (dayToCheck === currentDay) {
@@ -114,20 +129,12 @@ function pinSvc(
     ol.Feature.call(this, data);
     this.properties = data;
     this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
-    // Sets the time with the time service.
-    // this.start_time = timeSvc.getTime(this.start_time);
-    // this.end_time = timeSvc.getTime(this.end_time);
     this.start_time = new Date();
     this.end_time = new Date();
   };
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
   svc.Pin.prototype.constructor = svc.Pin;
-  // TODO: Remove this
-  svc.Pin.prototype.drawOverlay = (pin) => {
-    return `<div>-${pin.title}-</div>`;
-  };
-
 
   const embed_width = '"180"';
   const embed_height = '"180"';
@@ -219,6 +226,7 @@ function pinSvc(
       svc.addPinFromGeojsonObj(feature, chapter);
     });
   };
+
   /**
    * Adds a single pin from a GEOJSON feature object.
    * @param feature The feature
@@ -249,11 +257,11 @@ function pinSvc(
    */
   svc.addGetterAndSetterToPinPrototype = prop => {
     Object.defineProperty(svc.Pin.prototype, prop, {
-      get: function() {
+      get() {
         const val = this.get(prop);
         return typeof val === "undefined" ? null : val;
       },
-      set: function(val) {
+      set(val) {
         this.set(prop, val);
       }
     });
@@ -301,11 +309,10 @@ function pinSvc(
    * @param propertyName
    * @returns {*|boolean}
    */
-  svc.validatePinProperty = (pinInstantiationObj, propertyName) => {
-    return pinInstantiationObj.hasOwnProperty(propertyName) &&
+  svc.validatePinProperty = (pinInstantiationObj, propertyName) =>
+    pinInstantiationObj.hasOwnProperty(propertyName) &&
     (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
       !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
-  };
 
   svc.validateAllPinProperties = pinInstantiationObj => {
     const missingProperties = [];
@@ -367,7 +374,7 @@ function pinSvc(
       return null;
     }
 
-    //TODO: Check media whitelist and sanitize embed size.
+    // TODO: Check media whitelist and sanitize embed size.
     // if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
     //   props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
     //   props.media = props.media.replace(
@@ -385,7 +392,7 @@ function pinSvc(
     svc.pins[chapter_index].push(storyPin);
     // Broadcast event
 
-    console.log("story pin suposed to be added",storyPin);
+    console.log("story pin suposed to be added", storyPin);
     $rootScope.$broadcast("pin-added", chapter_index);
 
     return storyPin;
@@ -417,7 +424,7 @@ function pinSvc(
     $rootScope.$broadcast("pin-added", chapter_index);
   };
 
-  //@ TODO: move to another service
+  // @ TODO: move to another service
   svc.isUrl = str => {
     if (!/^(f|ht)tps?:\/\//i.test(str)) {
       return false;
@@ -556,8 +563,9 @@ function pinSvc(
     const map = MapManager.storyMap.getMap();
     const center = map.getView().getCenter(); // Creates it on the center of the current view.
 
+    // TODO: Insert current timeline times here
     const defaults = {
-      title: "New StoryPin",
+      title: "A StoryPin",
       start_time: "1/1/2018",
       end_time: "1/1/2018",
       in_timeline: true,
@@ -567,98 +575,25 @@ function pinSvc(
       }
     };
 
-    // Create or alert
+    // Add to this chapter's StoryPin list
     const pin = svc.addPin(defaults, chapterIndex);
     if (!pin) {
       alert("No pin was created");
     }
-    const pin_index = svc.pins[chapterIndex].length - 1;
-    pin.index_id = pin_index;
-    svc.currentPin = pin; // This behaves weird. Don't rely on currentPin :(
-    svc.currentPin.coords = center;
+
+    // Set some extra properties.
+    pin.index_id = svc.pins[chapterIndex].length - 1;;
+    svc.currentPin = pin; // TODO: This behaves weird. Don't rely on currentPin :(
+    svc.currentPin.coords = center; // TODO: Use the geometry coords!
+
     // Update the map with the new Pin
     if (pin.in_map === true) {
-      svc.addPointToPinLayer(pin);
+      svc.add_storypin_to_map(pin);
     }
+
+    // TODO: Make sure this isn't used anymore and remove it.
     $rootScope.$broadcast("pin-added", pin);
-  };
-
-
-  /**
-   * Drag constructor. Inherits from OpenLayers interaction.Pointer
-   */
-  svc.Drag = () => {
-    // Call conscructor and pass in custom handler functions for mouse events.
-    ol.interaction.Pointer.call(this, {
-      handleDownEvent: svc.Drag.prototype.handleDownEvent,
-      handleDragEvent: svc.Drag.prototype.handleDragEvent,
-      handleMoveEvent: svc.Drag.prototype.handleMoveEvent,
-      handleUpEvent: svc.Drag.prototype.handleUpEvent
-    });
-  };
-  ol.inherits(svc.Drag, ol.interaction.Pointer);
-
-  /**
-   * Handles the mouseDown event for drag
-   */
-  svc.Drag.prototype.handleDownEvent = evt => {
-    const map = evt.map;
-    const feature = map.forEachFeatureAtPixel(evt.pixel, feature_ => feature_);
-
-    if (feature) {
-      svc.coordinate = evt.coordinate;
-      svc.feature = feature;
-    }
-
-    return !!feature;
-  };
-
-  /**
-   * Handles the Drag event
-   */
-  svc.Drag.prototype.handleDragEvent = evt => {
-    const deltaX = evt.coordinate[0] - svc.coordinate[0];
-    const deltaY = evt.coordinate[1] - svc.coordinate[1];
-
-    const geometry = svc.feature.getGeometry();
-    geometry.translate(deltaX, deltaY);
-
-    svc.coordinate[0] = evt.coordinate[0];
-    svc.coordinate[1] = evt.coordinate[1];
-
-    // Update the coordinates for the currentPin:
-    svc.currentPin.coords[0] = evt.coordinate[0];
-    svc.currentPin.coords[1] = evt.coordinate[1];
-  };
-
-  svc.Drag.prototype.handleMoveEvent = evt => {
-    if (svc.cursor) {
-      const map = evt.map;
-      const feature = map.forEachFeatureAtPixel(evt.pixel, feature_ => feature_);
-
-      const element = evt.map.getTargetElement();
-      if (feature) {
-        if (element.style.cursor !== svc.cursor) {
-          svc.previousCursor = element.style.cursor;
-          element.style.cursor = svc.cursor;
-        }
-      } else if (svc.previousCursor !== undefined) {
-        element.style.cursor = svc.previousCursor;
-        svc.previousCursor = undefined;
-      }
-    }
-  };
-
-  /**
-   * Callback for the mouse up event for placing Storypins.
-   * @return {boolean}
-   */
-  svc.Drag.prototype.handleUpEvent = () => {
-
-
-    svc.coordinate = null;
-    svc.feature = null;
-    return false;
+    return pin;
   };
 
   /**
@@ -672,18 +607,30 @@ function pinSvc(
     const pin = svc.pins[stateSvc.getChapterIndex()][index];
     svc.currentPin = pin;
     const map = MapManager.storyMap.getMap();
-    // TODO: Start drag and drop here.
+
+    svc.isDrawing = !svc.isDrawing;
+
     if (svc.isDrawing === true) {
+      // Remove the overlay while moving
+      pin.overlay.setPosition(undefined);
+
       svc.doBounceAnim(pin.coords);
       // Add the drag interaction
-      svc.drag_instance = new svc.Drag();
-      map.addInteraction(svc.drag_instance);
+      // TODO: Start drag and drop here.
+      svc.start_drag_interaction([pin.map_feature]);
+
+
     } else {
       // Remove the drag interaction
-      map.removeInteraction(svc.drag_instance);
-      svc.drag_instance = null;
+      // TODO: Stop drag interaction here
+      svc.stop_drag_interaction();
+      pin.coords = pin.map_feature.getGeometry().getCoordinates();
+      // Set the overlay again
+      pin.overlay.setPosition(pin.coords);
     }
-    svc.startEditingPin(index);
+    if (!pin) {
+      alert("No pin!");
+    }
   };
 
   // TODO: Finish this
@@ -703,7 +650,7 @@ function pinSvc(
         svc.selected = resolved;
       },
       () => {
-        let x = 3;
+        const x = 3;
       }
     );
 
@@ -733,24 +680,59 @@ function pinSvc(
   };
 
   /**
+   * Creates and inserts a new element in the DOM for the given StoryPin.
+   * @param pin The StoryPin to create the overlay for.
+   * // TODO: create a function that removes the div when a storypin is deleted.
+   */
+  svc.insert_new_overlay_into_DOM_for_pin = pin => {
+    const txt_title = pin.title || "";
+    const txt_content = pin.content || "";
+    const txt_media = pin.media || "http://#";
+
+    // Creates a new div with a unique ID.
+    const element = document.createElement("div");
+    element.setAttribute("id", `pin-overlay-${pin.index_id}`);
+    element.setAttribute("class", "storypin-overlay");
+
+    // Create dynamic content and append to parent element.
+    const heading = document.createElement("div");
+    heading.setAttribute("class", "heading");
+    const title = document.createTextNode(`${txt_title}`);
+    heading.appendChild(title);
+
+    const body = document.createElement("div");
+    const content = document.createTextNode(`${txt_content}`);
+    body.appendChild(content);
+
+    // TODO: Create dynamic content for media if it whitelists OK here:
+    const link = document.createElement("a");
+    link.setAttribute("href", `${txt_media}`);
+    body.appendChild(link);
+
+    element.appendChild(heading);
+    element.appendChild(body);
+
+    // Add to the DOM as a hidden element.
+    const overlay_div = document.getElementById("hidden-overlays");
+    overlay_div.appendChild(element);
+  };
+
+  /**
    * Creates a storypin overlay and sets its position.
    * @param pin The pin.
    */
   svc.createPinOverlay = pin => {
-    //TODO: Fix this
     const map = MapManager.storyMap.getMap();
 
-    // // Create a new overlay for this pin
-    // const sp_overlay = new ol.Overlay({
-    //   element: document.getElementById(`sp-overlay`)
-    // });
-    //
-    // if(!sp_overlay) {
-    //   alert("no overlay found!");
-    // }
-    // // svc.sp_overlay = sp_overlay;
-    // map.addOverlay(sp_overlay);
-    // sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
+    // Create overlay in DOM.
+    svc.insert_new_overlay_into_DOM_for_pin(pin);
+
+    const overlay = new ol.Overlay({
+      element: document.getElementById(`pin-overlay-${pin.index_id}`)
+    });
+    map.addOverlay(overlay);
+    overlay.setPosition(pin.getGeometry().getCoordinates());
+    pin.overlay = overlay;
   };
 
   svc.init_edit_pin_overlay = () => {
@@ -765,29 +747,21 @@ function pinSvc(
       style: svc.getStyle
     });
     map.addLayer(svc.sp_vectorLayer);
+  };
 
-    // Register the overlay
-    const sp_overlay = new ol.Overlay({
-      element: document.getElementById("sp-overlay")
-    });
-    svc.sp_overlay = sp_overlay;
-    map.addOverlay(svc.sp_overlay);
+  svc.remove_overlay_from_DOM_for_pin = pin => {
+    const element = document.getElementById(`pin-overlay-${pin.index_id}`);
+    if (element) {
+      element.remove();
+    }
+  };
 
-    // Add interaction
-    const select_storypin_interaction = new ol.interaction.Select({
-      condition: ol.events.condition.click,
-      layers: [svc.sp_vectorLayer]
-    });
-    map.addInteraction(select_storypin_interaction);
-    select_storypin_interaction.on("select", event => {
-      svc.selected_feature = event.selected[0];
-      if (svc.selected_feature) {
-        const pos = svc.selected_feature.getGeometry().getCoordinates();
-        svc.sp_overlay.setPosition(pos);
-      } else {
-        svc.sp_overlay.setPosition(undefined);
-      }
-    });
+  svc.destroyOverlay = pin => {
+    const map = MapManager.storyMap.getMap();
+    // Create overlay in DOM.
+    map.removeOverlay(pin.overlay);
+    svc.remove_overlay_from_DOM_for_pin(pin);
+    pin.overlay = null;
   };
 
   /**
@@ -795,7 +769,7 @@ function pinSvc(
    * Adds this feature and associates it to the Pin.
    * @param pin The pin.
    */
-  svc.addPointToPinLayer = pin => {
+  svc.add_storypin_to_map = pin => {
     // Lazy instantiate the pin layer
     if (svc.pinLayerSource === null) {
       svc.init_edit_pin_overlay();
@@ -808,13 +782,28 @@ function pinSvc(
 
     // Pin now has a feature:
     pin.map_feature = point;
-    pin.map_feature.set("label", pin.title);
+
+    // Draw Labels
+    // pin.map_feature.set("label", pin.title);
 
     // Add to the Pin layer.
     svc.pinLayerSource.addFeatures([point]);
 
-    // Draw the overlay on top of this pin
+    // Create an overlay if it doesnt exist.
+    if (pin.overlay) {
+      // Remove overlay
+      svc.destroyOverlay(pin);
+    }
     svc.createPinOverlay(pin);
+
+    // Add functionality for the pin to show and hide itself from the map:
+    pin.show = () => {
+      pin.overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
+    };
+
+    pin.hide = () => {
+      pin.overlay.setPosition(undefined);
+    };
   };
 
   /**
@@ -832,13 +821,8 @@ function pinSvc(
       alert("No pin was created");
     }
     pin.coords = [lat, long];
-    // Set the label.
-    // const pin_index = svc.pins[chapterIndex].length - 1;
-
-    svc.addPointToPinLayer(pin);
-
+    svc.add_storypin_to_map(pin);
     $rootScope.$broadcast("pin-added", svc.currentPin);
-
     return pin;
   };
 
@@ -871,7 +855,9 @@ function pinSvc(
       pin_array.push(pin);
     });
     console.log("pin_array is", pin_array);
-    svc.modalInstance.close();
+    // This is null:
+    // TODO: Fix this null object. This should close the modal dialog.
+    // svc.modalInstance.close();
     return pin_array;
   };
 
@@ -904,8 +890,12 @@ function pinSvc(
     }
 
     if (pin.map_feature) {
+      // Remove the feature
       svc.pinLayerSource.removeFeature(pin.map_feature);
+      // Make the overlay invisible
+      pin.overlay.setPosition(undefined);
     } else {
+      // Log error
       alert("no map feature to remove!");
     }
   };
@@ -969,16 +959,6 @@ function pinSvc(
     }
   };
 
-  svc.startEditingPin = index => {
-    const pin = svc.pins[stateSvc.getChapterIndex()][index];
-    if (!pin) {
-      alert("No pin!");
-    }
-    // Create a new overlay for this pin
-
-    svc.sp_overlay.setPosition(pin.map_feature.getGeometry().getCoordinates());
-  };
-
   /**
    * This defines the style for each StoryPin.
    * This function is supposed to be passed to the Layer that contains them.
@@ -1010,6 +990,149 @@ function pinSvc(
       })
     })
   ];
+
+  /**
+   * Start StoryPin Drag
+   */
+  svc.start_drag_interaction = features => {
+    const map = MapManager.storyMap.getMap();
+    // Remove previous interaction
+    if (svc.drag_control !== null) {
+      map.removeInteraction(svc.drag_control);
+      svc.drag_control = null;
+    }
+    // Save old interactions
+    svc.old_interactions = map.getInteractions();
+    svc.drag_control = new ol.interaction.Modify({
+      features: new ol.Collection(features)
+    });
+    map.addInteraction(svc.drag_control);
+  };
+
+  /**
+   * The user is Done moving the StoryPin
+   */
+  svc.stop_drag_interaction = () => {
+    const map = MapManager.storyMap.getMap();
+    if (svc.drag_control !== null) {
+      map.removeInteraction(svc.drag_control);
+      svc.drag_control = null;
+    }
+    // Restore old interactions
+    svc.old_interactions.forEach(interaction => {
+      map.addInteraction(interaction);
+    });
+  };
+
+  /**
+   * When the user clicks on save it will reflect his changes on the map.
+   */
+  svc.onStoryPinSave = () => {
+    if (svc.isDrawing) {
+      alert("Finish moving StoryPin first!");
+      return;
+    }
+
+    // Update information from features, and remove form map.
+    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+
+      svc.pinLayerSource.removeFeature(pin.map_feature);
+      svc.remove_overlay_from_DOM_for_pin(pin);
+    });
+
+    // Add to the map with the new info.
+    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+      pin.coords = pin.map_feature.getGeometry().getCoordinates();
+      svc.add_storypin_to_map(pin);
+      pin.overlay.setPosition(pin.coords);
+    });
+
+    // Save to state service
+    stateSvc.save_storypins(svc.pins);
+  };
+
+  svc.exportPinsToJSON = pinArray => {
+    pinArray.forEach(pin => {
+      console.log(pin);
+    });
+    return [];
+  };
+
+  svc.onBulkPinComplete = results => {
+    const pin_array = [];
+    results.data.forEach(element => {
+      const pin = svc.createNewPin(
+        {
+          title: element.title,
+          start_time: element.start_time,
+          end_time: element.end_time,
+          geometry: {
+            coordinates: [element.latitude, element.longitude]
+          }
+        },
+        stateSvc.getChapterIndex(),
+        element.latitude,
+        element.longitude
+      );
+      pin.content = element.content || "";
+      pin.media = element.media || "";
+      pin.in_map = element.in_map || true;
+      pin.in_timeline = element.in_timeline || true;
+      pin_array.push(pin);
+    });
+    console.log("pin_array is", pin_array);
+    // This is null:
+    // TODO: Fix this null object. This should close the modal dialog.
+    // svc.modalInstance.close();
+    return pin_array;
+  };
+
+  /**
+   * Starts the downloading of a CSV file.
+   * Creates a hidden element with the file as a URI and clicks it to start the download.
+   * @param pinArray
+   */
+  svc.downloadCSV = pinArray => {
+    const data = svc.exportPinsToCSV(pinArray);
+    const hidden_element = document.createElement("a");
+    const uri_encoded = encodeURI(data);
+    hidden_element.href = `data:text/csv;charset=utf8,${uri_encoded}`;
+    hidden_element.target = "_blank";
+    hidden_element.download = "storypins.csv";
+    hidden_element.click();
+  };
+
+  /**
+   * Exoports the current chapter's storypins into comma separated values (CSV).
+   * @param pinArray
+   * @returns {""} An array of objects in CSV format.
+   */
+  svc.exportPinsToCSV = pinArray => {
+    const csv_objects = []; // Holds objects with the CSV format
+
+    pinArray.forEach(pin => {
+      const csv_pin = {};
+      csv_pin.title = pin.title;
+      csv_pin.content = pin.content;
+      csv_pin.media = pin.media;
+      csv_pin.start_time = pin.start_time;
+      csv_pin.end_time = pin.end_time;
+      const coords = pin.map_feature.getGeometry().getCoordinates();
+      csv_pin.latitude = coords[0];
+      csv_pin.longitude = coords[1];
+      csv_pin.in_map = pin.in_map;
+      csv_pin.in_timeline = pin.in_timeline;
+      csv_objects.push(csv_pin);
+    });
+
+    // Convert to CSV using Papa.
+    return Papa.unparse(csv_objects);
+  };
+
+  svc.onChangedTime = () => {
+    console.log(svc.pin_start_time);
+  };
+
   return svc;
 }
 

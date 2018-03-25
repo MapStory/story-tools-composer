@@ -324,4 +324,26 @@ describe("pinSvc", () => {
       expect(pinSvc.pins[0][1]).toBeDefined();
     });
   });
+
+  describe("StoryPin Exporter", () => {
+    xit("exports to CSV", () => {
+      pinSvc.createPinsWithCSV(csv_data);
+      const pins = pinSvc.pins[stateSvc.getChapterIndex()];
+      expect(pins.length).toBe(6);
+      const results = pinSvc.exportPinsToCSV(pins);
+
+      // CSV should have same 6 pins
+      pinSvc.createPinsWithCSV(results);
+      expect(pins.length).toBe(12);
+    });
+    xit("exports to JSON", () => {
+
+    });
+  });
+
+  describe("StoryPin Overlay", () => {
+    xit("has an overlay for each StoryPin in the DOM", () => {
+
+    });
+  });
 });

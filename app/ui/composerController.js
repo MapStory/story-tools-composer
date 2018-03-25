@@ -17,6 +17,7 @@ function composerController(
   uiHelperSvc,
   searchSvc,
   stateSvc,
+  newConfigSvc,
   $location
 ) {
   $scope.mapManager = MapManager;
@@ -261,6 +262,41 @@ function composerController(
     $scope.currentFrame = $scope.currentFrame + 1;
   };
 
+  // need to use obj,array when timeline is scrubbed
+  $log.log(TimeMachine.lastComputedTicks);
+
+  /**
+   * Callback for timeline update.
+   * @param data Data from the timeline.
+   */
+  window.onMoveCallback = data => {
+    // Checks times for storyframes.
+    $scope.checkTimes(data);
+    // Updates StoryPins.
+    $scope.updateStorypinTimeline(data);
+  };
+
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
+    const formattedDate = preFormatDate.format("YYYY-MM-DD");
+    return formattedDate;
+  };
+
+  let dateCount = 0;
+
+  $scope.checkTimes = date => {
+    const startDate = $scope.formatDates($scope.frameSettings.startDate);
+    const endDate = $scope.formatDates($scope.frameSettings.endDate);
+    const storyLayerStartDate = $scope.formatDates(date);
+
+    if (moment(storyLayerStartDate).isSameOrAfter(startDate) && dateCount < 1) {
+      $scope.zoomToExtent();
+      dateCount = 1;
+    } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
+      $scope.zoomOutExtent();
+    }
+  };
+
  $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
     const bbVector = new ol.source.Vector({ wrapX: false });
@@ -287,7 +323,7 @@ function composerController(
       id: Date.now(),
       title: frameSettings.title,
       startDate: frameSettings.startDate,
-      startTime: frameSettings.startTime,
+      startTime : frameSettings.startTime,
       endDate: frameSettings.endDate,
       endTime: frameSettings.endTime,
       bb1: [$scope.coords[0][0][0], $scope.coords[0][0][1]],
@@ -349,6 +385,37 @@ function composerController(
 
   $scope.deleteStoryframe = index => {
     $scope.frameSettings.splice(index, 1);
+  };
+
+  /**
+   * Updates the Storypins on timeline.
+   * Loops the current chapter's StoryPins and determines if they should be shown or hidden.
+   * @param date The date for the layer.
+   */
+  $scope.updateStorypinTimeline = date => {
+    // TODO: Use pre-cooked timeframe objects to optimize this?
+    const pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+    pinArray.forEach( pin => {
+      const startDate = $scope.formatDates(pin.start_time);
+      const endDate = $scope.formatDates(pin.end_time);
+      const storyLayerStartDate = $scope.formatDates(date);
+
+      let should_show = false;
+      if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
+        // TODO: Show StoryPin.
+        should_show = true;
+      }
+      if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
+        // TODO: Hide Storypin.
+        should_show = false;
+      }
+
+      if (should_show) {
+        pin.show();
+      } else {
+        pin.hide();
+      }
+    });
   };
 }
 

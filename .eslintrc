@@ -17,8 +17,7 @@
   "extends": [ "airbnb-base", "prettier" ],
   "globals": {
     "ol": true,
-    "storytools": true
-    "ol": true,
+    "storytools": true,
     "angular": true,
     "inject": true,
     "toastr": true,
