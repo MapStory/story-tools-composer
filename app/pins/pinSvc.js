@@ -75,6 +75,19 @@ function pinSvc(
     chooser: false
   };
 
+  svc.whitelist = [
+    new RegExp(/https?:\/\/.*\.flickr\.com\/photos\/.*/),
+    new RegExp(/https?:\/\/flic\.kr\/p\/.*/),
+    new RegExp(/https?:\/\/instagram\.com\/p\/.*/),
+    new RegExp(/https?:\/\/instagr\.am\/p\/.*/),
+    new RegExp(/https?:\/\/vine\.co\/v\/.*/),
+    new RegExp(/https?:\/\/(?:www\.)?vimeo\.com\/.+/),
+    new RegExp(/https?:\/\/((?:www\.)|(?:pic\.)?)twitter\.com\/.*/),
+    new RegExp(/https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im),
+    new RegExp(/https?:\/\/(w{3}\.)?soundcloud\.com\/.+/im),
+    new RegExp(/https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im)
+  ];
+
   svc.disabled = data => {
     const date = data.date;
     const mode = data.mode;
@@ -373,15 +386,6 @@ function pinSvc(
       toastr.error("Start Time must be before End Time", "Invalid Time");
       return null;
     }
-
-    // TODO: Check media whitelist and sanitize embed size.
-    // if (goog.isDefAndNotNull(props.media) && !this.isUrl(props.media)) {
-    //   props.media = props.media.replace(/width="\d+"/i, `width=${embed_width}`);
-    //   props.media = props.media.replace(
-    //     /height="\d+"/i,
-    //     `height=${embed_height}`
-    //   );
-    // }
 
     // Create the new storypin
     const storyPin = new svc.Pin(props);
@@ -709,6 +713,16 @@ function pinSvc(
     link.setAttribute("href", `${txt_media}`);
     body.appendChild(link);
 
+    // TODO: Whitelist this URL
+    if(pin.media !== null) {
+      const embedded_media = document.createElement("iframe");
+      embedded_media.setAttribute(
+        "src",
+        svc.sanitize_and_whitelist_check(pin.media)
+      );
+      element.appendChild(embedded_media);
+    }
+
     element.appendChild(heading);
     element.appendChild(body);
 
@@ -735,6 +749,9 @@ function pinSvc(
     pin.overlay = overlay;
   };
 
+  /**
+   * Initializes the StoryPin overlay.
+   */
   svc.init_edit_pin_overlay = () => {
     const map = MapManager.storyMap.getMap();
 
@@ -1035,7 +1052,6 @@ function pinSvc(
 
     // Update information from features, and remove form map.
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
-
       svc.pinLayerSource.removeFeature(pin.map_feature);
       svc.remove_overlay_from_DOM_for_pin(pin);
     });
@@ -1131,6 +1147,40 @@ function pinSvc(
 
   svc.onChangedTime = () => {
     console.log(svc.pin_start_time);
+  };
+
+  /**
+   * Whitelist.
+   * @param url
+   * @returns {boolean}
+   */
+  svc.is_whitelist = url => {
+    let is_allowed = false;
+
+    // Loop whitelist and check if it is ok.
+    svc.whitelist.forEach(allowed_regex => {
+      if (url.match(allowed_regex)) {
+        is_allowed = true;
+      }
+    });
+
+    return is_allowed;
+  };
+
+  /**
+   * Cleans the url to be used inside the embeded div.
+   * @param url the url to be cleaned.
+   */
+  svc.sanitize_and_whitelist_check = url => {
+    if (svc.isUrl(url)) {
+      // Whitelist
+      if (svc.is_whitelist(url)) {
+        return url;
+      } else {
+        alert("The URL did not pass whitelist test");
+      }
+    }
+    return "";
   };
 
   return svc;
