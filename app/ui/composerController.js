@@ -31,6 +31,12 @@ function composerController(
   $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
 
+  if (window.mapstory.composerMode === "False") {
+    $scope.composerMode = false;
+  } else {
+    $scope.composerMode = true;
+  }
+
   $rootScope.$on("$locationChangeSuccess", () => {
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();
