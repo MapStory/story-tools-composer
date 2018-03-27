@@ -1,4 +1,4 @@
-function newConfigSvc(layerOptionsSvc, appConfig) {
+function newConfigSvc(layerOptionsSvc, appConfig, $http) {
   const svc = {};
 
   svc.getLayerListFromServerData = layers => {
@@ -27,7 +27,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         owner: "",
         username: "",
         title: "Mapstory title",
-        id: 1,
+        id: 0,
         chapters: [{}]
       };
     }
@@ -40,18 +40,20 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         title: data.title,
         slug: data.slug
       },
+      viewer_playbackmode: "instant",
       thumbnail_url: data.thumbnail_url,
-      id: data.id || 1,
+      id: data.id || 0,
+      story_id: data.id || 0,
       chapters: data.chapters
     };
 
-    for (let i = 0; i < data.chapters.length; i++) {
+    for (let i = 0; i < data.chapters.length; i += 1) {
       data.chapters[i].owner = data.owner;
       cfg.chapters[i] = svc.getChapterConfig(i, data.chapters[i]);
     }
     if (data.chapters.length === 0) {
       cfg.chapters[0] = svc.getChapterConfig();
-      config.chapters[0].owner = data.owner;
+      cfg.chapters[0].owner = data.owner;
     }
 
     return cfg;
@@ -59,7 +61,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
 
   svc.getChapterConfig = (id, data) => {
     if (!id) {
-      id = 1;
+      id = 0;
     }
     if (!data) {
       data = {
@@ -70,7 +72,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
     }
     const cfg = {
       id,
-      map_id: data.map_id,
+      map_id: data.map_id || 0,
       about: {
         abstract: data.abstract,
         owner: data.owner,
