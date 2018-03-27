@@ -1,5 +1,6 @@
 const moment = require("moment");
 const $ = require("jquery");
+const turf = require("turf")
 
 function composerController(
   $scope,
@@ -56,8 +57,8 @@ function composerController(
   );
 
   $scope.setPreviewMode = () => {
-    $scope.viewerMode = $scope.viewerMode ? false : true;
-    $scope.adminViewerMode = $scope.adminViewerMode ? false : true;
+    $scope.viewerMode = !$scope.viewerMode;
+    $scope.adminViewerMode = !$scope.adminViewerMode;
     if ($scope.viewerMode) {
       $scope.updateSelected("toc", null, true);
     } else {
@@ -201,7 +202,11 @@ function composerController(
   };
 
   $scope.checkTimes = (date, start, end) => {
-    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
+    if (
+      moment(date).isSameOrAfter(start) &&
+      moment(date).isSameOrBefore(end) &&
+      $scope.zoomedIn === false
+    ) {
       $scope.zoomToExtent();
       $scope.zoomedIn = true;
     } else if (moment(date).isAfter(end)) {
@@ -211,44 +216,46 @@ function composerController(
   };
 
   $scope.zoomToExtent = () => {
-      var polygon = new ol.Feature(
-          new ol.geom.Polygon([[
-              $scope.frameSettings[$scope.currentFrame].bb1,
-              $scope.frameSettings[$scope.currentFrame].bb2,
-              $scope.frameSettings[$scope.currentFrame].bb3,
-              $scope.frameSettings[$scope.currentFrame].bb4
-          ]])
-      );
-      const vector = new ol.layer.Vector({
-          source: new ol.source.Vector({
-              features: [polygon]
-          })
-      });
-      map.addLayer(vector);
-      map.beforeRender(
-          ol.animation.pan({
-              source: map.getView().getCenter(),
-              duration: 1000
-          }),
-          ol.animation.zoom({
-              resolution: map.getView().getResolution(),
-              duration: 1000,
-              easing: ol.easing.easeIn
-          })
-      );
-      vector.set("name", $scope.frameSettings[$scope.currentFrame].title);
-      map.getView().fit(vector.getSource().getExtent(), map.getSize());
+    const polygon = new ol.Feature(
+      new ol.geom.Polygon([
+        [
+          $scope.frameSettings[$scope.currentFrame].bb1,
+          $scope.frameSettings[$scope.currentFrame].bb2,
+          $scope.frameSettings[$scope.currentFrame].bb3,
+          $scope.frameSettings[$scope.currentFrame].bb4
+        ]
+      ])
+    );
+    const vector = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [polygon]
+      })
+    });
+    map.addLayer(vector);
+    map.beforeRender(
+      ol.animation.pan({
+        source: map.getView().getCenter(),
+        duration: 1000
+      }),
+      ol.animation.zoom({
+        resolution: map.getView().getResolution(),
+        duration: 1000,
+        easing: ol.easing.easeIn
+      })
+    );
+    vector.set("name", $scope.frameSettings[$scope.currentFrame].title);
+    map.getView().fit(vector.getSource().getExtent(), map.getSize());
   };
 
   $scope.zoomOutExtent = () => {
     const zoom = ol.animation.zoom({
-        resolution: map.getView().getResolution(),
-        duration: 1000,
-        easing: ol.easing.easeOut
+      resolution: map.getView().getResolution(),
+      duration: 1000,
+      easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
     map.getView().setZoom(5);
-    $scope.currentFrame = $scope.currentFrame + 1;
+    $scope.currentFrame += 1;
   };
 
   // need to use obj,array when timeline is scrubbed
@@ -285,8 +292,8 @@ function composerController(
       $scope.zoomOutExtent();
     }
   };
-
- $scope.drawBoundingBox = () => {
+  
+  $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
     const bbVector = new ol.source.Vector({ wrapX: false });
     const vector = new ol.layer.Vector({
@@ -308,11 +315,12 @@ function composerController(
   };
 
   $scope.storyDetails = frameSettings => {
+    $scope.checkForIntersection();
     $scope.frameSettings.push({
       id: Date.now(),
       title: frameSettings.title,
       startDate: frameSettings.startDate,
-      startTime : frameSettings.startTime,
+      startTime: frameSettings.startTime,
       endDate: frameSettings.endDate,
       endTime: frameSettings.endTime,
       bb1: [$scope.coords[0][0][0], $scope.coords[0][0][1]],
@@ -384,7 +392,7 @@ function composerController(
   $scope.updateStorypinTimeline = date => {
     // TODO: Use pre-cooked timeframe objects to optimize this?
     const pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
-    pinArray.forEach( pin => {
+    pinArray.forEach(pin => {
       const startDate = $scope.formatDates(pin.start_time);
       const endDate = $scope.formatDates(pin.end_time);
       const storyLayerStartDate = $scope.formatDates(date);
