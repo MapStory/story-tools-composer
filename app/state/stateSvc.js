@@ -21,10 +21,12 @@ function stateSvc(
   };
 
   svc.removeChapter = chapterId => {
-    svc.config.chapters.splice(chapterId - 1, 1);
-    if (svc.config.chapters[chapterId].map_id) {
-      svc.config.removed_chapters.push(svc.config.chapters[chapterId].map_id);
+    const index = chapterId - 1;
+    if (svc.config.chapters[index].map_id) {
+      svc.config.removed_chapters.push(svc.config.chapters[index].map_id);
     }
+    svc.config.chapters.splice(index, 1);
+
     for (let i = 0; i < svc.config.chapters.length; i += 1) {
       svc.config.chapters[i].id = i + 1;
     }
@@ -110,6 +112,7 @@ function stateSvc(
         url: mapJsonUrl
       })
         .done(data => {
+          console.log("> ORIGINAL DATA -- >", data);
           svc.config = newConfigSvc.getMapstoryConfig(data);
           window.config = svc.config;
           // @TODO: find a permanent home for this function
@@ -141,6 +144,10 @@ function stateSvc(
 
   svc.setConfig = config => {
     svc.config = config;
+  };
+
+  svc.set = (k, v) => {
+    svc.config[k] = v;
   };
 
   svc.updateCurrentChapterConfig = () => {
@@ -246,7 +253,7 @@ function stateSvc(
         data: JSON.stringify({
           abstract: config.about.abstract,
           category: "", // @TODO: populate category
-          id: 0,
+          id: config.story_id || 0,
           story_id: config.story_id || 0,
           is_published: false,
           removed_chapters: config.removed_chapters,
@@ -254,7 +261,7 @@ function stateSvc(
         })
       }).then(data => {
         config.story_id = data.data.id;
-        svc.setConfig(config);
+        svc.set("story_id", data.data.id);
         res();
       });
     });
