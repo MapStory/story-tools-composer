@@ -288,12 +288,16 @@ function stateSvc(
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids
     const { story_id } = svc.getConfig();
+    const retrieveChapterIdsAndSave = () => {
+      svc.setUniqueChapterIds().then(() => {
+        svc.saveAfterIdRetrieval();
+      });
+    };
     if (!story_id) {
-      svc.getUniqueIdFromServer("story");
+      svc.getUniqueIdFromServer("story").then(retrieveChapterIdsAndSave);
+    } else {
+      retrieveChapterIdsAndSave();
     }
-    svc.setUniqueChapterIds().then(() => {
-      svc.saveAfterIdRetrieval();
-    });
   };
 
   svc.save_storypins = storypins => {
