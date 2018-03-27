@@ -21,7 +21,12 @@ function stateSvc(
   };
 
   svc.removeChapter = chapterId => {
-    svc.config.chapters.splice(chapterId - 1, 1);
+    const index = chapterId - 1;
+    if (svc.config.chapters[index].map_id) {
+      svc.config.removed_chapters.push(svc.config.chapters[index].map_id);
+    }
+    svc.config.chapters.splice(index, 1);
+
     for (let i = 0; i < svc.config.chapters.length; i += 1) {
       svc.config.chapters[i].id = i + 1;
     }
@@ -101,12 +106,13 @@ function stateSvc(
       : `/api/mapstories/${mapID}`;
     if (svc.config) {
       return;
-    } else if (mapID) {
+    } else if (mapID && mapID !== "new") {
       $.ajax({
         dataType: "json",
         url: mapJsonUrl
       })
         .done(data => {
+          console.log("> ORIGINAL DATA -- >", data);
           svc.config = newConfigSvc.getMapstoryConfig(data);
           window.config = svc.config;
           // @TODO: find a permanent home for this function
@@ -138,6 +144,10 @@ function stateSvc(
 
   svc.setConfig = config => {
     svc.config = config;
+  };
+
+  svc.set = (k, v) => {
+    svc.config[k] = v;
   };
 
   svc.updateCurrentChapterConfig = () => {
@@ -234,26 +244,41 @@ function stateSvc(
 
   svc.initConfig();
 
-  svc.getUniqueIdFromServer = (type, index) =>
+  svc.getUniqueStoryIdFromServer = requestType =>
     new Promise(res => {
       const config = svc.getConfig();
       $http({
         url: "/story",
-        method: "POST",
+        method: requestType,
         data: JSON.stringify({
-          abstract: "",
-          category: "",
-          id: 0,
+          abstract: config.about.abstract,
+          category: "", // @TODO: populate category
+          id: config.story_id || 0,
+          story_id: config.story_id || 0,
           is_published: false,
-          removed_chapters: [],
-          title: ""
+          removed_chapters: config.removed_chapters,
+          title: config.about.title
         })
       }).then(data => {
-        if (type === "story") {
-          config.story_id = data.data.id;
-        } else if (type === "chapter") {
-          config.chapters[index].map_id = data.data.id;
-        }
+        config.story_id = data.data.id;
+        svc.set("story_id", data.data.id);
+        res();
+      });
+    });
+
+  svc.getUniqueChapterIdFromServer = index =>
+    new Promise(res => {
+      const config = svc.getConfig();
+      config.chapters[index].story_id = config.story_id;
+      config.chapters[index].map.story_id = config.story_id;
+      const chapterConfig = { ...config.chapters[index] };
+      chapterConfig.map.layers = [];
+      $http({
+        url: "/story/chapter/new",
+        method: "POST",
+        data: JSON.stringify(chapterConfig)
+      }).then(data => {
+        config.chapters[index].map_id = data.data.id;
         svc.setConfig(config);
         res();
       });
@@ -264,10 +289,15 @@ function stateSvc(
     const promises = [];
     for (let i = 0; i < chapters.length; i += 1) {
       if (!chapters[i].map_id) {
-        promises.push(svc.getUniqueIdFromServer("chapter", i));
+        promises.push(svc.getUniqueChapterIdFromServer(i));
       }
     }
     return $q.all(promises);
+  };
+
+  svc.updateLocationUsingStoryId = () => {
+    const storyId = svc.getConfig().story_id;
+    window.location.href = `/story/${storyId}/composer`;
   };
 
   svc.saveAfterIdRetrieval = () => {
@@ -278,9 +308,11 @@ function stateSvc(
     }).then(
       response => {
         console.log("MAP SAVED");
+        svc.updateLocationUsingStoryId();
       },
       response => {
         console.log("MAP FAILED TO SAVE");
+        svc.updateLocationUsingStoryId();
       }
     );
   };
@@ -293,11 +325,10 @@ function stateSvc(
         svc.saveAfterIdRetrieval();
       });
     };
-    if (!story_id) {
-      svc.getUniqueIdFromServer("story").then(retrieveChapterIdsAndSave);
-    } else {
+    const requestType = story_id ? "PUT" : "POST";
+    svc.getUniqueStoryIdFromServer(requestType).then(() => {
       retrieveChapterIdsAndSave();
-    }
+    });
   };
 
   svc.save_storypins = storypins => {
