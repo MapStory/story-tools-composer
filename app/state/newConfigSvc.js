@@ -1,4 +1,4 @@
-function newConfigSvc(layerOptionsSvc, appConfig) {
+function newConfigSvc(layerOptionsSvc, appConfig, $http) {
   const svc = {};
 
   svc.getLayerListFromServerData = layers => {
@@ -27,7 +27,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         owner: "",
         username: "",
         title: "Mapstory title",
-        id: 1,
+        id: 0,
         chapters: [{}]
       };
     }
@@ -40,27 +40,27 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         title: data.title,
         slug: data.slug
       },
+      removed_chapters: [],
+      viewer_playbackmode: "instant",
       thumbnail_url: data.thumbnail_url,
-      id: data.id || 1,
+      id: data.id || 0,
+      story_id: data.id || 0,
       chapters: data.chapters
     };
 
-    for (let i = 0; i < data.chapters.length; i++) {
+    for (let i = 0; i < data.chapters.length; i += 1) {
       data.chapters[i].owner = data.owner;
-      cfg.chapters[i] = svc.getChapterConfig(i, data.chapters[i]);
+      cfg.chapters[i] = svc.getChapterConfig(i + 1, data.chapters[i]);
     }
     if (data.chapters.length === 0) {
       cfg.chapters[0] = svc.getChapterConfig();
-      config.chapters[0].owner = data.owner;
+      cfg.chapters[0].owner = data.owner;
     }
 
     return cfg;
   };
 
   svc.getChapterConfig = (id, data) => {
-    if (!id) {
-      id = 1;
-    }
     if (!data) {
       data = {
         abstract: "",
@@ -70,13 +70,15 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
     }
     const cfg = {
       id,
-      map_id: data.map_id,
+      map_id: data.map_id || 0,
       about: {
-        abstract: data.abstract,
+        abstract: data.abstract || "",
         owner: data.owner,
         title: data.title || `New Chapter`
       },
       layers: svc.getLayerListFromServerData(data.layers),
+      viewer_playbackmode: "instant",
+      story_id: data.story_id || null,
       sources: {
         "0": {
           lazy: true,
@@ -121,38 +123,9 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         maxResolution: 156543.03390625,
         maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
         zoom: 5,
+        story_id: data.story_id || null,
         projection: "EPSG:900913",
         layers: [
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "mapnik",
-            title: "OpenStreetMap",
-            args: ["OpenStreetMap"],
-            visibility: false,
-            source: "0",
-            fixed: true,
-            type: "OpenLayers.Layer.OSM"
-          },
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "hot",
-            title: "Humanitarian OpenStreetMap",
-            args: [
-              "Humanitarian OpenStreetMap",
-              [
-                "//a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
-                "//b.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
-                "//c.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png"
-              ],
-              { tileOptions: { crossOriginKeyword: null } }
-            ],
-            visibility: false,
-            source: "0",
-            fixed: true,
-            type: "OpenLayers.Layer.OSM"
-          },
           {
             opacity: 1.0,
             group: "background",

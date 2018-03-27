@@ -22,6 +22,9 @@ function stateSvc(
 
   svc.removeChapter = chapterId => {
     svc.config.chapters.splice(chapterId - 1, 1);
+    if (svc.config.chapters[chapterId].map_id) {
+      svc.config.removed_chapters.push(svc.config.chapters[chapterId].map_id);
+    }
     for (let i = 0; i < svc.config.chapters.length; i += 1) {
       svc.config.chapters[i].id = i + 1;
     }
@@ -101,7 +104,7 @@ function stateSvc(
       : `/api/mapstories/${mapID}`;
     if (svc.config) {
       return;
-    } else if (mapID) {
+    } else if (mapID && mapID !== "new") {
       $.ajax({
         dataType: "json",
         url: mapJsonUrl
@@ -109,7 +112,7 @@ function stateSvc(
         .done(data => {
           svc.config = newConfigSvc.getMapstoryConfig(data);
           window.config = svc.config;
-          //@TODO: find a permanent home for this function
+          // @TODO: find a permanent home for this function
           window.config.getTempStyleName = storyLayerName => {
             const config = window.config;
             const idParts = {
@@ -170,7 +173,6 @@ function stateSvc(
       }
     }
   };
-
 
   svc.setStoryframeDetails = frameSettings => {
     const savedFrame = {
@@ -234,20 +236,92 @@ function stateSvc(
   };
 
   svc.initConfig();
-  svc.save = function() {
-    console.log("svc.config: ", svc.config);
+
+  svc.getUniqueStoryIdFromServer = requestType =>
+    new Promise(res => {
+      const config = svc.getConfig();
+      $http({
+        url: "/story",
+        method: requestType,
+        data: JSON.stringify({
+          abstract: config.about.abstract,
+          category: "", // @TODO: populate category
+          id: 0,
+          story_id: config.story_id || 0,
+          is_published: false,
+          removed_chapters: config.removed_chapters,
+          title: config.about.title
+        })
+      }).then(data => {
+        config.story_id = data.data.id;
+        svc.setConfig(config);
+        res();
+      });
+    });
+
+  svc.getUniqueChapterIdFromServer = index =>
+    new Promise(res => {
+      const config = svc.getConfig();
+      config.chapters[index].story_id = config.story_id;
+      config.chapters[index].map.story_id = config.story_id;
+      const chapterConfig = { ...config.chapters[index] };
+      chapterConfig.map.layers = [];
+      $http({
+        url: "/story/chapter/new",
+        method: "POST",
+        data: JSON.stringify(chapterConfig)
+      }).then(data => {
+        config.chapters[index].map_id = data.data.id;
+        svc.setConfig(config);
+        res();
+      });
+    });
+
+  svc.setUniqueChapterIds = () => {
+    const { chapters } = svc.getConfig();
+    const promises = [];
+    for (let i = 0; i < chapters.length; i += 1) {
+      if (!chapters[i].map_id) {
+        promises.push(svc.getUniqueChapterIdFromServer(i));
+      }
+    }
+    return $q.all(promises);
+  };
+
+  svc.updateLocationUsingStoryId = () => {
+    const storyId = svc.getConfig().story_id;
+    window.location.href = `/story/${storyId}/composer`;
+  };
+
+  svc.saveAfterIdRetrieval = () => {
     $http({
       url: "/mapstory/save",
       method: "POST",
-      data: JSON.stringify(svc.config)
+      data: JSON.stringify(svc.getConfig())
     }).then(
       response => {
         console.log("MAP SAVED");
+        svc.updateLocationUsingStoryId();
       },
       response => {
         console.log("MAP FAILED TO SAVE");
+        svc.updateLocationUsingStoryId();
       }
     );
+  };
+
+  svc.save = () => {
+    // first ensure that story has an id; then ensure chapters have ids
+    const { story_id } = svc.getConfig();
+    const retrieveChapterIdsAndSave = () => {
+      svc.setUniqueChapterIds().then(() => {
+        svc.saveAfterIdRetrieval();
+      });
+    };
+    const requestType = story_id ? "PUT" : "POST";
+    svc.getUniqueStoryIdFromServer(requestType).then(() => {
+      retrieveChapterIdsAndSave();
+    });
   };
 
   svc.save_storypins = storypins => {
@@ -257,11 +331,10 @@ function stateSvc(
   svc.get_storypins = () => {
     if (svc.config.storypins) {
       return svc.config.storypins;
-    } else {
-      // Lazy init an array of arrays to hold chapters with storypins.
-      svc.config.storypins = [[]];
-      return svc.config.storypins;
     }
+    // Lazy init an array of arrays to hold chapters with storypins.
+    svc.config.storypins = [[]];
+    return svc.config.storypins;
   };
 
   return svc;
