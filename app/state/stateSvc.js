@@ -291,7 +291,7 @@ function stateSvc(
 
   svc.updateChapterOnServer = index =>
     new Promise(res => {
-      const config = svc.getChapterConfig(index);
+      const config = svc.getChapterConfigs()[index];
       $http({
         url: `/maps/${config.map_id}/data`,
         method: "PUT",
