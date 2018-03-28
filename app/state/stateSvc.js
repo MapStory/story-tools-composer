@@ -292,6 +292,7 @@ function stateSvc(
   svc.updateChapterOnServer = index =>
     new Promise(res => {
       const config = svc.getChapterConfigs()[index];
+      config.map.layers = [];
       $http({
         url: `/maps/${config.map_id}/data`,
         method: "PUT",
