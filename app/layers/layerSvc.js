@@ -96,6 +96,7 @@ function layerSvc(stateSvc) {
    * @returns {string} A URL to request the png legend from geoserver.
    */
   svc.get_legend_url = layer => {
+    // TODO: Use the entire layer.
     let url = null;
     const server = "/geoserver/wms";
     // const layer_name = layer.get("typeName") || layer.get("id");
@@ -104,7 +105,6 @@ function layerSvc(stateSvc) {
     // if (layer.get("params").STYLES) {
     //   url += `&style=${layer.get("params").STYLES}`;
     // }
-    //$scope.legend_url = url;
     return url;
   };
 

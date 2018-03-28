@@ -1,15 +1,19 @@
-function legendDirective(layerSvc) {
+function legendDirective(layerSvc, MapManager) {
   return {
     restrict: "E",
     templateUrl: "./app/ui/templates/legend.html",
-    link : function(scope,element,attrs){
-
-      scope.$on('layer-ready',(ev,name)=>{
-        console.log('[legend directive] layer is redy',name);
+    link: (scope, element, attrs) => {
+      scope.$on("layer-ready", (ev, name) => {
         scope.legend_url = layerSvc.get_legend_url(name);
-        console.log('so scope.legend_url is',scope.legend_url);
+        // // Make an overlay.
+        // const overlay = new ol.Overlay({
+        //   element: document.getElementById("legend"),
+        //   // positioning: "bottom-center"
+        // });
+        //
+        // const map = MapManager.storyMap.getMap();
+        // map.addOverlay(overlay);
       });
-
     }
   };
 }

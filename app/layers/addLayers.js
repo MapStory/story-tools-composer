@@ -42,13 +42,12 @@ function addLayers(
         MapManager.addLayer(name, settings, scope.server.active)
           .then(() => {
             scope.$parent.status.open = false;
-            //scope.legend_url = layerSvc.get_legend_url(name);
+            // Brodcast so we can request the legend for this layer.
             $rootScope.$broadcast("layer-ready", name);
           })
           .finally(() => {
             scope.loading = false;
           });
-        //layerSvc.get_legend_url(scope.layerName);
         scope.layerName = null;
       };
     }
