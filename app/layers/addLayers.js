@@ -8,6 +8,7 @@ function addLayers(
   MapManager,
   searchSvc,
   layerSvc,
+  $rootScope,
   appConfig,
   stateSvc
 ) {
@@ -41,10 +42,13 @@ function addLayers(
         MapManager.addLayer(name, settings, scope.server.active)
           .then(() => {
             scope.$parent.status.open = false;
-          }, layerSvc.handleAddLayerError)
+            //scope.legend_url = layerSvc.get_legend_url(name);
+            $rootScope.$broadcast("layer-ready", name);
+          })
           .finally(() => {
             scope.loading = false;
           });
+        //layerSvc.get_legend_url(scope.layerName);
         scope.layerName = null;
       };
     }
