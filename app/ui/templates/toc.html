@@ -4,13 +4,13 @@
   <button ng-if="composerMode" ng-hide="viewerMode" ng-click="stateSvc.addNewChapter()" class="sidebar-button">Add New Chapter</button>
   <div ng-repeat="chapter in stateSvc.config.chapters" class="contents-chapter">
       <div class="contents-summary">
-          <h2 class="chapter-number">{{ chapter.id}}</h2>
+          <h2 class="chapter-number">{{ chapter.index}}</h2>
           <h2>{{ chapter.about.title }}</h2>
-          <i ng-if="composerMode" ng-hide="viewerMode" ng-if="chapter.id !== 1" ng-click="removeChapter(chapter.id)" class="fa fa-trash delete"></i>
+          <i ng-if="composerMode" ng-hide="viewerMode" ng-if="chapter.index !== 1" ng-click="removeChapter(chapter.index)" class="fa fa-trash delete"></i>
           <p>
               {{ chapter.about.abstract }}
           </p>
       </div>
-      <a ng-if="composerMode" ng-hide="viewerMode" ng-click="updateSelected('info', chapter.id )" class="arrow"><i class="fa fa-lg fa-caret-right"></i></a>
+      <a ng-if="composerMode" ng-hide="viewerMode" ng-click="updateSelected('info', chapter.index )" class="arrow"><i class="fa fa-lg fa-caret-right"></i></a>
   </div>
 </div>

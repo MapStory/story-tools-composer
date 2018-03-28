@@ -27,8 +27,10 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         owner: "",
         username: "",
         title: "Mapstory title",
+        category: "",
         id: 0,
-        chapters: [{}]
+        chapters: [{}],
+        is_published: false
       };
     }
 
@@ -38,8 +40,10 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         username: data.owner.username,
         abstract: data.abstract,
         title: data.title,
+        category: data.category,
         slug: data.slug
       },
+      is_published: data.is_published || false,
       removed_chapters: [],
       viewer_playbackmode: "instant",
       thumbnail_url: data.thumbnail_url,
@@ -60,7 +64,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
     return cfg;
   };
 
-  svc.getChapterConfig = (id, data) => {
+  svc.getChapterConfig = (index, data) => {
     if (!data) {
       data = {
         abstract: "",
@@ -69,7 +73,8 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
       };
     }
     const cfg = {
-      id,
+      index,
+      id: index,
       map_id: data.map_id || 0,
       about: {
         abstract: data.abstract || "",
@@ -117,7 +122,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         }
       },
       map: {
-        id,
+        id: index,
         center: [-11046067.8315474, 4153282.36890334],
         units: "m",
         maxResolution: 156543.03390625,
@@ -168,6 +173,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
             name: "world-dark",
             title: "World Dark",
             visibility: true,
+            selected: true,
             source: "1",
             fixed: false
           },
@@ -176,7 +182,6 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
             group: "background",
             name: "world-light",
             title: "World Light",
-            selected: true,
             visibility: false,
             source: "1",
             fixed: false
