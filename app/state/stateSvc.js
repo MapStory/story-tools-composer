@@ -288,7 +288,11 @@ function stateSvc(
           mapId = chapterConfig.map_id;
           svc.chapterConfig(index, chapterConfig);
         })
-        .then(() => svc.saveStoryPinsToServer(mapId).then(() => res()));
+        .then(() =>
+          svc
+            .saveStoryPinsToServer(mapId)
+            .then(() => svc.saveStoryFramesToServer(mapId).then(() => res()))
+        );
     });
   };
   svc.setChapterConfig = (chapterIndex, config) => {
@@ -306,9 +310,8 @@ function stateSvc(
         method: "PUT",
         data: JSON.stringify(config)
       })
-        .then(() => {
-          return svc.saveStoryPinsToServer(config.map_id);
-        })
+        .then(() => svc.saveStoryPinsToServer(config.map_id))
+        .then(() => svc.saveStoryFramesToServer(config.map))
         .then(() => {
           console.log("updateChapterOnServer worked");
           res();
@@ -333,23 +336,21 @@ function stateSvc(
     window.location.href = `/story/${storyId}/draft`;
   };
 
-  svc.saveAfterIdRetrieval = () => {
-    console.log("saveAfterIdRetrieval happened");
+  svc.saveStoryToServer = () => {
+    console.log("saveStoryToServer happened");
     const storyId = svc.getConfig().story_id;
-    $http({
+    return $http({
       url: `/story/${storyId}/save`,
       method: "PUT",
       data: JSON.stringify(svc.getConfig())
-    })
-      .then(() => svc.updateChapterOnServer())
-      .then(
-        response => {
-          console.log("MAP SAVED");
-        },
-        response => {
-          console.log("MAP FAILED TO SAVE");
-        }
-      );
+    }).then(
+      response => {
+        console.log("MAP SAVED");
+      },
+      response => {
+        console.log("MAP FAILED TO SAVE");
+      }
+    );
   };
 
   svc.getChapterIndexByMapId = mapId => {
@@ -373,12 +374,23 @@ function stateSvc(
     return req;
   };
 
+  svc.saveStoryFramesToServer = mapId => {
+    const frames = {};
+    const chapterIndex = svc.getChapterIndexByMapId(mapId);
+    const req = $http({
+      url: `/maps/${mapId}/storyframes`,
+      method: "POST",
+      data: JSON.stringify(frames[chapterIndex])
+    });
+    return req;
+  };
+
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids
     const { story_id } = svc.getConfig();
     const retrieveChapterIdsAndSave = () => {
-      svc.generateChapterPromiseQueue().then(() => {
-        svc.saveAfterIdRetrieval();
+      svc.saveStoryToServer().then(() => {
+        svc.generateChapterPromiseQueue();
       });
     };
     if (!story_id) {
