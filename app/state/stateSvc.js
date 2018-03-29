@@ -306,7 +306,9 @@ function stateSvc(
         method: "PUT",
         data: JSON.stringify(config)
       })
-        .then(() => svc.saveStoryPinsToServer(config.map_id))
+        .then(() => {
+          return svc.saveStoryPinsToServer(config.map_id);
+        })
         .then(() => {
           console.log("updateChapterOnServer worked");
           res();
@@ -350,12 +352,26 @@ function stateSvc(
       );
   };
 
-  svc.saveStoryPinsToServer = mapId =>
-    $http({
+  svc.getChapterIndexByMapId = mapId => {
+    const config = svc.getConfig();
+    for (const chapter in config.chapters) {
+      if (config.chapters[chapter].map_id === mapId) {
+        return chapter;
+      }
+    }
+    return false;
+  };
+
+  svc.saveStoryPinsToServer = mapId => {
+    const pins = svc.get_storypins();
+    const chapterIndex = svc.getChapterIndexByMapId(mapId);
+    const req = $http({
       url: `/maps/${mapId}/storypins`,
       method: "POST",
-      data: JSON.stringify(svc.get_storypins())
+      data: JSON.stringify(pins[chapterIndex])
     });
+    return req;
+  };
 
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids

@@ -1064,7 +1064,26 @@ function pinSvc(
     });
 
     // Save to state service
-    stateSvc.save_storypins(svc.pins);
+    const featureCollections = [];
+
+    for (let i = 0; i < svc.pins.length; i += 1) {
+      featureCollections.push({
+        type: "FeatureCollection",
+        features: []
+      });
+      for (let p = 0; p < svc.pins[i].length; p += 1) {
+        featureCollections[i].features.push({
+          type: "Feature",
+          geometry: {
+            type: "Point",
+            coordinates: [svc.pins[i][p].coords[0], svc.pins[i][p].coords[1]]
+          },
+          properties: svc.pins[i][p].properties
+        });
+      }
+    }
+    console.log("FEATURE COLLECTIONS", featureCollections);
+    stateSvc.save_storypins(featureCollections);
   };
 
   svc.exportPinsToJSON = pinArray => {
