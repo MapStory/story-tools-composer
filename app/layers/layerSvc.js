@@ -90,24 +90,6 @@ function layerSvc(stateSvc) {
     $log.warn("Failed to load %s because of %s", scope.layerName, problems);
   };
 
-  /**
-   * Builds and returns a URL for getting the layer's legend from geoserver.
-   * @param layer The layer to get the url for.
-   * @returns {string} A URL to request the png legend from geoserver.
-   */
-  svc.get_legend_url = layer => {
-    // TODO: Use the entire layer.
-    let url = null;
-    const server = "/geoserver/wms";
-    // const layer_name = layer.get("typeName") || layer.get("id");
-    const layer_name = layer;
-    url = `${server}?request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=${layer_name}&transparent=true&legend_options=fontColor:0xFFFFFF;fontAntiAliasing:true;fontSize:14;fontStyle:bold;`;
-    // if (layer.get("params").STYLES) {
-    //   url += `&style=${layer.get("params").STYLES}`;
-    // }
-    return url;
-  };
-
   return svc;
 }
 

@@ -406,17 +406,6 @@ function composerController(
       }
     });
   };
-
-
-
-  /**
-   * Makes a HTTP Get Request to the given url and expects a PNG.
-   * @param url The Geoserver URL.
-   * @returns {file} or null if failed.
-   */
-  $scope.get_legend_from_geoserver = url => {
-    return null;
-  };
 }
 
 module.exports = composerController;
