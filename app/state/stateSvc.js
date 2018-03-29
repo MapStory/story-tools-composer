@@ -183,27 +183,30 @@ function stateSvc(
   };
 
   svc.setStoryframeDetails = frameSettings => {
-    const featureCollection = {
-      type: "FeatureCollection",
-      features: [
-        {
-          type: "Feature",
-          geometry: null,
-          properties: {
-            title: frameSettings.title,
-            start_time: frameSettings.startTime,
-            end_time: frameSettings.endTime,
-            extent: [
-              [frameSettings[0].bb1[0], frameSettings[0].bb1[0]],
-              [frameSettings[0].bb2[0], frameSettings[0].bb2[1]],
-              [frameSettings[0].bb3[0], frameSettings[0].bb3[1]],
-              [frameSettings[0].bb4[0], frameSettings[0].bb4[1]]
-            ]
+    svc.config.frameSettings = [];
+    for (let i = 0; i < frameSettings.length; i += 1) {
+      const featureCollection = {
+        type: "FeatureCollection",
+        features: [
+          {
+            type: "Feature",
+            geometry: null,
+            properties: {
+              title: frameSettings[i].title,
+              start_time: frameSettings[i].startTime,
+              end_time: frameSettings[i].endTime,
+              extent: [
+                [frameSettings[i].bb1[0], frameSettings[i].bb1[0]],
+                [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
+                [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
+                [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
+              ]
+            }
           }
-        }
-      ]
-    };
-    svc.config.frameSettings = featureCollection;
+        ]
+      };
+      svc.config.frameSettings[svc.getChapterIndex()] = featureCollection;
+    }
   };
 
   svc.getChapter = () => {
@@ -295,7 +298,7 @@ function stateSvc(
         svc.setChapterConfig(index, chapterConfig);
         return svc.saveStoryPinsToServer(mapId).then(() => {
           res();
-          // @TODO: svc.saveStoryFramesToServer(mapId).then(() => res());
+          svc.saveStoryFramesToServer(mapId).then(() => res());
         });
       });
     });
@@ -319,7 +322,6 @@ function stateSvc(
         .then(() => svc.saveStoryPinsToServer(config.map_id))
         .then(() => svc.saveStoryFramesToServer(config.map_id))
         .then(() => {
-          console.log("updateChapterOnServer worked");
           res();
         });
     });
@@ -343,7 +345,6 @@ function stateSvc(
   };
 
   svc.saveStoryToServer = () => {
-    console.log("saveStoryToServer happened");
     const storyId = svc.getConfig().story_id;
     return $http({
       url: `/story/${storyId}/save`,
