@@ -8,6 +8,7 @@ function addLayers(
   MapManager,
   searchSvc,
   layerSvc,
+  $rootScope,
   appConfig,
   stateSvc
 ) {
@@ -41,7 +42,9 @@ function addLayers(
         MapManager.addLayer(name, settings, scope.server.active)
           .then(() => {
             scope.$parent.status.open = false;
-          }, layerSvc.handleAddLayerError)
+            // Brodcast so we can request the legend for this layer.
+            $rootScope.$broadcast("layer-ready", name);
+          })
           .finally(() => {
             scope.loading = false;
           });
