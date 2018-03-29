@@ -308,38 +308,6 @@ function composerController($scope,
         map.addInteraction(draw);
     };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     $scope.checkTemporalOverlap = (frameSettings) => {
         if (frameSettings.length < 1) {
             $scope.saveStoryDetails(frameSettings);
@@ -369,8 +337,7 @@ function composerController($scope,
                 $scope.saveStoryDetails(frameSettings);
             }
         }
-    };  // Which dates overlap... example: end date of frame 0 overlaps with start date of frame 1.
-
+    };
 
     $scope.saveStoryDetails = frameSettings => {
         console.log("save storyframe details");
@@ -388,41 +355,6 @@ function composerController($scope,
         })
         stateSvc.setStoryframeDetails($scope.frameSettings);
     };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     $scope.editStoryframe = index => {
         $scope.frameSettings.title = $scope.frameSettings[index].title;
