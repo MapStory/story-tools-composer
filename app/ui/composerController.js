@@ -344,14 +344,10 @@ function composerController($scope,
         if (frameSettings.length < 1) {
             $scope.saveStoryDetails(frameSettings);
         } else if ($scope.frameSettings.length >= 1) {
-            console.log("frame settings length: ", frameSettings.length);
             const numFrames = $scope.frameSettings.length;
-            const current = $scope.currentFrame;
 
             const startToCheck = $scope.formatDates(frameSettings.startDate);
             const endToCheck = $scope.formatDates(frameSettings.endDate);
-
-            console.log(startToCheck, endToCheck);
 
             const start = $scope.formatDates($scope.frameSettings[0].startDate);
             const end = $scope.formatDates($scope.frameSettings[0].endDate);
@@ -361,19 +357,15 @@ function composerController($scope,
             $scope.showOverlapMsg = false;
 
             if (moment(startToCheck).isSameOrAfter(start) && moment(startToCheck).isSameOrBefore(end)) {
-                console.log("checked start date");
                 $scope.startOverlap = true;
             }
-            if (moment(endToCheck).isSameOrAfter(start) && moment(endToCheck).isSameOrBefore(end)) {
-                console.log("checked end date");
+            if (moment(endToCheck).isSameOrAfter(start) && moment(endToCheck).isSameOrBefore(end)) {;
                 $scope.endOverlap = true;
             }
             if ($scope.startOverlap === true || $scope.endOverlap === true) {
-                console.log("show overlap msg");
                 $scope.showOverlapMsg = true;
                 return 0;
             } else if ($scope.startOverlap === false && $scope.endOverlap === false) {
-                console.log("else if -> save");
                 $scope.saveStoryDetails(frameSettings);
             }
         }
