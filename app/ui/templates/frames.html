@@ -57,18 +57,10 @@
     </div>
 
     <div id="setPlacement">
-        <button class="btn btn-inverse" ng-click="drawBoundingBox()">
-            <i class="fa fa-map"></i>&nbsp;
-            Create Bounding Box
-        </button>
-    </div>
-    <hr/>
-
-    <div class="alert alert-danger" ng-show="showOverlapMsg">
-        Your StoryFrame dates overlap. Please adjust your dates.
+        <p href="#" ng-click="drawBoundingBox()">*Click to set bounding box for Storyframe on map.</p>
     </div>
 
-    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkTemporalOverlap(frameSettings)">Save</button>
+    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="storyDetails(frameSettings)">Save</button>
     <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframe(frameSettings, $index)">Update</button>
     <button class="btn btn-inverse" type="reset" ng-click="clearBoundingBox()">Reset</button>
 </form>
