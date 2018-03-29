@@ -27,6 +27,7 @@ function layerOptionsSvc() {
       name,
       title: title || name,
       url,
+      source: "0",
       path: server.path,
       canStyleWMS: server.canStyleWMS,
       styleName,

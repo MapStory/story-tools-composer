@@ -156,6 +156,7 @@ function stateSvc(
 
   svc.addLayer = layerOptions => {
     svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
+    svc.config.chapters[svc.getChapterIndex()].map.layers.push(layerOptions);
   };
 
   svc.updateLayerStyle = (layerName, styleName) => {
@@ -273,7 +274,9 @@ function stateSvc(
       config.chapters[index].story_id = config.story_id;
       config.chapters[index].map.story_id = config.story_id;
       const chapterConfig = { ...config.chapters[index] };
-      chapterConfig.map.layers = [];
+      chapterConfig.map.layers = chapterConfig.map.layers.filter(
+        layer => layer.group !== "background"
+      );
       $http({
         url: "/story/chapter/new",
         method: "POST",
@@ -292,7 +295,9 @@ function stateSvc(
   svc.updateChapterOnServer = index =>
     new Promise(res => {
       const config = svc.getChapterConfigs()[index];
-      config.map.layers = [];
+      config.map.layers = config.map.layers.filter(
+        layer => layer.group !== "background"
+      );
       $http({
         url: `/maps/${config.map_id}/data`,
         method: "PUT",

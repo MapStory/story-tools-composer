@@ -201,7 +201,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
             fixed: true,
             type: "OpenLayers.Layer"
           }
-        ],
+        ].concat(svc.getLayerListFromServerData(data.layers)),
         keywords: []
       }
     };
