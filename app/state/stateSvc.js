@@ -183,20 +183,27 @@ function stateSvc(
   };
 
   svc.setStoryframeDetails = frameSettings => {
-    const savedFrame = {
-      title: frameSettings.title,
-      startDate: frameSettings.startDate,
-      endDate: frameSettings.endDate,
-      startTime: frameSettings.startTime,
-      endTime: frameSettings.endTime,
-      boundingBox: [
-        [frameSettings[0].bb1[0], frameSettings[0].bb1[0]],
-        [frameSettings[0].bb2[0], frameSettings[0].bb2[1]],
-        [frameSettings[0].bb3[0], frameSettings[0].bb3[1]],
-        [frameSettings[0].bb4[0], frameSettings[0].bb4[1]]
+    const featureCollection = {
+      type: "FeatureCollection",
+      features: [
+        {
+          type: "Feature",
+          geometry: null,
+          properties: {
+            title: frameSettings.title,
+            start_time: frameSettings.startTime,
+            end_time: frameSettings.endTime,
+            extent: [
+              [frameSettings[0].bb1[0], frameSettings[0].bb1[0]],
+              [frameSettings[0].bb2[0], frameSettings[0].bb2[1]],
+              [frameSettings[0].bb3[0], frameSettings[0].bb3[1]],
+              [frameSettings[0].bb4[0], frameSettings[0].bb4[1]]
+            ]
+          }
+        }
       ]
     };
-    svc.config.frameSettings = frameSettings;
+    svc.config.frameSettings = featureCollection;
   };
 
   svc.getChapter = () => {
@@ -282,19 +289,18 @@ function stateSvc(
         url: "/story/chapter/new",
         method: "POST",
         data: JSON.stringify(chapterConfig)
-      })
-        .then(data => {
-          chapterConfig.map_id = data.data.id;
-          mapId = chapterConfig.map_id;
-          svc.chapterConfig(index, chapterConfig);
-        })
-        .then(() =>
-          svc
-            .saveStoryPinsToServer(mapId)
-            .then(() => svc.saveStoryFramesToServer(mapId).then(() => res()))
-        );
+      }).then(data => {
+        chapterConfig.map_id = data.data.id;
+        mapId = chapterConfig.map_id;
+        svc.setChapterConfig(index, chapterConfig);
+        return svc.saveStoryPinsToServer(mapId).then(() => {
+          res();
+          // @TODO: svc.saveStoryFramesToServer(mapId).then(() => res());
+        });
+      });
     });
   };
+
   svc.setChapterConfig = (chapterIndex, config) => {
     svc.config.chapters[chapterIndex] = config;
   };
@@ -311,7 +317,7 @@ function stateSvc(
         data: JSON.stringify(config)
       })
         .then(() => svc.saveStoryPinsToServer(config.map_id))
-        .then(() => svc.saveStoryFramesToServer(config.map))
+        .then(() => svc.saveStoryFramesToServer(config.map_id))
         .then(() => {
           console.log("updateChapterOnServer worked");
           res();
@@ -375,7 +381,8 @@ function stateSvc(
   };
 
   svc.saveStoryFramesToServer = mapId => {
-    const frames = {};
+    const config = svc.getConfig();
+    const frames = config.frameSettings;
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const req = $http({
       url: `/maps/${mapId}/storyframes`,
@@ -388,16 +395,21 @@ function stateSvc(
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids
     const { story_id } = svc.getConfig();
-    const retrieveChapterIdsAndSave = () => {
+    const retrieveChapterIdsAndSave = () =>
       svc.saveStoryToServer().then(() => {
-        svc.generateChapterPromiseQueue();
+        const p = svc.generateChapterPromiseQueue();
+        return p;
       });
-    };
     if (!story_id) {
-      svc.getUniqueStoryIdFromServer().then(() => {
-        retrieveChapterIdsAndSave();
-        svc.updateLocationUsingStoryId();
-      });
+      svc
+        .getUniqueStoryIdFromServer()
+        .then(() => {
+          const p = retrieveChapterIdsAndSave();
+          return p;
+        })
+        .then(() => {
+          svc.updateLocationUsingStoryId();
+        });
     } else {
       retrieveChapterIdsAndSave();
     }
