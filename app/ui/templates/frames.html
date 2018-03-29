@@ -64,8 +64,9 @@
     </div>
     <hr/>
 
-    <div class="alert alert-danger" ng-show="showOverlapMsg">
-        Your StoryFrame dates overlap. Please adjust your dates.
+    <div class="alert alert-danger" ng-show="showOverlapMsg" id="timeOverlapError">
+        <p>You have overlapping StoryFrames. Please adjust your dates:</p>
+        <p>{{ frameSettings.startDate | date: 'mediumDate' }} -  {{ frameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
 
     <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkTemporalOverlap(frameSettings)">Save</button>
