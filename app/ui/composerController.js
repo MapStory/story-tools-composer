@@ -314,33 +314,38 @@ function composerController($scope,
         } else if ($scope.frameSettings.length >= 1) {
             const numFrames = $scope.frameSettings.length;
 
-            const startToCheck = $scope.formatDates(frameSettings.startDate);
-            const endToCheck = $scope.formatDates(frameSettings.endDate);
-
-            const start = $scope.formatDates($scope.frameSettings[0].startDate);
-            const end = $scope.formatDates($scope.frameSettings[0].endDate);
-
             $scope.startOverlap = false;
             $scope.endOverlap = false;
             $scope.showOverlapMsg = false;
 
-            if (moment(startToCheck).isSameOrAfter(start) && moment(startToCheck).isSameOrBefore(end)) {
-                $scope.startOverlap = true;
+            for(let x=0; x<numFrames; x++) {
+                const startToCheck = $scope.formatDates(frameSettings.startDate);
+                const endToCheck = $scope.formatDates(frameSettings.endDate);
+
+                const start = $scope.formatDates($scope.frameSettings[x].startDate);
+                const end = $scope.formatDates($scope.frameSettings[x].endDate);
+
+                console.log($scope.formatDates($scope.frameSettings[x].startDate), $scope.formatDates($scope.frameSettings[x].endDate));
+
+                if (moment(startToCheck).isSameOrAfter(start) && moment(startToCheck).isSameOrBefore(end)) {
+                    $scope.startOverlap = true;
+                }
+                if (moment(endToCheck).isSameOrAfter(start) && moment(endToCheck).isSameOrBefore(end)) {
+                    $scope.endOverlap = true;
+                }
+                if ($scope.startOverlap === true || $scope.endOverlap === true) {
+                    $scope.showOverlapMsg = true;
+                    return 0;
+                }
             }
-            if (moment(endToCheck).isSameOrAfter(start) && moment(endToCheck).isSameOrBefore(end)) {;
-                $scope.endOverlap = true;
-            }
-            if ($scope.startOverlap === true || $scope.endOverlap === true) {
-                $scope.showOverlapMsg = true;
-                return 0;
-            } else if ($scope.startOverlap === false && $scope.endOverlap === false) {
+            if ($scope.startOverlap === false && $scope.endOverlap === false) {
                 $scope.saveStoryDetails(frameSettings);
             }
         }
     };
 
+
     $scope.saveStoryDetails = frameSettings => {
-        console.log("save storyframe details");
         $scope.frameSettings.push({
             id: Date.now(),
             title: frameSettings.title,
