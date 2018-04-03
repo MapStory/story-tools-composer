@@ -1,12 +1,12 @@
 <header>
     <div class="story-info">
         <h1>{{ stateSvc.config.about.title }}</h1>
-        <div ng-hide="viewerMode">
+        <div ng-if="composerMode" ng-hide="viewerMode">
             <a ng-click="openStoryModal()">Edit Story Info</a>
         </div>
     </div>
     <div class="preview">
-        <div ng-hide="viewerMode && !adminViewerMode" class="form-field">
+        <div ng-if="composerMode" ng-hide="viewerMode && !adminViewerMode" class="form-field">
             <label for="timeline">Preview mode</label>
             <label class="switch">
                 <input type="checkbox" for="sidebar"
@@ -15,7 +15,7 @@
             </label>
         </div>
     </div>
-    <div ng-hide="viewerMode" class="autosave">
+    <div ng-if="composerMode" ng-hide="viewerMode" class="autosave">
         <button ng-click="saveMap()">Save</button>
         <button>Publish</button>
     </div>
