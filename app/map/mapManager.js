@@ -33,8 +33,34 @@ function MapManager(
   svc.owner = "";
   svc.storyChapter = 1;
   svc.chapterCount = 1;
+
+  // TODO: Remove this?
   StoryPinLayerManager.storyPinsLayer = svc.storyMap.storyPinsLayer;
 
+  svc.LegendControl = options => {
+    const opts = options || {};
+    const button = document.createElement("button");
+    button.innerHTML = 'L';
+    const callback = e => {
+      // TODO: Do the things here.
+      console.log("hi there");
+    };
+    button.addEventListener("click", callback, false);
+    button.addEventListener("touchstart", callback, false);
+
+    const element = document.createElement("div");
+    element.className = "rotate-north ol-unselectable ol-control";
+    element.appendChild(button);
+
+
+    ol.control.Control.call(this, {
+      element: element,
+      target: opts.target
+    });
+  };
+  ol.inherits(svc.LegendControl, ol.control.Control);
+
+  // TODO: Remove This?
   svc.displayPinInfo = (pixel, pin) => {
     let feature = null;
     const embed_params = {
@@ -175,6 +201,22 @@ function MapManager(
       );
     });
     svc.currentMapOptions = options;
+
+    // Add the legend control to the map
+    var button = document.createElement('button');
+    button.innerHTML = 'N';
+
+
+    // button.addEventListener('click', handleRotateNorth, false);
+
+    var element = document.createElement('div');
+    element.className = 'rotate-north ol-unselectable ol-control';
+    element.appendChild(button);
+
+    var RotateNorthControl = new ol.control.Control({
+      element: element
+    });
+    svc.storyMap.getMap().addControl(RotateNorthControl);
   };
 
   svc.initMapLoad = () => {
@@ -194,7 +236,7 @@ function MapManager(
       .then(a => {
         if (options.styleName) {
           const layer = a.getLayer();
-          let layerSource = layer.getSource();
+          const layerSource = layer.getSource();
           layerSource.updateParams({
             _dc: new Date().getTime(),
             _olSalt: Math.random(),
@@ -212,6 +254,8 @@ function MapManager(
             .getView()
             .fit(extent, svc.storyMap.getMap().getSize());
         }
+        // Brodcast so we can request the legend for this layer.
+        $rootScope.$broadcast("layer-ready", a);
       });
 
   svc.addLayer = (name, settings, server, fitExtent, styleName, title) => {
@@ -225,6 +269,10 @@ function MapManager(
     );
     stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
+  };
+
+  svc.addControlToMap = control => {
+    svc.storyMap.getMap().addControl(control);
   };
 
   return svc;

@@ -604,8 +604,7 @@ function pinSvc(
    * turnPinDrawModeOn
    * -----------------
    *
-   * Turns Pin Draw Mode. On the user's next click,
-   * a Pin will be placed and the coordinates for currentPin updated.
+   * Turns Pin Draw Mode. The user can click and drag to move the feature while this mode is on.
    */
   svc.turnPinDrawModeOn = index => {
     const pin = svc.pins[stateSvc.getChapterIndex()][index];
@@ -637,7 +636,9 @@ function pinSvc(
     }
   };
 
-  // TODO: Finish this
+  /**
+   * Callback for when Bulk Pin has had success.
+   */
   svc.onBulkPinAdd = () => {
     // Open modal and start the upload wizard
     svc.modalInstance = $uibModal.open({
@@ -1181,6 +1182,10 @@ function pinSvc(
       }
     }
     return "";
+  };
+
+  svc.post_storypin = pin => {
+
   };
 
   return svc;
