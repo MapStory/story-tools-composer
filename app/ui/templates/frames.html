@@ -13,7 +13,7 @@
     <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
     <div class="clearfix" ng-repeat="item in frameSettings">
         <div id="titleBar">
-            <a href="#" ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title">
+            <a ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title">
                 <i class="fa fa-expand"></i> {{ item.title }}
             </a>
             <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
@@ -64,7 +64,7 @@
     </div>
     <hr/>
 
-    <div class="alert alert-danger" ng-show="showOverlapMsg" id="timeOverlapError">
+    <div class="alert alert-danger" ng-show="showOverlapMsg" id="timeOverlapError" title="Select the area for your StoryFrame">
         <p>You have overlapping StoryFrames. Please adjust your dates:</p>
         <p>{{ frameSettings.startDate | date: 'mediumDate' }} -  {{ frameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
