@@ -155,14 +155,6 @@ function composerController(
   $scope.frameSettings = [];
   const map = MapManager.storyMap.getMap();
 
-  $scope.isDefault = ($event, index) => {
-    const elem = document.querySelectorAll(".isDefault");
-    for (let i = 0; i < elem.length; i++) {
-      elem[i].classList.remove("isDefault");
-    }
-    $event.currentTarget.parentNode.classList.add("isDefault");
-  };
-
   function transformCoords(loc) {
     return ol.proj.transform(loc, "EPSG:3857", "EPSG:4326");
   }
