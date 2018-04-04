@@ -99,8 +99,8 @@ function stateSvc(
 
   svc.initConfig = () => {
     const path = window.location.pathname;
-    const mapID = /\/story\/([A-Za-z0-9]+)/.exec(path)
-      ? /\/story\/([A-Za-z0-9]+)/.exec(path)[1]
+    const mapID = /\/story\/([A-Za-z0-9-_]+)/.exec(path)
+      ? /\/story\/([A-Za-z0-9-_]+)/.exec(path)[1]
       : null;
     const mapJsonUrl = isNaN(mapID)
       ? `/api/mapstories/slug/${mapID}`
