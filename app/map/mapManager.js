@@ -108,14 +108,18 @@ function MapManager(
 
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
+    // TODO: Remove annotations
     const annotationsLoad = svc.getDataFromLocalServer(
       options.id,
       "annotations"
     );
+    // TODO: Remove boxes
     const boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
     for (let i = 0; i < options.layers.length; i++) {
       svc.buildStoryLayer(options.layers[i]);
     }
+    // TODO: Get Storyframes
+    // TODO: Get StoryPins
     $q.all([annotationsLoad, boxesLoad]).then(values => {
       if (values[0] !== "error") {
         StoryPinLayerManager.loadFromGeoJSON(
@@ -131,6 +135,8 @@ function MapManager(
   };
 
   svc.loadMapFromUrl = options => {
+    // TODO: Load Storypins
+    // TODO: Load Storyframes
     const mapLoad = $http
       .get(options.url)
       .then(response => {

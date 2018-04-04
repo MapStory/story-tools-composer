@@ -47,10 +47,14 @@ function composerController(
     $scope.stateSvc.updateCurrentChapterConfig();
   });
 
+  /**
+   * Event listener that gets launched once the config has been initialized.
+   */
   $rootScope.$on("configInitialized", () => {
     $scope.mapManager.initMapLoad();
   });
 
+  // TODO: Remove this?
   $rootScope.$on("pin-added", (event, chapter_index) => {
     // $log.log($scope.pinSvc.getPins(0))
   });
@@ -390,21 +394,21 @@ function composerController(
   $scope.updateStorypinTimeline = date => {
     // TODO: Use pre-cooked timeframe objects to optimize this?
     const pinArray = stateSvc.config.storypins[stateSvc.getChapterIndex()];
-    pinArray.forEach( pin => {
+    pinArray.forEach(pin => {
       const startDate = $scope.formatDates(pin.start_time);
       const endDate = $scope.formatDates(pin.end_time);
       const storyLayerStartDate = $scope.formatDates(date);
 
       let should_show = false;
+      // Flips the flag on.
       if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
-        // TODO: Show StoryPin.
         should_show = true;
       }
+      // Flips back off.
       if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
-        // TODO: Hide Storypin.
         should_show = false;
       }
-
+      // Determine if should show.
       if (should_show) {
         pin.show();
       } else {
