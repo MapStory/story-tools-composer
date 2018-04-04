@@ -26,8 +26,9 @@ function pinSvc(
   $uibModal
 ) {
   const svc = {}; // this
+  stateSvc.config
 
-  svc.pins = [[]]; // The collection of pins
+  svc.pins = stateSvc.config.storypins; // The collection of pins
   svc.currentPin = null; // The current Pin being edited
 
   // For Drag functionality:
@@ -181,7 +182,7 @@ function pinSvc(
    * Adds an empty chapter to the pin list.
    */
   svc.addChapter = () => {
-    svc.pins.push([]);
+    stateSvc.config.storypins.push([]);
   };
 
   /**
@@ -200,7 +201,7 @@ function pinSvc(
    * Adds an empty pin to the current chapter.
    */
   svc.addEmptyPinToCurrentChapter = () => {
-    svc.pins[stateSvc.getChapterIndex() - 1].push({});
+    stateSvc.config.storypins[stateSvc.getChapterIndex() - 1].push({});
     $rootScope.$broadcast("pin-added", stateSvc.getChapterIndex() - 1);
   };
 
@@ -209,7 +210,7 @@ function pinSvc(
    * @param chapter_index Chapter index to remove.
    */
   svc.removeChapter = chapter_index => {
-    svc.pins.splice(chapter_index, 1);
+    stateSvc.config.storypins.splice(chapter_index, 1);
   };
 
   /**
@@ -218,7 +219,7 @@ function pinSvc(
    * @return Returns a promise
    */
   svc.getFeaturesFromServer = config => {
-    const features_url = `/maps/${config.id}/annotations`;
+    const features_url = `/maps/${config.id}/storypins`;
     const defer = $q.defer();
     $http({
       url: features_url,
@@ -261,7 +262,7 @@ function pinSvc(
     // Create the new pin and insert to chapter
     const storyPin = new svc.Pin(props);
     storyPin.setId(feature.id);
-    svc.pins[chapter].push(storyPin);
+    stateSvc.config.storypins[chapter].push(storyPin);
   };
 
   /**
@@ -291,9 +292,9 @@ function pinSvc(
    * @param chapter_index The chapter
    * @returns {Array|*} An array of Pins
    */
-  svc.getPins = chapter_index => svc.pins[chapter_index] || [];
+  svc.getPins = chapter_index => stateSvc.config.storypins[chapter_index] || [];
   svc.reorderPins = (from_index, to_index) => {
-    svc.pins.splice(to_index, 0, svc.pins.splice(from_index, 1)[0]);
+    stateSvc.config.storypins.splice(to_index, 0, stateSvc.config.storypins.splice(from_index, 1)[0]);
   };
 
   /**
@@ -302,13 +303,13 @@ function pinSvc(
    * @param chapter_index The chapter to remove from.
    */
   svc.removePin = (storyPin, chapter_index) => {
-    for (let i = 0; i < svc.pins[chapter_index].length; i++) {
-      if (storyPin.id_ === svc.pins[chapter_index][i].id_) {
+    for (let i = 0; i < stateSvc.config.storypins[chapter_index].length; i++) {
+      if (storyPin.id_ === stateSvc.config.storypins[chapter_index][i].id_) {
         const splice_index = i;
         if (splice_index === 0) {
-          svc.pins[chapter_index].splice(0, 1);
+          stateSvc.config.storypins[chapter_index].splice(0, 1);
         } else {
-          svc.pins[chapter_index].splice(splice_index, 1);
+          stateSvc.config.storypins[chapter_index].splice(splice_index, 1);
         }
         $rootScope.$broadcast("pin-removed", chapter_index);
         return storyPin.id;
@@ -390,10 +391,10 @@ function pinSvc(
     // Create the new storypin
     const storyPin = new svc.Pin(props);
     // Push to the chapter
-    if (!svc.pins[chapter_index]) {
-      svc.pins[chapter_index] = [];
+    if (!stateSvc.config.storypins[chapter_index]) {
+      stateSvc.config.storypins[chapter_index] = [];
     }
-    svc.pins[chapter_index].push(storyPin);
+    stateSvc.config.storypins[chapter_index].push(storyPin);
     // Broadcast event
 
     console.log("story pin suposed to be added", storyPin);
@@ -419,9 +420,9 @@ function pinSvc(
       const newGeom = new ol.geom.Point(pin.geometry.coordinates);
       pin.setGeometry(newGeom);
     }
-    for (let iPin = 0; iPin < svc.pins.length; iPin += 1) {
-      if (pin.id === svc.pins[iPin].id) {
-        svc.pins[iPin] = pin;
+    for (let iPin = 0; iPin < stateSvc.config.storypins.length; iPin += 1) {
+      if (pin.id === stateSvc.config.storypins[iPin].id) {
+        stateSvc.config.storypins[iPin] = pin;
       }
     }
     // TODO: Check if this broadcast is behaving OK
@@ -505,7 +506,7 @@ function pinSvc(
       }
 
       const storyPin = new svc.Pin(pin);
-      svc.pins[chapter_index].push(storyPin);
+      stateSvc.config.storypins[chapter_index].push(storyPin);
     }
     $rootScope.$broadcast("pin-added", chapter_index);
   };
@@ -517,7 +518,7 @@ function pinSvc(
   svc.addChaptersAndPins = config => {
     const defer = $q.defer();
     angular.forEach(config.chapters, (chapterConfig, index) => {
-      if (!goog.isDefAndNotNull(svc.pins[index])) {
+      if (!goog.isDefAndNotNull(stateSvc.config.storypins[index])) {
         svc.addChapter();
       }
       svc.getFeaturesAndConvertToPins(chapterConfig).then(complete => {
@@ -586,7 +587,7 @@ function pinSvc(
     }
 
     // Set some extra properties.
-    pin.index_id = svc.pins[chapterIndex].length - 1;;
+    pin.index_id = stateSvc.config.storypins[chapterIndex].length - 1;;
     svc.currentPin = pin; // TODO: This behaves weird. Don't rely on currentPin :(
     svc.currentPin.coords = center; // TODO: Use the geometry coords!
 
@@ -608,7 +609,7 @@ function pinSvc(
    * a Pin will be placed and the coordinates for currentPin updated.
    */
   svc.turnPinDrawModeOn = index => {
-    const pin = svc.pins[stateSvc.getChapterIndex()][index];
+    const pin = stateSvc.config.storypins[stateSvc.getChapterIndex()][index];
     svc.currentPin = pin;
     const map = MapManager.storyMap.getMap();
 
@@ -622,8 +623,6 @@ function pinSvc(
       // Add the drag interaction
       // TODO: Start drag and drop here.
       svc.start_drag_interaction([pin.map_feature]);
-
-
     } else {
       // Remove the drag interaction
       // TODO: Stop drag interaction here
@@ -898,7 +897,7 @@ function pinSvc(
    * @param chapter_index The chapter's index.
    */
   svc.removePinFeatureFromMap = (pin_index, chapter_index) => {
-    const chapterPins = svc.pins[chapter_index];
+    const chapterPins = stateSvc.config.storypins[chapter_index];
     const pin = chapterPins[pin_index];
 
     if (!pin) {
@@ -927,7 +926,7 @@ function pinSvc(
     svc.removePinFeatureFromMap(pin_index.$index, chapter_index);
 
     // Remove pin from list:
-    svc.pins[chapter_index].splice(pin_index, 1);
+    stateSvc.config.storypins[chapter_index].splice(pin_index, 1);
     $rootScope.$broadcast("pin-removed", chapter_index);
   };
 
@@ -939,7 +938,7 @@ function pinSvc(
     const pin_list = [];
     let chapter_count = 0;
     // Loop chapters.
-    svc.pins.forEach(chapter => {
+    stateSvc.config.storypins.forEach(chapter => {
       if (chapter) {
         chapter.forEach(pin => {
           pin_list.push({
@@ -1051,13 +1050,13 @@ function pinSvc(
     }
 
     // Update information from features, and remove form map.
-    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+    stateSvc.config.storypins[stateSvc.getChapterIndex()].forEach(pin => {
       svc.pinLayerSource.removeFeature(pin.map_feature);
       svc.remove_overlay_from_DOM_for_pin(pin);
     });
 
     // Add to the map with the new info.
-    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+    stateSvc.config.storypins[stateSvc.getChapterIndex()].forEach(pin => {
       pin.coords = pin.map_feature.getGeometry().getCoordinates();
       svc.add_storypin_to_map(pin);
       pin.overlay.setPosition(pin.coords);
@@ -1066,28 +1065,31 @@ function pinSvc(
     // Save to state service
     const featureCollections = [];
 
-    for (let i = 0; i < svc.pins.length; i += 1) {
+    for (let i = 0; i < stateSvc.config.storypins.length; i += 1) {
       featureCollections.push({
         type: "FeatureCollection",
         features: []
       });
-      for (let p = 0; p < svc.pins[i].length; p += 1) {
+      for (let p = 0; p < stateSvc.config.storypins[i].length; p += 1) {
         featureCollections[i].features.push({
           type: "Feature",
           geometry: {
             type: "Point",
-            coordinates: [svc.pins[i][p].coords[0], svc.pins[i][p].coords[1]]
+            coordinates: [
+              stateSvc.config.storypins[i][p].coords[0],
+              stateSvc.config.storypins[i][p].coords[1]
+            ]
           },
           // properties: svc.pins[i][p].properties
           properties: {
-            in_map: svc.pins[i][p].in_map,
-            in_timeline: svc.pins[i][p].in_timeline,
-            auto_show: svc.pins[i][p].auto_show,
-            start_time: svc.pins[i][p].start_time,
-            end_time: svc.pins[i][p].end_time,
-            title: svc.pins[i][p].title,
-            content: svc.pins[i][p].content,
-            id: svc.pins[i][p].id
+            in_map: stateSvc.config.storypins[i][p].in_map,
+            in_timeline: stateSvc.config.storypins[i][p].in_timeline,
+            auto_show: stateSvc.config.storypins[i][p].auto_show,
+            start_time: stateSvc.config.storypins[i][p].start_time,
+            end_time: stateSvc.config.storypins[i][p].end_time,
+            title: stateSvc.config.storypins[i][p].title,
+            content: stateSvc.config.storypins[i][p].content,
+            id: stateSvc.config.storypins[i][p].id
           }
         });
       }
@@ -1210,6 +1212,15 @@ function pinSvc(
       }
     }
     return "";
+  };
+
+  /**
+   * Gets the storypins from the backend API.
+   * @param url The url to fetch from
+   * @returns {Array} A StoryPin Array.
+   */
+  svc.get_storypins_from_api = url => {
+    return [];
   };
 
   return svc;

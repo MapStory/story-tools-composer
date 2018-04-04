@@ -389,7 +389,7 @@ function composerController(
    */
   $scope.updateStorypinTimeline = date => {
     // TODO: Use pre-cooked timeframe objects to optimize this?
-    const pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+    const pinArray = stateSvc.config.storypins[stateSvc.getChapterIndex()];
     pinArray.forEach( pin => {
       const startDate = $scope.formatDates(pin.start_time);
       const endDate = $scope.formatDates(pin.end_time);

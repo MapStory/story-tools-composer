@@ -49,7 +49,8 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
       thumbnail_url: data.thumbnail_url,
       id: data.id || 0,
       story_id: data.id || 0,
-      chapters: data.chapters
+      chapters: data.chapters,
+      storypins: [[]]
     };
 
     for (let i = 0; i < data.chapters.length; i += 1) {
