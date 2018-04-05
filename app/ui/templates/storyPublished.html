@@ -1,0 +1,6 @@
+<div ng-if="composerMode" ng-hide="viewerMode" class="modal-header">
+    <h3 class="modal-title">Your Story Has Been Published</h3>
+</div>
+<div class="modal-body">
+    Congratulations your story titled {{ stateSvc.config.about.title }} has been published.  Click <a href ="/story/{{stateSvc.config.about.slug}}">here</a> to view your published story.  
+</div>

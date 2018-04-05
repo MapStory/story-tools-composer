@@ -463,6 +463,12 @@ function stateSvc(
     }
   };
 
+  svc.publish = () => {
+    const config = svc.getConfig();
+    config.is_published = true;
+    svc.save();
+  };
+
   svc.save_storypins = storypins => {
     svc.config.storypins = storypins;
   };

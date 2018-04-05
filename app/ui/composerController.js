@@ -101,6 +101,11 @@ function composerController(
     stateSvc.save();
   };
 
+  $scope.publishMap = () => {
+    stateSvc.publish();
+    $scope.openPublishedModal();
+  };
+
   $scope.newMap = () => $location.path("/new");
 
   $scope.showLoadMapDialog = () => {
@@ -141,15 +146,14 @@ function composerController(
       size,
       scope: $scope
     });
+  };
 
-    uibmodalInstance.result.then(
-      selectedItem => {
-        $scope.selected = selectedItem;
-      },
-      () => {
-        $log.info(`Modal dismissed at: ${new Date()}`);
-      }
-    );
+  $scope.openPublishedModal = function(size) {
+    const uibmodalInstance = $uibModal.open({
+      templateUrl: "app/ui/templates/storyPublished.html",
+      size,
+      scope: $scope
+    });
   };
 
   $scope.frameSettings = [];
