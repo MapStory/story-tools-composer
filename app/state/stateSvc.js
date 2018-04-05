@@ -169,8 +169,6 @@ function stateSvc(
     }
   };
 
-  svc.storyComponentStore = [];
-
   svc.getIndexedMapIds = () => {
     let indexedMapIds = [];
     const chapters = svc.getConfig().chapters;
@@ -181,32 +179,16 @@ function stateSvc(
     }
   };
 
-  svc.fetchStoryComponentFromServer = (mapId, type) => {
+  /**
+   * Gets storypins and storyframes for the given mapstory id from the server.
+   * @param story_id The mapstory id.
+   */
+  svc.fetchComponentsFromAPI = story_id => {
     return $http({
-      url: `/maps/${mapId}/story${type}`,
+      url: `/api/mapstories/${story_id}`,
       method: "GET"
     }).then(data => {
-      const chapterIndex = svc.getChapterIndexByMapId(mapId);
-      svc.storyComponentStore[chapterIndex][type] = data;
-    });
-  };
-
-  svc.fetchStoryComponentsFromServer = () => {
-    const { chapters } = svc.getConfig();
-    const promises = [];
-    for (let i = 0; i < chapters.length; i += 1) {
-      if (chapters[i].map_id) {
-        svc.storyComponentStore.push({
-          pins: null,
-          frames: null
-        });
-        promises.push(
-          svc.fetchStoryComponentFromServer(chapters[i].map_id, "frames")
-        );
-      }
-    }
-    $q.all(promises).then(() => {
-      $rootScope.$broadcast("storyComponentsLoaded", svc.storyComponentStore);
+      $rootScope.$broadcast("updateStorypins", data.data.chapters);
     });
   };
 
@@ -214,7 +196,31 @@ function stateSvc(
     console.log("> STORY COMPONENT DATA LOADED", data);
   });
 
-  $rootScope.$on("configInitialized", svc.fetchStoryComponentsFromServer);
+  /**
+   * Event responder for Init has finished.
+   */
+  $rootScope.$on("configInitialized", (event, data) => {
+    // This means we are in a new temp mapstory. No id has been created for this yet.
+    if( svc.is_temp_story() ){
+      // Initialize empty arrays for storypins
+      svc.getConfig().storypins = [[]];
+      // TODO: Do the same for storyframes
+    } else {
+      // Data should exist for this mapstory. Get saved components from API:
+      svc.fetchComponentsFromAPI(svc.getConfig().story_id);
+    }
+  });
+
+  /**
+   * True if this is a temp unsaved mapstory.
+   * @returns {boolean} True if this is a temp unsaved mapstory.
+   */
+  svc.is_temp_story = () => {
+    if(svc.getConfig().story_id === 0) {
+      return true;
+    }
+    return false;
+  };
 
   // !DJA @TODO: write test
   svc.removeLayer = uuid => {
