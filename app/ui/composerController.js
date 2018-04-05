@@ -190,11 +190,9 @@ function composerController(
   $scope.currentFrame = 0;
   $scope.zoomedIn = false;
 
-  window.onMoveCallback = date => {
-    $scope.getCurrentFrame(date);
-  };
-
   $scope.getCurrentFrame = date => {
+    console.log('current frame: ', $scope.currentFrame);
+    console.log('frames ', $scope.frameSettings);
     if ($scope.currentFrame < $scope.frameSettings.length) {
       const start = $scope.frameSettings[$scope.currentFrame].startDate;
       const end = $scope.frameSettings[$scope.currentFrame].endDate;
@@ -203,6 +201,7 @@ function composerController(
   };
 
   $scope.checkTimes = (date, start, end) => {
+    console.log("if: ", date, start, end, $scope.zoomedIn);
     if (
       moment(date).isSameOrAfter(start) &&
       moment(date).isSameOrBefore(end) &&
@@ -265,7 +264,7 @@ function composerController(
    */
   window.onMoveCallback = data => {
     // Checks times for storyframes.
-    $scope.checkTimes(data);
+    $scope.getCurrentFrame(data);
     // Updates StoryPins.
     $scope.updateStorypinTimeline(data);
   };
@@ -274,21 +273,6 @@ function composerController(
     const preFormatDate = moment(date);
     const formattedDate = preFormatDate.format("YYYY-MM-DD");
     return formattedDate;
-  };
-
-  let dateCount = 0;
-
-  $scope.checkTimes = date => {
-    const startDate = $scope.formatDates($scope.frameSettings.startDate);
-    const endDate = $scope.formatDates($scope.frameSettings.endDate);
-    const storyLayerStartDate = $scope.formatDates(date);
-
-    if (moment(storyLayerStartDate).isSameOrAfter(startDate) && dateCount < 1) {
-      $scope.zoomToExtent();
-      dateCount = 1;
-    } else if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
-      $scope.zoomOutExtent();
-    }
   };
 
   $scope.drawBoundingBox = () => {
