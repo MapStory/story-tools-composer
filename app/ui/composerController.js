@@ -295,15 +295,23 @@ function composerController(
     map.addInteraction(draw);
   };
 
+  $scope.checkBBDefined = (frameSettings) => {
+    if ($scope.coords === undefined) {
+        $scope.bbDefined = false;
+    } else if ($scope.coords) {
+        $scope.bbDefined = true;
+        $scope.checkTemporalOverlap(frameSettings);
+    }
+  }
+
   $scope.checkTemporalOverlap = frameSettings => {
     if (frameSettings.length < 1) {
       $scope.saveStoryDetails(frameSettings);
     } else if ($scope.frameSettings.length >= 1) {
       const numFrames = $scope.frameSettings.length;
-
       $scope.startOverlap = false;
       $scope.endOverlap = false;
-      $scope.showOverlapMsg = false;
+
       let x = 0;
 
       while (x < numFrames) {
