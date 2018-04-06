@@ -439,7 +439,12 @@ function composerController(
    */
   $scope.updateStorypinTimeline = date => {
     // TODO: Use pre-cooked timeframe objects to optimize this?
-    const pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+    let pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+    // This should not be null. Why is this happening?
+    if (!pinArray) {
+      pinArray = [];
+      pinSvc.pins[stateSvc.getChapterIndex()] = pinArray;
+    }
     pinArray.forEach(pin => {
       const startDate = $scope.formatDates(pin.start_time);
       const endDate = $scope.formatDates(pin.end_time);
