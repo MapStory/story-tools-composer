@@ -37,11 +37,11 @@
 
 <form ng-show="showForm == true" id="storySettings">
     <label>*Title</label>
-    <input id="storypin_title" type="text" ng-model="frameSettings.title"/>
+    <input id="storypin_title" type="text" ng-model="frameSettings.title" required/>
 
     <label>*Start Date</label>
     <div>
-        <input type="date" ng-model="frameSettings.startDate">
+        <input type="date" ng-model="frameSettings.startDate" required/>
         <span class="fa fa-calendar input-icons"></span>
         <input type="time" ng-model="frameSettings.startTime">
         <span class="fa fa-clock-o input-icons"></span>
@@ -49,7 +49,7 @@
 
     <label>*End Date</label>
     <div>
-        <input type="date" ng-model="frameSettings.endDate">
+        <input type="date" ng-model="frameSettings.endDate" required/>
         <span class="fa fa-calendar input-icons"></span>
         <input type="time" ng-model="frameSettings.endTime">
         <span class="fa fa-clock-o input-icons"></span>
@@ -63,12 +63,16 @@
     </div>
     <hr/>
 
-    <div class="alert alert-danger" ng-show="showOverlapMsg" id="timeOverlapError" title="Select the area for your StoryFrame">
+    <div class="alert alert-danger missingFieldMsg" ng-show="bbDefined == false">
+        <p>Please create a bounding box for your StoryFrame.</p>
+    </div>
+
+    <div class="alert alert-danger missingFieldMsg" ng-show="showOverlapMsg">
         <p>You have overlapping StoryFrames. Please adjust your dates:</p>
         <p>{{ frameSettings.startDate | date: 'mediumDate' }} -  {{ frameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
 
-    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkTemporalOverlap(frameSettings)">Save</button>
+    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings)">Save</button>
     <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframe(frameSettings, $index)">Update</button>
     <button class="btn btn-inverse" type="reset" ng-click="clearBoundingBox()">Reset</button>
 </form>
