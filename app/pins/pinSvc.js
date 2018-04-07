@@ -727,7 +727,10 @@ function pinSvc(
     element.appendChild(body);
 
     // Add to the DOM as a hidden element.
-    const overlay_div = document.getElementById("hidden-overlays");
+    let overlay_div = document.getElementById("hidden-overlays");
+    if (overlay_div === null){
+      overlay_div = document.createElement("hidden-overlays");
+    }
     overlay_div.appendChild(element);
   };
 
@@ -1211,6 +1214,26 @@ function pinSvc(
     }
     return "";
   };
+
+  $rootScope.$on("updateStorypins", (event, chapters) => {
+    chapters.forEach( (chapter, chapter_index) => {
+      chapter.storypins.forEach( pinJSON => {
+        const geom_obj = JSON.parse(pinJSON.the_geom);
+        const pin = svc.createNewPin({
+          title: pinJSON.title,
+          start_time: pinJSON.start_time,
+          end_time: pinJSON.end_time,
+          geometry: {
+            coordinates: geom_obj.coordinates
+          }
+        }, chapter_index, geom_obj.coordinates[0], geom_obj.coordinates[1]);
+        pin.content = pinJSON.content || "";
+        pin.media = pinJSON.media || "";
+        pin.in_map = pinJSON.in_map || true;
+        pin.in_timeline = pinJSON.in_timeline || true;
+      });
+    });
+  });
 
   return svc;
 }

@@ -101,6 +101,11 @@ function composerController(
     stateSvc.save();
   };
 
+  $scope.publishMap = () => {
+    stateSvc.publish();
+    $scope.openPublishedModal();
+  };
+
   $scope.newMap = () => $location.path("/new");
 
   $scope.showLoadMapDialog = () => {
@@ -141,15 +146,14 @@ function composerController(
       size,
       scope: $scope
     });
+  };
 
-    uibmodalInstance.result.then(
-      selectedItem => {
-        $scope.selected = selectedItem;
-      },
-      () => {
-        $log.info(`Modal dismissed at: ${new Date()}`);
-      }
-    );
+  $scope.openPublishedModal = function(size) {
+    const uibmodalInstance = $uibModal.open({
+      templateUrl: "app/ui/templates/storyPublished.html",
+      size,
+      scope: $scope
+    });
   };
 
   $scope.frameSettings = [];
@@ -419,7 +423,12 @@ function composerController(
    */
   $scope.updateStorypinTimeline = date => {
     // TODO: Use pre-cooked timeframe objects to optimize this?
-    const pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+    let pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+    // This should not be null. Why is this happening?
+    if (!pinArray) {
+      pinArray = [];
+      pinSvc.pins[stateSvc.getChapterIndex()] = pinArray;
+    }
     pinArray.forEach(pin => {
       const startDate = $scope.formatDates(pin.start_time);
       const endDate = $scope.formatDates(pin.end_time);
