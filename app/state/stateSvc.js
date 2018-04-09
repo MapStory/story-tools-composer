@@ -112,23 +112,8 @@ function stateSvc(
         url: mapJsonUrl
       })
         .done(data => {
-          console.log("> ORIGINAL DATA -- >", data);
           svc.config = newConfigSvc.getMapstoryConfig(data);
           window.config = svc.config;
-          // @TODO: find a permanent home for this function
-          window.config.getTempStyleName = storyLayerName => {
-            const config = window.config;
-            const idParts = {
-              user: config.about.owner.username,
-              slug: config.about.slug,
-              chapter: svc.getChapter(),
-              layerName: storyLayerName
-            };
-            const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
-              idParts.chapter
-            }-${idParts.layerName}`;
-            return tempStyleName;
-          };
           svc.originalConfig = data;
           $rootScope.$broadcast("configInitialized");
         })
@@ -349,10 +334,15 @@ function stateSvc(
         chapterConfig.map_id = data.data.id;
         mapId = chapterConfig.map_id;
         svc.setChapterConfig(index, chapterConfig);
-        return svc.saveStoryPinsToServer(mapId).then(() => {
-          res();
-          svc.saveStoryFramesToServer(mapId).then(() => res());
-        });
+        const pins = svc.get_storypins();
+        const chapterIndex = svc.getChapterIndexByMapId(mapId);
+        if (pins[chapterIndex]) {
+          return svc.saveStoryPinsToServer(mapId).then(() => {
+            res();
+          });
+        } else {
+          return res();
+        }
       });
     });
   };
@@ -426,10 +416,11 @@ function stateSvc(
   svc.saveStoryPinsToServer = mapId => {
     const pins = svc.get_storypins();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
+    const pinArray = pins[chapterIndex] || [];
     const req = $http({
       url: `/maps/${mapId}/storypins`,
       method: "POST",
-      data: JSON.stringify(pins[chapterIndex])
+      data: JSON.stringify(pinArray)
     });
     return req;
   };
