@@ -11,7 +11,6 @@ const module = angular.module("composer", [
   "storytools.core.loading",
   "storytools.core.legend",
   "storytools.edit.style",
-  "storytools.edit.boxes",
   "storytools.edit.pins",
   "storytools.core.ogc",
   "colorpicker.module",

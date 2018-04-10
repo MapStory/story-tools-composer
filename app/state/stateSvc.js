@@ -5,7 +5,7 @@ function stateSvc(
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
-  newConfigSvc,
+  configSvc,
   searchSvc,
   utils
 ) {
@@ -16,7 +16,7 @@ function stateSvc(
 
   svc.addNewChapter = () => {
     svc.config.chapters.push(
-      newConfigSvc.getChapterConfig(svc.config.chapters.length + 1)
+      configSvc.generateChapterConfig(svc.config.chapters.length + 1)
     );
   };
 
@@ -90,7 +90,7 @@ function stateSvc(
   };
 
   function initializeNewConfig() {
-    svc.config = newConfigSvc.getMapstoryConfig();
+    svc.config = configSvc.getMapstoryConfig();
     window.config = svc.config;
     svc.originalConfig = window.config;
     $rootScope.$broadcast("configInitialized");
@@ -112,7 +112,7 @@ function stateSvc(
         url: mapJsonUrl
       })
         .done(data => {
-          svc.config = newConfigSvc.getMapstoryConfig(data);
+          svc.config = configSvc.getMapstoryConfig(data);
           window.config = svc.config;
           svc.originalConfig = data;
           $rootScope.$broadcast("configInitialized");

@@ -17,7 +17,7 @@ function composerController(
   uiHelperSvc,
   searchSvc,
   stateSvc,
-  newConfigSvc,
+  configSvc,
   $location
 ) {
   let lastSelectedTab = null;

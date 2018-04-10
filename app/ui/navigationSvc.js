@@ -1,6 +1,5 @@
 function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
   const svc = {};
-  const values = { annotations: [], boxes: [], data: [] };
 
   /**
    * Navigates to next chapter or loops around.
@@ -12,13 +11,16 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
     if (nextChapter <= stateSvc.getChapterCount()) {
       // Go to next
       $log.info("Going to Chapter ", nextChapter);
-      $rootScope.$broadcast("updateTimeValues", values);
-      $rootScope.$broadcast("changingChapter", thisChapter -1, nextChapter -1); // (-1 because indeces start at 1)
+      $rootScope.$broadcast(
+        "changingChapter",
+        thisChapter - 1,
+        nextChapter - 1
+      ); // (-1 because indeces start at 1)
       $location.path(appConfig.routes.chapter + nextChapter);
     } else {
       // Go from last to first.
       $location.path("");
-      $rootScope.$broadcast("changingChapter", thisChapter -1, 0);
+      $rootScope.$broadcast("changingChapter", thisChapter - 1, 0);
     }
   };
 
@@ -32,13 +34,20 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
     if (previousChapter > 0) {
       // Go to previous
       $log.info("Going to the Chapter ", previousChapter);
-      $rootScope.$broadcast("updateTimeValues", values);
-      $rootScope.$broadcast("changingChapter", thisChapter -1, previousChapter -1); // (-1 because indeces start at 1)
+      $rootScope.$broadcast(
+        "changingChapter",
+        thisChapter - 1,
+        previousChapter - 1
+      ); // (-1 because indeces start at 1)
       $location.path(appConfig.routes.chapter + previousChapter);
     } else {
       // Go from first to last.
       svc.goToChapter(stateSvc.getChapterCount());
-      $rootScope.$broadcast("changingChapter", thisChapter -1, stateSvc.getChapterCount() -1);
+      $rootScope.$broadcast(
+        "changingChapter",
+        thisChapter - 1,
+        stateSvc.getChapterCount() - 1
+      );
     }
   };
 
@@ -49,7 +58,6 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
   svc.goToChapter = number => {
     if (number > 0) {
       $log.info("Going to the Chapter ", number);
-      $rootScope.$broadcast("updateTimeValues", values);
       $location.path(appConfig.routes.chapter + number);
     } else {
       $location.path("");
