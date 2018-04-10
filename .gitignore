@@ -3,3 +3,4 @@ node_modules
 *bundle.*
 .idea/
 .vscode/
+yarn-error.log
