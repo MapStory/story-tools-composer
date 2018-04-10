@@ -333,7 +333,7 @@ function stateSvc(
       }).then(data => {
         chapterConfig.map_id = data.data.id;
         mapId = chapterConfig.map_id;
-        svc.setChapterConfig(index, chapterConfig);
+        config.chapters[index].map_id = mapId;
         const pins = svc.get_storypins();
         const chapterIndex = svc.getChapterIndexByMapId(mapId);
         if (pins[chapterIndex]) {
@@ -354,13 +354,14 @@ function stateSvc(
   svc.updateChapterOnServer = index =>
     new Promise(res => {
       const config = svc.getChapterConfigs()[index];
-      config.map.layers = config.map.layers.filter(
+      const configCopy = { ...config };
+      configCopy.map.layers = configCopy.map.layers.filter(
         layer => layer.group !== "background"
       );
       $http({
         url: `/maps/${config.map_id}/data`,
         method: "PUT",
-        data: JSON.stringify(config)
+        data: JSON.stringify(configCopy)
       })
         .then(() => svc.saveStoryPinsToServer(config.map_id))
         .then(() => svc.saveStoryFramesToServer(config.map_id))
