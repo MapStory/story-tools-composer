@@ -54,17 +54,17 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
 
     for (let i = 0; i < data.chapters.length; i += 1) {
       data.chapters[i].owner = data.owner;
-      cfg.chapters[i] = svc.getChapterConfig(i + 1, data.chapters[i]);
+      cfg.chapters[i] = svc.generateChapterConfig(i + 1, data.chapters[i]);
     }
     if (data.chapters.length === 0) {
-      cfg.chapters[0] = svc.getChapterConfig();
+      cfg.chapters[0] = svc.generateChapterConfig();
       cfg.chapters[0].owner = data.owner;
     }
 
     return cfg;
   };
 
-  svc.getChapterConfig = (index, data) => {
+  svc.generateChapterConfig = (index, data) => {
     if (!data) {
       data = {
         abstract: "",

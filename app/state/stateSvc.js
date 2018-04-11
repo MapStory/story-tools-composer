@@ -16,7 +16,7 @@ function stateSvc(
 
   svc.addNewChapter = () => {
     svc.config.chapters.push(
-      configSvc.getChapterConfig(svc.config.chapters.length + 1)
+      configSvc.generateChapterConfig(svc.config.chapters.length + 1)
     );
   };
 

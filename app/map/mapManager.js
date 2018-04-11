@@ -103,6 +103,9 @@ function MapManager(
 
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
+    for (let i = 0; i < options.layers.length; i++) {
+      svc.buildStoryLayer(options.layers[i]);
+    }
   };
 
   svc.loadMapFromUrl = options => {
