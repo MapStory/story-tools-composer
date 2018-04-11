@@ -438,12 +438,20 @@ function stateSvc(
     return req;
   };
 
+  svc.generateStoryThumbnail = storyId => {
+    $http({
+      url: `/story/${storyId}/generate_thumbnail`,
+      method: "POST",
+    });
+  };
+
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids
     const { story_id } = svc.getConfig();
     const retrieveChapterIdsAndSave = () =>
       svc.saveStoryToServer().then(() => {
         const p = svc.generateChapterPromiseQueue();
+        svc.generateStoryThumbnail(story_id);
         return p;
       });
     if (!story_id) {
