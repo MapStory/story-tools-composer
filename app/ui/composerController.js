@@ -146,6 +146,9 @@ function composerController(
       size,
       scope: $scope
     });
+    $scope.close = () => {
+      uibmodalInstance.dismiss('close');
+    }
   };
 
   $scope.openPublishedModal = function(size) {
@@ -154,6 +157,9 @@ function composerController(
       size,
       scope: $scope
     });
+    $scope.close = () => {
+      uibmodalInstance.dismiss('close');
+    }
   };
 
   $scope.frameSettings = [];
