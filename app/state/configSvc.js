@@ -1,6 +1,109 @@
 function newConfigSvc(layerOptionsSvc, appConfig, $http) {
   const svc = {};
 
+  const basemaps = [
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "natural-earth-1",
+      title: "Natural Earth",
+      visibility: false,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "natural-earth-2",
+      title: "Natural Earth 2",
+      visibility: false,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "geography-class",
+      title: "Geography Class",
+      visibility: false,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "control-room",
+      title: "MapBoxControlRoom",
+      visibility: false,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "world-dark",
+      title: "World Dark",
+      visibility: true,
+      selected: true,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "world-light",
+      title: "World Light",
+      visibility: false,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "hot",
+      title: "Humanitarian OpenStreetMap",
+      args: [
+        "Humanitarian OpenStreetMap",
+        [
+          "//a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
+          "//b.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
+          "//c.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png"
+        ],
+        { tileOptions: { crossOriginKeyword: null } }
+      ],
+      visibility: false,
+      source: "3",
+      fixed: true,
+      type: "OpenLayers.Layer.OSM"
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "osm",
+      title: "OpenStreetMap",
+      args: ["OpenStreetMap"],
+      visibility: false,
+      source: "3",
+      fixed: true,
+      type: "OpenLayers.Layer.OSM"
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "world-topo-map",
+      title: "Eri NGS",
+      args: [
+        "Worldmap",
+        "https://services.arcgisonline.com/arcgis/rest/services/NGS_Topo_US_2D/MapServer/",
+        { layers: "basic" }
+      ],
+      visibility: false,
+      source: "2",
+      fixed: true,
+      type: "OpenLayers.Layer"
+    }
+  ];
+
   svc.getLayerListFromServerData = layers => {
     if (!layers) {
       return [];
@@ -130,78 +233,9 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         zoom: 5,
         story_id: data.story_id || null,
         projection: "EPSG:900913",
-        layers: [
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "natural-earth-1",
-            title: "Natural Earth",
-            visibility: false,
-            source: "1",
-            fixed: false
-          },
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "natural-earth-2",
-            title: "Natural Earth 2",
-            visibility: false,
-            source: "1",
-            fixed: false
-          },
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "geography-class",
-            title: "Geography Class",
-            visibility: false,
-            source: "1",
-            fixed: false
-          },
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "control-room",
-            title: "MapBoxControlRoom",
-            visibility: false,
-            source: "1",
-            fixed: false
-          },
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "world-dark",
-            title: "World Dark",
-            visibility: true,
-            selected: true,
-            source: "1",
-            fixed: false
-          },
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "world-light",
-            title: "World Light",
-            visibility: false,
-            source: "1",
-            fixed: false
-          },
-          {
-            opacity: 1.0,
-            group: "background",
-            name: "NGS_Topo_US_2D",
-            title: "Eri NGS",
-            args: [
-              "Worldmap",
-              "https://services.arcgisonline.com/arcgis/rest/services/NGS_Topo_US_2D/MapServer/",
-              { layers: "basic" }
-            ],
-            visibility: false,
-            source: "2",
-            fixed: true,
-            type: "OpenLayers.Layer"
-          }
-        ].concat(svc.getLayerListFromServerData(data.layers)),
+        layers: JSON.parse(JSON.stringify(basemaps)).concat(
+          svc.getLayerListFromServerData(data.layers)
+        ),
         keywords: []
       }
     };
