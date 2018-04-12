@@ -365,6 +365,7 @@ function stateSvc(
       })
         .then(() => svc.saveStoryPinsToServer(config.map_id))
         .then(() => svc.saveStoryFramesToServer(config.map_id))
+        .then(() => svc.generateStoryThumbnail(config.story_id))
         .then(() => {
           res();
         });
@@ -428,7 +429,7 @@ function stateSvc(
 
   svc.saveStoryFramesToServer = mapId => {
     const config = svc.getConfig();
-    const frames = config.frameSettings;
+    const frames = config.frameSettings || [[]];
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const req = $http({
       url: `/maps/${mapId}/storyframes`,
@@ -439,7 +440,7 @@ function stateSvc(
   };
 
   svc.generateStoryThumbnail = storyId => {
-    $http({
+    return $http({
       url: `/story/${storyId}/generate_thumbnail`,
       method: "POST",
     });
@@ -451,7 +452,6 @@ function stateSvc(
     const retrieveChapterIdsAndSave = () =>
       svc.saveStoryToServer().then(() => {
         const p = svc.generateChapterPromiseQueue();
-        svc.generateStoryThumbnail(story_id);
         return p;
       });
     if (!story_id) {
