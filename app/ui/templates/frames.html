@@ -67,7 +67,7 @@
         <p>Please create a bounding box for your StoryFrame.</p>
     </div>
 
-    <div class="alert alert-danger missingFieldMsg" ng-show="showOverlapMsg">
+    <div class="alert alert-danger" ng-show="showOverlapMsg" id="timeOverlapError" title="Select the area for your StoryFrame">
         <p>You have overlapping StoryFrames. Please adjust your dates:</p>
         <p>{{ frameSettings.startDate | date: 'mediumDate' }} -  {{ frameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
