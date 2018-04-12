@@ -293,6 +293,19 @@ function stateSvc(
 
   svc.initConfig();
 
+  svc.getCategories = () => {
+    $http({
+      url: "/api/categories/",
+      method: "GET",
+    }).then(data => {
+      console.log(data);
+      svc.categories = data.data.objects;
+      res();
+    });
+  };
+
+  svc.getCategories();
+
   svc.getUniqueStoryIdFromServer = () =>
     new Promise(res => {
       const config = svc.getConfig();
@@ -303,7 +316,7 @@ function stateSvc(
           about: {
             title: config.about.title,
             abstract: config.about.abstract,
-            category: "" // @TODO: populate category
+            category: config.about.category,
           },
           story_id: config.story_id || 0,
           is_published: false,
