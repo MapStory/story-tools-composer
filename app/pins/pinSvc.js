@@ -578,24 +578,29 @@ function pinSvc(
         coordinates: center
       }
     };
+    return svc.createStoryPinWithConfig(defaults, chapterIndex, center);
+  };
 
+  /**
+   * Creates and adds storypin to map.
+   * @param config The config obj.
+   */
+  svc.createStoryPinWithConfig = (config, chapterIndex, coords) => {
     // Add to this chapter's StoryPin list
-    const pin = svc.addPin(defaults, chapterIndex);
+    const pin = svc.addPin(config, chapterIndex);
     if (!pin) {
       alert("No pin was created");
     }
 
     // Set some extra properties.
-    pin.index_id = svc.pins[chapterIndex].length - 1;;
-    svc.currentPin = pin; // TODO: This behaves weird. Don't rely on currentPin :(
-    svc.currentPin.coords = center; // TODO: Use the geometry coords!
+    pin.index_id = svc.pins[chapterIndex].length - 1;
+    pin.coords = coords;
 
     // Update the map with the new Pin
     if (pin.in_map === true) {
       svc.add_storypin_to_map(pin);
     }
 
-    // TODO: Make sure this isn't used anymore and remove it.
     $rootScope.$broadcast("pin-added", pin);
     return pin;
   };
@@ -637,7 +642,6 @@ function pinSvc(
     }
   };
 
-  // TODO: Finish this
   svc.onBulkPinAdd = () => {
     // Open modal and start the upload wizard
     svc.modalInstance = $uibModal.open({
@@ -645,8 +649,6 @@ function pinSvc(
       ariaLabelledBy: "modal-title",
       ariaDescribedBy: "modal-body",
       templateUrl: "myModalContent.html"
-      // controller: svc,
-      // controllerAs: '$ctrl',
     });
 
     svc.modalInstance.result.then(
@@ -657,9 +659,6 @@ function pinSvc(
         const x = 3;
       }
     );
-
-    // TODO: Remove this later:
-    // svc.test_the_thing_remove_this_later();
   };
 
   /**
@@ -708,12 +707,10 @@ function pinSvc(
     const content = document.createTextNode(`${txt_content}`);
     body.appendChild(content);
 
-    // TODO: Create dynamic content for media if it whitelists OK here:
     const link = document.createElement("a");
     link.setAttribute("href", `${txt_media}`);
     body.appendChild(link);
 
-    // TODO: Whitelist this URL
     if(pin.media !== null) {
       const embedded_media = document.createElement("iframe");
       embedded_media.setAttribute(
@@ -1132,6 +1129,8 @@ function pinSvc(
     // This is null:
     // TODO: Fix this null object. This should close the modal dialog.
     // svc.modalInstance.close();
+
+    svc.pins[stateSvc.getChapterIndex()].push();
     return pin_array;
   };
 
@@ -1232,6 +1231,27 @@ function pinSvc(
         pin.in_map = pinJSON.in_map || true;
         pin.in_timeline = pinJSON.in_timeline || true;
       });
+    });
+  });
+
+  $rootScope.$on("changingChapter", (event, currentChapterIndex, nextChapterIndex) => {
+    const currentPins = svc.getPins(currentChapterIndex);
+    const nextPins = svc.getPins(nextChapterIndex);
+    const map = MapManager.storyMap.getMap();
+
+    // Remove previous chapter
+    currentPins.forEach( (pin, pin_index) => {
+      svc.removePinFeatureFromMap(pin_index, currentChapterIndex);
+      svc.destroyOverlay(pin);
+    });
+
+    // destoy old storypin layer source:
+    map.removeLayer(svc.pinLayerSource);
+    svc.pinLayerSource = null;
+
+    // Add the new pins:
+    nextPins.forEach( (pin, pin_index) => {
+      svc.add_storypin_to_map(pin);
     });
   });
 

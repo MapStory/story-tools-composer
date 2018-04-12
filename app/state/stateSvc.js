@@ -5,7 +5,7 @@ function stateSvc(
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
-  newConfigSvc,
+  configSvc,
   searchSvc,
   utils
 ) {
@@ -16,7 +16,7 @@ function stateSvc(
 
   svc.addNewChapter = () => {
     svc.config.chapters.push(
-      newConfigSvc.getChapterConfig(svc.config.chapters.length + 1)
+      configSvc.generateChapterConfig(svc.config.chapters.length + 1)
     );
   };
 
@@ -90,7 +90,7 @@ function stateSvc(
   };
 
   function initializeNewConfig() {
-    svc.config = newConfigSvc.getMapstoryConfig();
+    svc.config = configSvc.getMapstoryConfig();
     window.config = svc.config;
     svc.originalConfig = window.config;
     $rootScope.$broadcast("configInitialized");
@@ -112,23 +112,8 @@ function stateSvc(
         url: mapJsonUrl
       })
         .done(data => {
-          console.log("> ORIGINAL DATA -- >", data);
-          svc.config = newConfigSvc.getMapstoryConfig(data);
+          svc.config = configSvc.getMapstoryConfig(data);
           window.config = svc.config;
-          // @TODO: find a permanent home for this function
-          window.config.getTempStyleName = storyLayerName => {
-            const config = window.config;
-            const idParts = {
-              user: config.about.owner.username,
-              slug: config.about.slug,
-              chapter: svc.getChapter(),
-              layerName: storyLayerName
-            };
-            const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
-              idParts.chapter
-            }-${idParts.layerName}`;
-            return tempStyleName;
-          };
           svc.originalConfig = data;
           $rootScope.$broadcast("configInitialized");
         })
@@ -349,11 +334,16 @@ function stateSvc(
       }).then(data => {
         chapterConfig.map_id = data.data.id;
         mapId = chapterConfig.map_id;
-        svc.setChapterConfig(index, chapterConfig);
-        return svc.saveStoryPinsToServer(mapId).then(() => {
-          res();
-          svc.saveStoryFramesToServer(mapId).then(() => res());
-        });
+        config.chapters[index].map_id = mapId;
+        const pins = svc.get_storypins();
+        const chapterIndex = svc.getChapterIndexByMapId(mapId);
+        if (pins[chapterIndex]) {
+          return svc.saveStoryPinsToServer(mapId).then(() => {
+            res();
+          });
+        } else {
+          return res();
+        }
       });
     });
   };
@@ -365,16 +355,18 @@ function stateSvc(
   svc.updateChapterOnServer = index =>
     new Promise(res => {
       const config = svc.getChapterConfigs()[index];
-      config.map.layers = config.map.layers.filter(
+      const configCopy = { ...config };
+      configCopy.map.layers = configCopy.map.layers.filter(
         layer => layer.group !== "background"
       );
       $http({
         url: `/maps/${config.map_id}/data`,
         method: "PUT",
-        data: JSON.stringify(config)
+        data: JSON.stringify(configCopy)
       })
         .then(() => svc.saveStoryPinsToServer(config.map_id))
         .then(() => svc.saveStoryFramesToServer(config.map_id))
+        .then(() => svc.generateStoryThumbnail(config.story_id))
         .then(() => {
           res();
         });
@@ -427,17 +419,18 @@ function stateSvc(
   svc.saveStoryPinsToServer = mapId => {
     const pins = svc.get_storypins();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
+    const pinArray = pins[chapterIndex] || [];
     const req = $http({
       url: `/maps/${mapId}/storypins`,
       method: "POST",
-      data: JSON.stringify(pins[chapterIndex])
+      data: JSON.stringify(pinArray)
     });
     return req;
   };
 
   svc.saveStoryFramesToServer = mapId => {
     const config = svc.getConfig();
-    const frames = config.frameSettings;
+    const frames = config.frameSettings || [[]];
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const req = $http({
       url: `/maps/${mapId}/storyframes`,
@@ -446,6 +439,13 @@ function stateSvc(
     });
     console.log(1);
     return req;
+  };
+
+  svc.generateStoryThumbnail = storyId => {
+    return $http({
+      url: `/story/${storyId}/generate_thumbnail`,
+      method: "POST",
+    });
   };
 
   svc.save = () => {

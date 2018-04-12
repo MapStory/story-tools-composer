@@ -5,10 +5,8 @@ function MapManager(
   $rootScope,
   $location,
   $compile,
-  StoryPinLayerManager,
   stStoryMapBuilder,
   stLocalStorageSvc,
-  stAnnotationsStore,
   stEditableLayerBuilder,
   TimeControlsManager,
   EditableStoryMap,
@@ -26,14 +24,11 @@ function MapManager(
   });
 
   window.storyMap = svc.storyMap;
-  StoryPinLayerManager.map = svc.storyMap;
-  //StoryBoxLayerManager.map = this.storyMap;
   svc._config = {};
   svc.title = "";
   svc.owner = "";
   svc.storyChapter = 1;
   svc.chapterCount = 1;
-  StoryPinLayerManager.storyPinsLayer = svc.storyMap.storyPinsLayer;
 
   svc.displayPinInfo = (pixel, pin) => {
     let feature = null;
@@ -108,26 +103,9 @@ function MapManager(
 
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
-    const annotationsLoad = svc.getDataFromLocalServer(
-      options.id,
-      "annotations"
-    );
-    const boxesLoad = svc.getDataFromLocalServer(options.id, "boxes");
     for (let i = 0; i < options.layers.length; i++) {
       svc.buildStoryLayer(options.layers[i]);
     }
-    $q.all([annotationsLoad, boxesLoad]).then(values => {
-      if (values[0] !== "error") {
-        StoryPinLayerManager.loadFromGeoJSON(
-          values[0].data,
-          svc.storyMap
-            .getMap()
-            .getView()
-            .getProjection(),
-          true
-        );
-      }
-    });
   };
 
   svc.loadMapFromUrl = options => {
@@ -142,21 +120,6 @@ function MapManager(
           stStoryMapBaseBuilder.defaultMap(svc.storyMap);
         }
       });
-    let annotationsURL = options.url.replace("/data", "/annotations");
-    if (annotationsURL.slice(-1) === "/") {
-      annotationsURL = annotationsURL.slice(0, -1);
-    }
-    const annotationsLoad = $http.get(annotationsURL);
-    $q.all([mapLoad, annotationsLoad]).then(values => {
-      const geojson = values[1].data;
-      StoryPinLayerManager.loadFromGeoJSON(
-        geojson,
-        svc.storyMap
-          .getMap()
-          .getView()
-          .getProjection()
-      );
-    });
   };
 
   svc.loadMap = options => {

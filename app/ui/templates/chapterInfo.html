@@ -3,11 +3,11 @@
     <div class="form-field">
         <label for="chapter_title">Chapter Title</label>
         <br />
-        <input ng-model="stateSvc.currentChapter.about.title" id="chapter_title" type="text" name="chapter_title" required />
+        <input ng-model="stateSvc.getChapterConfig().about.title" id="chapter_title" type="text" name="chapter_title" required />
     </div>
     <div class="form-field">
         <label for="chapter_summary">Chapter Summary</label>
         <br />
-        <textarea id="chapter_summary" ng-model="stateSvc.currentChapter.about.abstract" rows="10" name="chapter_summary" required /></textarea>
+        <textarea id="chapter_summary" ng-model="stateSvc.getChapterConfig().about.abstract" rows="10" name="chapter_summary" required /></textarea>
     </div>
 </form>

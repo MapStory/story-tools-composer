@@ -44,7 +44,7 @@ describe('navigationSvc', () => {
       stateSvc.setConfig({chapters:[{}]});
       spyOn(location, 'path');
       navigationSvc.previousChapter();
-      expect(location.path).toHaveBeenCalledWith('');
+      expect(location.path).toHaveBeenCalledWith('/chapter/1');
     });
   });
 });
