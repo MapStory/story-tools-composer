@@ -189,8 +189,6 @@ function stateSvc(
     if( svc.is_temp_story() ){
       // Initialize empty arrays for storypins
       svc.getConfig().storypins = [[]];
-      // TODO: Do the same for storyframes
-      // svc.getConfig() = [[]];
     } else {
       // Data should exist for this mapstory. Get saved components from API:
       svc.fetchComponentsFromAPI(svc.getConfig().story_id);
@@ -490,20 +488,17 @@ function stateSvc(
     return svc.config.storypins;
   };
 
-  svc.save_storyframes = storyframes => {
+  svc.saveStoryframes = storyframes => {
     svc.config.storyframes = storyframes;
-    console.log('save_storyframes ', storyframes);
   };
 
-  svc.get_storyframes = () => {
+  svc.getStoryframes = () => {
     if (svc.config.storyframes) {
       return svc.config.storyframes;
     }
-        // Lazy init an array of arrays to hold chapters with storypins.
-        svc.config.storyframes = [[]];
-        return svc.config.storyframes;
+     svc.config.storyframes = [[]];
+     return svc.config.storyframes;
     };
-
 
   return svc;
 }
