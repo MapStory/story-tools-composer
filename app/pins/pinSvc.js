@@ -1237,12 +1237,17 @@ function pinSvc(
   $rootScope.$on("changingChapter", (event, currentChapterIndex, nextChapterIndex) => {
     const currentPins = svc.getPins(currentChapterIndex);
     const nextPins = svc.getPins(nextChapterIndex);
+    const map = MapManager.storyMap.getMap();
 
     // Remove previous chapter
     currentPins.forEach( (pin, pin_index) => {
       svc.removePinFeatureFromMap(pin_index, currentChapterIndex);
       svc.destroyOverlay(pin);
     });
+
+    // destoy old storypin layer source:
+    map.removeLayer(svc.pinLayerSource);
+    svc.pinLayerSource = null;
 
     // Add the new pins:
     nextPins.forEach( (pin, pin_index) => {
