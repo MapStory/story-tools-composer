@@ -1,6 +1,8 @@
 function newConfigSvc(layerOptionsSvc, appConfig, $http) {
   const svc = {};
 
+  svc.defaultBasemap = "world-dark";
+
   const basemaps = [
     {
       opacity: 1.0,
@@ -43,8 +45,8 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
       group: "background",
       name: "world-dark",
       title: "World Dark",
-      visibility: true,
-      selected: true,
+      visibility: false,
+      selected: false,
       source: "1",
       fixed: false
     },
@@ -103,6 +105,27 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
       type: "OpenLayers.Layer"
     }
   ];
+
+  svc.getBasemapArrayWithActiveBasemap = layers => {
+    let activeBasemap = null;
+    const basemapCopy = angular.copy(basemaps);
+    if (layers && layers[0]) {
+      activeBasemap = layers[0].split("?layers=")[1];
+    }
+    return basemapCopy.map(basemap => {
+      if (activeBasemap && basemap.name === activeBasemap) {
+        basemap.visibility = true;
+        basemap.selected = true;
+      } else if (!activeBasemap && basemap.name === svc.defaultBasemap) {
+        basemap.visibility = true;
+        basemap.selected = true;
+      } else {
+        basemap.visibility = false;
+        basemap.selected = false;
+      }
+      return basemap;
+    });
+  };
 
   svc.getLayerListFromServerData = layers => {
     if (!layers) {
@@ -233,9 +256,9 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         zoom: 5,
         story_id: data.story_id || null,
         projection: "EPSG:900913",
-        layers: JSON.parse(JSON.stringify(basemaps)).concat(
-          svc.getLayerListFromServerData(data.layers)
-        ),
+        layers: svc
+          .getBasemapArrayWithActiveBasemap(data.layers)
+          .concat(svc.getLayerListFromServerData(data.layers)),
         keywords: []
       }
     };
