@@ -189,7 +189,6 @@ function stateSvc(
     if( svc.is_temp_story() ){
       // Initialize empty arrays for storypins
       svc.getConfig().storypins = [[]];
-      // TODO: Do the same for storyframes
     } else {
       // Data should exist for this mapstory. Get saved components from API:
       svc.fetchComponentsFromAPI(svc.getConfig().story_id);
@@ -222,27 +221,27 @@ function stateSvc(
 
   svc.setStoryframeDetails = frameSettings => {
     svc.config.frameSettings = [];
+    let features = [];
     for (let i = 0; i < frameSettings.length; i += 1) {
-      const featureCollection = {
-        type: "FeatureCollection",
-        features: [
-          {
+        features.push({
             type: "Feature",
             geometry: null,
             properties: {
-              title: frameSettings[i].title,
-              start_time: frameSettings[i].startTime,
-              end_time: frameSettings[i].endTime,
-              extent: [
-                [frameSettings[i].bb1[0], frameSettings[i].bb1[0]],
-                [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
-                [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
-                [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
-              ]
+                title: frameSettings[i].title,
+                start_time: frameSettings[i].startDate,
+                end_time: frameSettings[i].endDate,
+                center: [
+                    [frameSettings[i].bb1[0], frameSettings[i].bb1[1]],
+                    [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
+                    [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
+                    [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
+                ]
             }
-          }
-        ]
-      };
+        });
+        const featureCollection = {
+            type: "FeatureCollection",
+            features
+        };
       svc.config.frameSettings[svc.getChapterIndex()] = featureCollection;
     }
   };
@@ -436,6 +435,7 @@ function stateSvc(
       method: "POST",
       data: JSON.stringify(frames[chapterIndex])
     });
+    console.log(1);
     return req;
   };
 
@@ -487,6 +487,18 @@ function stateSvc(
     svc.config.storypins = [[]];
     return svc.config.storypins;
   };
+
+  svc.saveStoryframes = storyframes => {
+    svc.config.storyframes = storyframes;
+  };
+
+  svc.getStoryframes = () => {
+    if (svc.config.storyframes) {
+      return svc.config.storyframes;
+    }
+     svc.config.storyframes = [[]];
+     return svc.config.storyframes;
+    };
 
   return svc;
 }
