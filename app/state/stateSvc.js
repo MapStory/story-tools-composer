@@ -277,6 +277,27 @@ function stateSvc(
     return config;
   };
 
+  svc.updateBaseLayer = baselayer => {
+    const layers = svc.config.chapters[svc.getChapterIndex()].map.layers;
+    /*
+     The first base layer in the config when a map is reloaded will be set as `selected`
+    */
+    let replacedBaselayer = layers[0];
+    let selectedBaseLayerIndex = null;
+    for (let i = 0; i < layers.length; i += 1) {
+      if (baselayer.name == layers[i].name) {
+        selectedBaseLayerIndex = i;
+        layers[i].visibility = true;
+        layers[i].selected = true;
+        layers[0] = layers[selectedBaseLayerIndex];
+        layers[selectedBaseLayerIndex] = replacedBaselayer;
+      } else {
+        layers[i].visibility = false;
+        layers[i].selected = false;
+      }
+    }
+  };
+
   svc.getChapterAbout = () => svc.getChapterConfig().about;
 
   svc.getChapterConfigs = () => {
@@ -336,9 +357,6 @@ function stateSvc(
       config.chapters[index].story_id = config.story_id;
       config.chapters[index].map.story_id = config.story_id;
       const chapterConfig = { ...config.chapters[index] };
-      chapterConfig.map.layers = chapterConfig.map.layers.filter(
-        layer => layer.group !== "background"
-      );
       $http({
         url: "/story/chapter/new",
         method: "POST",
@@ -364,14 +382,10 @@ function stateSvc(
   svc.updateChapterOnServer = index =>
     new Promise(res => {
       const config = svc.getChapterConfigs()[index];
-      const configCopy = { ...config };
-      configCopy.map.layers = configCopy.map.layers.filter(
-        layer => layer.group !== "background"
-      );
       $http({
         url: `/maps/${config.map_id}/data`,
         method: "PUT",
-        data: JSON.stringify(configCopy)
+        data: JSON.stringify(config)
       })
         .then(() => svc.saveStoryPinsToServer(config.map_id))
         .then(() => svc.saveStoryFramesToServer(config.map_id))
