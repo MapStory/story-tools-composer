@@ -166,7 +166,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         username: data.owner.username,
         abstract: data.abstract,
         title: data.title,
-        category: data.category,
+        category: data.category || "",
         slug: data.slug
       },
       is_published: data.is_published || false,

@@ -37,6 +37,16 @@ function composerController(
     $scope.composerMode = true;
   }
 
+  function getUrlParam(name) {
+    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    return (results && results[1]) || undefined;
+  }
+
+  var layer = getUrlParam("layer");
+  if (layer > "") {
+    MapManager.addLayer(layer, {}, 0);
+  }
+
   $rootScope.$on("$locationChangeSuccess", () => {
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();
@@ -197,8 +207,6 @@ function composerController(
   $scope.zoomedIn = false;
 
   $scope.getCurrentFrame = date => {
-    console.log('current frame: ', $scope.currentFrame);
-    console.log('frames ', $scope.frameSettings);
     if ($scope.currentFrame < $scope.frameSettings.length) {
       const start = $scope.frameSettings[$scope.currentFrame].startDate;
       const end = $scope.frameSettings[$scope.currentFrame].endDate;
@@ -207,7 +215,6 @@ function composerController(
   };
 
   $scope.checkTimes = (date, start, end) => {
-    console.log("if: ", date, start, end, $scope.zoomedIn);
     if (
       moment(date).isSameOrAfter(start) &&
       moment(date).isSameOrBefore(end) &&
@@ -274,6 +281,23 @@ function composerController(
     // Updates StoryPins.
     $scope.updateStorypinTimeline(data);
   };
+
+  $rootScope.$on("updateStorypins", (event, chapters) => {
+    for (let c=0; c<chapters.length; c++) {
+        for (let f=0; f<chapters[c].storyframes.length; f++) {
+            const coords = JSON.parse(chapters[0].storyframes[f].center);
+            $scope.frameSettings.push({
+                title: chapters[c].storyframes[f].title,
+                startDate: moment.unix(chapters[c].storyframes[f].start_time).format('YYYY-MM-DD'),
+                endDate: moment.unix(chapters[c].storyframes[f].end_time).format('YYYY-MM-DD'),
+                bb1: [coords[0][0], coords[0][1]],
+                bb2: [coords[1][0], coords[1][1]],
+                bb3: [coords[2][0], coords[2][1]],
+                bb4: [coords[3][0], coords[3][1]]
+            });
+        }
+    }
+  });
 
   $scope.formatDates = date => {
     const preFormatDate = moment(date);

@@ -189,7 +189,6 @@ function stateSvc(
     if( svc.is_temp_story() ){
       // Initialize empty arrays for storypins
       svc.getConfig().storypins = [[]];
-      // TODO: Do the same for storyframes
     } else {
       // Data should exist for this mapstory. Get saved components from API:
       svc.fetchComponentsFromAPI(svc.getConfig().story_id);
@@ -222,28 +221,29 @@ function stateSvc(
 
   svc.setStoryframeDetails = frameSettings => {
     svc.config.frameSettings = [];
+    let features = [];
     for (let i = 0; i < frameSettings.length; i += 1) {
-      const featureCollection = {
-        type: "FeatureCollection",
-        features: [
-          {
+        features.push({
             type: "Feature",
             geometry: null,
             properties: {
-              title: frameSettings[i].title,
-              start_time: frameSettings[i].startTime,
-              end_time: frameSettings[i].endTime,
-              extent: [
-                [frameSettings[i].bb1[0], frameSettings[i].bb1[0]],
-                [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
-                [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
-                [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
-              ]
+                title: frameSettings[i].title,
+                start_time: frameSettings[i].startDate,
+                end_time: frameSettings[i].endDate,
+                center: [
+                    [frameSettings[i].bb1[0], frameSettings[i].bb1[1]],
+                    [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
+                    [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
+                    [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
+                ]
             }
-          }
-        ]
-      };
+        });
+        const featureCollection = {
+            type: "FeatureCollection",
+            features
+        };
       svc.config.frameSettings[svc.getChapterIndex()] = featureCollection;
+      svc.saveStoryframes(svc.config.frameSettings);
     }
   };
 
@@ -314,6 +314,19 @@ function stateSvc(
 
   svc.initConfig();
 
+  svc.getCategories = () => {
+    $http({
+      url: "/api/categories/",
+      method: "GET",
+    }).then(data => {
+      console.log(data);
+      svc.categories = data.data.objects;
+      res();
+    });
+  };
+
+  svc.getCategories();
+
   svc.getUniqueStoryIdFromServer = () =>
     new Promise(res => {
       const config = svc.getConfig();
@@ -324,7 +337,7 @@ function stateSvc(
           about: {
             title: config.about.title,
             abstract: config.about.abstract,
-            category: "" // @TODO: populate category
+            category: config.about.category,
           },
           story_id: config.story_id || 0,
           is_published: false,
@@ -352,16 +365,13 @@ function stateSvc(
         chapterConfig.map_id = data.data.id;
         mapId = chapterConfig.map_id;
         config.chapters[index].map_id = mapId;
-        const pins = svc.get_storypins();
         const chapterIndex = svc.getChapterIndexByMapId(mapId);
-        if (pins[chapterIndex]) {
-          return svc.saveStoryPinsToServer(mapId).then(() => {
-            res();
-          });
-        } else {
-          return res();
-        }
-      });
+        svc.saveStoryPinsToServer(mapId)
+        .then(() => svc.saveStoryFramesToServer(mapId))
+        .then(() => {
+          res();
+        });
+      })
     });
   };
 
@@ -379,7 +389,6 @@ function stateSvc(
       })
         .then(() => svc.saveStoryPinsToServer(config.map_id))
         .then(() => svc.saveStoryFramesToServer(config.map_id))
-        .then(() => svc.generateStoryThumbnail(config.story_id))
         .then(() => {
           res();
         });
@@ -442,14 +451,15 @@ function stateSvc(
   };
 
   svc.saveStoryFramesToServer = mapId => {
-    const config = svc.getConfig();
-    const frames = config.frameSettings || [[]];
+    const frames = svc.getStoryframes();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
+    const frameArray = frames[chapterIndex] || [];
     const req = $http({
       url: `/maps/${mapId}/storyframes`,
       method: "POST",
-      data: JSON.stringify(frames[chapterIndex])
+      data: JSON.stringify(frameArray)
     });
+    console.log(1);
     return req;
   };
 
@@ -462,13 +472,13 @@ function stateSvc(
 
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids
-    const { story_id } = svc.getConfig();
+    const config = svc.getConfig();
     const retrieveChapterIdsAndSave = () =>
-      svc.saveStoryToServer().then(() => {
+       svc.saveStoryToServer().then(() => {
         const p = svc.generateChapterPromiseQueue();
         return p;
       });
-    if (!story_id) {
+    if (!config.story_id) {
       svc
         .getUniqueStoryIdFromServer()
         .then(() => {
@@ -476,10 +486,12 @@ function stateSvc(
           return p;
         })
         .then(() => {
-          svc.updateLocationUsingStoryId();
+          svc.generateStoryThumbnail(config.story_id)
+            .then(() => svc.updateLocationUsingStoryId())
         });
     } else {
-      retrieveChapterIdsAndSave();
+      retrieveChapterIdsAndSave()
+        .then(() => svc.generateStoryThumbnail(config.story_id))
     }
   };
 
@@ -501,6 +513,18 @@ function stateSvc(
     svc.config.storypins = [[]];
     return svc.config.storypins;
   };
+
+  svc.saveStoryframes = storyframes => {
+    svc.config.storyframes = storyframes;
+  };
+
+  svc.getStoryframes = () => {
+    if (svc.config.storyframes) {
+      return svc.config.storyframes;
+    }
+     svc.config.storyframes = [[]];
+     return svc.config.storyframes;
+    };
 
   return svc;
 }
