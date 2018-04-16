@@ -1208,7 +1208,8 @@ function pinSvc(
       if (svc.is_whitelist(url)) {
         return url;
       } else {
-        alert("The URL did not pass whitelist test");
+        // TODO: Alert the user here
+        return "";
       }
     }
     return "";
@@ -1216,44 +1217,53 @@ function pinSvc(
 
   $rootScope.$on("updateStorypins", (event, chapters) => {
     chapters.forEach( (chapter, chapter_index) => {
-      chapter.storypins.forEach( pinJSON => {
+      chapter.storypins.forEach( (pinJSON, pinIndex) => {
         const geom_obj = JSON.parse(pinJSON.the_geom);
-        const pin = svc.createNewPin({
-          title: pinJSON.title,
-          start_time: pinJSON.start_time,
-          end_time: pinJSON.end_time,
-          geometry: {
-            coordinates: geom_obj.coordinates
-          }
-        }, chapter_index, geom_obj.coordinates[0], geom_obj.coordinates[1]);
+        const pin = svc.createNewPin(
+          {
+            title: pinJSON.title,
+            start_time: pinJSON.start_time,
+            end_time: pinJSON.end_time,
+            geometry: {
+              coordinates: geom_obj.coordinates
+            }
+          },
+          chapter_index, geom_obj.coordinates[0], geom_obj.coordinates[1]);
         pin.content = pinJSON.content || "";
         pin.media = pinJSON.media || "";
         pin.in_map = pinJSON.in_map || true;
         pin.in_timeline = pinJSON.in_timeline || true;
+        pin.index_id = pinIndex;
+        // pin.overlay.setPosition(pin.coords);
+        pin.show();
       });
     });
+
+    svc.onStoryPinSave();
   });
 
-  $rootScope.$on("changingChapter", (event, currentChapterIndex, nextChapterIndex) => {
-    const currentPins = svc.getPins(currentChapterIndex);
-    const nextPins = svc.getPins(nextChapterIndex);
-    const map = MapManager.storyMap.getMap();
+  $rootScope.$on(
+    "changingChapter", (event, currentChapterIndex, nextChapterIndex) =>
+    {
+      const currentPins = svc.getPins(currentChapterIndex);
+      const nextPins = svc.getPins(nextChapterIndex);
+      const map = MapManager.storyMap.getMap();
 
-    // Remove previous chapter
-    currentPins.forEach( (pin, pin_index) => {
-      svc.removePinFeatureFromMap(pin_index, currentChapterIndex);
-      svc.destroyOverlay(pin);
+      // Remove previous chapter
+      currentPins.forEach((pin, pin_index) => {
+        svc.removePinFeatureFromMap(pin_index, currentChapterIndex);
+        svc.destroyOverlay(pin);
+      });
+
+      // destoy old storypin layer source:
+      map.removeLayer(svc.pinLayerSource);
+      svc.pinLayerSource = null;
+
+      // Add the new pins:
+      nextPins.forEach( (pin, pin_index) => {
+        svc.add_storypin_to_map(pin);
+      });
     });
-
-    // destoy old storypin layer source:
-    map.removeLayer(svc.pinLayerSource);
-    svc.pinLayerSource = null;
-
-    // Add the new pins:
-    nextPins.forEach( (pin, pin_index) => {
-      svc.add_storypin_to_map(pin);
-    });
-  });
 
   return svc;
 }
