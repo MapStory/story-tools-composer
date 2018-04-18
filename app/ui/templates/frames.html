@@ -1,6 +1,6 @@
 <section>
-    <h2 class="section-title float-left">StoryFrames</h2>
-    <button class="sidebar-button" ng-click="showForm = !showForm">Create New StoryFrame</button>
+    <h2 class="section-title float-left">Create StoryFrame</h2>
+    <!--<button class="sidebar-button" ng-click="showForm = !showForm">Create New StoryFrame</button>-->
     <br/>
     <p class="clearfix" id="storyDescription">
         A StoryFrame defines the area of the map a viewer of your story will see.
@@ -13,13 +13,13 @@
     <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
     <div class="clearfix" ng-repeat="item in frameSettings">
         <div id="titleBar">
-            <a ng-click="showDetails = ! showDetails" id="storyframeTitle" class="section-title">
+            <a ng-click="showDetails = !showDetails" id="storyframeTitle" class="section-title">
                 <i class="fa fa-expand"></i> {{ item.title }}
             </a>
             <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
-            <i class="fa fa-edit" ng-click="editStoryframe($index)"></i>
+            <i class="fa fa-edit" ng-click="editStoryframe($index); showForm = !showForm"></i>
         </div>
-        <ul class="storyframe-details" ng-class="{ 'hidden': ! showDetails }">
+        <ul class="storyframe-details" ng-class="{ 'hidden': !showDetails }">
             <li><strong>Bounding Box:</strong></li>
             <ol>
                 <li>{{ item.bb1[0] | limitTo: 7 }}, {{ item.bb1[1] | limitTo: 7 }}</li>
@@ -34,8 +34,8 @@
         </ul>
     </div>
 </div>
-
-<form ng-show="showForm == true" id="storySettings">
+<!--<form ng-show="showForm" id="storySettings">-->
+<form id="storySettings">
     <label>*Title</label>
     <input id="storypin_title" type="text" ng-model="frameSettings.title" required/>
 
@@ -67,7 +67,7 @@
         <p>Please create a bounding box for your StoryFrame.</p>
     </div>
 
-    <div class="alert alert-danger missingFieldMsg" ng-show="showOverlapMsg">
+    <div class="alert alert-danger missingFieldMsg" ng-show="showOverlapMsg" class="missingFieldMsg">
         <p>You have overlapping StoryFrames. Please adjust your dates:</p>
         <p>{{ frameSettings.startDate | date: 'mediumDate' }} -  {{ frameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
