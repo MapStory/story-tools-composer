@@ -38,6 +38,16 @@ function composerController(
     $scope.composerMode = true;
   }
 
+  function getUrlParam(name) {
+    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    return (results && results[1]) || undefined;
+  }
+
+  var layer = getUrlParam("layer");
+  if (layer > "") {
+    MapManager.addLayer(layer, {}, 0);
+  }
+
   $rootScope.$on("$locationChangeSuccess", () => {
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();

@@ -52,6 +52,7 @@ function layerList(
       };
       scope.onChange = baseLayer => {
         stStoryMapBaseBuilder.setBaseLayer(MapManager.storyMap, baseLayer);
+        stateSvc.updateBaseLayer(baseLayer);
       };
       scope.onSort = (item, partFrom, partTo, indexFrom, indexTo) => {
         stateSvc.reorderLayer(indexFrom, indexTo);
