@@ -117,6 +117,8 @@ function composerController(
     $scope.openPublishedModal();
   };
 
+  $scope.goHome = () => location.href = "/";
+
   $scope.newMap = () => $location.path("/new");
 
   $scope.showLoadMapDialog = () => {
