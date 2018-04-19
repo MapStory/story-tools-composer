@@ -365,6 +365,7 @@ function stateSvc(
         chapterConfig.map_id = data.data.id;
         mapId = chapterConfig.map_id;
         config.chapters[index].map_id = mapId;
+        console.log(data);
         const chapterIndex = svc.getChapterIndexByMapId(mapId);
         svc.saveStoryPinsToServer(mapId)
         .then(() => svc.saveStoryFramesToServer(mapId))
@@ -420,6 +421,7 @@ function stateSvc(
       data: JSON.stringify(svc.getConfig())
     }).then(
       response => {
+        console.log(response);
         console.log("MAP SAVED");
       },
       response => {
@@ -446,8 +448,22 @@ function stateSvc(
       url: `/maps/${mapId}/storypins`,
       method: "POST",
       data: JSON.stringify(pinArray)
+    }).then( data => {
+      svc.updateStorypinIds(data.data.ids, chapterIndex);
     });
     return req;
+  };
+
+
+  svc.updateStorypinIds = (idArray, chapterId) => {
+    // Update the local things
+    const pins = svc.get_storypins();
+		idArray.forEach( (pinID, index) => {
+			pins[chapterId][index].id = pinID;
+		});
+
+		// Broadcast the change
+		$rootScope.$broadcast("updateStorypinIds", idArray, chapterId);
   };
 
   svc.saveStoryFramesToServer = mapId => {
@@ -501,10 +517,12 @@ function stateSvc(
     svc.save();
   };
 
+  // TODO: Fix this
   svc.save_storypins = storypins => {
     svc.config.storypins = storypins;
   };
 
+  // TODO: Fix this
   svc.get_storypins = () => {
     if (svc.config.storypins) {
       return svc.config.storypins;

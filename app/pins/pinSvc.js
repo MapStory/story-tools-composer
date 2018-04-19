@@ -1265,6 +1265,13 @@ function pinSvc(
       });
     });
 
+	$rootScope.$on("updateStorypinIds", (event, idArray, chapterID) => {
+    // Set storypin ids to mark them as saved to server
+    svc.pins[chapterID].forEach( (pin, index) => {
+      pin.id = idArray[index];
+    });
+  });
+
   return svc;
 }
 
