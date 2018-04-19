@@ -14,6 +14,7 @@ function uiHelperSvc($location, $rootScope, $log, stateSvc, pinSvc, appConfig) {
     }
   };
 
+  // TODO: Remove this
   svc.addNewPin = () => {
     pinSvc.addEmptyPinToCurrentChapter();
     svc.activePin = pinSvc.getPins(stateSvc.getChapterIndex()).length;

@@ -39,6 +39,7 @@ function pinSvc(
   svc.pinLayerSource = null;
   svc.old_interactions = [];
 
+  // TODO: Move this to pin editor controller
   // For Date selection widgets
   svc.dt = new Date(); // The DT
   svc.startdate_popup = {
@@ -49,24 +50,8 @@ function pinSvc(
   };
 
   // Start and end times.
-  svc.pin_start_time = Date.now();
-  svc.pin_end_time = Date.now();
-  svc.dt2 = new Date();
-  svc.formats = ["dd-MMMM-yyyy", "yyyy/MM/dd", "dd.MM.yyyy", "shortDate"];
-  const [first_format] = svc.formats;
-  svc.format = first_format;
-  svc.altInputFormats = ["M!/d!/yyyy"];
-  svc.inlineOptions = {
-    customClass: svc.getDayClass,
-    minDate: new Date(),
-    showWeeks: true
-  };
-
-  svc.dateOptions = {
-    dateDisabled: svc.disabled,
-    formatYear: "yy",
-    startingDay: 1
-  };
+  svc.pin_start_time = Date.now(); // TODO: Move this to pin editor controller
+  svc.pin_end_time = Date.now();  // TODO: Move this to pin editor controller
 
   // Controlls the accordions
   // TODO: Move this to a form controller
@@ -87,24 +72,6 @@ function pinSvc(
     new RegExp(/https?:\/\/(w{3}\.)?soundcloud\.com\/.+/im),
     new RegExp(/https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im)
   ];
-
-  svc.disabled = data => {
-    const date = data.date;
-    const mode = data.mode;
-    return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
-  };
-
-  svc.open_startdate = () => {
-    svc.startdate_popup.opened = true;
-  };
-
-  svc.open_enddate = () => {
-    svc.enddate_popup.opened = true;
-  };
-
-  svc.setDate = function(year, month, day) {
-    svc.dt = new Date(year, month, day);
-  };
 
   /**
    * Gets the current day
@@ -217,6 +184,7 @@ function pinSvc(
    * @param config Config
    * @return Returns a promise
    */
+  // TODO: Remove this
   svc.getFeaturesFromServer = config => {
     const features_url = `/maps/${config.id}/annotations`;
     const defer = $q.defer();
@@ -370,7 +338,7 @@ function pinSvc(
    * @param chapter_index The chapter's index.
    * @returns {Pin} The Pin created.
    */
-  svc.addPin = (props, chapter_index) => {
+  svc._addPin = (props, chapter_index) => {
     // TODO: Validate the pin!
 
     const pinValidated = svc.validateAllPinProperties(props);
@@ -587,7 +555,7 @@ function pinSvc(
    */
   svc.createStoryPinWithConfig = (config, chapterIndex, coords) => {
     // Add to this chapter's StoryPin list
-    const pin = svc.addPin(config, chapterIndex);
+    const pin = svc._addPin(config, chapterIndex);
     if (!pin) {
       alert("No pin was created");
     }
@@ -833,11 +801,16 @@ function pinSvc(
    */
   svc.createNewPin = (config, chapterIndex, lat, long) => {
     const map = MapManager.storyMap.getMap();
-    const pin = svc.addPin(config, chapterIndex);
+    const pin = svc._addPin(config, chapterIndex);
     if (!pin) {
       alert("No pin was created");
     }
     pin.coords = [lat, long];
+    pin.content = "";
+    pin.media = "";
+    pin.in_map = true;
+    pin.in_timeline = true;
+    // TODO: Start date and end date.
     svc.add_storypin_to_map(pin);
     $rootScope.$broadcast("pin-added", svc.currentPin);
     return pin;
@@ -871,8 +844,6 @@ function pinSvc(
       pin.in_timeline = element.in_timeline || true;
       pin_array.push(pin);
     });
-    console.log("pin_array is", pin_array);
-    // This is null:
     // TODO: Fix this null object. This should close the modal dialog.
     // svc.modalInstance.close();
     return pin_array;
@@ -923,9 +894,8 @@ function pinSvc(
    * @param chapter_index The chapter index of the pin.
    */
   svc.removePinByIndex = (pin_index, chapter_index) => {
-    // remove feature from map:
-    svc.removePinFeatureFromMap(pin_index.$index, chapter_index);
-
+    const pin = svc.pins[chapter_index][pin_index];
+    svc._removeStorypin(pin);
     // Remove pin from list:
     svc.pins[chapter_index].splice(pin_index, 1);
     $rootScope.$broadcast("pin-removed", chapter_index);
@@ -1052,15 +1022,14 @@ function pinSvc(
 
     // Update information from features, and remove form map.
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
-      svc.pinLayerSource.removeFeature(pin.map_feature);
-      svc.remove_overlay_from_DOM_for_pin(pin);
+      svc._removeStorypin(pin);
     });
 
     // Add to the map with the new info.
     svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
-      pin.coords = pin.map_feature.getGeometry().getCoordinates();
-      svc.add_storypin_to_map(pin);
-      pin.overlay.setPosition(pin.coords);
+      // Todo: Set coordinates properly
+      // pin.coords = pin.map_feature.getGeometry().getCoordinates();
+      svc._showPinOnMap(pin);
     });
 
     // Save to state service
@@ -1234,7 +1203,6 @@ function pinSvc(
         pin.in_map = pinJSON.in_map || true;
         pin.in_timeline = pinJSON.in_timeline || true;
         pin.index_id = pinIndex;
-        // pin.overlay.setPosition(pin.coords);
         pin.show();
       });
     });
@@ -1243,16 +1211,15 @@ function pinSvc(
   });
 
   $rootScope.$on(
-    "changingChapter", (event, currentChapterIndex, nextChapterIndex) =>
-    {
+    "changingChapter",
+    (event, currentChapterIndex, nextChapterIndex) => {
       const currentPins = svc.getPins(currentChapterIndex);
       const nextPins = svc.getPins(nextChapterIndex);
       const map = MapManager.storyMap.getMap();
 
       // Remove previous chapter
-      currentPins.forEach((pin, pin_index) => {
-        svc.removePinFeatureFromMap(pin_index, currentChapterIndex);
-        svc.destroyOverlay(pin);
+      currentPins.forEach(pin => {
+        svc._removeStorypin(pin);
       });
 
       // destoy old storypin layer source:
@@ -1260,17 +1227,32 @@ function pinSvc(
       svc.pinLayerSource = null;
 
       // Add the new pins:
-      nextPins.forEach( (pin, pin_index) => {
-        svc.add_storypin_to_map(pin);
+      nextPins.forEach(pin => {
+        svc._showPinOnMap(pin);
       });
-    });
-
-	$rootScope.$on("updateStorypinIds", (event, idArray, chapterID) => {
+    }
+  );
+  $rootScope.$on("updateStorypinIds", (event, idArray, chapterID) => {
     // Set storypin ids to mark them as saved to server
-    svc.pins[chapterID].forEach( (pin, index) => {
+    svc.pins[chapterID].forEach((pin, index) => {
       pin.id = idArray[index];
     });
   });
+
+  svc._removeStorypin = pin => {
+    svc.pinLayerSource.removeFeature(pin.map_feature);
+    svc.destroyOverlay(pin);
+    pin.overlay = null;
+    pin.map_feature = null;
+  };
+
+  svc._showPinOnMap = pin => {
+    svc.add_storypin_to_map(pin);
+    if(!pin.overlay) {
+      alert("No Overlay present!");
+    }
+    pin.overlay.setPosition(pin.coords);
+  };
 
   return svc;
 }
