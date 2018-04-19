@@ -34,27 +34,27 @@ function styleService(
     );
   };
 
-  window.getTempStyleName = storyLayer => {
-    const config = window.config;
+  window.getStyleName = (name, uuid) => {
+    const config = window.mapstory.composer.config;
     const idParts = {
-      user: config.about.owner.username,
-      slug: config.about.slug,
+      user: config.username, //@TODO: get username for new stories
+      uuid,
       chapter: stateSvc.getChapter(),
-      layerName: storyLayer
+      layerName: name
     };
-    const tempStyleName = `TEMP_${idParts.user}_${idParts.slug}-${
+    const styleName = `STYLE_${idParts.user}_${idParts.uuid}-${
       idParts.chapter
     }-${idParts.layerName}`;
-    return tempStyleName;
+    return styleName;
   };
 
   svc.handleCanStyleWMSFalseEvent = storyLayer => {
     const layerName = storyLayer.get("name");
-    const tempStyleName = window.getTempStyleName(layerName);
+    const styleName = storyLayer.get("styleName");
 
     // this case will happen if canStyleWMS is false for the server
     const style = storyLayer.get("style");
-    style.name = storyLayer.get("styleName") || tempStyleName;
+    style.name = styleName;
     const layer = storyLayer.getLayer();
     let layerSource = layer.getSource();
     const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
