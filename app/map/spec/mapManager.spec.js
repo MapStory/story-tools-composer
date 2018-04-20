@@ -13,33 +13,6 @@ describe("mapManager", () => {
     })
   );
 
-  describe("getDataFromLocalServer", () => {
-    it("should return a promise", () => {
-      const promise = MapManager.getDataFromLocalServer(15, "annotations").then;
-      expect(promise).toBeDefined();
-    });
-
-    it("should return `error` if endpoint doesn't exist", () => {
-      let res;
-      $httpBackend.whenGET("/maps/15/annotations").respond(404);
-      MapManager.getDataFromLocalServer(15, "annotations").then(_res_ => {
-        res = _res_;
-      });
-      $httpBackend.flush();
-      expect(res).toBe("error");
-    });
-
-    it("should return `error` if endpoint doesn't exist", () => {
-      let res;
-      $httpBackend.whenGET("/maps/15/annotations").respond(404);
-      MapManager.getDataFromLocalServer(15, "annotations").then(_res_ => {
-        res = _res_;
-      });
-      $httpBackend.flush();
-      expect(res).toBe("error");
-    });
-  });
-
   describe("loadMap", () => {
     it("should call `loadMapFromID`", () => {
       const loadMapFromIDSpy = spyOn(

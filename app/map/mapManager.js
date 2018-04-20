@@ -89,18 +89,6 @@ function MapManager(
     }
   };
 
-  svc.getDataFromLocalServer = (mapId, dataType) =>
-    $http
-      .get(`/maps/${mapId}/${dataType}`)
-      .then(response => response)
-      .catch((data, status) => {
-        if (status === 404) {
-          console.log("404 error");
-          return "error";
-        }
-        return "error";
-      });
-
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     for (let i = 0; i < options.layers.length; i++) {
