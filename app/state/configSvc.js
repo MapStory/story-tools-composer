@@ -1,4 +1,4 @@
-function newConfigSvc(layerOptionsSvc, appConfig, $http) {
+function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
   const svc = {};
 
   svc.defaultBasemap = "world-dark";
@@ -155,6 +155,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         title: "Mapstory title",
         category: "",
         id: 0,
+        uuid: utils.generateUUID(),
         chapters: [{}],
         is_published: false
       };
@@ -169,6 +170,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
         category: data.category || "",
         slug: data.slug
       },
+      uuid: data.uuid,
       is_published: data.is_published || false,
       removed_chapters: [],
       viewer_playbackmode: "instant",
@@ -178,8 +180,10 @@ function newConfigSvc(layerOptionsSvc, appConfig, $http) {
       chapters: data.chapters
     };
 
+    window.storyUUID = data.uuid;
+
     for (let i = 0; i < data.chapters.length; i += 1) {
-      data.chapters[i].owner = data.owner;
+      cfg.chapters[i].owner = data.owner;
       cfg.chapters[i] = svc.generateChapterConfig(i + 1, data.chapters[i]);
     }
     if (data.chapters.length === 0) {

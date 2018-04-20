@@ -34,17 +34,18 @@ function styleService(
     );
   };
 
-  window.getStyleName = (name, uuid) => {
-    const config = window.mapstory.composer.config;
+  window.getStyleName = name => {
+    const composerConfig = window.mapstory.composer.config;
     const idParts = {
-      user: config.username, //@TODO: get username for new stories
-      uuid,
+      user: composerConfig.username,
+      uuid: window.storyUUID,
       chapter: stateSvc.getChapter(),
       layerName: name
     };
     const styleName = `STYLE_${idParts.user}_${idParts.uuid}-${
       idParts.chapter
     }-${idParts.layerName}`;
+
     return styleName;
   };
 
