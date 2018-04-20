@@ -30,6 +30,7 @@ function composerController(
   $scope.pin = {};
   $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
+  $scope.showForm = null;
 
   if (window.mapstory.composerMode === "False") {
     $scope.composerMode = false;
