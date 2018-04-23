@@ -1,5 +1,3 @@
-"use strict";
-
 function layerSvc(stateSvc) {
   const svc = {};
 
@@ -69,7 +67,7 @@ function layerSvc(stateSvc) {
 
   svc.getNameFromIndex = (layerName, nameIndex) => {
     let name;
-    for (let i = 0; i < nameIndex.length; i++) {
+    for (let i = 0; i < nameIndex.length; i += 1) {
       if (
         nameIndex[i].title.trim() === layerName.trim() ||
         nameIndex[i].typename === layerName
@@ -80,17 +78,7 @@ function layerSvc(stateSvc) {
     return name;
   };
 
-  svc.handleAddLayerError = problems => {
-    let msg = "Something went wrong:";
-    if (problems[0].status == 404) {
-      msg = "Cannot find the specified layer: ";
-    } else {
-      msg += problems[0].data;
-    }
-    $log.warn("Failed to load %s because of %s", scope.layerName, problems);
-  };
-
   return svc;
 }
 
-module.exports = layerSvc;
+export default layerSvc;

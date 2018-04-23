@@ -1,15 +1,12 @@
 describe("mapManager", () => {
-  let rootScope, location, MapManager, $httpBackend, q, stateSvc;
+  let MapManager;
+  let stateSvc;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($rootScope, $location, $q, _MapManager_, _stateSvc_, _$httpBackend_) => {
-      q = $q;
-      $httpBackend = _$httpBackend_;
+    inject(($rootScope, $location, $q, _MapManager_, _stateSvc_) => {
       stateSvc = _stateSvc_;
       MapManager = _MapManager_;
-      rootScope = $rootScope.$new();
-      location = $location;
     })
   );
 

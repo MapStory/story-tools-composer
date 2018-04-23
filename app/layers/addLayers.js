@@ -1,5 +1,3 @@
-"use strict";
-
 function addLayers(
   $log,
   $http,
@@ -8,8 +6,7 @@ function addLayers(
   MapManager,
   searchSvc,
   layerSvc,
-  appConfig,
-  stateSvc
+  appConfig
 ) {
   return {
     restrict: "E",
@@ -17,7 +14,7 @@ function addLayers(
       map: "="
     },
     templateUrl: "./app/layers/templates/add-layers.html",
-    link: (scope, el, atts) => {
+    link: scope => {
       let nameIndex;
       let names;
       scope.server = {
@@ -41,7 +38,7 @@ function addLayers(
         MapManager.addLayer(name, settings, scope.server.active)
           .then(() => {
             scope.$parent.status.open = false;
-          }, layerSvc.handleAddLayerError)
+          })
           .finally(() => {
             scope.loading = false;
           });
@@ -51,4 +48,4 @@ function addLayers(
   };
 }
 
-module.exports = addLayers;
+export default addLayers;

@@ -1,9 +1,9 @@
-function featureManagerSvc($rootScope, $http, $translate, $q, timeSvc, stateSvc) {
+function featureManagerSvc() {
   const svc = {};
 
   svc.storyPinLayerMetadata = {
     StoryPinLayer: true,
-    title: 'Story Pins',
+    title: "Story Pins",
     config: {}
   };
 
@@ -18,27 +18,29 @@ function featureManagerSvc($rootScope, $http, $translate, $q, timeSvc, stateSvc)
       source: new ol.source.Vector({
         parser: null
       }),
-      style: function(feature, resolution) {
-        return [new ol.style.Style({
-          fill: new ol.style.Fill({
-            color: [0, 0, 255, 0.25]
-          }),
-          stroke: new ol.style.Stroke({
-            color: [0, 0, 255, 1],
-            width: 4
-          }),
-          image: new ol.style.Circle({
-            radius: 6,
+      style(feature, resolution) {
+        return [
+          new ol.style.Style({
             fill: new ol.style.Fill({
               color: [0, 0, 255, 0.25]
             }),
             stroke: new ol.style.Stroke({
               color: [0, 0, 255, 1],
-              width: 1.5
-            })
-          }),
-          zIndex: 1
-        })];
+              width: 4
+            }),
+            image: new ol.style.Circle({
+              radius: 6,
+              fill: new ol.style.Fill({
+                color: [0, 0, 255, 0.25]
+              }),
+              stroke: new ol.style.Stroke({
+                color: [0, 0, 255, 1],
+                width: 1.5
+              })
+            }),
+            zIndex: 1
+          })
+        ];
       }
     });
   };
@@ -46,4 +48,4 @@ function featureManagerSvc($rootScope, $http, $translate, $q, timeSvc, stateSvc)
   return svc;
 }
 
-module.exports = featureManagerSvc;
+export default featureManagerSvc;

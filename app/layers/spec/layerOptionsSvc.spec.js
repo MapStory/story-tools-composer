@@ -1,10 +1,10 @@
 describe("layerOptionsSvc", () => {
-  let rootScope, layerOptionsSvc, testServer;
+  let layerOptionsSvc;
+  let testServer;
 
   beforeEach(module("composer"));
   beforeEach(
     inject(($rootScope, _layerOptionsSvc_) => {
-      rootScope = $rootScope;
       layerOptionsSvc = _layerOptionsSvc_;
       testServer = {
         path: "/testpath"

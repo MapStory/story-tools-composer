@@ -33,28 +33,9 @@
                         {{layer.getProperties().type}}
                     </div>
                 </div>
-                <!--div class="row">
-                    <div class="col-sm-2">
-                      <strong>Visibility:</strong>
-                    </div>
-                    <div class="col-sm-10">
-                      <label class="checkbox-inline" for="visibility-{{layer.getProperties().name}}" style="padding-left:45px;padding-top:4px;">
-                      <input type="checkbox" ng-model="allowPan" checked="true" id="visibility-{{layer.getProperties().name}}" data-toggle="checkbox"
-                             class="checkbox-inline"></input>
-                      <span class="icons">
-                          <span class="icon-unchecked"></span>
-                          <span class="icon-checked"></span>
-                      </span>
-                      </label>
-                    </div>
-                </div-->
             </div>
         </div>
         <div class="pull-right">
-            <!--button type="button" data-toggle="button" ng-click="modifyLayer(layer); $event.preventDefault();" class="btn btn-xs btn-inverse">
-                <div class="stLoading" spinner-radius="16" spinner-hidden="!swapping"></div>
-                <i class="glyphicon glyphicon-cog"></i>
-            </button!-->
             <button type="button" data-toggle="button" ng-click="toggleStyle(layer);$event.preventDefault(); $event.preventDefault();" class="btn btn-xs btn-inverse" uib-tooltip="Style">
                 <i class="fa fa-paint-brush"></i>
             </button>

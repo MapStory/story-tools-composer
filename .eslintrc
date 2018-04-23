@@ -15,7 +15,6 @@
       "es6": true
   },
   "extends": [ "airbnb-base", "prettier" ],
-  "no-extend-native": ["error", { "exceptions": ["Object"] }],
   "globals": {
     "ol": true,
     "storytools": true,

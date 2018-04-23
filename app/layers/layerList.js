@@ -13,7 +13,7 @@ function layerList(
       selected: "@"
     },
     templateUrl: "./app/layers/templates/layer-list.html",
-    link: (scope, el, atts) => {
+    link: scope => {
       scope.baseLayers = layerSvc.baseLayers;
       scope.styleSvc = styleService;
       scope.styleActivated = false;
@@ -56,17 +56,9 @@ function layerList(
       };
       scope.onSort = (item, partFrom, partTo, indexFrom, indexTo) => {
         stateSvc.reorderLayer(indexFrom, indexTo);
-
-        partFrom.forEach(layer => {
-          console.log(layer.get("title"));
-        });
-
-        partTo.forEach(layer => {
-          console.log(layer.get("title"));
-        });
       };
     }
   };
 }
 
-module.exports = layerList;
+export default layerList;

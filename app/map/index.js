@@ -1,6 +1,6 @@
-'use strict';
+import { module } from "angular";
+import MapManager from "./mapManager.js";
 
-const angular = require('angular');
-const MapManager = require('./mapManager.js');
-
-angular.module('composer').service('MapManager', $injector => $injector.instantiate(MapManager));
+module("composer").service("MapManager", $injector =>
+  $injector.instantiate(MapManager)
+);

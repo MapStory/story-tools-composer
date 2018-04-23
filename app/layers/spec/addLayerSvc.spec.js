@@ -1,5 +1,6 @@
 describe("layerSvc", () => {
-  let testIndex, layerSvc;
+  let testIndex;
+  let layerSvc;
 
   beforeEach(module("composer"));
   beforeEach(
