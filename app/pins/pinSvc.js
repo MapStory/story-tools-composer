@@ -1185,8 +1185,8 @@ function pinSvc(
   };
 
   $rootScope.$on("updateStorypins", (event, chapters) => {
-    chapters.forEach( (chapter, chapter_index) => {
-      chapter.storypins.forEach( (pinJSON, pinIndex) => {
+    chapters.forEach((chapter, chapter_index) => {
+      chapter.storypins.forEach((pinJSON, pinIndex) => {
         const geom_obj = JSON.parse(pinJSON.the_geom);
         const pin = svc.createNewPin(
           {
