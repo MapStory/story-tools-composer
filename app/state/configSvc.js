@@ -7,6 +7,16 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
     {
       opacity: 1.0,
       group: "background",
+      name: "world-dark",
+      title: "World Dark",
+      visibility: false,
+      selected: false,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
       name: "natural-earth-1",
       title: "Natural Earth",
       visibility: false,
@@ -37,16 +47,6 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
       name: "control-room",
       title: "MapBoxControlRoom",
       visibility: false,
-      source: "1",
-      fixed: false
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "world-dark",
-      title: "World Dark",
-      visibility: false,
-      selected: false,
       source: "1",
       fixed: false
     },
@@ -202,6 +202,11 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         title: `New Chapter`
       };
     }
+
+    data.layers_config = data.layers_config
+      ? JSON.parse(data.layers_config)
+      : [];
+
     const cfg = {
       index,
       id: index,
@@ -211,7 +216,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         owner: data.owner,
         title: data.title || `New Chapter`
       },
-      layers: svc.getLayerListFromServerData(data.layers),
+      layers: data.layers_config,
       viewer_playbackmode: "instant",
       story_id: data.story_id || null,
       sources: {
@@ -262,10 +267,11 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         projection: "EPSG:900913",
         layers: svc
           .getBasemapArrayWithActiveBasemap(data.layers)
-          .concat(svc.getLayerListFromServerData(data.layers)),
+          .concat(data.layers_config),
         keywords: []
       }
     };
+    console.log("CONFIG TEST", cfg);
     return cfg;
   };
 
