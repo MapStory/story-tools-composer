@@ -457,13 +457,9 @@ function stateSvc(
 
   svc.updateStorypinIds = (idArray, chapterId) => {
     // Update the local things
-    const pins = svc.get_storypins();
-		idArray.forEach( (pinID, index) => {
-			pins[chapterId][index].id = pinID;
-		});
-
-		// Broadcast the change
-		$rootScope.$broadcast("updateStorypinIds", idArray, chapterId);
+    // Broadcast the change
+    console.log("Brodacasting pin id change");
+    $rootScope.$broadcast("loadids", idArray, chapterId);
   };
 
   svc.saveStoryFramesToServer = mapId => {

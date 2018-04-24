@@ -1041,6 +1041,7 @@ function pinSvc(
         features: []
       });
       for (let p = 0; p < svc.pins[i].length; p += 1) {
+        console.log("This is the id: "  + svc.pins[i][p].id);
         featureCollections[i].features.push({
           type: "Feature",
           geometry: {
@@ -1188,6 +1189,7 @@ function pinSvc(
     chapters.forEach((chapter, chapter_index) => {
       chapter.storypins.forEach((pinJSON, pinIndex) => {
         const geom_obj = JSON.parse(pinJSON.the_geom);
+
         const pin = svc.createNewPin(
           {
             title: pinJSON.title,
@@ -1203,6 +1205,12 @@ function pinSvc(
         pin.in_map = pinJSON.in_map || true;
         pin.in_timeline = pinJSON.in_timeline || true;
         pin.index_id = pinIndex;
+        // Set the id from the server.
+        if (!geom_obj.id) {
+          console.log("this json doesnt have an id for the storypin");
+        } else {
+          pin.id = geom_obj.id;
+        }
         pin.show();
       });
     });
@@ -1232,10 +1240,12 @@ function pinSvc(
       });
     }
   );
-  $rootScope.$on("updateStorypinIds", (event, idArray, chapterID) => {
+  $rootScope.$on("loadids", (event, idArray, chapterID) => {
+    console.log("Event was triggered");
     // Set storypin ids to mark them as saved to server
     svc.pins[chapterID].forEach((pin, index) => {
       pin.id = idArray[index];
+      console.log(pin.id);
     });
   });
 
