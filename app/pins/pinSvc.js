@@ -1047,6 +1047,7 @@ function pinSvc(
         console.log("This is the id: "  + svc.pins[i][p].id);
         featureCollections[i].features.push({
           type: "Feature",
+          id: svc.pins[i][p].id,
           geometry: {
             type: "Point",
             coordinates: [svc.pins[i][p].coords[0], svc.pins[i][p].coords[1]]
@@ -1059,8 +1060,7 @@ function pinSvc(
             start_time: svc.pins[i][p].start_time,
             end_time: svc.pins[i][p].end_time,
             title: svc.pins[i][p].title,
-            content: svc.pins[i][p].content,
-            id: svc.pins[i][p].id
+            content: svc.pins[i][p].content
           }
         });
       }
