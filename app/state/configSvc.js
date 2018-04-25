@@ -203,7 +203,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
       };
     }
 
-    data.layers_config = data.layers_config
+    data.layersConfig = data.layers_config
       ? JSON.parse(data.layers_config)
       : [];
 
@@ -216,8 +216,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         owner: data.owner,
         title: data.title || `New Chapter`
       },
-      layers: data.layers_config,
-      layersConfig: data.layers_config,
+      layers: data.layersConfig,
       viewer_playbackmode: "instant",
       story_id: data.story_id || null,
       sources: {
@@ -268,7 +267,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         projection: "EPSG:900913",
         layers: svc
           .getBasemapArrayWithActiveBasemap(data.layers)
-          .concat(data.layers_config),
+          .concat(data.layersConfig),
         keywords: []
       }
     };

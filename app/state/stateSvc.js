@@ -147,16 +147,10 @@ function stateSvc(
   svc.updateLayerStyle = (layerName, styleName) => {
     const chapter = svc.config.chapters[svc.getChapterIndex()];
     const layerCount = chapter.layers.length;
-    const layersConfigCount = chapter.layersConfig.length;
 
     for (let i = 0; i < layerCount; i += 1) {
       if (chapter.layers[i].name === layerName) {
         chapter.layers[i].styleName = styleName;
-      }
-    }
-    for (let i = 0; i < layersConfigCount; i += 1) {
-      if (chapter.layersConfig[i].name === layerName) {
-        chapter.layersConfig[i].styleName = styleName;
       }
     }
   };
