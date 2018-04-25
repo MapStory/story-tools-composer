@@ -217,6 +217,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         title: data.title || `New Chapter`
       },
       layers: data.layers_config,
+      layersConfig: data.layers_config,
       viewer_playbackmode: "instant",
       story_id: data.story_id || null,
       sources: {

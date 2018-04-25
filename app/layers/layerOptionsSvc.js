@@ -26,7 +26,7 @@ function layerOptionsSvc() {
       source: "0",
       path: server.path,
       canStyleWMS: server.canStyleWMS,
-      styleName: window.getStyleName(name),
+      styleName: null,
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
       type: settings.asVector === true ? "VECTOR" : "WMS",
       geomType: "point",

@@ -51,8 +51,8 @@ function styleService(
 
   svc.handleCanStyleWMSFalseEvent = storyLayer => {
     const layerName = storyLayer.get("name");
-    const styleName = storyLayer.get("styleName");
-
+    const styleName =
+      storyLayer.get("styleName") || window.getStyleName(layerName);
     // this case will happen if canStyleWMS is false for the server
     const style = storyLayer.get("style");
     style.name = styleName;
