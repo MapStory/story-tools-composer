@@ -1217,7 +1217,6 @@ function pinSvc(
         pin.show();
       });
     });
-
     svc.onStoryPinSave();
   });
 
@@ -1244,14 +1243,18 @@ function pinSvc(
     }
   );
   $rootScope.$on("loadids", (event, idArray, chapterID) => {
-    console.log("Event was triggered");
-    // Set storypin ids to mark them as saved to server
-    svc.pins[chapterID].forEach((pin, index) => {
-      if (!pin.id) {
-        // Only updates the id if the pin was new.
-        pin.id = idArray[index];
-      }
-      console.log("Updating id: " + pin.id);
+    // Look for the next null id and assign it.
+    idArray.forEach(newPinId => {
+      let wasThisIDUsed = false;
+      svc.pins[chapterID].forEach(pin => {
+        if (wasThisIDUsed) {
+          return;
+        }
+        if (!pin.id) {
+          pin.id = newPinId;
+          wasThisIDUsed = true;
+        }
+      });
     });
   });
 

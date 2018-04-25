@@ -26,6 +26,8 @@ function storypinController($scope, pinSvc, stateSvc) {
     const pin = pinSvc.onNewStoryPin(stateSvc.getChapterIndex());
     // Add a property for keeping track of the accordion state.
     pin.is_open = true;
+    // Save the new pin to the config.
+    pinSvc.onStoryPinSave();
   };
 
   /**
