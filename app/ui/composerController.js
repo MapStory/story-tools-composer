@@ -109,6 +109,7 @@ function composerController(
   };
 
   $scope.saveMap = () => {
+    pinSvc.onStoryPinSave();
     stateSvc.save();
   };
 
