@@ -150,12 +150,12 @@ describe("pinSvc", () => {
 
   describe("addPin", () => {
     it("should create a valid pin", () => {
-      const test = pinSvc.addPin(validProperties, 0);
+      const test = pinSvc._addPin(validProperties, 0);
       expect(test).not.toBe(null);
     });
 
     it("should push the pin to the correct svc.pin array", () => {
-      pinSvc.addPin(validProperties, 0);
+      pinSvc._addPin(validProperties, 0);
       expect(pinSvc.pins[0][0].get("title")).toBe("test");
     });
   });
