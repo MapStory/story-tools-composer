@@ -1259,7 +1259,9 @@ function pinSvc(
   });
 
   svc._removeStorypin = pin => {
-    svc.pinLayerSource.removeFeature(pin.map_feature);
+    if (pin.map_feature) {
+      svc.pinLayerSource.removeFeature(pin.map_feature);
+    }
     svc.destroyOverlay(pin);
     pin.overlay = null;
     pin.map_feature = null;
