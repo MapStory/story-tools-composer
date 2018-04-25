@@ -16,9 +16,9 @@
                         ng-click="on_add_storypin()">
                     Add a StoryPin
                 </button>
-                <!--<button class="btn btn-inverse" ng-click="on_export_pins()">-->
-                    <!--Export StoryPins-->
-                <!--</button>-->
+                <button class="btn btn-inverse" ng-click="on_export_pins()">
+                    Export StoryPins
+                </button>
             </div>
         </uib-accordion>
 
@@ -56,7 +56,7 @@
                 <!-- Heading -->
                 <uib-accordion-heading>
                     <span ng-click="uiHelperSvc.togglePinForm({$index})">
-                        {{pin.title}}
+                        {{pin.title}} - {{ pin.id }}
                         <i ng-class="{'fa-caret-up': uiHelperSvc.activePin === $index,'fa-caret-down': uiHelperSvc.activePin !== $index}" class="fa"></i>
                     </span>
                     <i class="fa float-right fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>

@@ -679,13 +679,16 @@ function pinSvc(
     link.setAttribute("href", `${txt_media}`);
     body.appendChild(link);
 
-    if(pin.media !== null) {
-      const embedded_media = document.createElement("iframe");
-      embedded_media.setAttribute(
-        "src",
-        svc.sanitize_and_whitelist_check(pin.media)
-      );
-      element.appendChild(embedded_media);
+    // Need to check for null or empty string.
+    if (pin.media !== null) {
+      if (pin.media !== "") {
+        const embedded_media = document.createElement("iframe");
+        embedded_media.setAttribute(
+          "src",
+          svc.sanitize_and_whitelist_check(pin.media)
+        );
+        element.appendChild(embedded_media);
+      }
     }
 
     element.appendChild(heading);
@@ -1206,10 +1209,10 @@ function pinSvc(
         pin.in_timeline = pinJSON.in_timeline || true;
         pin.index_id = pinIndex;
         // Set the id from the server.
-        if (!geom_obj.id) {
+        if (!pinJSON.id) {
           console.log("this json doesnt have an id for the storypin");
         } else {
-          pin.id = geom_obj.id;
+          pin.id = pinJSON.id;
         }
         pin.show();
       });
@@ -1244,8 +1247,11 @@ function pinSvc(
     console.log("Event was triggered");
     // Set storypin ids to mark them as saved to server
     svc.pins[chapterID].forEach((pin, index) => {
-      pin.id = idArray[index];
-      console.log(pin.id);
+      if (!pin.id) {
+        // Only updates the id if the pin was new.
+        pin.id = idArray[index];
+      }
+      console.log("Updating id: " + pin.id);
     });
   });
 
@@ -1258,7 +1264,7 @@ function pinSvc(
 
   svc._showPinOnMap = pin => {
     svc.add_storypin_to_map(pin);
-    if(!pin.overlay) {
+    if (!pin.overlay) {
       alert("No Overlay present!");
     }
     pin.overlay.setPosition(pin.coords);
