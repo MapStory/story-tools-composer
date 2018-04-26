@@ -338,7 +338,7 @@ function stateSvc(
           about: {
             title: config.about.title,
             abstract: config.about.abstract,
-            category: config.about.category,
+            category: config.about.category
           },
           story_id: config.story_id || 0,
           is_published: false,
@@ -415,12 +415,19 @@ function stateSvc(
   };
 
   svc.saveStoryToServer = () => {
+    const config = svc.getConfig();
+    // Make a copy so that we don't change the config in scope.
+    const copiedConfig = angular.copy(config);
+    if (copiedConfig.about.category.id) {
+      copiedConfig.about.category = copiedConfig.about.category.id;
+    }
     const storyId = svc.getConfig().story_id;
     return $http({
       url: `/story/${storyId}/save`,
       method: "PUT",
-      data: JSON.stringify(svc.getConfig())
+      data: JSON.stringify(copiedConfig)
     }).then(
+      // TODO: Make these user facing notifications.
       response => {
         console.log(response);
         console.log("MAP SAVED");
