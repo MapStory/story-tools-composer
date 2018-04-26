@@ -2,7 +2,7 @@
     <h2 class="section-title">Legend Display Settings</h2>
     <form>
         <div class="form-field">
-            <p>Choose whether viewers of your MapStory will see a legend for this chapter.</p>
+            <p>Choose whether viewers of your {{ stateSvc.config.branding.storyName }} will see a legend for this chapter.</p>
             <label class="switch">
                 <input type="checkbox" for="legend">
                 <div class="slider round"></div>
@@ -21,8 +21,8 @@
     <form>
         <div class="form-field">
             <p>
-                Customize how each StoryLayer name should appear. Names entered here display
-                in the legend, timeline, and your story, but do not affect the StoryLayer itself.
+                Customize how each {{ stateSvc.config.branding.layerName }} name should appear. Names entered here display
+                in the legend, timeline, and your story, but do not affect the {{ stateSvc.config.branding.layerName }} itself.
             </p>
             <label for="layer1">Display name for "layer_name"</label>
             <br />
