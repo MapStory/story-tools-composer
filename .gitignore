@@ -3,4 +3,6 @@ node_modules
 *bundle.*
 .idea/
 .vscode/
+/build/
+/index.html
 yarn-error.log

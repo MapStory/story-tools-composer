@@ -1,0 +1,11 @@
+<html ng-app="composer">
+<head>
+  <script>
+    <%= require('html-loader!./standaloneConfig.js') %>
+  </script>
+  <%= require('html-loader!./head.html') %>
+</head>
+<body ng-controller="composerController as composer">
+  <%= require('html-loader!./body.html') %>
+</body>
+</html>

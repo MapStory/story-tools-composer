@@ -1,7 +1,8 @@
 var webpack = require("webpack");
 var Path = require("path");
+var HtmlWebpackPlugin = require("html-webpack-plugin");
 var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var serverHost = "https://mapstory.org"; //"https://docker";
+var serverHost = "https://docker";
 
 module.exports = {
   context: __dirname,
@@ -88,6 +89,10 @@ module.exports = {
     }
   },
   plugins: [
+    new HtmlWebpackPlugin({
+      filename: "../index.html",
+      template: "partials/index.html"
+    }),
     new webpack.optimize.CommonsChunkPlugin({
       name: "vendor",
       filename: "vendor.bundle.js"

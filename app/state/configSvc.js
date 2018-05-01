@@ -147,12 +147,13 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
   };
 
   svc.getMapstoryConfig = data => {
+    const brandingCfg = window.mapstory.composer.config.branding
     if (!data) {
       data = {
-        abstract: "Mapstory description",
+        abstract: `${ brandingCfg.storyName } description`,
         owner: "",
         username: "",
-        title: "Mapstory title",
+        title: `${ brandingCfg.storyName } title`,
         category: "",
         id: 0,
         uuid: utils.generateUUID(),
@@ -170,6 +171,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         category: data.category || "",
         slug: data.slug
       },
+      branding: brandingCfg,
       uuid: data.uuid,
       is_published: data.is_published || false,
       removed_chapters: [],
