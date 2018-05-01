@@ -17,7 +17,7 @@ module.exports = function(config) {
     browsers: browserMode ? ["Chrome"] : ["PhantomJS"],
     singleRun: browserMode ? false : true,
     autoWatchBatchDelay: 300,
-    webpack: require("./webpack.config.js")[2],
+    webpack: webpackConfig,
     files: [
       "./build/vendor.bundle.js",
       "./js/test_config.js",
@@ -29,6 +29,7 @@ module.exports = function(config) {
       "./node_modules/story-tools/dist/story-tools-edit.js",
       "./node_modules/story-tools/dist/story-tools-edit-ng.js",
       "./node_modules/story-tools/dist/story-tools-mapstory.js",
+      "./partials/standaloneConfig.js",
       "./build/app.bundle.js",
       "./app/**/*.html",
       "./node_modules/angular-mocks/angular-mocks.js",
