@@ -16,17 +16,19 @@ function layerOptionsSvc() {
       workspace = parts[0];
       name = parts[1];
     }
+    let styleName = null;
     const url = `${server.path + workspace}/${name}/wms`;
     const id = `${workspace}:${name}`;
     const options = {
       id,
+      uuid: new Date().getTime(),
       name,
       title: title || name,
       url,
       source: "0",
       path: server.path,
       canStyleWMS: server.canStyleWMS,
-      styleName: null,
+      styleName,
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
       type: settings.asVector === true ? "VECTOR" : "WMS",
       geomType: "point",

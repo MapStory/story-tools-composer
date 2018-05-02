@@ -1,19 +1,9 @@
-function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
+function newConfigSvc(layerOptionsSvc, appConfig, $http) {
   const svc = {};
 
   svc.defaultBasemap = "world-dark";
 
   const basemaps = [
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "world-dark",
-      title: "World Dark",
-      visibility: false,
-      selected: false,
-      source: "1",
-      fixed: false
-    },
     {
       opacity: 1.0,
       group: "background",
@@ -47,6 +37,16 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
       name: "control-room",
       title: "MapBoxControlRoom",
       visibility: false,
+      source: "1",
+      fixed: false
+    },
+    {
+      opacity: 1.0,
+      group: "background",
+      name: "world-dark",
+      title: "World Dark",
+      visibility: false,
+      selected: false,
       source: "1",
       fixed: false
     },
@@ -147,16 +147,14 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
   };
 
   svc.getMapstoryConfig = data => {
-    const brandingCfg = window.mapstory.composer.config.branding
     if (!data) {
       data = {
-        abstract: `${ brandingCfg.storyName } description`,
+        abstract: "Mapstory description",
         owner: "",
         username: "",
-        title: `${ brandingCfg.storyName } title`,
+        title: "Mapstory title",
         category: "",
         id: 0,
-        uuid: utils.generateUUID(),
         chapters: [{}],
         is_published: false
       };
@@ -171,8 +169,6 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         category: data.category || "",
         slug: data.slug
       },
-      branding: brandingCfg,
-      uuid: data.uuid,
       is_published: data.is_published || false,
       removed_chapters: [],
       viewer_playbackmode: "instant",
@@ -182,10 +178,8 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
       chapters: data.chapters
     };
 
-    window.storyUUID = data.uuid;
-
     for (let i = 0; i < data.chapters.length; i += 1) {
-      cfg.chapters[i].owner = data.owner;
+      data.chapters[i].owner = data.owner;
       cfg.chapters[i] = svc.generateChapterConfig(i + 1, data.chapters[i]);
     }
     if (data.chapters.length === 0) {
@@ -204,11 +198,6 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         title: `New Chapter`
       };
     }
-
-    data.layersConfig = data.layers_config
-      ? JSON.parse(data.layers_config)
-      : [];
-
     const cfg = {
       index,
       id: index,
@@ -218,7 +207,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         owner: data.owner,
         title: data.title || `New Chapter`
       },
-      layers: data.layersConfig,
+      layers: svc.getLayerListFromServerData(data.layers),
       viewer_playbackmode: "instant",
       story_id: data.story_id || null,
       sources: {
@@ -269,11 +258,10 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         projection: "EPSG:900913",
         layers: svc
           .getBasemapArrayWithActiveBasemap(data.layers)
-          .concat(data.layersConfig),
+          .concat(svc.getLayerListFromServerData(data.layers)),
         keywords: []
       }
     };
-    console.log("CONFIG TEST", cfg);
     return cfg;
   };
 
