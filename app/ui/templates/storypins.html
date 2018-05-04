@@ -52,7 +52,7 @@
         <!-- Gets pins from pin service-->
         <section ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
             <!-- A STORYPIN -->
-            <div uib-accordion-group class="panel-default" is-open="pin.is_open">
+            <div uib-accordion-group class="panel-default storypin-content" is-open="pin.is_open">
                 <!-- Heading -->
                 <uib-accordion-heading>
                     <span ng-click="uiHelperSvc.togglePinForm({$index})">
@@ -69,7 +69,7 @@
                         {{pinSvc.isDrawing ? "Done" : "Move Pin"}}
                     </button>
                     <!-- Save Button -->
-                    <button id="storpin-save-button" class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave()">Save</button>
+                    <button id="storpin-save-button" class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave()">Update</button>
                     <!-- Edit Form -->
                     <form>
                         <!-- Title -->

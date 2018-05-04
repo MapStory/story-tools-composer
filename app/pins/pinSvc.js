@@ -595,8 +595,6 @@ function pinSvc(
       // Add the drag interaction
       // TODO: Start drag and drop here.
       svc.start_drag_interaction([pin.map_feature]);
-
-
     } else {
       // Remove the drag interaction
       // TODO: Stop drag interaction here
@@ -735,6 +733,20 @@ function pinSvc(
       style: svc.getStyle
     });
     map.addLayer(svc.sp_vectorLayer);
+    const selectInteraction = new ol.interaction.Select({
+      source: svc.pinLayerSource
+    });
+    map.addInteraction(selectInteraction);
+    selectInteraction.on("select", e => {
+      const features = e.target.getFeatures();
+      const mapFeature = features.getArray()[0];
+      if (mapFeature) {
+        const pin = mapFeature.getStoryPin();
+        pin.toggleShow();
+      }
+      // Clears the selection
+      selectInteraction.getFeatures().clear();
+    });
   };
 
   svc.remove_overlay_from_DOM_for_pin = pin => {
@@ -767,7 +779,10 @@ function pinSvc(
     const point = new ol.Feature({
       geometry: new ol.geom.Point(pin.coords)
     });
-
+    // TODO: Fix circular dependency
+    point.getStoryPin = () => {
+      return pin;
+    };
     // Pin now has a feature:
     pin.map_feature = point;
 
@@ -791,6 +806,14 @@ function pinSvc(
 
     pin.hide = () => {
       pin.overlay.setPosition(undefined);
+    };
+
+    pin.toggleShow = () => {
+      if(pin.overlay.getPosition()) {
+        pin.hide();
+      } else {
+        pin.show();
+      }
     };
   };
 
@@ -1242,7 +1265,18 @@ function pinSvc(
       });
     }
   );
+
+  /**
+   * This event gets triggered once the server has saved a new storypin.
+   * @event  *Obj* The event that triggered this callback
+   * @idArray *[]* An array of ids for each storypin created on the server.
+   * */
   $rootScope.$on("loadids", (event, idArray, chapterID) => {
+    // Sometimes we get a null idArray.
+    if (!idArray) {
+      console.log("Received a null ID Array from the server");
+      return;
+    }
     // Look for the next null id and assign it.
     idArray.forEach(newPinId => {
       let wasThisIDUsed = false;
@@ -1273,6 +1307,17 @@ function pinSvc(
       alert("No Overlay present!");
     }
     pin.overlay.setPosition(pin.coords);
+  };
+
+  svc.addSelectInteraction = features => {
+    const map = MapManager.storyMap.getMap();
+    const selectInteraction = new ol.interaction.Select({
+      features: new ol.Collection(features)
+    });
+    map.addInteraction(selectInteraction);
+    selectInteraction.on("select", e => {
+      alert("selected " + e.target.getFeatures().getLength());
+    });
   };
 
   return svc;

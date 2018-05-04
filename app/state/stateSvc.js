@@ -222,27 +222,27 @@ function stateSvc(
 
   svc.setStoryframeDetails = frameSettings => {
     svc.config.frameSettings = [];
-    let features = [];
+    const features = [];
     for (let i = 0; i < frameSettings.length; i += 1) {
-        features.push({
-            type: "Feature",
-            geometry: null,
-            properties: {
-                title: frameSettings[i].title,
-                start_time: frameSettings[i].startDate,
-                end_time: frameSettings[i].endDate,
-                center: [
-                    [frameSettings[i].bb1[0], frameSettings[i].bb1[1]],
-                    [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
-                    [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
-                    [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
-                ]
-            }
-        });
-        const featureCollection = {
-            type: "FeatureCollection",
-            features
-        };
+      features.push({
+        type: "Feature",
+        geometry: null,
+        properties: {
+          title: frameSettings[i].title,
+          start_time: frameSettings[i].startDate,
+          end_time: frameSettings[i].endDate,
+          center: [
+            [frameSettings[i].bb1[0], frameSettings[i].bb1[1]],
+            [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
+            [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
+            [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
+          ]
+        }
+      });
+      const featureCollection = {
+        type: "FeatureCollection",
+        features
+      };
       svc.config.frameSettings[svc.getChapterIndex()] = featureCollection;
       svc.saveStoryframes(svc.config.frameSettings);
     }
@@ -456,17 +456,25 @@ function stateSvc(
       url: `/maps/${mapId}/storypins`,
       method: "POST",
       data: JSON.stringify(pinArray)
-    }).then( data => {
+    }).then(data => {
       svc.updateStorypinIds(data.data.ids, chapterIndex);
     });
     return req;
   };
 
-
+  /**
+   * Broadcasts an event for new storypins being created, so that their new ids can be updated by the Pin manager.
+   * @param idArray
+   * @param chapterId
+   */
   svc.updateStorypinIds = (idArray, chapterId) => {
     // Update the local things
     // Broadcast the change
-    console.log("Brodacasting pin id change");
+    if (!idArray) {
+      console.log("*******NULL ID ARRAY!!!!");
+      // No need to broadcast
+      return;
+    }
     $rootScope.$broadcast("loadids", idArray, chapterId);
   };
 
@@ -479,14 +487,13 @@ function stateSvc(
       method: "POST",
       data: JSON.stringify(frameArray)
     });
-    console.log(1);
     return req;
   };
 
   svc.generateStoryThumbnail = storyId => {
     return $http({
       url: `/story/${storyId}/generate_thumbnail`,
-      method: "POST",
+      method: "POST"
     });
   };
 
@@ -494,7 +501,7 @@ function stateSvc(
     // first ensure that story has an id; then ensure chapters have ids
     const config = svc.getConfig();
     const retrieveChapterIdsAndSave = () =>
-       svc.saveStoryToServer().then(() => {
+      svc.saveStoryToServer().then(() => {
         const p = svc.generateChapterPromiseQueue();
         return p;
       });
@@ -521,12 +528,19 @@ function stateSvc(
     svc.save();
   };
 
-  // TODO: Fix this
+  /**
+   * Sets the storypins to the config that will be saved.
+   * @param storypins [[]] An Array chapters containing an array of Storypins each.
+   * TODO: Rename this to something more coherent like `setStoryPinsToConfig`
+   */
   svc.save_storypins = storypins => {
     svc.config.storypins = storypins;
   };
 
-  // TODO: Fix this
+  /**
+   * Gets the current storypins held by the config.
+   * @returns {*|Array[]}
+   */
   svc.get_storypins = () => {
     if (svc.config.storypins) {
       return svc.config.storypins;
@@ -544,9 +558,9 @@ function stateSvc(
     if (svc.config.storyframes) {
       return svc.config.storyframes;
     }
-     svc.config.storyframes = [[]];
-     return svc.config.storyframes;
-    };
+    svc.config.storyframes = [[]];
+    return svc.config.storyframes;
+  };
 
   return svc;
 }
