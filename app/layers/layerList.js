@@ -1,3 +1,5 @@
+const $ = require("jquery");
+
 function layerList(
   stStoryMapBaseBuilder,
   stEditableStoryMapBuilder,
@@ -35,6 +37,16 @@ function layerList(
       scope.toggleStyle = layer => {
         scope.styleSvc.setCurrentLayer(layer);
         scope.styleActivated = scope.styleActivated !== true;
+        console.log('are we here');
+
+        // timeout required to init colorpicker
+        setTimeout( () => {
+          console.log('or here');
+          $(".colorpicker").spectrum({
+            color: "#f4970f",
+            replacerClassName: 'color-picker-button'
+          });
+        })
       };
 
       scope.layers = MapManager.storyMap.getStoryLayers().getArray();

@@ -65,7 +65,8 @@
     "jquery": "3.3.1",
     "moment": "^2.20.1",
     "papaparse": "^4.3.7",
-    "story-tools": "./deps/story-tools"
+    "story-tools": "./deps/story-tools",
+    "spectrum-colorpicker": "1.8.0"
   },
   "repository": "https://github.com/MapStory/story-tools-composer",
   "author": "Darin Acosta <darinjacosta@gmail.com>",
