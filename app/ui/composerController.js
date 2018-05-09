@@ -176,7 +176,7 @@ function composerController(
     }
   };
 
-  $scope.frameSettings = [];
+  $scope.frameSettings = [[]];
   const map = MapManager.storyMap.getMap();
 
   function transformCoords(loc) {
@@ -211,9 +211,9 @@ function composerController(
   $scope.zoomedIn = false;
 
   $scope.getCurrentFrame = date => {
-    if ($scope.currentFrame < $scope.frameSettings.length) {
-      const start = $scope.frameSettings[$scope.currentFrame].startDate;
-      const end = $scope.frameSettings[$scope.currentFrame].endDate;
+    if ($scope.currentFrame < $scope.getFrames().length) {
+      const start = $scope.getFrames()[$scope.currentFrame].startDate;
+      const end = $scope.getFrames()[$scope.currentFrame].endDate;
       $scope.checkTimes(date, start, end);
     }
   };
@@ -236,10 +236,10 @@ function composerController(
     const polygon = new ol.Feature(
       new ol.geom.Polygon([
         [
-          $scope.frameSettings[$scope.currentFrame].bb1,
-          $scope.frameSettings[$scope.currentFrame].bb2,
-          $scope.frameSettings[$scope.currentFrame].bb3,
-          $scope.frameSettings[$scope.currentFrame].bb4
+            $scope.getFrames()[$scope.currentFrame].bb1,
+            $scope.getFrames()[$scope.currentFrame].bb2,
+            $scope.getFrames()[$scope.currentFrame].bb3,
+            $scope.getFrames()[$scope.currentFrame].bb4
         ]
       ])
     );
@@ -260,7 +260,7 @@ function composerController(
         easing: ol.easing.easeIn
       })
     );
-    vector.set("name", $scope.frameSettings[$scope.currentFrame].title);
+    vector.set("name", $scope.getFrames()[$scope.currentFrame].title);
     map.getView().fit(vector.getSource().getExtent(), map.getSize());
   };
 
@@ -290,7 +290,7 @@ function composerController(
     for (let c=0; c<chapters.length; c++) {
         for (let f=0; f<chapters[c].storyframes.length; f++) {
             const coords = JSON.parse(chapters[0].storyframes[f].center);
-            $scope.frameSettings.push({
+            $scope.getFrames().push({
                 title: chapters[c].storyframes[f].title,
                 startDate: moment.unix(chapters[c].storyframes[f].start_time).format('YYYY-MM-DD'),
                 endDate: moment.unix(chapters[c].storyframes[f].end_time).format('YYYY-MM-DD'),
@@ -339,10 +339,12 @@ function composerController(
   }
 
   $scope.checkTemporalOverlap = frameSettings => {
+    console.log('length:' , frameSettings.length);
+
     if (frameSettings.length < 1) {
       $scope.saveStoryDetails(frameSettings);
-    } else if ($scope.frameSettings.length >= 1) {
-      const numFrames = $scope.frameSettings.length;
+    } else if (frameSettings.length >= 1) {
+      const numFrames = $scope.getFrames().length;
       $scope.startOverlap = false;
       $scope.endOverlap = false;
 
@@ -352,8 +354,8 @@ function composerController(
         const startToCheck = $scope.formatDates(frameSettings.startDate);
         const endToCheck = $scope.formatDates(frameSettings.endDate);
 
-        const start = $scope.formatDates($scope.frameSettings[x].startDate);
-        const end = $scope.formatDates($scope.frameSettings[x].endDate);
+        const start = $scope.formatDates($scope.getFrames()[x].startDate);
+        const end = $scope.formatDates($scope.getFrames()[x].endDate);
 
         x += 1;
 
@@ -381,41 +383,49 @@ function composerController(
     return 0;
   };
 
+  $scope.getFrames = () => $scope.frameSettings[stateSvc.getChapterIndex()] || [];
+
   $scope.saveStoryDetails = frameSettings => {
-    $scope.frameSettings.push({
-      id: Date.now(),
-      title: frameSettings.title,
-      startDate: frameSettings.startDate,
-      startTime: frameSettings.startTime,
-      endDate: frameSettings.endDate,
-      endTime: frameSettings.endTime,
-      bb1: [$scope.coords[0][0][0], $scope.coords[0][0][1]],
-      bb2: [$scope.coords[0][1][0], $scope.coords[0][1][1]],
-      bb3: [$scope.coords[0][2][0], $scope.coords[0][2][1]],
-      bb4: [$scope.coords[0][3][0], $scope.coords[0][3][1]]
+
+      console.log('blah');
+
+      $scope.getFrames().push({
+        id: Date.now(),
+        //chapter: $scope.getChapterIndex(),
+        title: frameSettings.title,
+        startDate: frameSettings.startDate,
+        startTime: frameSettings.startTime,
+        endDate: frameSettings.endDate,
+        endTime: frameSettings.endTime,
+        bb1: [$scope.coords[0][0][0], $scope.coords[0][0][1]],
+        bb2: [$scope.coords[0][1][0], $scope.coords[0][1][1]],
+        bb3: [$scope.coords[0][2][0], $scope.coords[0][2][1]],
+        bb4: [$scope.coords[0][3][0], $scope.coords[0][3][1]]
     });
-    stateSvc.setStoryframeDetails($scope.frameSettings);
+    stateSvc.setStoryframeDetails($scope.getFrames());
   };
 
   $scope.editStoryframe = index => {
-    $scope.frameSettings.title = $scope.frameSettings[index].title;
-    $scope.frameSettings.startDate = $scope.frameSettings[index].startDate;
-    $scope.frameSettings.startTime = $scope.frameSettings[index].startTime;
-    $scope.frameSettings.endDate = $scope.frameSettings[index].endDate;
-    $scope.frameSettings.endTime = $scope.frameSettings[index].endTime;
-    $scope.frameSettings.bb1 = transformCoords([
+    const frames = $scope.getFrames();
+
+    frames.title = frames[index].title;
+      frames.startDate = frames[index].startDate;
+      frames.startTime = frames[index].startTime;
+      frames.endDate = frames[index].endDate;
+      frames.endTime = frames[index].endTime;
+      frames.bb1 = transformCoords([
       $scope.coords[0][0][0],
       $scope.coords[0][0][1]
     ]);
-    $scope.frameSettings.bb2 = transformCoords([
+      frames.bb2 = transformCoords([
       $scope.coords[0][1][0],
       $scope.coords[0][1][1]
     ]);
-    $scope.frameSettings.bb3 = transformCoords([
+      frames.bb3 = transformCoords([
       $scope.coords[0][2][0],
       $scope.coords[0][2][1]
     ]);
-    $scope.frameSettings.bb4 = transformCoords([
+      frames.bb4 = transformCoords([
       $scope.coords[0][3][0],
       $scope.coords[0][3][1]
     ]);
@@ -426,28 +436,28 @@ function composerController(
   };
 
   $scope.updateStoryframe = () => {
-    $scope.frameSettings[$scope.currentIndex].title =
-      $scope.frameSettings.title;
-    $scope.frameSettings[$scope.currentIndex].startDate =
-      $scope.frameSettings.startDate;
-    $scope.frameSettings[$scope.currentIndex].startTime =
-      $scope.frameSettings.startTime;
-    $scope.frameSettings[$scope.currentIndex].endDate =
-      $scope.frameSettings.endDate;
-    $scope.frameSettings[$scope.currentIndex].endTime =
-      $scope.frameSettings.endTime;
+    $scope.getFrames()[$scope.currentIndex].title =
+        $scope.getFrames().title;
+      $scope.getFrames()[$scope.currentIndex].startDate =
+          $scope.getFrames().startDate;
+      $scope.getFrames()[$scope.currentIndex].startTime =
+          $scope.getFrames().startTime;
+      $scope.getFrames()[$scope.currentIndex].endDate =
+          $scope.getFrames().endDate;
+      $scope.getFrames()[$scope.currentIndex].endTime =
+          $scope.getFrames().endTime;
 
-    $scope.frameSettings[$scope.currentIndex].bb1 = $scope.frameSettings.bb1;
-    $scope.frameSettings[$scope.currentIndex].bb2 = $scope.frameSettings.bb2;
-    $scope.frameSettings[$scope.currentIndex].bb3 = $scope.frameSettings.bb3;
-    $scope.frameSettings[$scope.currentIndex].bb4 = $scope.frameSettings.bb4;
+      $scope.getFrames()[$scope.currentIndex].bb1 = $scope.getFrames().bb1;
+      $scope.getFrames()[$scope.currentIndex].bb2 = $scope.getFrames().bb2;
+      $scope.getFrames()[$scope.currentIndex].bb3 = $scope.getFrames().bb3;
+      $scope.getFrames()[$scope.currentIndex].bb4 = $scope.getFrames().bb4;
 
     $scope.disableButton = true;
     $scope.disableButton = !$scope.disableButton;
   };
 
   $scope.deleteStoryframe = index => {
-    $scope.frameSettings.splice(index, 1);
+      $scope.getFrames().splice(index, 1);
   };
 
   /**
