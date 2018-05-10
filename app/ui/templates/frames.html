@@ -10,8 +10,9 @@
 
 <div id="createdStoryframes" ng-show="frameSettings">
     <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
+
     <div class="clearfix" ng-repeat="item in frameSettings">
-        <div id="titleBar">
+        <div id="titleBar" ng-if="item.chapter === stateSvc.getChapterIndex()">
             <a ng-click="showDetails = !showDetails" id="storyframeTitle" class="section-title">
                 <i class="fa fa-expand"></i> {{ item.title }}
             </a>

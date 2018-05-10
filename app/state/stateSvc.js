@@ -228,6 +228,7 @@ function stateSvc(
         type: "Feature",
         geometry: null,
         properties: {
+          chapter: frameSettings[i].chapter,
           title: frameSettings[i].title,
           start_time: frameSettings[i].startDate,
           end_time: frameSettings[i].endDate,
