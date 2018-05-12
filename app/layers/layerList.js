@@ -17,6 +17,7 @@ function layerList(
       scope.baseLayers = layerSvc.baseLayers;
       scope.styleSvc = styleService;
       scope.styleActivated = false;
+      scope.stateSvc = stateSvc;
       const baseLayer = MapManager.storyMap.get("baselayer");
       if (baseLayer) {
         scope.baseLayer = baseLayer.get("title");
