@@ -771,7 +771,7 @@ function pinSvc(
    */
   svc.add_storypin_to_map = pin => {
     // Lazy instantiate the pin layer
-    if (svc.pinLayerSource === null) {
+    if (svc.pinLayerSource === null || svc.sp_vectorLayer === null) {
       svc.init_edit_pin_overlay();
     }
 
@@ -790,7 +790,7 @@ function pinSvc(
     // pin.map_feature.set("label", pin.title);
 
     // Add to the Pin layer.
-    svc.pinLayerSource.addFeatures([point]);
+    svc.pinLayerSource.addFeatures([pin.map_feature]);
 
     // Create an overlay if it doesnt exist.
     if (pin.overlay) {
@@ -1047,12 +1047,18 @@ function pinSvc(
     }
 
     // Update information from features, and remove form map.
-    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+    svc.getPins(stateSvc.getChapterIndex()).forEach(pin => {
       svc._removeStorypin(pin);
     });
 
+    // Remove the old layer
+    const map = MapManager.storyMap.getMap();
+    map.removeLayer(svc.sp_vectorLayer);
+    svc.pinLayerSource = null;
+    svc.sp_vectorLayer = null;
+
     // Add to the map with the new info.
-    svc.pins[stateSvc.getChapterIndex()].forEach(pin => {
+    svc.getPins(stateSvc.getChapterIndex()).forEach(pin => {
       // Todo: Set coordinates properly
       // pin.coords = pin.map_feature.getGeometry().getCoordinates();
       svc._showPinOnMap(pin);
@@ -1255,11 +1261,11 @@ function pinSvc(
         svc._removeStorypin(pin);
       });
 
-      // destoy old storypin layer source:
-      map.removeLayer(svc.pinLayerSource);
+      map.removeLayer(svc.sp_vectorLayer);
       svc.pinLayerSource = null;
+      svc.sp_vectorLayer = null;
 
-      // Add the new pins:
+      // // Add the new pins:
       nextPins.forEach(pin => {
         svc._showPinOnMap(pin);
       });
@@ -1292,8 +1298,13 @@ function pinSvc(
     });
   });
 
+  /**
+   * Removes a storypin and it's overlay from the map.
+   * @param pin
+   * @private
+   */
   svc._removeStorypin = pin => {
-    if (pin.map_feature && pin.pinLayerSource) {
+    if (pin.map_feature && svc.pinLayerSource) {
       svc.pinLayerSource.removeFeature(pin.map_feature);
     }
     svc.destroyOverlay(pin);

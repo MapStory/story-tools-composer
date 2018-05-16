@@ -19,6 +19,7 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
       $location.path(appConfig.routes.chapter + nextChapter);
     } else {
       // Go from last to first.
+      $log.info("Going to Chapter ", 1);
       $location.path("");
       $rootScope.$broadcast("changingChapter", thisChapter - 1, 0);
     }
@@ -42,6 +43,7 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
       $location.path(appConfig.routes.chapter + previousChapter);
     } else {
       // Go from first to last.
+      $log.info("Going to Chapter ", stateSvc.getChapterCount());
       svc.goToChapter(stateSvc.getChapterCount());
       $rootScope.$broadcast(
         "changingChapter",
