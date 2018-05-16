@@ -1,6 +1,9 @@
 <header>
     <div class="story-info">
         <h1>{{ stateSvc.config.about.title }}</h1>
+        <div ng-hide="composerMode">
+          <a href="/storyteller/{{ stateSvc.config.about.owner.username }}">{{ stateSvc.config.about.owner.username }}</a>
+        </div>
         <div ng-if="composerMode" ng-hide="viewerMode">
             <a ng-click="openStoryModal()">Edit Story Info</a>
         </div>
