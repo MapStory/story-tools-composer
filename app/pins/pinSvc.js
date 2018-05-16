@@ -1343,7 +1343,7 @@ function pinSvc(
   svc.altInputFormats = ["M!/d!/yyyy"];
   svc.inlineOptions = {
     customClass: svc.getDayClass,
-    minDate: new Date(),
+    minDate: new Date(1200, 1, 1),
     showWeeks: true
   };
 
@@ -1351,7 +1351,7 @@ function pinSvc(
     dateDisabled: svc.disabled,
     formatYear: "yy",
     maxDate: new Date(2020, 5, 22),
-    minDate: new Date(),
+    minDate: new Date(1200, 1, 1),
     startingDay: 1
   };
   svc.disabled = data => {
@@ -1384,29 +1384,6 @@ function pinSvc(
 
   svc.setDate = function(year, month, day) {
     svc.dt = new Date(year, month, day);
-  };
-
-  /**
-   * Gets the current day
-   * @param data
-   * @returns {string}
-   */
-  svc.getDayClass = (data) => {
-    var date = data.date;
-    var mode = data.mode;
-    if (mode === "day") {
-      const dayToCheck = new Date(date).setHours(0, 0, 0, 0);
-
-      for (var i = 0; i < svc.events.length; i++) {
-        const currentDay = new Date(svc.events[i].date).setHours(0, 0, 0, 0);
-
-        if (dayToCheck === currentDay) {
-          return svc.events[i].status;
-        }
-      }
-    }
-
-    return "";
   };
 
   return svc;
