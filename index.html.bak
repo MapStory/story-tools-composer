@@ -4,6 +4,7 @@
   <link href="node_modules/time-controls/dist/story-tools-core-all.css" rel="stylesheet">
   <link href="node_modules/bootstrap/dist/css/bootstrap.min.css" rel="stylesheet">
   <link href="build/bundle.css" rel="stylesheet">
+  <link href="node_modules/font-awesome/css/font-awesome.min.css" rel="stylesheet">
 </head>
 <body ng-controller="composerController as composer">
   <div id="appwrap">
@@ -28,11 +29,10 @@
            </div>
        </div>
   </div>
-  <script src="https://use.fontawesome.com/9690d4cb85.js"></script>
   <script src="js/config.js"></script>
   <script>
-  console.log(config);
-</script>
+    console.log(config);
+  </script>
   <script src="js/modernizr.js"></script>
   <script src="node_modules/jquery/dist/jquery.min.js"></script>
   <script src="build/vendor.bundle.js"></script>
