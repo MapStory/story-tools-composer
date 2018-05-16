@@ -24,3 +24,92 @@
 .popover-content {
   min-width: 180px;
 }
+
+.legend-btn-border {
+  padding: 2px;
+  background: rgba(255, 255, 255, 0.4);
+  position: absolute;
+  right: 10px;
+  left: auto;
+  border-radius: 4px;
+}
+
+#legend-container {
+  overflow-y: scroll;
+  position: absolute;
+  top: 100px;
+  right: 50px;
+  left: auto;
+  z-index: 250;
+  width: 200px;
+  max-height: 100%;
+  padding-right: 5px;
+  padding-bottom: 5px;
+  padding-left: 5px;
+  color: #666;
+  background-color: whitesmoke;
+  visibility: hidden;
+  .panel {
+    max-height: 450px;
+    overflow-y: hidden;
+  }
+}
+
+.legend-panel-body {
+  background-color: transparent !important;
+}
+
+.legend-item {
+  padding-left: 20px;
+  padding-right: 5px;
+}
+
+.legend-item-header {
+  width: auto;
+  padding: 3px;
+  margin-top: 5px;
+  margin-bottom: 5px;
+  font-weight: bold;
+  font-size: 12px;
+  text-transform: uppercase;
+  background: #ccc;
+  border-radius: 3px !important;
+}
+
+.stLegend{
+  display: inline-block;
+  top: 118px;
+  position: relative;
+  z-index: 999;
+  right: 64px;
+}
+
+#legend-btn-border {
+  top: 100px;
+}
+#legend-btn {
+  height: 22px;
+  width: 22px;
+  color: #FFFFFF;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 4px;
+  .glyphicon {
+    padding-left: 3px;
+    padding-top: 2px;
+  }
+  &:hover {
+    background-color: rgba(0, 0, 0, 1);
+  }
+}
+
+.legend-panel-title {
+  display: inline-block;
+}
+
+#legend-title-heading {
+  display: none;
+}
+
+#legend-title-text {
+  padding-right: 5px;
+}

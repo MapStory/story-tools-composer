@@ -1,4 +1,5 @@
-function layerSvc(stateSvc) {
+function layerSvc($rootScope, stateSvc) {
+  const layerStyleTimeStamps = {};
   const svc = {};
 
   svc.baseLayers = [
@@ -47,6 +48,7 @@ function layerSvc(stateSvc) {
   svc.removeLayer = lyr => {
     stateSvc.removeLayer(lyr.values_.uuid);
     window.storyMap.removeStoryLayer(lyr);
+    $rootScope.$broadcast("layerRemoved");
   };
 
   svc.toggleVisibleLayer = lyr => {
@@ -76,6 +78,28 @@ function layerSvc(stateSvc) {
       }
     }
     return name;
+  };
+
+  svc.getLegendUrl = layer => {
+    let url = null;
+    const layerName = layer.get("typeName") || layer.get("id");
+    const styleName = layer.get("styleName");
+    const timestamp = new Date().getTime();
+    if (
+      !layerStyleTimeStamps[layerName] ||
+      timestamp - layerStyleTimeStamps[layerName] > 150
+    ) {
+      layerStyleTimeStamps[layerName] = timestamp;
+    }
+    const server = "/geoserver/wms/";
+    url =
+      `${server}?test=ab&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=${layerName}&transparent=true&legend_options=fontColor:0xFFFFFF;` +
+      `fontAntiAliasing:true;fontSize:14;fontStyle:bold;`;
+    if (goog.isDefAndNotNull(styleName)) {
+      url += `&style=${styleName}`;
+      url += `&timestamp=${layerStyleTimeStamps[layerName]}`;
+    }
+    return url;
   };
 
   return svc;

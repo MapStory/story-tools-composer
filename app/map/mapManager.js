@@ -1,5 +1,6 @@
 function MapManager(
   $http,
+  $rootScope,
   stStoryMapBuilder,
   stEditableLayerBuilder,
   EditableStoryMap,
@@ -85,6 +86,8 @@ function MapManager(
             .getView()
             .fit(extent, svc.storyMap.getMap().getSize());
         }
+        // Brodcast so we can request the legend for this layer.
+        $rootScope.$broadcast("layerAdded");
       });
 
   svc.addLayer = (name, settings, server, fitExtent, styleName, title) => {
