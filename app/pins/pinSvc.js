@@ -1329,6 +1329,86 @@ function pinSvc(
     });
   };
 
+  // For Date selection widgets
+  svc.dt = new Date(); // The DT
+  svc.startdate_popup = {
+    opened: false // Controlls open/close of popup
+  };
+  svc.enddate_popup = {
+    opened: false
+  };
+
+  svc.formats = ["dd-MMMM-yyyy", "yyyy/MM/dd", "dd.MM.yyyy", "shortDate"];
+  svc.format = svc.formats[0];
+  svc.altInputFormats = ["M!/d!/yyyy"];
+  svc.inlineOptions = {
+    customClass: svc.getDayClass,
+    minDate: new Date(),
+    showWeeks: true
+  };
+
+  svc.dateOptions = {
+    dateDisabled: svc.disabled,
+    formatYear: "yy",
+    maxDate: new Date(2020, 5, 22),
+    minDate: new Date(),
+    startingDay: 1
+  };
+  svc.disabled = data => {
+    var date = data.date;
+    var mode = data.mode;
+    return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
+  }
+
+  /**
+   * Sets current date to today.
+   */
+  svc.today = () => {
+    svc.dt = new Date();
+  };
+
+  /**
+   * Clears the date.
+   */
+  svc.clear = () => {
+    svc.dt = null;
+  };
+
+  svc.open_startdate = () => {
+    svc.startdate_popup.opened = true;
+  };
+
+  svc.open_enddate = () => {
+    svc.enddate_popup.opened = true;
+  };
+
+  svc.setDate = function(year, month, day) {
+    svc.dt = new Date(year, month, day);
+  };
+
+  /**
+   * Gets the current day
+   * @param data
+   * @returns {string}
+   */
+  svc.getDayClass = (data) => {
+    var date = data.date;
+    var mode = data.mode;
+    if (mode === "day") {
+      const dayToCheck = new Date(date).setHours(0, 0, 0, 0);
+
+      for (var i = 0; i < svc.events.length; i++) {
+        const currentDay = new Date(svc.events[i].date).setHours(0, 0, 0, 0);
+
+        if (dayToCheck === currentDay) {
+          return svc.events[i].status;
+        }
+      }
+    }
+
+    return "";
+  };
+
   return svc;
 }
 
