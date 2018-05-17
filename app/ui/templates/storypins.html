@@ -105,7 +105,7 @@
                                         class="form-control"
                                         uib-datepicker-popup="{{pinSvc.format}}"
                                         ng-model="pin.start_time"
-                                        is-open="pinSvc.startdate_popup.opened"
+                                        is-open="pinSvc.startDatePopup.opened"
                                         datepicker-options="pinSvc.dateOptions"
                                         uib-init-date="false"
                                         init-date="false"
@@ -113,11 +113,11 @@
                                         close-text="Close"
                                         alt-input-formats="pinSvc.altInputFormats" />
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" ng-click="pinSvc.open_startdate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    <button type="button" class="btn btn-default" ng-click="pinSvc.openStartDate()"><i class="glyphicon glyphicon-calendar"></i></button>
                                 </span>
                             </div>
                             <div class="row">
-                                <div uib-timepicker ng-model="pinSvc.pin_start_time" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
+                                <div uib-timepicker ng-model="pinSvc.pinStartTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
                             </div>
                         </div>
                         <!-- End Time -->
@@ -131,7 +131,7 @@
                                         class="form-control"
                                         uib-datepicker-popup="{{pinSvc.format}}"
                                         ng-model="pin.end_time"
-                                        is-open="pinSvc.enddate_popup.opened"
+                                        is-open="pinSvc.endDatePopup.opened"
                                         datepicker-options="pinSvc.dateOptions"
                                         uib-init-date="false"
                                         init-date="false"
@@ -139,11 +139,11 @@
                                         close-text="Close"
                                         alt-input-formats="pinSvc.altInputFormats" />
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" ng-click="pinSvc.open_enddate()"><i class="glyphicon glyphicon-calendar"></i></button>
+                                    <button type="button" class="btn btn-default" ng-click="pinSvc.openEndDate()"><i class="glyphicon glyphicon-calendar"></i></button>
                                 </span>
                             </div>
                             <div class="row">
-                                <div uib-timepicker ng-model="pinSvc.pin_end_time" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
+                                <div uib-timepicker ng-model="pinSvc.pinEndTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
                             </div>
                         </div>
                         <hr>

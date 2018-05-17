@@ -32,26 +32,28 @@ function pinSvc(
 
   // For Drag functionality:
   svc.isDrawing = false;
-  svc.selected_feature = null;
-  svc.drag_control = null;
+  svc.selectedFeature = null;
+  svc.dragControl = null;
 
   // This is the openlayers source that stores all the features that are drawn on the map.
   svc.pinLayerSource = null;
-  svc.old_interactions = [];
+  svc.oldInteractions = [];
 
   // TODO: Move this to pin editor controller
   // For Date selection widgets
   svc.dt = new Date(); // The DT
-  svc.startdate_popup = {
+  svc.startDatePopup = {
     opened: false // State for open/close popup
   };
-  svc.enddate_popup = {
+  svc.endDatePopup = {
     opened: false
   };
 
   // Start and end times.
-  svc.pin_start_time = Date.now(); // TODO: Move this to pin editor controller
-  svc.pin_end_time = Date.now();  // TODO: Move this to pin editor controller
+  // TODO: Move this to pin editor controller
+  svc.pinStartTime = Date.now();
+  // TODO: Move this to pin editor controller
+  svc.pinEndTime = Date.now();
 
   // Controlls the accordions
   // TODO: Move this to a form controller
@@ -566,7 +568,7 @@ function pinSvc(
 
     // Update the map with the new Pin
     if (pin.in_map === true) {
-      svc.add_storypin_to_map(pin);
+      svc.addStorypinToMap(pin);
     }
 
     $rootScope.$broadcast("pin-added", pin);
@@ -594,11 +596,11 @@ function pinSvc(
       svc.doBounceAnim(pin.coords);
       // Add the drag interaction
       // TODO: Start drag and drop here.
-      svc.start_drag_interaction([pin.map_feature]);
+      svc.startDragInteraction([pin.map_feature]);
     } else {
       // Remove the drag interaction
       // TODO: Stop drag interaction here
-      svc.stop_drag_interaction();
+      svc.stopDragInteraction();
       pin.coords = pin.map_feature.getGeometry().getCoordinates();
       // Set the overlay again
       pin.overlay.setPosition(pin.coords);
@@ -653,7 +655,7 @@ function pinSvc(
    * @param pin The StoryPin to create the overlay for.
    * // TODO: create a function that removes the div when a storypin is deleted.
    */
-  svc.insert_new_overlay_into_DOM_for_pin = pin => {
+  svc.insertNewOverlayIntoDOMForPin = pin => {
     const txt_title = pin.title || "";
     const txt_content = pin.content || "";
     const txt_media = pin.media || "http://#";
@@ -708,7 +710,7 @@ function pinSvc(
     const map = MapManager.storyMap.getMap();
 
     // Create overlay in DOM.
-    svc.insert_new_overlay_into_DOM_for_pin(pin);
+    svc.insertNewOverlayIntoDOMForPin(pin);
 
     const overlay = new ol.Overlay({
       element: document.getElementById(`pin-overlay-${pin.index_id}`)
@@ -721,7 +723,7 @@ function pinSvc(
   /**
    * Initializes the StoryPin overlay.
    */
-  svc.init_edit_pin_overlay = () => {
+  svc.initEditPinOverlay = () => {
     const map = MapManager.storyMap.getMap();
 
     // Create the layer
@@ -749,7 +751,7 @@ function pinSvc(
     });
   };
 
-  svc.remove_overlay_from_DOM_for_pin = pin => {
+  svc.removeOverlayFromDOMForPin = pin => {
     const element = document.getElementById(`pin-overlay-${pin.index_id}`);
     if (element) {
       element.remove();
@@ -760,7 +762,7 @@ function pinSvc(
     const map = MapManager.storyMap.getMap();
     // Create overlay in DOM.
     map.removeOverlay(pin.overlay);
-    svc.remove_overlay_from_DOM_for_pin(pin);
+    svc.removeOverlayFromDOMForPin(pin);
     pin.overlay = null;
   };
 
@@ -769,10 +771,10 @@ function pinSvc(
    * Adds this feature and associates it to the Pin.
    * @param pin The pin.
    */
-  svc.add_storypin_to_map = pin => {
+  svc.addStorypinToMap = pin => {
     // Lazy instantiate the pin layer
     if (svc.pinLayerSource === null || svc.sp_vectorLayer === null) {
-      svc.init_edit_pin_overlay();
+      svc.initEditPinOverlay();
     }
 
     // Builds a new point at the pin's location
@@ -835,7 +837,7 @@ function pinSvc(
     pin.in_map = true;
     pin.in_timeline = true;
     // TODO: Start date and end date.
-    svc.add_storypin_to_map(pin);
+    svc.addStorypinToMap(pin);
     $rootScope.$broadcast("pin-added", svc.currentPin);
     return pin;
   };
@@ -1005,32 +1007,32 @@ function pinSvc(
   /**
    * Start StoryPin Drag
    */
-  svc.start_drag_interaction = features => {
+  svc.startDragInteraction = features => {
     const map = MapManager.storyMap.getMap();
     // Remove previous interaction
-    if (svc.drag_control !== null) {
-      map.removeInteraction(svc.drag_control);
-      svc.drag_control = null;
+    if (svc.dragControl !== null) {
+      map.removeInteraction(svc.dragControl);
+      svc.dragControl = null;
     }
     // Save old interactions
-    svc.old_interactions = map.getInteractions();
-    svc.drag_control = new ol.interaction.Modify({
+    svc.oldInteractions = map.getInteractions();
+    svc.dragControl = new ol.interaction.Modify({
       features: new ol.Collection(features)
     });
-    map.addInteraction(svc.drag_control);
+    map.addInteraction(svc.dragControl);
   };
 
   /**
    * The user is Done moving the StoryPin
    */
-  svc.stop_drag_interaction = () => {
+  svc.stopDragInteraction = () => {
     const map = MapManager.storyMap.getMap();
-    if (svc.drag_control !== null) {
-      map.removeInteraction(svc.drag_control);
-      svc.drag_control = null;
+    if (svc.dragControl !== null) {
+      map.removeInteraction(svc.dragControl);
+      svc.dragControl = null;
     }
     // Restore old interactions
-    svc.old_interactions.forEach(interaction => {
+    svc.oldInteractions.forEach(interaction => {
       map.addInteraction(interaction);
     });
   };
@@ -1177,7 +1179,7 @@ function pinSvc(
   };
 
   svc.onChangedTime = () => {
-    console.log(svc.pin_start_time);
+    console.log(svc.pinStartTime);
   };
 
   /**
@@ -1185,7 +1187,7 @@ function pinSvc(
    * @param url
    * @returns {boolean}
    */
-  svc.is_whitelist = url => {
+  svc.isWhitelist = url => {
     let is_allowed = false;
 
     // Loop whitelist and check if it is ok.
@@ -1205,7 +1207,7 @@ function pinSvc(
   svc.sanitize_and_whitelist_check = url => {
     if (svc.isUrl(url)) {
       // Whitelist
-      if (svc.is_whitelist(url)) {
+      if (svc.isWhitelist(url)) {
         return url;
       } 
       // TODO: Alert the user here
@@ -1235,6 +1237,12 @@ function pinSvc(
         pin.in_map = pinJSON.in_map || true;
         pin.in_timeline = pinJSON.in_timeline || true;
         pin.index_id = pinIndex;
+        pin.start_time = new Date(pinJSON.start_time);
+        pin.end_time = new Date(pinJSON.end_time);
+
+        // Set the pins time.
+        // TODO: Do this later today
+
         // Set the id from the server.
         if (!pinJSON.id) {
           console.log("this json doesnt have an id for the storypin");
@@ -1311,7 +1319,7 @@ function pinSvc(
   };
 
   svc._showPinOnMap = pin => {
-    svc.add_storypin_to_map(pin);
+    svc.addStorypinToMap(pin);
     if (!pin.overlay) {
       alert("No Overlay present!");
     }
@@ -1331,10 +1339,10 @@ function pinSvc(
 
   // For Date selection widgets
   svc.dt = new Date(); // The DT
-  svc.startdate_popup = {
+  svc.startDatePopup = {
     opened: false // Controlls open/close of popup
   };
-  svc.enddate_popup = {
+  svc.endDatePopup = {
     opened: false
   };
 
@@ -1374,12 +1382,12 @@ function pinSvc(
     svc.dt = null;
   };
 
-  svc.open_startdate = () => {
-    svc.startdate_popup.opened = true;
+  svc.openStartDate = () => {
+    svc.startDatePopup.opened = true;
   };
 
-  svc.open_enddate = () => {
-    svc.enddate_popup.opened = true;
+  svc.openEndDate = () => {
+    svc.endDatePopup.opened = true;
   };
 
   svc.setDate = function(year, month, day) {
