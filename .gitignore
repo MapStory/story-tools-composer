@@ -5,4 +5,5 @@ node_modules
 .vscode/
 /build/
 /index.html
+package-lock.json
 yarn-error.log
