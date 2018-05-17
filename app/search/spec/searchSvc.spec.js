@@ -1,14 +1,18 @@
 describe("searchSvc", () => {
-  let rootScope, appConfig, httpBackend, searchConfig, searchBarRes, searchSvc, stateSvc, pin, categoryRes, serverFeatures, validProperties, pinConfigs;
+  let appConfig;
+  let httpBackend;
+  let searchConfig;
+  let searchBarRes;
+  let searchSvc;
+  let categoryRes;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($rootScope, $httpBackend, _appConfig_, _searchSvc_, _searchConfig_) => {
+    inject(($httpBackend, _appConfig_, _searchSvc_, _searchConfig_) => {
       searchSvc = _searchSvc_;
       searchConfig = _searchConfig_;
       appConfig = _appConfig_;
       httpBackend = $httpBackend;
-      rootScope = $rootScope;
       categoryRes = {
         meta: {
           limit: 1000,
@@ -134,27 +138,13 @@ describe("searchSvc", () => {
       httpBackend
         .when(
           "GET",
-          `${appConfig.servers[0].host}/api/base/search/?type__in=layer&limit=15&df=typename&q=iguana`
+          `${
+            appConfig.servers[0].host
+          }/api/base/search/?type__in=layer&limit=15&df=typename&q=iguana`
         )
         .respond(searchBarRes);
     })
   );
-
-  describe("getCategories", () => {
-    let response;
-
-    beforeEach(done => {
-      searchSvc.getCategories().then(res => {
-        response = res;
-        done();
-      });
-      httpBackend.flush();
-    });
-
-    it("should return categories", () => {
-      expect(categoryRes.objects).toEqual(response);
-    });
-  });
 
   describe("getSearchBarResultsIndex", () => {
     let response;

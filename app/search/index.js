@@ -1,10 +1,6 @@
-"use strict";
+import { module } from "angular";
+import searchConfig from "./searchConfig.js";
+import searchSvc from "./searchSvc.js";
 
-const angular = require("angular");
-const searchConfig = require("./searchConfig.js");
-const searchSvc = require("./searchSvc.js");
-const paginationSvc = require("./paginationSvc.js");
-
-angular.module("composer").factory("searchConfig", searchConfig);
-angular.module("composer").factory("searchSvc", searchSvc);
-angular.module("composer").factory("paginationSvc", paginationSvc);
+module("composer").factory("searchConfig", searchConfig);
+module("composer").factory("searchSvc", searchSvc);

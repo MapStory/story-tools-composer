@@ -16,4 +16,4 @@ function searchConfig() {
   };
 }
 
-module.exports = searchConfig;
+export default searchConfig;
