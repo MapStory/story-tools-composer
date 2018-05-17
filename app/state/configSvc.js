@@ -1,4 +1,4 @@
-function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
+function newConfigSvc(layerOptionsSvc, appConfig, utils) {
   const svc = {};
 
   svc.defaultBasemap = "world-dark";
@@ -147,13 +147,13 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
   };
 
   svc.getMapstoryConfig = data => {
-    const brandingCfg = window.mapstory.composer.config.branding
+    const brandingCfg = window.mapstory.composer.config.branding;
     if (!data) {
       data = {
-        abstract: `${ brandingCfg.storyName } description`,
+        abstract: `${brandingCfg.storyName} description`,
         owner: "",
         username: "",
-        title: `${ brandingCfg.storyName } title`,
+        title: `${brandingCfg.storyName} title`,
         category: "",
         id: 0,
         uuid: utils.generateUUID(),
@@ -273,11 +273,10 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils, $http) {
         keywords: []
       }
     };
-    console.log("CONFIG TEST", cfg);
     return cfg;
   };
 
   return svc;
 }
 
-module.exports = newConfigSvc;
+export default newConfigSvc;

@@ -1,8 +1,6 @@
-'use strict';
+import { module } from "angular";
+import stateSvc from "./stateSvc.js";
+import configSvc from "./configSvc.js";
 
-const angular = require('angular');
-const stateSvc = require('./stateSvc.js');
-const configSvc = require('./configSvc.js');
-
-angular.module('composer').factory('stateSvc', stateSvc);
-angular.module('composer').factory('configSvc', configSvc);
+module("composer").factory("stateSvc", stateSvc);
+module("composer").factory("configSvc", configSvc);

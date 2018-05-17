@@ -5,9 +5,7 @@ function stateSvc(
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
-  configSvc,
-  searchSvc,
-  utils
+  configSvc
 ) {
   const svc = {};
   svc.currentChapter = null;
@@ -36,65 +34,11 @@ function stateSvc(
     svc.config.chapters[svc.getChapterIndex()].layers.move(from, to);
   };
 
-  svc.getLayerSaveConfig = function getLayerSaveConfig(layer) {
-    const config = layer.get("metadata").config;
-    const styleStorageService = storytools.edit.styleStorageService.styleStorageService();
-
-    const jsonStyle = styleStorageService.getSavedStyle(
-      layer,
-      map_config.chapter_index
-    );
-
-    if (!goog.isDefAndNotNull(config)) {
-      console.log(
-        "Not saving layer: ",
-        layer.get("metadata").name,
-        "because the layer does not have a configuration object."
-      );
-      return false;
-    }
-
-    // Note: when a server is removed, its id diverges from the index. since in geonode's config object it is all
-    // index based, updating it to be the index in case the id is no longer the index
-    const serverIndex = serverService_.getServerIndex(config.source);
-    if (serverIndex > -1) {
-      config.source = serverIndex;
-    }
-    if (goog.isDefAndNotNull(jsonStyle)) {
-      config.jsonstyle = jsonStyle;
-    }
-    config.visibility = layer.get("visible");
-    if (goog.isDefAndNotNull(layer.get("metadata").dimensions)) {
-      const dimension = layer.get("metadata").dimensions[0];
-      config.capability = {};
-      config.capability.dimensions = {};
-      config.capability.dimensions.time = dimension;
-      if (dimension.values instanceof Array) {
-        config.capability.dimensions.time.values = dimension.values;
-      } else {
-        config.capability.dimensions.time.values = dimension.values.split(",");
-      }
-    }
-    if (goog.isDefAndNotNull(layer.get("metadata").schema)) {
-      config.schema = [];
-      for (const i in layer.get("metadata").schema) {
-        config.schema.push({
-          name: i,
-          visible: layer.get("metadata").schema[i].visible
-        });
-      }
-    } else if (goog.isDefAndNotNull(layer.get("metadata").savedSchema)) {
-      config.schema = layer.get("metadata").savedSchema;
-    }
-    return config;
-  };
-
   function initializeNewConfig() {
     svc.config = configSvc.getMapstoryConfig();
     window.config = svc.config;
     svc.originalConfig = window.config;
     $rootScope.$broadcast("configInitialized");
-    console.log(window.config);
   }
 
   svc.initConfig = () => {
@@ -105,8 +49,7 @@ function stateSvc(
     const mapJsonUrl = isNaN(mapID)
       ? `/api/mapstories/slug/${mapID}`
       : `/api/mapstories/${mapID}`;
-    if (svc.config) {
-    } else if (mapID && mapID !== "new") {
+    if (mapID && mapID !== "new") {
       $.ajax({
         dataType: "json",
         url: mapJsonUrl
@@ -155,39 +98,24 @@ function stateSvc(
     }
   };
 
-  svc.getIndexedMapIds = () => {
-    let indexedMapIds = [];
-    const chapters = svc.getConfig().chapters;
-    for (let i = 0; i < chapters.length; i += 1) {
-      if (chapters[i].map_id) {
-        indexedMapIds.push(chapters[i].map_id);
-      }
-    }
-  };
-
   /**
    * Gets storypins and storyframes for the given mapstory id from the server.
    * @param story_id The mapstory id.
    */
-  svc.fetchComponentsFromAPI = story_id => {
-    return $http({
+  svc.fetchComponentsFromAPI = story_id =>
+    $http({
       url: `/api/mapstories/${story_id}`,
       method: "GET"
     }).then(data => {
       $rootScope.$broadcast("updateStorypins", data.data.chapters);
     });
-  };
-
-  $rootScope.$on("storyComponentsLoaded", (event, data) => {
-    console.log("> STORY COMPONENT DATA LOADED", data);
-  });
 
   /**
    * Event responder for Init has finished.
    */
-  $rootScope.$on("configInitialized", (event, data) => {
+  $rootScope.$on("configInitialized", () => {
     // This means we are in a new temp mapstory. No id has been created for this yet.
-    if( svc.is_temp_story() ){
+    if (svc.is_temp_story()) {
       // Initialize empty arrays for storypins
       svc.getConfig().storypins = [[]];
     } else {
@@ -201,7 +129,7 @@ function stateSvc(
    * @returns {boolean} True if this is a temp unsaved mapstory.
    */
   svc.is_temp_story = () => {
-    if(svc.getConfig().story_id === 0) {
+    if (svc.getConfig().story_id === 0) {
       return true;
     }
     return false;
@@ -210,7 +138,7 @@ function stateSvc(
   // !DJA @TODO: write test
   svc.removeLayer = uuid => {
     const layers = svc.config.chapters[svc.getChapterIndex()].layers;
-    for (let i = 0; i < layers.length; i++) {
+    for (let i = 0; i < layers.length; i += 1) {
       if (layers[i].uuid === uuid) {
         const index = layers.indexOf(layers[i]);
         if (index > -1) {
@@ -284,10 +212,10 @@ function stateSvc(
     /*
      The first base layer in the config when a map is reloaded will be set as `selected`
     */
-    let replacedBaselayer = layers[0];
+    const replacedBaselayer = layers[0];
     let selectedBaseLayerIndex = null;
     for (let i = 0; i < layers.length; i += 1) {
-      if (baselayer.name == layers[i].name) {
+      if (baselayer.name === layers[i].name) {
         selectedBaseLayerIndex = i;
         layers[i].visibility = true;
         layers[i].selected = true;
@@ -319,11 +247,9 @@ function stateSvc(
   svc.getCategories = () => {
     $http({
       url: "/api/categories/",
-      method: "GET",
+      method: "GET"
     }).then(data => {
-      console.log(data);
       svc.categories = data.data.objects;
-      res();
     });
   };
 
@@ -367,14 +293,13 @@ function stateSvc(
         chapterConfig.map_id = data.data.id;
         mapId = chapterConfig.map_id;
         config.chapters[index].map_id = mapId;
-        console.log(data);
-        const chapterIndex = svc.getChapterIndexByMapId(mapId);
-        svc.saveStoryPinsToServer(mapId)
-        .then(() => svc.saveStoryFramesToServer(mapId))
-        .then(() => {
-          res();
-        });
-      })
+        svc
+          .saveStoryPinsToServer(mapId)
+          .then(() => svc.saveStoryFramesToServer(mapId))
+          .then(() => {
+            res();
+          });
+      });
     });
   };
 
@@ -427,16 +352,7 @@ function stateSvc(
       url: `/story/${storyId}/save`,
       method: "PUT",
       data: JSON.stringify(copiedConfig)
-    }).then(
-      // TODO: Make these user facing notifications.
-      response => {
-        console.log(response);
-        console.log("MAP SAVED");
-      },
-      response => {
-        console.log("MAP FAILED TO SAVE");
-      }
-    );
+    });
   };
 
   svc.getChapterIndexByMapId = mapId => {
@@ -472,7 +388,6 @@ function stateSvc(
     // Update the local things
     // Broadcast the change
     if (!idArray) {
-      console.log("*******NULL ID ARRAY!!!!");
       // No need to broadcast
       return;
     }
@@ -491,12 +406,11 @@ function stateSvc(
     return req;
   };
 
-  svc.generateStoryThumbnail = storyId => {
-    return $http({
+  svc.generateStoryThumbnail = storyId =>
+    $http({
       url: `/story/${storyId}/generate_thumbnail`,
       method: "POST"
     });
-  };
 
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids
@@ -514,12 +428,14 @@ function stateSvc(
           return p;
         })
         .then(() => {
-          svc.generateStoryThumbnail(config.story_id)
-            .then(() => svc.updateLocationUsingStoryId())
+          svc
+            .generateStoryThumbnail(config.story_id)
+            .then(() => svc.updateLocationUsingStoryId());
         });
     } else {
-      retrieveChapterIdsAndSave()
-        .then(() => svc.generateStoryThumbnail(config.story_id))
+      retrieveChapterIdsAndSave().then(() =>
+        svc.generateStoryThumbnail(config.story_id)
+      );
     }
   };
 
@@ -566,4 +482,4 @@ function stateSvc(
   return svc;
 }
 
-module.exports = stateSvc;
+export default stateSvc;
