@@ -14,7 +14,6 @@ function composerController(
   TimeMachine,
   navigationSvc,
   pinSvc,
-  uiHelperSvc,
   searchSvc,
   stateSvc,
   configSvc,
@@ -24,7 +23,6 @@ function composerController(
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
-  $scope.uiHelperSvc = uiHelperSvc;
   $scope.searchSvc = searchSvc;
   $scope.navigationSvc = navigationSvc;
   $scope.pin = {};

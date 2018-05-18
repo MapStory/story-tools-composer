@@ -1394,6 +1394,17 @@ function pinSvc(
     svc.dt = new Date(year, month, day);
   };
 
+  svc.activePin = null;
+
+  svc.togglePinForm = $index => {
+    const i = $index.$index;
+    if (svc.activePin === i) {
+      svc.activePin = null;
+    } else {
+      svc.activePin = i;
+    }
+  };
+
   return svc;
 }
 

@@ -1,13 +1,15 @@
 describe("navigationSvc", () => {
 
-  let rootScope, config, navigationSvc, location, stateSvc;
+  let config;
+  let navigationSvc;
+  let location;
+  let stateSvc;
 
   beforeEach(module("composer"));
   beforeEach(inject(($rootScope, $location, _navigationSvc_, _stateSvc_, _appConfig_) => {
     config = _appConfig_;
     navigationSvc = _navigationSvc_;
     stateSvc = _stateSvc_;
-    rootScope = $rootScope;
     location = $location;
   }));
 
