@@ -1,5 +1,4 @@
 const moment = require("moment");
-const $ = require("jquery");
 
 function composerController(
   $scope,
@@ -14,7 +13,6 @@ function composerController(
   TimeMachine,
   navigationSvc,
   pinSvc,
-  uiHelperSvc,
   searchSvc,
   stateSvc,
   configSvc,
@@ -24,7 +22,6 @@ function composerController(
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
-  $scope.uiHelperSvc = uiHelperSvc;
   $scope.searchSvc = searchSvc;
   $scope.navigationSvc = navigationSvc;
   $scope.pin = {};
@@ -61,11 +58,7 @@ function composerController(
   $rootScope.$on("configInitialized", () => {
     $scope.mapManager.initMapLoad();
   });
-
-  $rootScope.$on("pin-added", (event, chapterIndex) => {
-    // $log.log($scope.pinSvc.getPins(0))
-  });
-
+  
   $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
 
   $rootScope.$on("chapter-removed", (event, chapterIndex) =>
@@ -86,7 +79,6 @@ function composerController(
     // @TODO: write tests
     const urlChapterId = parseInt($location.path().split("chapter/")[1]);
     const chapterCount = stateSvc.getChapterCount();
-    const previousChapterId = urlChapterId - 1;
     if (urlChapterId.toString() === chapterId.toString()) {
       if (chapterCount >= urlChapterId) {
         navigationSvc.goToChapter(chapterCount - 1);
@@ -122,17 +114,6 @@ function composerController(
 
   $scope.newMap = () => $location.path("/new");
 
-  $scope.showLoadMapDialog = () => {
-    const promise = loadMapDialog.show();
-    promise.then(result => {
-      if (result.mapstoryMapId) {
-        $location.path(`/maps/${result.mapstoryMapId}/data/`);
-      } else if (result.localMapId) {
-        $location.path(`/local/${result.localMapId}`);
-      }
-    });
-  };
-
   $scope.layerProperties = lyr => {
     const props = lyr.getProperties();
     const features = delete props.features;
@@ -154,7 +135,7 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
-  $scope.openStoryModal = function (size) {
+  $scope.openStoryModal = (size) => {
     const uibmodalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/storyInfoModal.html",
       size,
@@ -165,7 +146,7 @@ function composerController(
     }
   };
 
-  $scope.openPublishedModal = function (size) {
+  $scope.openPublishedModal = (size) => {
     const uibmodalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/storyPublished.html",
       size,
@@ -205,7 +186,6 @@ function composerController(
   };
 
   let draw;
-  const layerList = [];
 
   $scope.currentFrame = 0;
   $scope.zoomedIn = false;

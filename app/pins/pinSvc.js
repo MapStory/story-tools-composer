@@ -170,7 +170,6 @@ function pinSvc(
    */
   svc.addEmptyPinToCurrentChapter = () => {
     svc.pins[stateSvc.getChapterIndex() - 1].push({});
-    $rootScope.$broadcast("pin-added", stateSvc.getChapterIndex() - 1);
   };
 
   /**
@@ -367,7 +366,6 @@ function pinSvc(
     // Broadcast event
 
     console.log("story pin suposed to be added", storyPin);
-    $rootScope.$broadcast("pin-added", chapter_index);
 
     return storyPin;
   };
@@ -395,7 +393,6 @@ function pinSvc(
       }
     }
     // TODO: Check if this broadcast is behaving OK
-    $rootScope.$broadcast("pin-added", chapter_index);
   };
 
   // @ TODO: move to another service
@@ -477,7 +474,6 @@ function pinSvc(
       const storyPin = new svc.Pin(pin);
       svc.pins[chapter_index].push(storyPin);
     }
-    $rootScope.$broadcast("pin-added", chapter_index);
   };
 
   /**
@@ -571,7 +567,6 @@ function pinSvc(
       svc.addStorypinToMap(pin);
     }
 
-    $rootScope.$broadcast("pin-added", pin);
     return pin;
   };
 
@@ -838,7 +833,6 @@ function pinSvc(
     pin.in_timeline = true;
     // TODO: Start date and end date.
     svc.addStorypinToMap(pin);
-    $rootScope.$broadcast("pin-added", svc.currentPin);
     return pin;
   };
 
@@ -1392,6 +1386,17 @@ function pinSvc(
 
   svc.setDate = function(year, month, day) {
     svc.dt = new Date(year, month, day);
+  };
+
+  svc.activePin = null;
+
+  svc.togglePinForm = $index => {
+    const i = $index.$index;
+    if (svc.activePin === i) {
+      svc.activePin = null;
+    } else {
+      svc.activePin = i;
+    }
   };
 
   return svc;
