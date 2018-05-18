@@ -29,6 +29,9 @@ COPY yarn.lock ./
 COPY deps ./deps
 RUN yarn install
 
+# Symlink for eslint
+RUN ln -s /srv/story-tools-composer/node_modules/eslint/bin/eslint.js /usr/local/bin/eslint
+
 ENV COMPOSER_BUNDLE_ARGS=
 
 COPY . ./

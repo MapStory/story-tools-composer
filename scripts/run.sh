@@ -37,6 +37,10 @@ for i do # loop over $@
         yarn run test
     fi
 
+    if [ "$i" = "--lint" ]; then
+        yarn run lint
+    fi
+
     if [ "$i" = "--serve-dev" ]; then
         yarn run server --host 0.0.0.0 --watch --disable-host-check
     fi

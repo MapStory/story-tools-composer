@@ -11,6 +11,7 @@
     "changepaths": "./scripts/change_paths.sh",
     "server": "node_modules/.bin/webpack-dev-server",
     "test": "webpack && karma start karma.config.js",
+    "lint": "node_modules/eslint/bin/eslint.js app",
     "continuous": "webpack && karma start karma.config.js"
   },
   "keywords": [],
