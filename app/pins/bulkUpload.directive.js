@@ -6,7 +6,7 @@ function bulkUploadDirective() {
     controllerAs: "$ctrl",
     scope: {
       test_me: () => {
-        alert('huevo');
+        alert("huevo");
       }
     }
   };

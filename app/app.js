@@ -30,10 +30,10 @@ module.constant("appConfig", {
     {
       name: "mapstory",
       path: "/geoserver/",
-      absolutePath: "", //'https://mapstory.org/geoserver/',
-      host: "", //'https://mapstory.org/',
+      absolutePath: "", // 'https://mapstory.org/geoserver/',
+      host: "", // 'https://mapstory.org/',
       canStyleWMS: false,
-      timeEndpoint: function(name) {
+      timeEndpoint(name) {
         return `/maps/time_info.json?layer=${name}`;
       }
     },
@@ -73,7 +73,7 @@ module.run(() => {
       watchers = 0;
       f(root);
       if (watchers != last) {
-        //console.log(watchers);
+        // console.log(watchers);
       }
       last = watchers;
     }, 1000);

@@ -1,8 +1,8 @@
-describe('navigationSvc', () => {
+describe("navigationSvc", () => {
 
   let rootScope, config, navigationSvc, location, stateSvc;
 
-  beforeEach(module('composer'));
+  beforeEach(module("composer"));
   beforeEach(inject(($rootScope, $location, _navigationSvc_, _stateSvc_, _appConfig_) => {
     config = _appConfig_;
     navigationSvc = _navigationSvc_;
@@ -11,40 +11,40 @@ describe('navigationSvc', () => {
     location = $location;
   }));
 
-  describe('nextChapter', () => {
+  describe("nextChapter", () => {
     beforeEach(inject(($controller, $rootScope, $compile) => {
-      spyOn(location, 'path');
+      spyOn(location, "path");
     }));
 
-    it('should update the location path to the next chapter if it exists', () => {
+    it("should update the location path to the next chapter if it exists", () => {
       stateSvc.setConfig({chapters:[{},{}]});
       navigationSvc.nextChapter();
       expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
     });
 
-    it('should update the location path to the first chapter if there is no next chapter ', () => {
+    it("should update the location path to the first chapter if there is no next chapter ", () => {
       stateSvc.setConfig({chapters:[{}]});
       navigationSvc.nextChapter();
-      expect(location.path).toHaveBeenCalledWith('');
+      expect(location.path).toHaveBeenCalledWith("");
     });
   });
 
-  describe('previous chapter', () => {
+  describe("previous chapter", () => {
     beforeEach(inject(($rootScope, $compile) => {
     }));
 
-    it('should update the location path to the previous chapter if it exists', () => {
+    it("should update the location path to the previous chapter if it exists", () => {
       stateSvc.setConfig({chapters:[{},{},{}]});
-      spyOn(location, 'path').and.returnValue('/chapter/3');
+      spyOn(location, "path").and.returnValue("/chapter/3");
       navigationSvc.previousChapter();
       expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
     });
 
-    it('should update the location path to the first chapter if there is no previous chapter ', () => {
+    it("should update the location path to the first chapter if there is no previous chapter ", () => {
       stateSvc.setConfig({chapters:[{}]});
-      spyOn(location, 'path');
+      spyOn(location, "path");
       navigationSvc.previousChapter();
-      expect(location.path).toHaveBeenCalledWith('/chapter/1');
+      expect(location.path).toHaveBeenCalledWith("/chapter/1");
     });
   });
 });

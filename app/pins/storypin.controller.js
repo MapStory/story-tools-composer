@@ -41,9 +41,7 @@ function storypinController($scope, pinSvc, stateSvc) {
    * Returns the given chapter's pins.
    * @returns {Array|*} An array of StoryPins.
    */
-  $scope.get_chapter_pins = () => {
-    return pinSvc.getPins(stateSvc.getChapterIndex());
-  };
+  $scope.get_chapter_pins = () => pinSvc.getPins(stateSvc.getChapterIndex());
 }
 
 module.exports = storypinController;

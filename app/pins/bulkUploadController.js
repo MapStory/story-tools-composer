@@ -27,7 +27,7 @@ function bulkUploadCtrl($scope, $uibModal, pinSvc) {
       resolved => {
         pinSvc.selected = resolved;
       },() => {
-        let x = 3;
+        const x = 3;
       });
   };
 }

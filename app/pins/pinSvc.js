@@ -780,9 +780,7 @@ function pinSvc(
       geometry: new ol.geom.Point(pin.coords)
     });
     // TODO: Fix circular dependency
-    point.getStoryPin = () => {
-      return pin;
-    };
+    point.getStoryPin = () => pin;
     // Pin now has a feature:
     pin.map_feature = point;
 
@@ -1073,7 +1071,7 @@ function pinSvc(
         features: []
       });
       for (let p = 0; p < svc.pins[i].length; p += 1) {
-        console.log("This is the id: "  + svc.pins[i][p].id);
+        console.log(`This is the id: ${   svc.pins[i][p].id}`);
         featureCollections[i].features.push({
           type: "Feature",
           id: svc.pins[i][p].id,
@@ -1209,10 +1207,10 @@ function pinSvc(
       // Whitelist
       if (svc.is_whitelist(url)) {
         return url;
-      } else {
-        // TODO: Alert the user here
-        return "";
-      }
+      } 
+      // TODO: Alert the user here
+      return "";
+      
     }
     return "";
   };
@@ -1327,7 +1325,7 @@ function pinSvc(
     });
     map.addInteraction(selectInteraction);
     selectInteraction.on("select", e => {
-      alert("selected " + e.target.getFeatures().getLength());
+      alert(`selected ${  e.target.getFeatures().getLength()}`);
     });
   };
 

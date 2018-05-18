@@ -57,7 +57,7 @@ function styleService(
     const style = storyLayer.get("style");
     style.name = styleName;
     const layer = storyLayer.getLayer();
-    let layerSource = layer.getSource();
+    const layerSource = layer.getSource();
     const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
       style
     );
@@ -72,7 +72,7 @@ function styleService(
         const csrfToken = $cookies.getAll().csrftoken;
         // @TODO: Use GET request to verify existence of style before POST
         $http({
-          url: "/gs/rest/styles?name=" + style.name,
+          url: `/gs/rest/styles?name=${  style.name}`,
           method: "POST",
           data: xml,
           headers: {
@@ -81,7 +81,7 @@ function styleService(
             "X-Requested-With": "XMLHttpRequest"
           }
         }).then(
-          function(result) {
+          (result) => {
             layerSource.updateParams({
               _dc: new Date().getTime(),
               _olSalt: Math.random(),
@@ -89,11 +89,11 @@ function styleService(
             });
             stateSvc.updateLayerStyle(layerName, style.name);
           },
-          function errorCallback(response) {
+          (response) => {
             console.log("Style Create Error Response ", response);
             if (response.status === 403 || response.status === 500) {
               $http
-                .put("/gs/rest/styles/" + style.name + ".xml", xml, {
+                .put(`/gs/rest/styles/${  style.name  }.xml`, xml, {
                   headers: {
                     "Content-Type":
                       "application/vnd.ogc.sld+xml; charset=UTF-8",
@@ -101,7 +101,7 @@ function styleService(
                     "X-Requested-With": "XMLHttpRequest"
                   }
                 })
-                .then(function(result) {
+                .then((result) => {
                   layerSource.updateParams({
                     _dc: new Date().getTime(),
                     _olSalt: Math.random(),

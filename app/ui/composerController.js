@@ -39,11 +39,11 @@ function composerController(
   }
 
   function getUrlParam(name) {
-    var results = new RegExp('[\\?&]' + name + '=([^&#]*)').exec(window.location.href);
+    const results = new RegExp(`[\\?&]${  name  }=([^&#]*)`).exec(window.location.href);
     return (results && results[1]) || undefined;
   }
 
-  var layer = getUrlParam("layer");
+  const layer = getUrlParam("layer");
   if (layer > "") {
     MapManager.addLayer(layer, {}, 0);
   }
@@ -161,7 +161,7 @@ function composerController(
       scope: $scope
     });
     $scope.close = () => {
-      uibmodalInstance.dismiss('close');
+      uibmodalInstance.dismiss("close");
     }
   };
 
@@ -172,7 +172,7 @@ function composerController(
       scope: $scope
     });
     $scope.close = () => {
-      uibmodalInstance.dismiss('close');
+      uibmodalInstance.dismiss("close");
     }
   };
 
@@ -185,18 +185,18 @@ function composerController(
 
   $scope.clearBoundingBox = () => {
     MapManager.storyMap
-    .getMap()
-    .getLayers()
-    .forEach(layer => {
-      if (layer.get("name") === "boundingBox") {
-        map.removeLayer(layer);
-        const zoom = ol.animation.zoom({
-          resolution: map.getView().getResolution()
-        });
-        map.beforeRender(zoom);
-        map.getView().setZoom(5);
-      }
-    });
+      .getMap()
+      .getLayers()
+      .forEach(layer => {
+        if (layer.get("name") === "boundingBox") {
+          map.removeLayer(layer);
+          const zoom = ol.animation.zoom({
+            resolution: map.getView().getResolution()
+          });
+          map.beforeRender(zoom);
+          map.getView().setZoom(5);
+        }
+      });
   };
 
   $scope.formatDates = date => {
@@ -292,8 +292,8 @@ function composerController(
         const coords = JSON.parse(chapters[0].storyframes[f].center);
         $scope.frameSettings.push({
           title: chapters[c].storyframes[f].title,
-          startDate: moment.unix(chapters[c].storyframes[f].start_time).format('YYYY-MM-DD'),
-          endDate: moment.unix(chapters[c].storyframes[f].end_time).format('YYYY-MM-DD'),
+          startDate: moment.unix(chapters[c].storyframes[f].start_time).format("YYYY-MM-DD"),
+          endDate: moment.unix(chapters[c].storyframes[f].end_time).format("YYYY-MM-DD"),
           bb1: [coords[0][0], coords[0][1]],
           bb2: [coords[1][0], coords[1][1]],
           bb3: [coords[2][0], coords[2][1]],
@@ -401,7 +401,7 @@ function composerController(
   };
 
   $scope.resetFramesForm = () => {
-    document.getElementById('storySettings').reset();
+    document.getElementById("storySettings").reset();
     $scope.clearBoundingBox();
   };
 
