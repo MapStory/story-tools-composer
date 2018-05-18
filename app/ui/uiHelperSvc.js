@@ -1,4 +1,4 @@
-'use strict';
+
 
 function uiHelperSvc($location, $rootScope, $log, stateSvc, pinSvc, appConfig) {
   const svc = {};

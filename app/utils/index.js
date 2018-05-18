@@ -1,4 +1,4 @@
-"use strict";
+
 
 const angular = require("angular");
 const utils = require("./utils.js");
