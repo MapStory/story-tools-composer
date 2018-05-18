@@ -10,16 +10,15 @@
 
 <div id="createdStoryframes" ng-show="frameSettings">
     <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
-
     <div class="clearfix" ng-repeat="item in frameSettings">
-        <div id="titleBar" ng-if="item.chapter === stateSvc.getChapterIndex()">
+        <div id="titleBar" ng-show="item.chapter === stateSvc.getChapterIndex()">
             <a ng-click="showDetails = !showDetails" id="storyframeTitle" class="section-title">
                 <i class="fa fa-expand"></i> {{ item.title }}
             </a>
-            <i class="fa fa-trash" ng-click="deleteStoryframe($index)"></i>
-            <i class="fa fa-edit" ng-click="editStoryframe($index); showForm = !showForm"></i>
+            <i class="fa fa-trash" ng-click="deleteStoryframe($index)" uib-tooltip="Delete StoryFrame"></i>
+            <i class="fa fa-edit" ng-click="editStoryframe($index)" uib-tooltip="Edit StoryFrame"></i>
         </div>
-        <ul class="storyframe-details" ng-class="{ 'hidden': !showDetails }">
+        <ul class="storyframe-details" ng-show="showDetails">
             <li><strong>Bounding Box:</strong></li>
             <ol>
                 <li>{{ item.bb1[0] | limitTo: 7 }}, {{ item.bb1[1] | limitTo: 7 }}</li>
@@ -34,23 +33,23 @@
         </ul>
     </div>
 </div>
-<form id="storySettings">
+<form name="storyFrameDetails" id="storySettings">
     <label>*Title</label>
-    <input id="storypin_title" type="text" ng-model="frameSettings.title" required/>
+    <input id="frameTitle" type="text" ng-model="frameSettings.title" aria-label="title" required/>
 
     <label>*Start Date</label>
     <div>
-        <input type="date" ng-model="frameSettings.startDate" required/>
+        <input required id="startDate" type="date" ng-model="frameSettings.startDate" aria-label="start date" required/>
         <span class="fa fa-calendar input-icons"></span>
-        <input type="time" ng-model="frameSettings.startTime">
+        <input id="startTime" type="time" ng-model="frameSettings.startTime" aria-label="start time">
         <span class="fa fa-clock-o input-icons"></span>
     </div>
 
     <label>*End Date</label>
     <div>
-        <input type="date" ng-model="frameSettings.endDate" required/>
+        <input id="endDate" type="date" ng-model="frameSettings.endDate" aria-label="end date" required/>
         <span class="fa fa-calendar input-icons"></span>
-        <input type="time" ng-model="frameSettings.endTime">
+        <input id="endTime" type="time" ng-model="frameSettings.endTime" aria-label="end time">
         <span class="fa fa-clock-o input-icons"></span>
     </div>
 
