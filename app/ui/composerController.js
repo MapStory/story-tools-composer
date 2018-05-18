@@ -142,7 +142,7 @@ function composerController(
 
   $scope.updateSelected = (selected, chapterId, dontCache) => {
     $scope.selected = {};
-    if ((chapterId !== null) & (chapterId !== undefined)) {
+    if ((chapterId !== null) && (chapterId !== undefined)) {
       navigationSvc.goToChapter(chapterId);
     }
     $scope.selected[selected] = true;

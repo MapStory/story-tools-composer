@@ -1,6 +1,6 @@
 describe('navigationSvc', () => {
 
-  let rootScope, config, MapManager, navigationSvc, location, stateSvc;
+  let rootScope, config, navigationSvc, location, stateSvc;
 
   beforeEach(module('composer'));
   beforeEach(inject(($rootScope, $location, _navigationSvc_, _stateSvc_, _appConfig_) => {

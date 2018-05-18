@@ -3,7 +3,7 @@ function utils() {
   Array.prototype.move = function(old_index, new_index) {
     if (new_index >= this.length) {
       let k = new_index - this.length;
-      while (k-- + 1) {
+      while (k-=1 + 1) {
         this.push(undefined);
       }
     }
@@ -12,6 +12,7 @@ function utils() {
   };
 
   svc.generateUUID = () => {
+    /* eslint-disable no-bitwise, eqeqeq */
     var d = new Date().getTime();
     var uuid = "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(
       c
@@ -21,6 +22,7 @@ function utils() {
       return (c == "x" ? r : (r & 0x3) | 0x8).toString(16);
     });
     return uuid;
+    /* eslint-enable no-bitwise, eqeqeq */
   };
   return svc;
 }
