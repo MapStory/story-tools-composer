@@ -58,7 +58,7 @@ function composerController(
   $rootScope.$on("configInitialized", () => {
     $scope.mapManager.initMapLoad();
   });
-
+  
   $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
 
   $rootScope.$on("chapter-removed", (event, chapterIndex) =>
@@ -457,17 +457,17 @@ function composerController(
       const endDate = $scope.formatDates(pin.end_time);
       const storyLayerStartDate = $scope.formatDates(date);
 
-      let should_show = false;
+      let shouldShow = false;
       if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
         // TODO: Show StoryPin.
-        should_show = true;
+        shouldShow = true;
       }
       if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
         // TODO: Hide Storypin.
-        should_show = false;
+        shouldShow = false;
       }
 
-      if (should_show) {
+      if (shouldShow) {
         pin.show();
       } else {
         pin.hide();

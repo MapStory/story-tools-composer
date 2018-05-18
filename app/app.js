@@ -72,7 +72,7 @@ module.run(() => {
     window.setInterval(() => {
       watchers = 0;
       f(root);
-      if (watchers != last) {
+      if (watchers !== last) {
         // console.log(watchers);
       }
       last = watchers;

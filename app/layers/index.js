@@ -1,17 +1,15 @@
 import { module } from "angular";
-import addLayers from "./addLayers.js";
-import featureManagerSvc from "./featureManagerSvc.js";
-import layerSvc from "./layerSvc.js";
-import layerOptionsSvc from "./layerOptionsSvc.js";
-import layerList from "./layerList.js";
-import tileProgressController from "./tileProgressController.js";
+import addLayers from "./addLayers";
+import featureManagerSvc from "./featureManagerSvc";
+import layerSvc from "./layerSvc";
+import layerOptionsSvc from "./layerOptionsSvc";
+import layerList from "./layerList";
+import tileProgressController from "./tileProgressController";
 
-angular.module("composer").factory("layerSvc", layerSvc);
-angular.module("composer").factory("layerOptionsSvc", layerOptionsSvc);
-angular.module("composer").directive("addLayers", addLayers);
-angular.module("composer").directive("layerList", layerList);
-angular.module("composer").factory("featureManagerSvc", featureManagerSvc);
+module("composer").factory("layerSvc", layerSvc);
+module("composer").factory("layerOptionsSvc", layerOptionsSvc);
+module("composer").directive("addLayers", addLayers);
+module("composer").directive("layerList", layerList);
+module("composer").factory("featureManagerSvc", featureManagerSvc);
 
-angular
-  .module("composer")
-  .controller("tileProgressController", tileProgressController);
+module("composer").controller("tileProgressController", tileProgressController);

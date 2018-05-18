@@ -5,7 +5,7 @@ function tileProgressController($scope) {
   $scope.tilesLoadedProgress = 0;
   $scope.safeApply = function(fn) {
     const phase = this.$root.$$phase;
-    if (phase == "$apply" || phase == "$digest") {
+    if (phase === "$apply" || phase === "$digest") {
       if (fn && typeof fn === "function") {
         fn();
       }
