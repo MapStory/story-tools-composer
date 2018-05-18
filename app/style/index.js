@@ -1,5 +1,5 @@
 
-const angular = require("angular");
-const styleService = require("./styleService.js");
+import { module } from "angular";
+import styleService from "./styleService";
 
-angular.module("composer").service("styleService", styleService);
+module("composer").service("styleService", styleService);
