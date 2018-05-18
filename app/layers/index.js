@@ -1,10 +1,10 @@
 import { module } from "angular";
-import addLayers from "./addLayers.js";
-import featureManagerSvc from "./featureManagerSvc.js";
-import layerSvc from "./layerSvc.js";
-import layerOptionsSvc from "./layerOptionsSvc.js";
-import layerList from "./layerList.js";
-import tileProgressController from "./tileProgressController.js";
+import addLayers from "./addLayers";
+import featureManagerSvc from "./featureManagerSvc";
+import layerSvc from "./layerSvc";
+import layerOptionsSvc from "./layerOptionsSvc";
+import layerList from "./layerList";
+import tileProgressController from "./tileProgressController";
 
 angular.module("composer").factory("layerSvc", layerSvc);
 angular.module("composer").factory("layerOptionsSvc", layerOptionsSvc);

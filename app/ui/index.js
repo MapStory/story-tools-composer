@@ -1,6 +1,4 @@
-
-
-import legendDirective from "./legend.directive.js";
+import legendDirective from "./legend.directive";
 
 const angular = require("angular");
 const composerController = require("./composerController.js");
