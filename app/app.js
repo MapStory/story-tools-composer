@@ -88,6 +88,8 @@ module.config([
   ($qProvider, $translateProvider, $httpProvider, $sceDelegateProvider) => {
     $qProvider.errorOnUnhandledRejections(false);
     $translateProvider.preferredLanguage("en");
+    $translateProvider.useSanitizeValueStrategy("escape");
+
     $httpProvider.defaults.headers.post["X-Requested-With"] = "XMLHttpRequest";
 
     $httpProvider.defaults.xsrfCookieName = "csrftoken";
