@@ -62,14 +62,14 @@ function composerController(
     $scope.mapManager.initMapLoad();
   });
 
-  $rootScope.$on("pin-added", (event, chapter_index) => {
+  $rootScope.$on("pin-added", (event, chapterIndex) => {
     // $log.log($scope.pinSvc.getPins(0))
   });
 
   $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
 
-  $rootScope.$on("chapter-removed", (event, chapter_index) =>
-    pinSvc.removeChapter(chapter_index)
+  $rootScope.$on("chapter-removed", (event, chapterIndex) =>
+    pinSvc.removeChapter(chapterIndex)
   );
 
   $scope.setPreviewMode = () => {
@@ -477,17 +477,17 @@ function composerController(
       const endDate = $scope.formatDates(pin.end_time);
       const storyLayerStartDate = $scope.formatDates(date);
 
-      let should_show = false;
+      let shouldShow = false;
       if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
         // TODO: Show StoryPin.
-        should_show = true;
+        shouldShow = true;
       }
       if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
         // TODO: Hide Storypin.
-        should_show = false;
+        shouldShow = false;
       }
 
-      if (should_show) {
+      if (shouldShow) {
         pin.show();
       } else {
         pin.hide();
