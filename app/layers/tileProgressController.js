@@ -3,7 +3,7 @@
 function tileProgressController($scope) {
   $scope.tilesToLoad = 0;
   $scope.tilesLoadedProgress = 0;
-  $scope.safeApply = function(fn) {
+  $scope.safeApply = (fn) => {
     const phase = this.$root.$$phase;
     if (phase === "$apply" || phase === "$digest") {
       if (fn && typeof fn === "function") {

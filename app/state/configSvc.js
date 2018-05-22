@@ -158,7 +158,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
         id: 0,
         uuid: utils.generateUUID(),
         chapters: [{}],
-        is_published: false
+        isPublished: false
       };
     }
 
@@ -173,12 +173,12 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
       },
       branding: brandingCfg,
       uuid: data.uuid,
-      is_published: data.is_published || false,
-      removed_chapters: [],
-      viewer_playbackmode: "instant",
-      thumbnail_url: data.thumbnail_url,
+      isPublished: data.is_published || false,
+      removedChapters: [],
+      viewerPlaybackMode: "instant",
+      thumbnailUrl: data.thumbnail_url,
       id: data.id || 0,
-      story_id: data.id || 0,
+      storyId: data.id || 0,
       chapters: data.chapters
     };
 
@@ -212,15 +212,15 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
     const cfg = {
       index,
       id: index,
-      map_id: data.map_id || 0,
+      mapId: data.map_id || 0,
       about: {
         abstract: data.abstract || "",
         owner: data.owner,
         title: data.title || `New Chapter`
       },
       layers: data.layersConfig,
-      viewer_playbackmode: "instant",
-      story_id: data.story_id || null,
+      viewerPlaybackMode: "instant",
+      storyID: data.story_id || null,
       sources: {
         "0": {
           lazy: true,
@@ -265,7 +265,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
         maxResolution: 156543.03390625,
         maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
         zoom: 5,
-        story_id: data.story_id || null,
+        storyId: data.story_id || null,
         projection: "EPSG:900913",
         layers: svc
           .getBasemapArrayWithActiveBasemap(data.layers)

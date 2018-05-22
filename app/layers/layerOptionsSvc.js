@@ -12,7 +12,6 @@ function layerOptionsSvc() {
     let workspace = "geonode";
     const parts = name.split(":");
     if (parts.length > 1) {
-      console.log("PARTS LENGTH > 1")
       workspace = parts[0];
       name = parts[1];
     }

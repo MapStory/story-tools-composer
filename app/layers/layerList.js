@@ -51,9 +51,9 @@ function layerList(
           scope.swapping = false;
         });
       };
-      scope.onChange = baseLayer => {
-        stStoryMapBaseBuilder.setBaseLayer(MapManager.storyMap, baseLayer);
-        stateSvc.updateBaseLayer(baseLayer);
+      scope.onChange = newBaseLayer => {
+        stStoryMapBaseBuilder.setBaseLayer(MapManager.storyMap, newBaseLayer);
+        stateSvc.updateBaseLayer(newBaseLayer);
       };
       scope.onSort = (item, partFrom, partTo, indexFrom, indexTo) => {
         stateSvc.reorderLayer(indexFrom, indexTo);
