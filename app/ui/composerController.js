@@ -272,8 +272,8 @@ function composerController(
         const coords = JSON.parse(chapters[0].storyframes[f].center);
         $scope.frameSettings.push({
           title: chapters[c].storyframes[f].title,
-          startDate: moment.unix(chapters[c].storyframes[f].start_time).format("YYYY-MM-DD"),
-          endDate: moment.unix(chapters[c].storyframes[f].end_time).format("YYYY-MM-DD"),
+          startDate: moment.unix(chapters[c].storyframes[f].startTime).format("YYYY-MM-DD"),
+          endDate: moment.unix(chapters[c].storyframes[f].endTime).format("YYYY-MM-DD"),
           bb1: [coords[0][0], coords[0][1]],
           bb2: [coords[1][0], coords[1][1]],
           bb3: [coords[2][0], coords[2][1]],
@@ -453,8 +453,8 @@ function composerController(
       pinSvc.pins[stateSvc.getChapterIndex()] = pinArray;
     }
     pinArray.forEach(pin => {
-      const startDate = $scope.formatDates(pin.start_time);
-      const endDate = $scope.formatDates(pin.end_time);
+      const startDate = $scope.formatDates(pin.startTime);
+      const endDate = $scope.formatDates(pin.endTime);
       const storyLayerStartDate = $scope.formatDates(date);
 
       let shouldShow = false;

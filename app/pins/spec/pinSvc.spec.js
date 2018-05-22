@@ -26,8 +26,8 @@ describe("pinSvc", () => {
 
       validProperties = {
         title: "test",
-        start_time: "10/1/2017",
-        end_time: "10/20/2017",
+        startTime: "10/1/2017",
+        endTime: "10/20/2017",
         geometry: {
           coordinates: [0, 0]
         }
@@ -37,8 +37,8 @@ describe("pinSvc", () => {
         validProperties,
         {
           title: "test2",
-          start_time: "9/1/2000",
-          end_time: "10/20/2000",
+          startTime: "9/1/2000",
+          endTime: "10/20/2000",
           geometry: {
             coordinates: [0, 0]
           }
@@ -51,8 +51,8 @@ describe("pinSvc", () => {
             geometry: '{"coordinates": [29,30]}',
             id: 1,
             properties: {
-              start_time: 5,
-              end_time: 5,
+              startTime: 5,
+              endTime: 5,
               id: 5
             }
           },
@@ -60,8 +60,8 @@ describe("pinSvc", () => {
             geometry: '{"coordinates": [29,30]}',
             id: 2,
             properties: {
-              start_time: 6,
-              end_time: 6,
+              startTime: 6,
+              endTime: 6,
               id: 6
             }
           }
@@ -141,10 +141,10 @@ describe("pinSvc", () => {
       const incompleteProps = {
         title: "test",
         geometry: {},
-        end_time: 1
+        endTime: 1
       };
       const test = pinSvc.validateAllPinProperties(incompleteProps);
-      expect(test[0]).toBe("start_time");
+      expect(test[0]).toBe("startTime");
     });
   });
 
@@ -166,8 +166,8 @@ describe("pinSvc", () => {
         {
           geometry: '{"coordinates": [29,30]}',
           properties: {
-            start_time: 5,
-            end_time: 5,
+            startTime: 5,
+            endTime: 5,
             id: 5
           }
         },
@@ -276,22 +276,22 @@ describe("pinSvc", () => {
       expect(newPin.test).toBe(false);
     });
 
-    it("should replace an empty string with `false` for the keys `in_timeline`, `auto_show`, and `pause_playback`", () => {
+    it("should replace an empty string with `false` for the keys `inTimeline`, `autoShow`, and `pause_playback`", () => {
       const newPin = pinSvc.defaultPinValues({
-        in_timeline: "",
-        auto_show: "",
+        inTimeline: "",
+        autoShow: "",
         pause_playback: ""
       });
-      expect(newPin.in_timeline).toBe(false);
-      expect(newPin.auto_show).toBe(false);
+      expect(newPin.inTimeline).toBe(false);
+      expect(newPin.autoShow).toBe(false);
       expect(newPin.pause_playback).toBe(false);
     });
 
-    it("should replace an empty string with `true` for the keys `in_map`", () => {
+    it("should replace an empty string with `true` for the keys `inMap`", () => {
       const newPin = pinSvc.defaultPinValues({
-        in_map: ""
+        inMap: ""
       });
-      expect(newPin.in_map).toBe(true);
+      expect(newPin.inMap).toBe(true);
     });
   });
 

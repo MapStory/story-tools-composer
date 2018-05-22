@@ -158,8 +158,8 @@ function stateSvc(
         properties: {
           chapter: frameSettings[i].chapter,
           title: frameSettings[i].title,
-          start_time: frameSettings[i].startDate,
-          end_time: frameSettings[i].endDate,
+          startTime: frameSettings[i].startDate,
+          endTime: frameSettings[i].endDate,
           center: [
             [frameSettings[i].bb1[0], frameSettings[i].bb1[1]],
             [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
@@ -366,7 +366,7 @@ function stateSvc(
   };
 
   svc.saveStoryPinsToServer = mapId => {
-    const pins = svc.get_storypins();
+    const pins = svc.getStorypins();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const pinArray = pins[chapterIndex] || [];
     const req = $http({
@@ -448,9 +448,8 @@ function stateSvc(
   /**
    * Sets the storypins to the config that will be saved.
    * @param storypins [[]] An Array chapters containing an array of Storypins each.
-   * TODO: Rename this to something more coherent like `setStoryPinsToConfig`
    */
-  svc.save_storypins = storypins => {
+  svc.setStoryPinsToConfig = storypins => {
     svc.config.storypins = storypins;
   };
 
@@ -458,7 +457,7 @@ function stateSvc(
    * Gets the current storypins held by the config.
    * @returns {*|Array[]}
    */
-  svc.get_storypins = () => {
+  svc.getStorypins = () => {
     if (svc.config.storypins) {
       return svc.config.storypins;
     }

@@ -2,26 +2,17 @@
 <div id="pins-editor"
      ng-controller="storypinController"
      class="floating style-editor-item">
-
     <!-- Bulk upload controller -->
     <div ng-controller="bulkUploadCtrl">
-
         <!-- Pin Accordion -->
         <uib-accordion close-others="false" ng-init="is_open.editor = false; is_open.chooser = true;">
-
             <!-- Pin List -->
             <div uib-accordion-group heading="StoryPins" is-open="is_open.chooser">
                 <button class="btn btn-inverse" ng-click="onBulkPinAdd()">Bulk Upload</button>
-                <button class="btn btn-inverse"
-                        ng-click="on_add_storypin()">
-                    Add a StoryPin
-                </button>
-                <button class="btn btn-inverse" ng-click="on_export_pins()">
-                    Export StoryPins
-                </button>
+                <button class="btn btn-inverse" ng-click="on_add_storypin()">Add a StoryPin</button>
+                <button class="btn btn-inverse" ng-click="on_export_pins()">Export StoryPins</button>
             </div>
         </uib-accordion>
-
         <!-- THE MODAL -->
         <!-- TODO: Move this to a template -->
         <!-- Change the ID's to something more unique -->
@@ -61,7 +52,6 @@
                     </span>
                     <i class="fa float-right fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>
                 </uib-accordion-heading>
-
                 <!-- Content -->
                 <div id="pin-form-{{$index}}">
                     <!-- Move Button-->
@@ -104,7 +94,7 @@
                                         type="text"
                                         class="form-control"
                                         uib-datepicker-popup="{{pinSvc.format}}"
-                                        ng-model="pin.start_time"
+                                        ng-model="pin.startTime"
                                         is-open="pinSvc.startDatePopup.opened"
                                         datepicker-options="pinSvc.dateOptions"
                                         uib-init-date="false"
@@ -130,7 +120,7 @@
                                         type="text"
                                         class="form-control"
                                         uib-datepicker-popup="{{pinSvc.format}}"
-                                        ng-model="pin.end_time"
+                                        ng-model="pin.endTime"
                                         is-open="pinSvc.endDatePopup.opened"
                                         datepicker-options="pinSvc.dateOptions"
                                         uib-init-date="false"
@@ -149,12 +139,13 @@
                         <hr>
                         <!-- Latitude -->
                         <label for="lat-input">Latitude</label>
-                        <input id="lat-input" type="number" name="lat" ng-model="pin.map_feature.getGeometry().getCoordinates()[0]" placeholder="{{pin.coords[0]}}">
+                        <input id="lat-input" type="number" name="lat" ng-model="pin.mapFeature.getGeometry().getCoordinates()[0]" placeholder="{{pin.coords[0]}}">
                         <br/>
                         <!-- Longitude -->
                         <label for="long-input">Longitude</label>
-                        <input id="long-input" type="number" name="long" ng-model="pin.map_feature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">
+                        <input id="long-input" type="number" name="long" ng-model="pin.mapFeature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">
                         <hr>
+                        <!-- TODO: Implement options -->
                         <!-- Playback Options -->
                         <!--<div class="form-field">-->
                             <!--<label for="storypin_playback_options">-->
@@ -164,8 +155,8 @@
                             <!--&lt;!&ndash; Show in timeline &ndash;&gt;-->
                             <!--<label class="switch">-->
                                 <!--<input type="checkbox" for="timeline"-->
-                                       <!--ng-init="pin.in_timeline = false"-->
-                                       <!--ng-model="pin.in_timeline">-->
+                                       <!--ng-init="pin.inTimeline = false"-->
+                                       <!--ng-model="pin.inTimeline">-->
                                 <!--<div class="slider round"></div>-->
                             <!--</label>-->
                             <!--<label for="timeline">Show StoryPin on Timeline</label>-->
@@ -173,8 +164,8 @@
                             <!--&lt;!&ndash; Show on map &ndash;&gt;-->
                             <!--<label class="switch">-->
                                 <!--<input type="checkbox" for="map"-->
-                                       <!--ng-init="pin.in_map = true"-->
-                                       <!--ng-model="pin.in_map">-->
+                                       <!--ng-init="pin.inMap = true"-->
+                                       <!--ng-model="pin.inMap">-->
                                 <!--<div class="slider round"></div>-->
                             <!--</label>-->
                             <!--<label for="map">Show StoryPin on Map</label>-->
@@ -191,8 +182,8 @@
                             <!--&lt;!&ndash; autoplay embedded&ndash;&gt;-->
                             <!--<label class="switch">-->
                                 <!--<input type="checkbox" for="play_embedded"-->
-                                       <!--ng-init="pin.auto_show = false"-->
-                                       <!--ng-model="pin.auto_show">-->
+                                       <!--ng-init="pin.autoShow = false"-->
+                                       <!--ng-model="pin.autoShow">-->
                                 <!--<div class="slider round"></div>-->
                             <!--</label>-->
                             <!--<label for="play_embedded">-->
