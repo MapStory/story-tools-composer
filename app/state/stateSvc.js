@@ -46,9 +46,6 @@ function stateSvc(
     const mapID = /\/story\/([A-Za-z0-9-_]+)/.exec(path)
       ? /\/story\/([A-Za-z0-9-_]+)/.exec(path)[1]
       : null;
-    console.log("mapID", mapID);
-    console.log("isNaN", isNaN(mapID));
-    console.log("Number.isNaN", Number.isNaN(mapID));
     const mapJsonUrl = Number.isNaN(Number(mapID))
       ? `/api/mapstories/slug/${mapID}`
       : `/api/mapstories/${mapID}`;
