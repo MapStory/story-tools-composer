@@ -105,6 +105,16 @@ function composerController(
     stateSvc.save();
   };
 
+  $scope.displaySaveModal = () => {
+    const uibmodalInstance = $uibModal.open({
+      templateUrl: "app/ui/templates/saveNotificationModal.html",
+      scope: $scope
+    });
+    $scope.close = () => {
+      uibmodalInstance.dismiss("close");
+    }
+  };
+
   $scope.publishMap = () => {
     stateSvc.publish();
     $scope.openPublishedModal();
