@@ -79,8 +79,7 @@ function pinSvc(
    * @returns {string}
    */
   svc.getDayClass = data => {
-    const date = data.date;
-    const mode = data.mode;
+    const [date, mode] = [data.date, data.mode];
     if (mode === "day") {
       const dayToCheck = new Date(date).setHours(0, 0, 0, 0);
       for (let i = 0; i < svc.events.length; i++) {
@@ -338,14 +337,13 @@ function pinSvc(
   svc._addPin = (props, chapterIndex) => {
     const pinValidated = svc.validateAllPinProperties(props);
     if (pinValidated !== true) {
-      console.log("invalid pin!!!");
+      // TODO: log("invalid pin!!!");
       svc.handleInvalidPin(pinValidated);
       return null;
     }
 
     // Check time is OK
     if (timeSvc.getTime(props.startTime) > timeSvc.getTime(props.endTime)) {
-      console.log("Start Time must be before End Time", "Invalid Time");
       toastr.error("Start Time must be before End Time", "Invalid Time");
       return null;
     }
@@ -357,8 +355,6 @@ function pinSvc(
       svc.pins[chapterIndex] = [];
     }
     svc.pins[chapterIndex].push(storyPin);
-    // Broadcast event
-    console.log("story pin suposed to be added", storyPin);
     return storyPin;
   };
 
@@ -369,7 +365,6 @@ function pinSvc(
    * @ TODO: write test for this after mapService functions are ported over
    */
   svc.updatePin = (pin, chapterIndex) => {
-    console.log("about to update pin");
     // Only set new geometry if location was saved on pin object
     if (goog.isDefAndNotNull(pin.geometry)) {
       // mapService_.removeDraw();
@@ -548,7 +543,7 @@ function pinSvc(
     // Add to this chapter's StoryPin list
     const pin = svc._addPin(config, chapterIndex);
     if (!pin) {
-      alert("No pin was created");
+      // TODO: log("No pin was created");
     }
 
     // Set some extra properties.
@@ -589,7 +584,7 @@ function pinSvc(
       pin.overlay.setPosition(pin.coords);
     }
     if (!pin) {
-      alert("No pin!");
+      // TODO: alert("No pin!");
     }
   };
 
@@ -810,7 +805,7 @@ function pinSvc(
   svc.createNewPin = (config, chapterIndex, lat, long) => {
     const pin = svc._addPin(config, chapterIndex);
     if (!pin) {
-      alert("No pin was created");
+      // TODO: alert("No pin was created");
     }
     pin.coords = [lat, long];
     pin.content = "";
@@ -849,7 +844,7 @@ function pinSvc(
     const pin = chapterPins[pinIndex];
 
     if (!pin) {
-      alert("Trying to remove something that isn't");
+      // TODO: alert("Trying to remove something that isn't");
       return;
     }
 
@@ -860,7 +855,7 @@ function pinSvc(
       pin.overlay.setPosition(undefined);
     } else {
       // Log error
-      alert("no map feature to remove!");
+      // TODO: alert("no map feature to remove!");
     }
   };
 
@@ -902,7 +897,7 @@ function pinSvc(
           });
         });
       } else {
-        alert("bad chapter!");
+        // TODO: alert("bad chapter!");
       }
 
       chapterCount += 1;
@@ -918,7 +913,7 @@ function pinSvc(
     if (selectedFile) {
       svc.createPinsWithCSV(selectedFile);
     } else {
-      alert("No file selected!");
+      // TODO: alert("No file selected!");
     }
   };
 
@@ -992,7 +987,7 @@ function pinSvc(
    */
   svc.onStoryPinSave = () => {
     if (svc.isDrawing) {
-      alert("Finish moving StoryPin first!");
+      // TODO: alert("Finish moving StoryPin first!");
       return;
     }
 
@@ -1023,7 +1018,6 @@ function pinSvc(
         features: []
       });
       for (let p = 0; p < svc.pins[i].length; p += 1) {
-        // console.log(`This is the id: ${   svc.pins[i][p].id}`);
         featureCollections[i].features.push({
           type: "Feature",
           id: svc.pins[i][p].id,
@@ -1044,13 +1038,11 @@ function pinSvc(
         });
       }
     }
-    // console.log("FEATURE COLLECTIONS", featureCollections);
     stateSvc.setStoryPinsToConfig(featureCollections);
   };
 
   svc.exportPinsToJSON = pinArray => {
     pinArray.forEach(pin => {
-      console.log(pin);
     });
     return [];
   };
@@ -1077,7 +1069,6 @@ function pinSvc(
       pin.inTimeline = element.inTimeline || true;
       pinArray.push(pin);
     });
-    console.log("pin_array is", pinArray);
     // This is null:
     // TODO: Fix this null object. This should close the modal dialog.
     // svc.modalInstance.close();
@@ -1129,7 +1120,7 @@ function pinSvc(
   };
 
   svc.onChangedTime = () => {
-    console.log(svc.pinStartTime);
+    // TODO: Set new time here
   };
 
   /**
@@ -1195,7 +1186,7 @@ function pinSvc(
         pin.endTime = endDateObj;
         // Set the id from the server.
         if (!pinJSON.id) {
-          console.log("this json doesnt have an id for the storypin");
+          // TODO: log("this json doesnt have an id for the storypin");
         } else {
           pin.id = pinJSON.id;
         }
@@ -1236,7 +1227,7 @@ function pinSvc(
   $rootScope.$on("loadids", (event, idArray, chapterID) => {
     // Sometimes we get a null idArray.
     if (!idArray) {
-      console.log("Received a null ID Array from the server");
+      // TODO: log("Received a null ID Array from the server");
       return;
     }
     // Look for the next null id and assign it.
@@ -1271,7 +1262,7 @@ function pinSvc(
   svc._showPinOnMap = pin => {
     svc.addStorypinToMap(pin);
     if (!pin.overlay) {
-      alert("No Overlay present!");
+      // TODO: alert("No Overlay present!");
     }
     pin.overlay.setPosition(pin.coords);
   };
@@ -1283,6 +1274,7 @@ function pinSvc(
     });
     map.addInteraction(selectInteraction);
     selectInteraction.on("select", e => {
+      // TODO: For debugging only, remove this later.
       alert(`selected ${  e.target.getFeatures().getLength()}`);
     });
   };
