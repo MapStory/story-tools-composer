@@ -46,9 +46,9 @@ function stateSvc(
     const mapID = /\/story\/([A-Za-z0-9-_]+)/.exec(path)
       ? /\/story\/([A-Za-z0-9-_]+)/.exec(path)[1]
       : null;
-    console.log("mapID", mapID);
-    console.log("isNaN", isNaN(mapID));
-    console.log("Number.isNaN", Number.isNaN(mapID));
+    // console.log("mapID", mapID);
+    // console.log("isNaN", isNaN(mapID));
+    // console.log("Number.isNaN", Number.isNaN(mapID));
     const mapJsonUrl = Number.isNaN(Number(mapID))
       ? `/api/mapstories/slug/${mapID}`
       : `/api/mapstories/${mapID}`;
@@ -189,7 +189,7 @@ function stateSvc(
         chapter = matches[0];
       }
     }
-    return parseInt(chapter);
+    return parseInt(chapter, 10);
   };
 
   svc.getChapterIndex = () => svc.getChapter() - 1;
@@ -198,7 +198,7 @@ function stateSvc(
     const chapter = svc.getChapter();
     const config = svc.getConfig();
     if (!config) {
-      return;
+      return undefined;
     }
     const i = chapter - 1;
     if (config.chapters && chapter > 0 && chapter <= config.chapters.length) {

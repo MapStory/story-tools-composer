@@ -278,6 +278,7 @@ function pinSvc(
         return storyPin.id;
       }
     }
+    return undefined
   };
 
   /**
@@ -1022,7 +1023,7 @@ function pinSvc(
         features: []
       });
       for (let p = 0; p < svc.pins[i].length; p += 1) {
-        console.log(`This is the id: ${   svc.pins[i][p].id}`);
+        // console.log(`This is the id: ${   svc.pins[i][p].id}`);
         featureCollections[i].features.push({
           type: "Feature",
           id: svc.pins[i][p].id,
@@ -1043,7 +1044,7 @@ function pinSvc(
         });
       }
     }
-    console.log("FEATURE COLLECTIONS", featureCollections);
+    // console.log("FEATURE COLLECTIONS", featureCollections);
     stateSvc.setStoryPinsToConfig(featureCollections);
   };
 
@@ -1158,10 +1159,10 @@ function pinSvc(
       // Whitelist
       if (svc.isWhitelist(url)) {
         return url;
-      } 
+      }
       // TODO: Alert the user here
       return "";
-      
+
     }
     return "";
   };
@@ -1339,7 +1340,7 @@ function pinSvc(
     svc.endDatePopup.opened = true;
   };
 
-  svc.setDate = function(year, month, day) {
+  svc.setDate = (year, month, day) => {
     svc.dt = new Date(year, month, day);
   };
 

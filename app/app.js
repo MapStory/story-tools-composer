@@ -128,4 +128,5 @@ require("./time");
 require("./search");
 require("./state");
 require("./pins");
+require("./frames");
 require("./utils");

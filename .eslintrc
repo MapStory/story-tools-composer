@@ -23,16 +23,19 @@
     "goog": true
   },
   "plugins": [
+    "import",
     "prettier"
   ],
   "rules": {
     "camelcase": ["error", { "properties": "always" }],
+    "import/extensions": "off",
     "import/no-unresolved": "off",
     "indent": ["error", 2],
     "no-bitwise": ["error", { "int32Hint": true }],
-    "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["scope", "$scope"] }],
+    "no-param-reassign": "off",
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-unused-vars": ["error", { "args": "none" }],
+    "one-var": "off",
     "prefer-destructuring": "off",
     "prettier/prettier": "off",
     "quotes": ["error", "double", { "allowTemplateLiterals": true, "avoidEscape": true }]

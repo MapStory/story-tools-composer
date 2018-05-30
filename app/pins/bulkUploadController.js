@@ -26,9 +26,7 @@ function bulkUploadCtrl($scope, $uibModal, pinSvc) {
     pinSvc.$uibModalInstance.result.then(
       resolved => {
         pinSvc.selected = resolved;
-      },() => {
-        const x = 3;
-      });
+      },() => {});
   };
 }
 bulkUploadCtrl.$inject = ["$scope", "$uibModal"];

@@ -4,11 +4,7 @@ function bulkUploadDirective() {
     templateUrl: "myModalContent.html",
     controller: "bulkUploadCtrl",
     controllerAs: "$ctrl",
-    scope: {
-      test_me: () => {
-        alert("huevo");
-      }
-    }
+    scope: {}
   };
 }
 
