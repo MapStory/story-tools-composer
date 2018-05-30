@@ -41,6 +41,10 @@ for i do # loop over $@
         yarn run lint
     fi
 
+    if [ "$i" = "--lint-fix" ]; then
+        yarn run lint-fix
+    fi
+
     if [ "$i" = "--serve-dev" ]; then
         yarn run server --host 0.0.0.0 --watch --disable-host-check
     fi
