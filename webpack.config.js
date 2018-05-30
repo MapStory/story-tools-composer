@@ -1,12 +1,13 @@
-var webpack = require("webpack");
-var Path = require("path");
-var HtmlWebpackPlugin = require("html-webpack-plugin");
-var ExtractTextPlugin = require("extract-text-webpack-plugin");
-var serverHost = "https://docker";
+const webpack = require("webpack");
+const Path = require("path");
+const HtmlWebpackPlugin = require("html-webpack-plugin");
+const ExtractTextPlugin = require("extract-text-webpack-plugin");
+
+const serverHost = "https://docker";
 
 module.exports = {
   context: __dirname,
-  devtool: 'inline-source-map',
+  devtool: "inline-source-map",
   resolve: {
     modules: ["node_modules"],
     alias: {
@@ -54,7 +55,7 @@ module.exports = {
     vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate", "angular-animate", "papaparse"]
   },
   output: {
-    path: __dirname + "/build",
+    path: `${__dirname}/build`,
     publicPath: "/build",
     filename: "[name].bundle.js"
   },
@@ -63,7 +64,7 @@ module.exports = {
     port: 9090,
     proxy: {
       "/maps/*": {
-        target: serverHost + "/maps",
+        target: `${serverHost}/maps`,
         changeOrigin: true,
         secure: false,
         pathRewrite: {
@@ -71,7 +72,7 @@ module.exports = {
         }
       },
       "/api/*": {
-        target: serverHost + "/api/",
+        target: `${serverHost}/api/`,
         changeOrigin: true,
         secure: false,
         pathRewrite: {
@@ -79,7 +80,7 @@ module.exports = {
         }
       },
       "/geoserver/*": {
-        target: serverHost + "/geoserver",
+        target: `${serverHost}/geoserver`,
         changeOrigin: true,
         secure: false,
         pathRewrite: {

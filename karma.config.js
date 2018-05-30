@@ -1,12 +1,12 @@
-var webpackConfig = require("./webpack.config.js");
+const webpackConfig = require("./webpack.config.js");
 
-var browserMode = false;
+const browserMode = false;
 
 module.exports = function(config) {
   config.set({
     basePath: ".",
     client: {
-      captureConsole: browserMode ? true : false
+      captureConsole: !!browserMode
     },
     frameworks: ["jasmine"],
     reporters: ["mocha"],
@@ -15,7 +15,7 @@ module.exports = function(config) {
     logLevel: config.LOG_INFO,
     autoWatch: false,
     browsers: browserMode ? ["Chrome"] : ["PhantomJS"],
-    singleRun: browserMode ? false : true,
+    singleRun: !browserMode,
     autoWatchBatchDelay: 300,
     webpack: webpackConfig,
     files: [

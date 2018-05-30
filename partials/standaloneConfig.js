@@ -7,7 +7,7 @@ window.mapstory.composer.config = {
   userprofilename:  "Tester" ,
   userprofileemail:  "test@test.org" ,
   currentLanguage: "en",
-  proxy: '/proxy/?url=',
+  proxy: "/proxy/?url=",
   rest: "/maps/",
   ajaxLoginUrl: "/account/ajax_login",
   homeUrl: "/",

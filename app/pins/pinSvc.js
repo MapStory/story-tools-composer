@@ -1312,8 +1312,8 @@ function pinSvc(
     startingDay: 1
   };
   svc.disabled = data => {
-    var date = data.date;
-    var mode = data.mode;
+    const date = data.date;
+    const mode = data.mode;
     return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
   }
 
