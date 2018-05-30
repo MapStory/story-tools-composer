@@ -32,6 +32,7 @@
     "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["scope", "$scope"] }],
     "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
     "no-unused-vars": ["error", { "args": "none" }],
+    "prefer-destructuring": "off",
     "prettier/prettier": "off",
     "quotes": ["error", "double", { "allowTemplateLiterals": true, "avoidEscape": true }]
   }
