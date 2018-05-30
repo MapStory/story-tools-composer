@@ -27,6 +27,7 @@
   ],
   "rules": {
     "camelcase": ["error", { "properties": "always" }],
+    "import/no-unresolved": "off",
     "indent": ["error", 2],
     "no-bitwise": ["error", { "int32Hint": true }],
     "no-param-reassign": ["error", { "props": true, "ignorePropertyModificationsFor": ["scope", "$scope"] }],
