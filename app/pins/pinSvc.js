@@ -1,4 +1,5 @@
 const Papa = require("papaparse"); // Used for CSV Parsing.
+const moment = require("moment"); // For time and dates
 
 /**
  * StoryPin Service.
@@ -1034,8 +1035,8 @@ function pinSvc(
             inMap: svc.pins[i][p].inMap,
             inTimeline: svc.pins[i][p].inTimeline,
             autoShow: svc.pins[i][p].autoShow,
-            startTime: svc.pins[i][p].startTime,
-            endTime: svc.pins[i][p].endTime,
+            start_time: svc.pins[i][p].startTime,
+            end_time: svc.pins[i][p].endTime,
             title: svc.pins[i][p].title,
             content: svc.pins[i][p].content
           }
@@ -1170,11 +1171,14 @@ function pinSvc(
       chapter.storypins.forEach((pinJSON, pinIndex) => {
         const geomObj = JSON.parse(pinJSON.the_geom);
 
+        const startDateObj = pinJSON.start_time ? moment.unix(pinJSON.start_time).toDate() : new Date();
+        const endDateObj = pinJSON.end_time ? moment.unix(pinJSON.end_time).toDate() : new Date();
+
         const pin = svc.createNewPin(
           {
             title: pinJSON.title,
-            startTime: pinJSON.startTime,
-            endTime: pinJSON.endTime,
+            startTime: startDateObj,
+            endTime: endDateObj,
             geometry: {
               coordinates: geomObj.coordinates
             }
@@ -1186,8 +1190,8 @@ function pinSvc(
         pin.inTimeline = pinJSON.inTimeline || true;
         pin.indexID = pinIndex;
         // TODO: Fix these dates
-        pin.startTime = new Date(pinJSON.startTime);
-        pin.endTime = new Date(pinJSON.endTime);
+        pin.startTime = startDateObj;
+        pin.endTime = endDateObj;
         // Set the id from the server.
         if (!pinJSON.id) {
           console.log("this json doesnt have an id for the storypin");
