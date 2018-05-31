@@ -30,8 +30,21 @@ function stateSvc(
     }
   };
 
+  // mutates the input array
+  svc.arrayMove = (array, oldIndex, newIndex) => {
+    if (newIndex >= array.length) {
+      let k = newIndex - array.length;
+      while (k) {
+        array.push(undefined);
+        k -= 1;
+      }
+    }
+    array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
+    return array; // for testing purposes
+  };
+
   svc.reorderLayer = (from, to) => {
-    svc.config.chapters[svc.getChapterIndex()].layers.move(from, to);
+    svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].layers, from, to);
   };
 
   function initializeNewConfig() {

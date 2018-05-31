@@ -1,16 +1,5 @@
 function utils() {
   const svc = {};
-  Array.prototype.move = (oldIndex, newIndex) => {
-    if (newIndex >= this.length) {
-      let k = newIndex - this.length;
-      while (k-=1 + 1) {
-        this.push(undefined);
-      }
-    }
-    this.splice(newIndex, 0, this.splice(oldIndex, 1)[0]);
-    return this; // for testing purposes
-  };
-
   svc.generateUUID = () => {
     /* eslint-disable no-bitwise, eqeqeq */
     let d = new Date().getTime();
