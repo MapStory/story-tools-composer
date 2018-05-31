@@ -2,7 +2,7 @@ const webpackConfig = require("./webpack.config.js");
 
 const browserMode = false;
 
-module.exports = function(config) {
+module.exports = (config) => {
   config.set({
     basePath: ".",
     client: {

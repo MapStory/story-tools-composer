@@ -60,7 +60,7 @@ module.run(() => {
     let watchers = 0;
 
     const f = element => {
-      if (element.data().hasOwnProperty("$scope")) {
+      if (Object.prototype.hasOwnProperty.call(element.data(), "$scope")) {
         watchers += (element.data().$scope.$$watchers || []).length;
       }
 

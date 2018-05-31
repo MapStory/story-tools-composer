@@ -183,9 +183,9 @@ function stateSvc(
   svc.getChapter = () => {
     let chapter = 1;
     const path = $location.path();
-    let matches;
     if (path && path.indexOf("/chapter") === 0) {
-      if ((matches = /\d+/.exec(path)) !== null) {
+      const matches = /\d+/.exec(path)
+      if (matches !== null) {
         chapter = matches[0];
       }
     }

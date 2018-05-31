@@ -67,9 +67,11 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
       args: [
         "Humanitarian OpenStreetMap",
         [
+          /* eslint-disable no-template-curly-in-string */
           "//a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
           "//b.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
           "//c.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png"
+          /* eslint-enable no-template-curly-in-string */
         ],
         { tileOptions: { crossOriginKeyword: null } }
       ],

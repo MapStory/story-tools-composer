@@ -1,6 +1,6 @@
 function utils() {
   const svc = {};
-  Array.prototype.move = function(oldIndex, newIndex) {
+  Array.prototype.move = (oldIndex, newIndex) => {
     if (newIndex >= this.length) {
       let k = newIndex - this.length;
       while (k-=1 + 1) {

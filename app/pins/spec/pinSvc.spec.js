@@ -1,5 +1,5 @@
 // TODO: Remove this when done.
-const csv_data = `title,content,media,start_time,end_time,latitude,longitude,in_map,in_timeline,pause_playback,auto_show
+const csvData = `title,content,media,start_time,end_time,latitude,longitude,in_map,in_timeline,pause_playback,auto_show
 Test Pin 1,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
 Test Pin 2,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
 Test Pin 3,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE
@@ -173,6 +173,7 @@ describe("pinSvc", () => {
         },
         0
       );
+      expect(test).not.toBe(null);
       expect(pinSvc.pins[0][0]).toBeDefined();
     });
   });
@@ -249,7 +250,7 @@ describe("pinSvc", () => {
     it("should remove the specified pin from the specified chapter index", () => {
       pinSvc.addPinsFromGeojsonObj(serverFeatures, 0);
       const newPin = jQuery.extend(true, {}, pinSvc.pins[0][1]);
-      console.log("NEW PIN ---- > ", newPin);
+      // console.log("NEW PIN ---- > ", newPin);
       expect(pinSvc.pins[0].length).toBe(2);
       pinSvc.removePin(pinSvc.pins[0][0], 0);
       expect(pinSvc.pins[0][0].id).toBe(newPin.id_);
@@ -306,10 +307,10 @@ describe("pinSvc", () => {
 
     xit("should create multiple pins when provided some csv data that is correct", () => {
       // TODO: WIP
-      const init_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
-      pinSvc.createPinsWithCSV(csv_data);
-      const fin_count = pinSvc.pins[stateSvc.getChapterIndex()].length;
-      expect(fin_count).toBe(6);
+      // const initCount = pinSvc.pins[stateSvc.getChapterIndex()].length;
+      pinSvc.createPinsWithCSV(csvData);
+      const finCount = pinSvc.pins[stateSvc.getChapterIndex()].length;
+      expect(finCount).toBe(6);
     });
   });
 
@@ -327,7 +328,7 @@ describe("pinSvc", () => {
 
   describe("StoryPin Exporter", () => {
     xit("exports to CSV", () => {
-      pinSvc.createPinsWithCSV(csv_data);
+      pinSvc.createPinsWithCSV(csvData);
       const pins = pinSvc.pins[stateSvc.getChapterIndex()];
       expect(pins.length).toBe(6);
       const results = pinSvc.exportPinsToCSV(pins);

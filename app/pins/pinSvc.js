@@ -97,7 +97,7 @@ function pinSvc(
    * TODO: Check if this actually works as expected
    * @param data The data to build the pin from.
    */
-  svc.Pin = function(data) {
+  svc.Pin = data => {
     // Angular copydata
     const copyData = angular.copy(data);
     // Deletes and re-sets geometry
@@ -198,6 +198,7 @@ function pinSvc(
    * @param chapter Chapter to insert to.
    */
   svc.addPinsFromGeojsonObj = (geojson, chapter) => {
+    // eslint-disable-next-line array-callback-return
     geojson.features.map(feature => {
       svc.addPinFromGeojsonObj(feature, chapter);
     });
@@ -427,7 +428,7 @@ function pinSvc(
    * TODO: Remove if not used
    */
   svc.bulkPinAdd = (pinConfigs, chapterIndex) => {
-    let failedToAdd = 0;
+    // let failedToAdd = 0;
     for (let iPin = 0; iPin < pinConfigs.length; iPin += 1) {
       let pin = pinConfigs[iPin];
       pin = svc.defaultPinValues(pin);
@@ -446,8 +447,9 @@ function pinSvc(
         svc.validateAllPinProperties(pin) !== true ||
         timeSvc.getTime(pin.startTime) > timeSvc.getTime(pin.endTime)
       ) {
-        failedToAdd += 1;
+        // failedToAdd += 1;
         // TODO: This is not OK! Fix!
+        // eslint-disable-next-line no-continue
         continue;
       }
 
@@ -1275,7 +1277,7 @@ function pinSvc(
     map.addInteraction(selectInteraction);
     selectInteraction.on("select", e => {
       // TODO: For debugging only, remove this later.
-      alert(`selected ${  e.target.getFeatures().getLength()}`);
+      // alert(`selected ${  e.target.getFeatures().getLength()}`);
     });
   };
 
