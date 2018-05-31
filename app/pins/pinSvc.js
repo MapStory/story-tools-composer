@@ -97,7 +97,7 @@ function pinSvc(
    * TODO: Check if this actually works as expected
    * @param data The data to build the pin from.
    */
-  svc.Pin = data => {
+  svc.Pin = function createPin(data) {
     // Angular copydata
     const copyData = angular.copy(data);
     // Deletes and re-sets geometry
