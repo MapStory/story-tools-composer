@@ -288,7 +288,7 @@ function pinSvc(
    * @returns {*|boolean}
    */
   svc.validatePinProperty = (pinInstantiationObj, propertyName) =>
-    pinInstantiationObj.hasOwnProperty(propertyName) &&
+    Object.prototype.hasOwnProperty.call(pinInstantiationObj, propertyName) &&
     (goog.isDefAndNotNull(pinInstantiationObj[propertyName]) &&
       !goog.string.isEmptySafe(pinInstantiationObj[propertyName]));
 
