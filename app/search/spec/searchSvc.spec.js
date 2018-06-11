@@ -18,8 +18,7 @@ describe("searchSvc", () => {
         objects: [
           {
             title: "Green Iguana",
-            typename: "geonode:green_iguana",
-            type: "layer"
+            alternate: "geonode:green_iguana"
           }
         ]
       };
@@ -53,7 +52,7 @@ describe("searchSvc", () => {
       expect(response).toEqual([
         {
           title: "Green Iguana",
-          typename: "geonode:green_iguana"
+          typename: "green_iguana"
         }
       ]);
     });

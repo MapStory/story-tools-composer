@@ -12,17 +12,21 @@ function searchSvc($q, $rootScope, $http, appConfig, searchConfig) {
     const url = `${
       appConfig.servers[0].host
     }/api/base/search/?type__in=layer&limit=15&df=typename&q=${layerName}`;
-    return $http.get(url).then(response => {
-      const nameIndex = [];
-      for (let i = 0; i < response.data.objects.length; i += 1) {
-        if (response.data.objects[i].alternate) {
-          nameIndex.push({
-            title: response.data.objects[i].title,
-            typename: response.data.objects[i].alternate.split("geonode:")[1]
-          });
+    return new Promise(resolve => {
+      $http.get(url).then(response => {
+        const nameIndex = [];
+        const objects = response.data.objects;
+
+        for (let i = 0; i < objects.length; i += 1) {
+          if (objects[i].alternate) {
+            nameIndex.push({
+              title: objects[i].title,
+              typename: objects[i].alternate.split("geonode:")[1]
+            });
+          }
         }
-      }
-      return nameIndex;
+        resolve(nameIndex);
+      });
     });
   };
 
