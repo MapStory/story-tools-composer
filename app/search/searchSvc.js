@@ -15,10 +15,10 @@ function searchSvc($q, $rootScope, $http, appConfig, searchConfig) {
     return $http.get(url).then(response => {
       const nameIndex = [];
       for (let i = 0; i < response.data.objects.length; i += 1) {
-        if (response.data.objects[i].typename) {
+        if (response.data.objects[i].alternate) {
           nameIndex.push({
             title: response.data.objects[i].title,
-            typename: response.data.objects[i].typename
+            typename: response.data.objects[i].alternate.split("geonode:")[1]
           });
         }
       }

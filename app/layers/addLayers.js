@@ -21,12 +21,13 @@ function addLayers(
         active: appConfig.servers[0]
       };
       scope.servers = appConfig.servers;
-      scope.results = layerName =>
-        searchSvc.getSearchBarResultsIndex(layerName).then(res => {
+      scope.getResults = layerName => {
+        return searchSvc.getSearchBarResultsIndex(layerName).then(res => {
           nameIndex = res;
           names = layerSvc.compileLayerNamesFromSearchIndex(res);
-          return limitToFilter(names, 15);
+          return names;
         });
+      };
       scope.addLayer = () => {
         scope.loading = true;
         const name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
