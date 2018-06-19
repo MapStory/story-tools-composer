@@ -46,12 +46,12 @@
             <div uib-accordion-group class="panel-default storypin-content" is-open="pin.is_open">
                 <!-- Heading -->
                 <uib-accordion-heading>
-                    <span ng-click="pinSvc.togglePinForm({$index})">
-                        {{pin.title}}
-                        <i ng-class="{'fa-caret-up': pinSvc.activePin === $index,'fa-caret-down': pinSvc.activePin !== $index}" class="fa"></i>
-                    </span>
-                    <i class="fa float-right fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>
+                        <span>
+                            {{pin.title}}
+                            <i ng-class="{'fa-caret-up': pinSvc.activePin === $index,'fa-caret-down': pinSvc.activePin !== $index}" class="fa"></i>
+                        </span>
                 </uib-accordion-heading>
+
                 <!-- Content -->
                 <div id="pin-form-{{$index}}">
                     <!-- Move Button-->
@@ -59,7 +59,9 @@
                         {{pinSvc.isDrawing ? "Done" : "Move Pin"}}
                     </button>
                     <!-- Save Button -->
-                    <button id="storpin-save-button" class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave()">Update</button>
+                    <button id="storpin-save-button" class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave()">Update Map</button>
+                    <button id="storypin-delete-button" class="btn" ng-click="pinSvc.removePinByIndex($index, stateSvc.getChapterIndex())">Delete</button>
+                </div>
                     <!-- Edit Form -->
                     <form>
                         <!-- Title -->

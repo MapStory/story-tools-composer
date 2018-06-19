@@ -867,7 +867,10 @@ function pinSvc(
    * @param chapterIndex The chapter index of the pin.
    */
   svc.removePinByIndex = (pinIndex, chapterIndex) => {
-    const pin = svc.pins[chapterIndex][pinIndex];
+    const pin = svc.pins[stateSvc.getChapterIndex()][pinIndex];
+    if(!pin){
+      alert("No pin found!!!!")
+    }
     svc._removeStorypin(pin);
     // Remove pin from list:
     svc.pins[chapterIndex].splice(pinIndex, 1);
