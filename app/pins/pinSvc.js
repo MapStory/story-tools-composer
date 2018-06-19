@@ -1306,6 +1306,7 @@ function pinSvc(
     minDate: new Date(1200, 1, 1),
     startingDay: 1
   };
+
   svc.disabled = data => {
     const date = data.date;
     const mode = data.mode;
@@ -1326,10 +1327,16 @@ function pinSvc(
     svc.dt = null;
   };
 
+  /**
+   * Opens the start date popup
+   */
   svc.openStartDate = () => {
     svc.startDatePopup.opened = true;
   };
 
+  /**
+   * Opens the end date popup
+   */
   svc.openEndDate = () => {
     svc.endDatePopup.opened = true;
   };
