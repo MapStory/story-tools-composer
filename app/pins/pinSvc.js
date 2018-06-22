@@ -335,7 +335,7 @@ function pinSvc(
    * @param chapterIndex The chapter's index.
    * @returns {Pin} The Pin created.
    */
-  svc._addPin = (props, chapterIndex) => {
+  svc.mAddPin = (props, chapterIndex) => {
     const pinValidated = svc.validateAllPinProperties(props);
     if (pinValidated !== true) {
       // TODO: log("invalid pin!!!");
@@ -543,7 +543,7 @@ function pinSvc(
    */
   svc.createStoryPinWithConfig = (config, chapterIndex, coords) => {
     // Add to this chapter's StoryPin list
-    const pin = svc._addPin(config, chapterIndex);
+    const pin = svc.mAddPin(config, chapterIndex);
     if (!pin) {
       // TODO: log("No pin was created");
     }
@@ -805,7 +805,7 @@ function pinSvc(
    * @returns {Pin}
    */
   svc.createNewPin = (config, chapterIndex, lat, long) => {
-    const pin = svc._addPin(config, chapterIndex);
+    const pin = svc.mAddPin(config, chapterIndex);
     if (!pin) {
       // TODO: alert("No pin was created");
     }
@@ -867,8 +867,8 @@ function pinSvc(
    * @param chapterIndex The chapter index of the pin.
    */
   svc.removePinByIndex = (pinIndex, chapterIndex) => {
-    const pin = svc.pins[chapterIndex][pinIndex];
-    svc._removeStorypin(pin);
+    const pin = svc.pins[stateSvc.getChapterIndex()][pinIndex];
+    svc.mRemoveStorypin(pin);
     // Remove pin from list:
     svc.pins[chapterIndex].splice(pinIndex, 1);
     $rootScope.$broadcast("pin-removed", chapterIndex);
@@ -995,7 +995,7 @@ function pinSvc(
 
     // Update information from features, and remove form map.
     svc.getPins(stateSvc.getChapterIndex()).forEach(pin => {
-      svc._removeStorypin(pin);
+      svc.mRemoveStorypin(pin);
     });
 
     // Remove the old layer
@@ -1008,7 +1008,7 @@ function pinSvc(
     svc.getPins(stateSvc.getChapterIndex()).forEach(pin => {
       // Todo: Set coordinates properly
       // pin.coords = pin.mapFeature.getGeometry().getCoordinates();
-      svc._showPinOnMap(pin);
+      svc.mShowPinOnMap(pin);
     });
 
     // Save to state service
@@ -1207,7 +1207,7 @@ function pinSvc(
 
       // Remove previous chapter
       currentPins.forEach(pin => {
-        svc._removeStorypin(pin);
+        svc.mRemoveStorypin(pin);
       });
 
       map.removeLayer(svc.vectorLayer);
@@ -1216,7 +1216,7 @@ function pinSvc(
 
       // // Add the new pins:
       nextPins.forEach(pin => {
-        svc._showPinOnMap(pin);
+        svc.mShowPinOnMap(pin);
       });
     }
   );
@@ -1252,7 +1252,7 @@ function pinSvc(
    * @param pin
    * @private
    */
-  svc._removeStorypin = pin => {
+  svc.mRemoveStorypin = pin => {
     if (pin.mapFeature && svc.pinLayerSource) {
       svc.pinLayerSource.removeFeature(pin.mapFeature);
     }
@@ -1261,7 +1261,7 @@ function pinSvc(
     pin.mapFeature = null;
   };
 
-  svc._showPinOnMap = pin => {
+  svc.mShowPinOnMap = pin => {
     svc.addStorypinToMap(pin);
     if (!pin.overlay) {
       // TODO: alert("No Overlay present!");
@@ -1306,6 +1306,7 @@ function pinSvc(
     minDate: new Date(1200, 1, 1),
     startingDay: 1
   };
+
   svc.disabled = data => {
     const date = data.date;
     const mode = data.mode;
@@ -1326,10 +1327,16 @@ function pinSvc(
     svc.dt = null;
   };
 
+  /**
+   * Opens the start date popup
+   */
   svc.openStartDate = () => {
     svc.startDatePopup.opened = true;
   };
 
+  /**
+   * Opens the end date popup
+   */
   svc.openEndDate = () => {
     svc.endDatePopup.opened = true;
   };
