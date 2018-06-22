@@ -33,10 +33,6 @@
         </script>
     </div>
 </div>
-
-<!--HIDDEN OVERLAYS-->
-<div id="hidden-overlays" style="display:none;"></div>
-
 <!--STORYPIN LIST-->
 <section id="pin-list">
     <uib-accordion close-others=true>
@@ -46,12 +42,12 @@
             <div uib-accordion-group class="panel-default storypin-content" is-open="pin.is_open">
                 <!-- Heading -->
                 <uib-accordion-heading>
-                    <span ng-click="pinSvc.togglePinForm({$index})">
-                        {{pin.title}}
-                        <i ng-class="{'fa-caret-up': pinSvc.activePin === $index,'fa-caret-down': pinSvc.activePin !== $index}" class="fa"></i>
-                    </span>
-                    <i class="fa float-right fa-trash delete" ng-click="pinSvc.removePinByIndex({$index}, stateSvc.getChapterIndex())"></i>
+                        <span>
+                            {{pin.title}}
+                            <i ng-class="{'fa-caret-up': pinSvc.activePin === $index,'fa-caret-down': pinSvc.activePin !== $index}" class="fa"></i>
+                        </span>
                 </uib-accordion-heading>
+
                 <!-- Content -->
                 <div id="pin-form-{{$index}}">
                     <!-- Move Button-->
@@ -59,7 +55,9 @@
                         {{pinSvc.isDrawing ? "Done" : "Move Pin"}}
                     </button>
                     <!-- Save Button -->
-                    <button id="storpin-save-button" class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave()">Update</button>
+                    <button id="storpin-save-button" class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave()">Update Map</button>
+                    <button id="storypin-delete-button" class="btn" ng-click="pinSvc.removePinByIndex($index, stateSvc.getChapterIndex())">Delete</button>
+                </div>
                     <!-- Edit Form -->
                     <form>
                         <!-- Title -->
@@ -83,68 +81,70 @@
                             <strong><abbr title="required">*</abbr></strong>
                             <br/>
                             <!-- TODO: Empty text areas don't work in all browsers-->
-                            <input id="storypin_media" rows="10"  name="storypin_media" ng-model="pin.media" required/>
+                            <input id="storypin_media" type="text" name="storypin_media" ng-model="pin.media" required/>
                         </div>
                         <!-- Start Time -->
                         <div class="form-field">
                             <label for="start_time">Start Time</label>
                             <strong><abbr title="required">*</abbr></strong>
                             <div class="input-group">
-                                <input  id="start_time"
-                                        type="text"
-                                        class="form-control"
-                                        uib-datepicker-popup="{{pinSvc.format}}"
-                                        ng-model="pin.startTime"
-                                        is-open="pinSvc.startDatePopup.opened"
-                                        datepicker-options="pinSvc.dateOptions"
-                                        uib-init-date="false"
-                                        init-date="false"
-                                        ng-required="true"
-                                        close-text="Close"
-                                        alt-input-formats="pinSvc.altInputFormats" />
+                                <input id="start_time"
+                                       class="form-control"
+                                       uib-datepicker-popup="{{pinSvc.format}}"
+                                       ng-model="pin.startTime"
+                                       is-open="pinSvc.startDatePopup.opened"
+                                       datepicker-options="pinSvc.dateOptions"
+                                       uib-init-date="false"
+                                       init-date="false"
+                                       ng-required="true"
+                                       close-text="Close"
+                                       alt-input-formats="pinSvc.altInputFormats"
+                                />
                                 <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" ng-click="pinSvc.openStartDate()"><i class="glyphicon glyphicon-calendar" aria-label="Open start date"></i></button>
+                                    <button type="button"
+                                            class="btn btn-default"
+                                            ng-click="pinSvc.openStartDate()"><i class="glyphicon glyphicon-calendar" aria-label="Open start date"></i>
+                                    </button>
                                 </span>
                             </div>
-                            <div class="row">
-                                <div uib-timepicker ng-model="pinSvc.pinStartTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
-                            </div>
+                            <!--<div class="row">-->
+                                <!--<div uib-timepicker ng-model="pinSvc.pinStartTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>-->
+                            <!--</div>-->
                         </div>
                         <!-- End Time -->
                         <div class="form-field">
                             <label for="end_time">End Time</label>
                             <strong><abbr title="required">*</abbr></strong>
                             <div class="input-group">
-                                <input
-                                        id="end_time"
-                                        type="text"
-                                        class="form-control"
-                                        uib-datepicker-popup="{{pinSvc.format}}"
-                                        ng-model="pin.endTime"
-                                        is-open="pinSvc.endDatePopup.opened"
-                                        datepicker-options="pinSvc.dateOptions"
-                                        uib-init-date="false"
-                                        init-date="false"
-                                        ng-required="true"
-                                        close-text="Close"
-                                        alt-input-formats="pinSvc.altInputFormats" />
+                                <input id="end_time"
+                                    class="form-control"
+                                    uib-datepicker-popup="{{pinSvc.format}}"
+                                    ng-model="pin.endTime"
+                                    is-open="pinSvc.endDatePopup.opened"
+                                    datepicker-options="pinSvc.dateOptions"
+                                    uib-init-date="false"
+                                    init-date="false"
+                                    ng-required="true"
+                                    close-text="Close"
+                                    alt-input-formats="pinSvc.altInputFormats"
+                                />
                                 <span class="input-group-btn">
                                     <button type="button" class="btn btn-default" ng-click="pinSvc.openEndDate()"><i class="glyphicon glyphicon-calendar" aria-label="Open end date"></i></button>
                                 </span>
                             </div>
-                            <div class="row">
-                                <div uib-timepicker ng-model="pinSvc.pinEndTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>
-                            </div>
+                            <!--<div class="row">-->
+                                <!--<div uib-timepicker ng-model="pinSvc.pinEndTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>-->
+                            <!--</div>-->
                         </div>
-                        <hr>
-                        <!-- Latitude -->
-                        <label for="lat-input">Latitude</label>
-                        <input id="lat-input" type="number" name="lat" ng-model="pin.mapFeature.getGeometry().getCoordinates()[0]" placeholder="{{pin.coords[0]}}">
-                        <br/>
-                        <!-- Longitude -->
-                        <label for="long-input">Longitude</label>
-                        <input id="long-input" type="number" name="long" ng-model="pin.mapFeature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">
-                        <hr>
+                        <!--<hr>-->
+                        <!--&lt;!&ndash; Latitude &ndash;&gt;-->
+                        <!--<label for="lat-input">Latitude</label>-->
+                        <!--<input id="lat-input" type="number" name="lat" ng-model="pin.mapFeature.getGeometry().getCoordinates()[0]" placeholder="{{pin.coords[0]}}">-->
+                        <!--<br/>-->
+                        <!--&lt;!&ndash; Longitude &ndash;&gt;-->
+                        <!--<label for="long-input">Longitude</label>-->
+                        <!--<input id="long-input" type="number" name="long" ng-model="pin.mapFeature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">-->
+                        <!--<hr>-->
                         <!-- TODO: Implement options -->
                         <!-- Playback Options -->
                         <!--<div class="form-field">-->
