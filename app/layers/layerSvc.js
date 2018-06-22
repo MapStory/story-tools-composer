@@ -1,4 +1,4 @@
-function layerSvc($rootScope, stateSvc) {
+function layerSvc($rootScope, $http, appConfig, stateSvc) {
   const layerStyleTimeStamps = {};
   const svc = {};
 
@@ -55,7 +55,8 @@ function layerSvc($rootScope, stateSvc) {
     window.storyMap.toggleStoryLayer(lyr);
   };
 
-  svc.compileLayerNamesFromSearchIndex = searchIndex => {
+  // Display a layer's title if it has one; else display its name.
+  svc.compileLayerTitlesFromSearchIndex = searchIndex => {
     const names = [];
     for (let i = 0; i < searchIndex.length; i += 1) {
       if (searchIndex[i].title) {
@@ -67,17 +68,47 @@ function layerSvc($rootScope, stateSvc) {
     return names;
   };
 
-  svc.getNameFromIndex = (layerName, nameIndex) => {
+  /*
+  getNameFromIndex
+    The name of the layer may differ from the title, which is what appears
+    in the search bar. Use the name of the layer to make the server request
+    if the name value is not empty; else use the title.
+  */
+  svc.getNameFromIndex = (searchValue, nameIndex) => {
     let name;
     for (let i = 0; i < nameIndex.length; i += 1) {
       if (
-        nameIndex[i].title.trim() === layerName.trim() ||
-        nameIndex[i].typename === layerName
+        nameIndex[i].title.trim() === searchValue.trim() ||
+        nameIndex[i].typename === searchValue
       ) {
-        name = nameIndex[i].typename;
+        name = nameIndex[i].typename || nameIndex[i].title;
       }
     }
     return name;
+  };
+
+  // Compile search bar results into an array of objects containing both the
+  // name and the title of the layer
+  svc.getSearchBarResultsIndex = searchValue => {
+    const url = `${
+      appConfig.servers[0].host
+    }/api/base/search/?type__in=layer&limit=15&df=typename&q=${searchValue}`;
+    return new Promise(resolve => {
+      $http.get(url).then(response => {
+        const nameIndex = [];
+        const objects = response.data.objects;
+
+        for (let i = 0; i < objects.length; i += 1) {
+          if (objects[i].alternate) {
+            nameIndex.push({
+              title: objects[i].title,
+              typename: objects[i].alternate.split("geonode:")[1]
+            });
+          }
+        }
+        resolve(nameIndex);
+      });
+    });
   };
 
   svc.getLegendUrl = layer => {

@@ -1,15 +1,15 @@
-describe("searchSvc", () => {
+describe("getSearchBarResultsIndex", () => {
   let appConfig;
   let httpBackend;
   let searchConfig;
   let searchBarRes;
-  let searchSvc;
+  let layerSvc;
   let categoryRes;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($httpBackend, _appConfig_, _searchSvc_, _searchConfig_) => {
-      searchSvc = _searchSvc_;
+    inject(($httpBackend, _appConfig_, _layerSvc_, _searchConfig_) => {
+      layerSvc = _layerSvc_;
       searchConfig = _searchConfig_;
       appConfig = _appConfig_;
       httpBackend = $httpBackend;
@@ -41,7 +41,7 @@ describe("searchSvc", () => {
     let response;
 
     beforeEach(done => {
-      searchSvc.getSearchBarResultsIndex("iguana").then(res => {
+      layerSvc.getSearchBarResultsIndex("iguana").then(res => {
         response = res;
         done();
       });

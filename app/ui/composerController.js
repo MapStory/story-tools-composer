@@ -13,7 +13,6 @@ function composerController(
   TimeMachine,
   navigationSvc,
   pinSvc,
-  searchSvc,
   stateSvc,
   configSvc,
   $location
@@ -22,10 +21,9 @@ function composerController(
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
-  $scope.searchSvc = searchSvc;
   $scope.navigationSvc = navigationSvc;
   $scope.pin = {};
-  $scope.selected = {toc: true};
+  $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
 
@@ -36,7 +34,9 @@ function composerController(
   }
 
   function getUrlParam(name) {
-    const results = new RegExp(`[\\?&]${  name  }=([^&#]*)`).exec(window.location.href);
+    const results = new RegExp(`[\\?&]${name}=([^&#]*)`).exec(
+      window.location.href
+    );
     return (results && results[1]) || undefined;
   }
 
@@ -59,7 +59,9 @@ function composerController(
     $scope.mapManager.initMapLoad();
   });
 
-  $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
+  $rootScope.$on("chapter-added", (event, config) => {
+    pinSvc.addChapter();
+  });
 
   $rootScope.$on("chapter-removed", (event, chapterIndex) =>
     pinSvc.removeChapter(chapterIndex)
@@ -110,7 +112,9 @@ function composerController(
     $scope.openPublishedModal();
   };
 
-  $scope.goHome = () => { $location.href = "/"; }
+  $scope.goHome = () => {
+    $location.href = "/";
+  };
   $scope.newMap = () => $location.path("/new");
 
   $scope.layerProperties = lyr => {
@@ -122,7 +126,7 @@ function composerController(
 
   $scope.updateSelected = (selected, chapterId, dontCache) => {
     $scope.selected = {};
-    if ((chapterId !== null) && (chapterId !== undefined)) {
+    if (chapterId !== null && chapterId !== undefined) {
       navigationSvc.goToChapter(chapterId);
     }
     $scope.selected[selected] = true;
@@ -134,7 +138,7 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
-  $scope.openStoryModal = (size) => {
+  $scope.openStoryModal = size => {
     const uibmodalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/storyInfoModal.html",
       size,
@@ -142,10 +146,10 @@ function composerController(
     });
     $scope.close = () => {
       uibmodalInstance.dismiss("close");
-    }
+    };
   };
 
-  $scope.openPublishedModal = (size) => {
+  $scope.openPublishedModal = size => {
     const uibmodalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/storyPublished.html",
       size,
@@ -153,7 +157,7 @@ function composerController(
     });
     $scope.close = () => {
       uibmodalInstance.dismiss("close");
-    }
+    };
   };
 
   /**
