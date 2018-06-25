@@ -102,7 +102,10 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
           if (objects[i].alternate) {
             nameIndex.push({
               title: objects[i].title,
-              typename: objects[i].alternate.split("geonode:")[1]
+              typename: objects[i].alternate.split("geonode:")[1],
+              remote: objects[i].subtype
+                ? objects[i].subtype === "remote"
+                : false
             });
           }
         }

@@ -28,21 +28,30 @@ function addLayers(
           return names;
         });
       scope.addLayer = () => {
-        console.log("!!!!ADD LAYER");
         scope.loading = true;
         const name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
+        const remote = nameIndex[0].remote;
         const settings = {
           asVector: scope.asVector,
           allowZoom: scope.allowZoom,
           allowPan: scope.allowPan
         };
-        MapManager.addLayer(name, settings, scope.server.active)
-          .then(() => {
-            scope.$parent.status.open = false;
-          })
-          .finally(() => {
-            scope.loading = false;
-          });
+        const add = () => {
+          MapManager.addLayer(name, settings, scope.server.active)
+            .then(() => {
+              scope.$parent.status.open = false;
+            })
+            .finally(() => {
+              scope.loading = false;
+            });
+        };
+
+        if (remote) {
+          // @TODO: construct remote server object to pass to MapManager
+        } else {
+          add();
+        }
+
         scope.layerName = null;
       };
     }
