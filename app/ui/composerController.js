@@ -13,6 +13,7 @@ function composerController(
   TimeMachine,
   navigationSvc,
   pinSvc,
+  frameSvc,
   stateSvc,
   configSvc,
   $location

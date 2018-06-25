@@ -9,6 +9,15 @@
     </p>
 </section>
 
+
+<div ng-repeat="item in fetchedFrameSettings">
+    <ul>
+        <li><strong>Title:</strong> {{ item.title }}</li>
+    </ul>
+</div>
+
+
+
 <div id="createdStoryframes" ng-show="frameSettings">
     <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
     <div class="clearfix" ng-repeat="item in frameSettings">
@@ -71,9 +80,10 @@
         <p>{{ frameSettings.startDate | date: 'mediumDate' }} -  {{ frameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
 
-    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings)">Save</button>
+    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings);">Save</button>
     <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframe(frameSettings, $index)">Update</button>
     <button class="btn btn-inverse" type="reset" ng-click="clearBoundingBox()">Reset</button>
 </form>
 </section>
 </div>
+<br/><br/>

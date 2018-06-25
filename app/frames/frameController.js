@@ -5,8 +5,10 @@ function frameController(
   $rootScope,
   $log,
   $injector,
+  $timeout,
   $uibModal,
   stateSvc,
+  frameSvc,
   MapManager
 ) {
   $scope.mapManager = MapManager;
@@ -19,6 +21,32 @@ function frameController(
   function transformCoords(loc) {
     return ol.proj.transform(loc, "EPSG:3857", "EPSG:4326");
   }
+
+
+  $scope.fetchedFrameSettings = frameSvc.storyFrames;
+
+  /*
+  $scope.$apply("fetchedFrameSettings", () => {
+    console.log("watch called!: ", frameSvc.storyFrames);
+    $scope.fetchedFrameSettings = frameSvc.storyFrames;
+  });
+  */
+
+  /*
+  $scope.$watch("frameSvc.storyFrames", () => {
+    $scope.fetchedFrameSettings = frameSvc.storyFrames;
+  }, true);
+  */
+
+
+  $timeout("frameSvc.storyFrames", () => {
+    $scope.fetchedFrameSettings = frameSvc.storyFrames;
+  });
+
+
+
+
+
 
   $scope.clearBoundingBox = () => {
     MapManager.storyMap
@@ -57,8 +85,8 @@ function frameController(
   $scope.checkTimes = (date, start, end) => {
     if (
       moment(date).isSameOrAfter(start) &&
-      moment(date).isSameOrBefore(end) &&
-      $scope.zoomedIn === false
+     moment(date).isSameOrBefore(end) &&
+     $scope.zoomedIn === false
     ) {
       $scope.zoomToExtent();
       $scope.zoomedIn = true;
@@ -112,32 +140,15 @@ function frameController(
   };
 
   /**
-   * Callback for timeline update.
-   * @param data Data from the timeline.
-   */
+  * Callback for timeline update.
+  * @param data Data from the timeline.
+  */
   window.onMoveCallback = data => {
     // Checks times for storyframes.
     $scope.getCurrentFrame(data);
     // Updates StoryPins.
     $scope.updateStorypinTimeline(data);
   };
-
-  $rootScope.$on("updateStorypins", (event, chapters) => {
-    for (let c = 0; c < chapters.length; c++) {
-      for (let f = 0; f < chapters[c].storyframes.length; f++) {
-        const coords = JSON.parse(chapters[0].storyframes[f].center);
-        $scope.frameSettings.push({
-          title: chapters[c].storyframes[f].title,
-          startDate: moment.unix(chapters[c].storyframes[f].startTime).format("YYYY-MM-DD"),
-          endDate: moment.unix(chapters[c].storyframes[f].endTime).format("YYYY-MM-DD"),
-          bb1: [coords[0][0], coords[0][1]],
-          bb2: [coords[1][0], coords[1][1]],
-          bb3: [coords[2][0], coords[2][1]],
-          bb4: [coords[3][0], coords[3][1]]
-        });
-      }
-    }
-  });
 
   $scope.formatDates = date => {
     const preFormatDate = moment(date);
@@ -294,6 +305,7 @@ function frameController(
   $scope.deleteStoryframe = index => {
     $scope.frameSettings.splice(index, 1);
   };
+
 }
 
 module.exports = frameController;

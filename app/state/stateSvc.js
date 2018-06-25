@@ -11,6 +11,7 @@ function stateSvc(
   svc.currentChapter = null;
   svc.originalConfig = null;
   svc.config = null;
+  svc.frameSettings = null;
 
   svc.addNewChapter = () => {
     svc.config.chapters.push(
@@ -124,6 +125,7 @@ function stateSvc(
       method: "GET"
     }).then(data => {
       $rootScope.$broadcast("updateStorypins", data.data.chapters);
+      $rootScope.$broadcast("updateStoryframes", data.data.chapters);
     });
 
   /**
@@ -172,6 +174,7 @@ function stateSvc(
         type: "Feature",
         geometry: null,
         properties: {
+          id: 1, // ${storyId} is undefined
           chapter: frameSettings[i].chapter,
           title: frameSettings[i].title,
           startTime: frameSettings[i].startDate,
