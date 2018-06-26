@@ -77,8 +77,10 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
   svc.getNameFromIndex = (searchValue, nameIndex) => {
     let name;
     for (let i = 0; i < nameIndex.length; i += 1) {
+      console.log(">>>> ", nameIndex[i], searchValue);
       if (
-        nameIndex[i].title.trim() === searchValue.trim() ||
+        (nameIndex[i].title &&
+          nameIndex[i].title.trim() === searchValue.trim()) ||
         nameIndex[i].typename === searchValue
       ) {
         name = nameIndex[i].typename || nameIndex[i].title;
@@ -100,9 +102,13 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
 
         for (let i = 0; i < objects.length; i += 1) {
           if (objects[i].alternate) {
+            const typename =
+              objects[i].alternate.indexOf("geonode") > -1
+                ? objects[i].alternate.split("geonode:")[1]
+                : objects[i].alternate;
             nameIndex.push({
               title: objects[i].title,
-              typename: objects[i].alternate.split("geonode:")[1],
+              typename,
               remote: objects[i].subtype
                 ? objects[i].subtype === "remote"
                 : false
@@ -113,6 +119,31 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
       });
     });
   };
+
+  svc.getLayerParam = (query, param) => {
+    const urlJson = (() => {
+      const result = {};
+      query.split("&").forEach(part => {
+        const item = part.split("=");
+        result[item[0]] = decodeURIComponent(item[1]);
+      });
+      return result;
+    })();
+    return urlJson[param];
+  };
+
+  svc.getRemoteServiceUrl = name =>
+    new Promise(res => {
+      $http.get(`/layers/${name}/remote`).then(r => {
+        const containsQuery = r.data.indexOf("?") > -1;
+        const url = containsQuery ? r.data.split("?")[0] : r.data;
+        const query = containsQuery ? r.data.split("?")[1] : false;
+        const params = {
+          map: svc.getLayerParam(query, "map")
+        };
+        res({ url, params });
+      });
+    });
 
   svc.getLegendUrl = layer => {
     let url = null;

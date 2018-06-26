@@ -1,5 +1,5 @@
 import { module } from "angular";
-import addLayers from "./addLayers";
+import addLayers from "./addLayerDirective";
 import featureManagerSvc from "./featureManagerSvc";
 import layerSvc from "./layerSvc";
 import layerOptionsSvc from "./layerOptionsSvc";

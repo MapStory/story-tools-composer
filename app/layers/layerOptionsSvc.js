@@ -1,7 +1,14 @@
 function layerOptionsSvc() {
   const svc = {};
 
-  svc.getLayerOptions = (name, settings, server, fitExtent, title) => {
+  svc.getLayerOptions = args => {
+    let name = args.name;
+    const settings = args.settings;
+    const server = args.server;
+    const fitExtent = args.fitExtent;
+    const title = args.title;
+    const params = settings.params;
+
     if (window.storyMap) {
       window.storyMap.setAllowZoom(settings.allowZoom || true);
       window.storyMap.setAllowPan(settings.allowPan || true);
@@ -15,7 +22,11 @@ function layerOptionsSvc() {
       workspace = parts[0];
       name = parts[1];
     }
-    const url = `${server.path + workspace}/${name}/wms`;
+
+    const url =
+      server.type === "remote"
+        ? server.absolutePath
+        : `${server.path + workspace}/${name}/wms`;
     const id = `${workspace}:${name}`;
     const options = {
       id,
@@ -29,6 +40,7 @@ function layerOptionsSvc() {
       timeEndpoint: server.timeEndpoint ? server.timeEndpoint(name) : undefined,
       type: settings.asVector === true ? "VECTOR" : "WMS",
       geomType: "point",
+      params,
       settings
     };
     return options;
