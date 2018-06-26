@@ -77,7 +77,6 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
   svc.getNameFromIndex = (searchValue, nameIndex) => {
     let name;
     for (let i = 0; i < nameIndex.length; i += 1) {
-      console.log(">>>> ", nameIndex[i], searchValue);
       if (
         (nameIndex[i].title &&
           nameIndex[i].title.trim() === searchValue.trim()) ||
