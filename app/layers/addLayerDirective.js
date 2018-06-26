@@ -4,7 +4,6 @@ function addLayers(
   $sce,
   limitToFilter,
   MapManager,
-  searchSvc,
   layerSvc,
   appConfig
 ) {
@@ -16,33 +15,59 @@ function addLayers(
     templateUrl: "./app/layers/templates/add-layers.html",
     link: scope => {
       let nameIndex;
-      let names;
+      let titles;
       scope.server = {
         active: appConfig.servers[0]
       };
       scope.servers = appConfig.servers;
-      scope.getResults = layerName =>
-        searchSvc.getSearchBarResultsIndex(layerName).then(res => {
+
+      // Get the results from Elastic Search to be used in the search bar based
+      // on the user's search value
+      scope.getResults = searchValue =>
+        layerSvc.getSearchBarResultsIndex(searchValue).then(res => {
           nameIndex = res;
-          names = layerSvc.compileLayerNamesFromSearchIndex(res);
-          return names;
+          titles = layerSvc.compileLayerTitlesFromSearchIndex(res);
+          return titles;
         });
       scope.addLayer = () => {
-        console.log("!!!!ADD LAYER");
         scope.loading = true;
-        const name = layerSvc.getNameFromIndex(scope.layerName, nameIndex);
+        const name = layerSvc.getNameFromIndex(scope.searchValue, nameIndex);
+        const remote = nameIndex[0].remote;
         const settings = {
           asVector: scope.asVector,
           allowZoom: scope.allowZoom,
           allowPan: scope.allowPan
         };
-        MapManager.addLayer(name, settings, scope.server.active)
-          .then(() => {
-            scope.$parent.status.open = false;
+        const addLayer = server => {
+          MapManager.addLayer({
+            name,
+            settings,
+            server: server || scope.server.active
           })
-          .finally(() => {
-            scope.loading = false;
+            .then(() => {
+              scope.$parent.status.open = false;
+            })
+            .finally(() => {
+              scope.loading = false;
+            });
+        };
+
+        if (remote) {
+          layerSvc.getRemoteServiceUrl(name).then(res => {
+            const server = {
+              absolutePath: res.url,
+              canStyleWMS: false,
+              name: "remote",
+              type: "remote",
+              path: ""
+            };
+            settings.params = res.params;
+            addLayer(server);
           });
+        } else {
+          addLayer();
+        }
+
         scope.layerName = null;
       };
     }
