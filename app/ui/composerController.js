@@ -6,6 +6,8 @@ function composerController(
   $log,
   $injector,
   $uibModal,
+  $window,
+  $location,
   MapManager,
   styleService,
   appConfig,
@@ -14,8 +16,7 @@ function composerController(
   navigationSvc,
   pinSvc,
   stateSvc,
-  configSvc,
-  $location
+  configSvc
 ) {
   let lastSelectedTab = null;
   $scope.mapManager = MapManager;
@@ -113,7 +114,7 @@ function composerController(
   };
 
   $scope.goHome = () => {
-    $location.href = "/";
+    $window.location.href = "/";
   };
   $scope.newMap = () => $location.path("/new");
 
