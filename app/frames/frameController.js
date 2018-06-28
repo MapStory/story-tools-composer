@@ -291,48 +291,12 @@ function frameController(
    * Callback for timeline update.
    * @param data Data from the timeline.
    */
-  window.onMoveCallback = data => {
+  window.frameCallback = data => {
     // Checks times for storyframes.
     $scope.getCurrentFrame(data);
-    // Updates StoryPins.
-    $scope.updateStorypinTimeline(data);
   };
 
-  /**
-   * Updates the Storypins on timeline.
-   * Loops the current chapter's StoryPins and determines if they should be shown or hidden.
-   * @param date The date for the layer.
-   */
-  $scope.updateStorypinTimeline = date => {
-    // TODO: Use pre-cooked timeframe objects to optimize this?
-    let pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
-    // This should not be null. Why is this happening?
-    if (!pinArray) {
-      pinArray = [];
-      pinSvc.pins[stateSvc.getChapterIndex()] = pinArray;
-    }
-    pinArray.forEach(pin => {
-      const startDate = $scope.formatDates(pin.startTime);
-      const endDate = $scope.formatDates(pin.endTime);
-      const storyLayerStartDate = $scope.formatDates(date);
 
-      let shouldShow = false;
-      if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
-        // TODO: Show StoryPin.
-        shouldShow = true;
-      }
-      if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
-        // TODO: Hide Storypin.
-        shouldShow = false;
-      }
-
-      if (shouldShow) {
-        pin.show();
-      } else {
-        pin.hide();
-      }
-    });
-  };
 }
 
 module.exports = frameController;
