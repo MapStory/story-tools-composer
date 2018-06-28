@@ -8,7 +8,6 @@ function frameController(
   $uibModal,
   stateSvc,
   MapManager,
-  pinSvc,
 ) {
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
