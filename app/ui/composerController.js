@@ -161,6 +161,11 @@ function composerController(
     };
   };
 
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
+    return preFormatDate.format("YYYY-MM-DD");
+  };
+
   /**
    * Updates the Storypins on timeline.
    * Loops the current chapter's StoryPins and determines if they should be shown or hidden.
@@ -195,6 +200,15 @@ function composerController(
         pin.hide();
       }
     });
+  };
+
+  /**
+   * Callback for timeline update.
+   * @param data Data from the timeline.
+   */
+  window.storypinCallback = data => {
+    // Updates StoryPins.
+    $scope.updateStorypinTimeline(data);
   };
 }
 

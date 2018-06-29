@@ -7,7 +7,7 @@ function frameController(
   $injector,
   $uibModal,
   stateSvc,
-  MapManager
+  MapManager,
 ) {
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
@@ -111,16 +111,7 @@ function frameController(
     $scope.currentFrame += 1;
   };
 
-  /**
-   * Callback for timeline update.
-   * @param data Data from the timeline.
-   */
-  window.onMoveCallback = data => {
-    // Checks times for storyframes.
-    $scope.getCurrentFrame(data);
-    // Updates StoryPins.
-    $scope.updateStorypinTimeline(data);
-  };
+
 
   $rootScope.$on("updateStorypins", (event, chapters) => {
     for (let c = 0; c < chapters.length; c++) {
@@ -294,6 +285,17 @@ function frameController(
   $scope.deleteStoryframe = index => {
     $scope.frameSettings.splice(index, 1);
   };
+
+  /**
+   * Callback for timeline update.
+   * @param data Data from the timeline.
+   */
+  window.frameCallback = data => {
+    // Checks times for storyframes.
+    $scope.getCurrentFrame(data);
+  };
+
+
 }
 
 module.exports = frameController;
