@@ -16,6 +16,7 @@ function frameController(
   $scope.showForm = null;
 
   $scope.frameSettings = [];
+  $scope.fetchedFrameSettings = [];
   const map = MapManager.storyMap.getMap();
 
   function transformCoords(loc) {
@@ -23,25 +24,43 @@ function frameController(
   }
 
 
-  $scope.fetchedFrameSettings = frameSvc.storyFrames;
+  $scope.$watch(angular.bind($scope, () => {
 
-  /*
-  $scope.$apply("fetchedFrameSettings", () => {
-    console.log("watch called!: ", frameSvc.storyFrames);
-    $scope.fetchedFrameSettings = frameSvc.storyFrames;
-  });
-  */
+    console.log("watch");
 
-  /*
-  $scope.$watch("frameSvc.storyFrames", () => {
-    $scope.fetchedFrameSettings = frameSvc.storyFrames;
-  }, true);
-  */
+    $scope.fetchedFrameSettings = [];
+
+    $scope.fetchedFrameSettings = frameSvc.get("storyFrames");
 
 
-  $timeout("frameSvc.storyFrames", () => {
-    $scope.fetchedFrameSettings = frameSvc.storyFrames;
-  });
+    if ($scope.fetchedFrameSettings && $scope.fetchedFrameSettings.length > 0) {
+      $scope.frameSettings = [];
+      const frameSettingsTemp = [];
+      const currentChapter = stateSvc.getChapterIndex();
+
+
+      frameSettingsTemp.push({
+        id: Date.now(),
+        chapter: currentChapter,
+        title: $scope.fetchedFrameSettings[1].title,
+        startDate: $scope.fetchedFrameSettings[1].startDate,
+        startTime: $scope.fetchedFrameSettings[1].startTime,
+        endDate: $scope.fetchedFrameSettings[1].endDate,
+        endTime: $scope.fetchedFrameSettings[1].endTime,
+        bb1: [$scope.fetchedFrameSettings[1].bb1[0], $scope.fetchedFrameSettings[1].bb1[1]],
+        bb2: [$scope.fetchedFrameSettings[1].bb2[0], $scope.fetchedFrameSettings[1].bb2[1]],
+        bb3: [$scope.fetchedFrameSettings[1].bb3[0], $scope.fetchedFrameSettings[1].bb3[1]],
+        bb4: [$scope.fetchedFrameSettings[1].bb4[0], $scope.fetchedFrameSettings[1].bb4[1]]
+      });
+
+      console.log("after push, frameSettingsTemp: ", frameSettingsTemp);
+
+      $scope.frameSettings = frameSettingsTemp;
+
+    }
+
+    // return $scope.frameSettings;
+  }));
 
 
 
@@ -75,6 +94,8 @@ function frameController(
   $scope.zoomedIn = false;
 
   $scope.getCurrentFrame = date => {
+    console.log("$scope.getCurrentFrame: ", date);
+
     if ($scope.currentFrame < $scope.frameSettings.length) {
       const start = $scope.frameSettings[$scope.currentFrame].startDate;
       const end = $scope.frameSettings[$scope.currentFrame].endDate;
@@ -137,17 +158,6 @@ function frameController(
     map.beforeRender(zoom);
     map.getView().setZoom(5);
     $scope.currentFrame += 1;
-  };
-
-  /**
-  * Callback for timeline update.
-  * @param data Data from the timeline.
-  */
-  window.onMoveCallback = data => {
-    // Checks times for storyframes.
-    $scope.getCurrentFrame(data);
-    // Updates StoryPins.
-    $scope.updateStorypinTimeline(data);
   };
 
   $scope.formatDates = date => {
@@ -306,6 +316,14 @@ function frameController(
     $scope.frameSettings.splice(index, 1);
   };
 
+  /**
+   * Callback for timeline update.
+   * @param data Data from the timeline.
+   */
+  window.frameCallback = data => {
+    console.log("framecallback date: ", data);
+    $scope.getCurrentFrame(data);
+  };
 }
 
 module.exports = frameController;
