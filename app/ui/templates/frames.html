@@ -10,14 +10,6 @@
 </section>
 
 
-<div ng-repeat="item in fetchedFrameSettings">
-    <ul>
-        <li><strong>Title:</strong> {{ item.title }}</li>
-    </ul>
-</div>
-
-
-
 <div id="createdStoryframes" ng-show="frameSettings">
     <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
     <div class="clearfix" ng-repeat="item in frameSettings">

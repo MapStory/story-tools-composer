@@ -16,8 +16,7 @@ function composerController(
   navigationSvc,
   pinSvc,
   frameSvc,
-  stateSvc,
-  configSvc
+  stateSvc
 ) {
   let lastSelectedTab = null;
   $scope.mapManager = MapManager;
@@ -28,6 +27,34 @@ function composerController(
   $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
+  $scope.frameSettings = [];
+
+  const map = MapManager.storyMap.getMap();
+
+  $scope.$watch(angular.bind($scope, () => {
+    const fetchedFrameSettings = frameSvc.get("storyFrames");
+    const currentChapter = stateSvc.getChapterIndex();
+
+    if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
+      if ($scope.frameSettings.length < fetchedFrameSettings.length) {
+        fetchedFrameSettings.push({
+          id: Date.now(),
+          chapter: currentChapter,
+          title: fetchedFrameSettings[1].title,
+          startDate: fetchedFrameSettings[1].startDate,
+          startTime: fetchedFrameSettings[1].startTime,
+          endDate: fetchedFrameSettings[1].endDate,
+          endTime: fetchedFrameSettings[1].endTime,
+          bb1: [fetchedFrameSettings[1].bb1[0], fetchedFrameSettings[1].bb1[1]],
+          bb2: [fetchedFrameSettings[1].bb2[0], fetchedFrameSettings[1].bb2[1]],
+          bb3: [fetchedFrameSettings[1].bb3[0], fetchedFrameSettings[1].bb3[1]],
+          bb4: [fetchedFrameSettings[1].bb4[0], fetchedFrameSettings[1].bb4[1]]
+        });
+      }
+      $scope.frameSettings = fetchedFrameSettings;
+    }
+    return $scope.frameSettings;
+  }));
 
   if (window.mapstory.composerMode === "False") {
     $scope.composerMode = false;
@@ -210,6 +237,101 @@ function composerController(
   window.storypinCallback = data => {
     // Updates StoryPins.
     $scope.updateStorypinTimeline(data);
+    // Updates StoryFrames
+    $scope.getCurrentFrame(data);
+  };
+
+  $scope.currentFrame = 0;
+  $scope.zoomedIn = false;
+
+  $scope.getCurrentFrame = date => {
+    if (date) {
+      if ($scope.currentFrame < $scope.frameSettings.length) {
+        const start = $scope.frameSettings[$scope.currentFrame].startDate;
+        const end = $scope.frameSettings[$scope.currentFrame].endDate;
+        $scope.checkTimes(date, start, end);
+      }
+      else if ($scope.currentFrame < $scope.frameSettings.length) {
+        const start = new Date($scope.frameSettings[1].startDate * 1000);
+        const end = new Date($scope.frameSettings[1].endDate * 1000);
+        $scope.checkTimes(date, start, end);
+      }
+    }
+  };
+
+  $scope.checkTimes = (date, start, end) => {
+    if (
+      moment(date).isSameOrAfter(start) &&
+      moment(date).isSameOrBefore(end) &&
+      $scope.zoomedIn === false
+    ) {
+      $scope.zoomToExtent();
+      $scope.zoomedIn = true;
+    } else if (moment(date).isAfter(end)) {
+      $scope.zoomOutExtent();
+      $scope.zoomedIn = false;
+    }
+  };
+
+  $scope.zoomToExtent = () => {
+    let polygon;
+
+    if ($scope.frameSettings[$scope.currentFrame].bb1) {
+      polygon = new ol.Feature(
+        new ol.geom.Polygon([
+          [
+            $scope.frameSettings[$scope.currentFrame].bb1,
+            $scope.frameSettings[$scope.currentFrame].bb2,
+            $scope.frameSettings[$scope.currentFrame].bb3,
+            $scope.frameSettings[$scope.currentFrame].bb4
+          ]
+        ])
+      )
+    }
+    else if (!$scope.frameSettings[$scope.currentFrame].bb1) {
+      for (let i = 0; i < $scope.frameSettings.length; i += 1) {
+        polygon = new ol.Feature(
+          new ol.geom.Polygon([
+            [
+              $scope.frameSettings[i].bb1,
+              $scope.frameSettings[i].bb2,
+              $scope.frameSettings[i].bb3,
+              $scope.frameSettings[i].bb4
+            ]
+          ])
+        )
+      }
+    }
+    const vector = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [polygon]
+      })
+    });
+    map.addLayer(vector);
+    map.beforeRender(
+      ol.animation.pan({
+        source: map.getView().getCenter(),
+        duration: 1000
+      }),
+      ol.animation.zoom({
+        resolution: map.getView().getResolution(),
+        duration: 1000,
+        easing: ol.easing.easeIn
+      })
+    );
+    vector.set("name", "boundingBox");
+    map.getView().fit(vector.getSource().getExtent(), map.getSize());
+  };
+
+  $scope.zoomOutExtent = () => {
+    const zoom = ol.animation.zoom({
+      resolution: map.getView().getResolution(),
+      duration: 1000,
+      easing: ol.easing.easeOut
+    });
+    map.beforeRender(zoom);
+    map.getView().setZoom(5);
+    $scope.currentFrame += 1;
   };
 }
 
