@@ -32,7 +32,10 @@ function addLayers(
       scope.addLayer = () => {
         scope.loading = true;
         const name = layerSvc.getNameFromIndex(scope.searchValue, nameIndex);
-        const remote = nameIndex[0].remote;
+        const remote = layerSvc.getLayerInfoFromIndex(
+          scope.searchValue,
+          nameIndex
+        ).remote;
         const settings = {
           asVector: scope.asVector,
           allowZoom: scope.allowZoom,

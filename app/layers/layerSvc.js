@@ -74,22 +74,31 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
     in the search bar. Use the name of the layer to make the server request
     if the name value is not empty; else use the title.
   */
-  svc.getNameFromIndex = (searchValue, nameIndex) => {
-    let name;
-    for (let i = 0; i < nameIndex.length; i += 1) {
-      if (
-        (nameIndex[i].title &&
-          nameIndex[i].title.trim() === searchValue.trim()) ||
-        nameIndex[i].typename === searchValue
-      ) {
-        name = nameIndex[i].typename || nameIndex[i].title;
-      }
-    }
-    return name;
+  svc.getNameFromIndex = (searchValue, layerIndex) => {
+    const layerInfo = svc.getLayerInfoFromIndex(searchValue, layerIndex);
+    return layerInfo.typename || layerInfo.title;
   };
 
-  // Compile search bar results into an array of objects containing both the
-  // name and the title of the layer
+  /*
+  getLayerInfoFromIndex
+    Search the layer index for the search value provided and return an object
+    containing relevant data
+  */
+  svc.getLayerInfoFromIndex = (searchValue, layerIndex) => {
+    for (let i = 0; i < layerIndex.length; i += 1) {
+      if (
+        (layerIndex[i].title &&
+          layerIndex[i].title.trim() === searchValue.trim()) ||
+        layerIndex[i].typename === searchValue
+      ) {
+        return layerIndex[i];
+      }
+    }
+    return false;
+  };
+
+  // Compile search bar results into an array of objects containing the name,
+  // title, and whether or not it's a remote service
   svc.getSearchBarResultsIndex = searchValue => {
     const url = `${
       appConfig.servers[0].host
