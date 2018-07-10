@@ -171,7 +171,7 @@ function stateSvc(
         type: "Feature",
         geometry: null,
         properties: {
-          id: 1, // ${storyId} is undefined
+          id: Date.now(),
           chapter: frameSettings[i].chapter,
           title: frameSettings[i].title,
           start_time: frameSettings[i].startDate,

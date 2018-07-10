@@ -40,6 +40,11 @@ function frameController(
 
   $scope.formatDates = date => {
     const preFormatDate = moment(date);
+    return preFormatDate.format("YYYY-MM-DD");
+  };
+
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
     const formattedDate = preFormatDate.format("YYYY-MM-DD");
     return formattedDate;
   };
@@ -86,6 +91,7 @@ function frameController(
       while (x < numFrames) {
         const startToCheck = $scope.formatDates(frameSettings.startDate);
         const endToCheck = $scope.formatDates(frameSettings.endDate);
+
         const start = $scope.formatDates($scope.frameSettings[x].startDate);
         const end = $scope.formatDates($scope.frameSettings[x].endDate);
 

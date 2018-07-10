@@ -34,26 +34,28 @@ function composerController(
   $scope.$watch(angular.bind($scope, () => {
     const fetchedFrameSettings = frameSvc.get("storyFrames");
     const currentChapter = stateSvc.getChapterIndex();
+    const fetchedFrames = [];
 
     if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
       if ($scope.frameSettings.length < fetchedFrameSettings.length) {
-        fetchedFrameSettings.push({
-          id: Date.now(),
-          chapter: currentChapter,
-          title: fetchedFrameSettings[1].title,
-          startDate: fetchedFrameSettings[1].startDate,
-          startTime: fetchedFrameSettings[1].startTime,
-          endDate: fetchedFrameSettings[1].endDate,
-          endTime: fetchedFrameSettings[1].endTime,
-          bb1: [fetchedFrameSettings[1].bb1[0], fetchedFrameSettings[1].bb1[1]],
-          bb2: [fetchedFrameSettings[1].bb2[0], fetchedFrameSettings[1].bb2[1]],
-          bb3: [fetchedFrameSettings[1].bb3[0], fetchedFrameSettings[1].bb3[1]],
-          bb4: [fetchedFrameSettings[1].bb4[0], fetchedFrameSettings[1].bb4[1]]
-        });
+        for (let i = 1; i < fetchedFrameSettings.length; i++) {
+          fetchedFrames[i] = ({
+            id: Date.now(),
+            chapter: currentChapter,
+            title: fetchedFrameSettings[i].title,
+            startDate: fetchedFrameSettings[i].startDate,
+            startTime: fetchedFrameSettings[i].startTime,
+            endDate: fetchedFrameSettings[i].endDate,
+            endTime: fetchedFrameSettings[i].endTime,
+            bb1: [fetchedFrameSettings[i].bb1[0], fetchedFrameSettings[i].bb1[1]],
+            bb2: [fetchedFrameSettings[i].bb2[0], fetchedFrameSettings[i].bb2[1]],
+            bb3: [fetchedFrameSettings[i].bb3[0], fetchedFrameSettings[i].bb3[1]],
+            bb4: [fetchedFrameSettings[i].bb4[0], fetchedFrameSettings[i].bb4[1]]
+          });
+        }
+        $scope.frameSettings = fetchedFrames.reverse();
       }
-      $scope.frameSettings = fetchedFrameSettings;
     }
-    return $scope.frameSettings;
   }));
 
   if (window.mapstory.composerMode === "False") {
@@ -244,20 +246,20 @@ function composerController(
   $scope.currentFrame = 0;
   $scope.zoomedIn = false;
 
+
   $scope.getCurrentFrame = date => {
-    if (date) {
-      if ($scope.currentFrame < $scope.frameSettings.length) {
+
+
+    if ($scope.currentFrame < $scope.frameSettings.length) {
+      if (typeof $scope.frameSettings[$scope.currentFrame] === "undefined") {
+        $scope.currentFrame += 1;
+      } else {
         const start = $scope.frameSettings[$scope.currentFrame].startDate;
         const end = $scope.frameSettings[$scope.currentFrame].endDate;
         $scope.checkTimes(date, start, end);
       }
-      else if ($scope.currentFrame < $scope.frameSettings.length) {
-        const start = new Date($scope.frameSettings[1].startDate * 1000);
-        const end = new Date($scope.frameSettings[1].endDate * 1000);
-        $scope.checkTimes(date, start, end);
-      }
     }
-  };
+  }
 
   $scope.checkTimes = (date, start, end) => {
     if (
@@ -276,7 +278,8 @@ function composerController(
   $scope.zoomToExtent = () => {
     let polygon;
 
-    if ($scope.frameSettings[$scope.currentFrame].bb1) {
+    if ($scope.frameSettings[$scope.currentFrame]) {
+
       polygon = new ol.Feature(
         new ol.geom.Polygon([
           [
@@ -288,8 +291,8 @@ function composerController(
         ])
       )
     }
-    else if (!$scope.frameSettings[$scope.currentFrame].bb1) {
-      for (let i = 0; i < $scope.frameSettings.length; i += 1) {
+    else if (!$scope.frameSettings[$scope.currentFrame]) {
+      for (let i=1; i < $scope.frameSettings.length; i ++) {
         polygon = new ol.Feature(
           new ol.geom.Polygon([
             [

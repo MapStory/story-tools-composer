@@ -1,3 +1,5 @@
+const moment = require("moment");
+
 function frameSvc(
   $rootScope,
   stateSvc
@@ -11,8 +13,8 @@ function frameSvc(
         const coords = JSON.parse(chapters[0].storyframes[f].center);
         stateSvc.config.storyframes.push({
           title: chapters[c].storyframes[f].title,
-          startDate: chapters[c].storyframes[f].start_time,
-          endDate: chapters[c].storyframes[f].end_time,
+          startDate: moment.unix(chapters[c].storyframes[f].start_time).format("YYYY-MM-DD"),
+          endDate: moment.unix(chapters[c].storyframes[f].end_time).format("YYYY-MM-DD"),
           bb1: [coords[0][0], coords[0][1]],
           bb2: [coords[1][0], coords[1][1]],
           bb3: [coords[2][0], coords[2][1]],
