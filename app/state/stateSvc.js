@@ -11,6 +11,7 @@ function stateSvc(
   svc.currentChapter = null;
   svc.originalConfig = null;
   svc.config = null;
+  svc.frameSettings = null;
 
   svc.addNewChapter = () => {
     svc.config.chapters.push(
@@ -59,9 +60,6 @@ function stateSvc(
     const mapID = /\/story\/([A-Za-z0-9-_]+)/.exec(path)
       ? /\/story\/([A-Za-z0-9-_]+)/.exec(path)[1]
       : null;
-    // console.log("mapID", mapID);
-    // console.log("isNaN", isNaN(mapID));
-    // console.log("Number.isNaN", Number.isNaN(mapID));
     const mapJsonUrl = Number.isNaN(Number(mapID))
       ? `/api/mapstories/slug/${mapID}`
       : `/api/mapstories/${mapID}`;
@@ -124,6 +122,7 @@ function stateSvc(
       method: "GET"
     }).then(data => {
       $rootScope.$broadcast("updateStorypins", data.data.chapters);
+      $rootScope.$broadcast("updateStoryframes", data.data.chapters);
     });
 
   /**
@@ -172,10 +171,11 @@ function stateSvc(
         type: "Feature",
         geometry: null,
         properties: {
+          id: Date.now(),
           chapter: frameSettings[i].chapter,
           title: frameSettings[i].title,
-          startTime: frameSettings[i].startDate,
-          endTime: frameSettings[i].endDate,
+          start_time: frameSettings[i].startDate,
+          end_time: frameSettings[i].endDate,
           center: [
             [frameSettings[i].bb1[0], frameSettings[i].bb1[1]],
             [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
@@ -414,6 +414,7 @@ function stateSvc(
     const frames = svc.getStoryframes();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const frameArray = frames[chapterIndex] || [];
+
     const req = $http({
       url: `/maps/${mapId}/storyframes`,
       method: "POST",
