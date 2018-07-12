@@ -19,6 +19,8 @@ function MapManager(
   svc.title = "";
   svc.owner = "";
 
+  svc.getChapterCount = () => stateSvc.getConfig().chapters.length;
+
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     for (let i = 0; i < options.layers.length; i += 1) {
