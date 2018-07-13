@@ -14,22 +14,22 @@ describe("layerOptionsSvc", () => {
 
   describe("getLayerOptions", () => {
     it("should return the correct server path", () => {
-      const layerOptTest = layerOptionsSvc.getLayerOptions(
-        "test_layer",
-        {},
-        testServer
-      );
+      const layerOptTest = layerOptionsSvc.getLayerOptions({
+        name: "text_layer",
+        settings: {},
+        server: testServer
+      });
       expect(layerOptTest.path).toBe(testServer.path);
     });
   });
 
   describe("getLayerOptions", () => {
     it("should return the correct server path", () => {
-      const layerOptTest = layerOptionsSvc.getLayerOptions(
-        "test_layer",
-        {},
-        testServer
-      );
+      const layerOptTest = layerOptionsSvc.getLayerOptions({
+        name: "text_layer",
+        settings: {},
+        server: testServer
+      });
       expect(layerOptTest.path).toBe(testServer.path);
     });
   });
