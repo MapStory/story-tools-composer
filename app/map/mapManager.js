@@ -1,6 +1,7 @@
 function MapManager(
   $http,
   $rootScope,
+  appConfig,
   stStoryMapBuilder,
   stEditableLayerBuilder,
   EditableStoryMap,
@@ -26,27 +27,17 @@ function MapManager(
     for (let i = 0; i < options.layers.length; i += 1) {
       svc.buildStoryLayer(options.layers[i]);
     }
-  };
-
-  svc.loadMapFromUrl = options => {
-    $http
-      .get(options.url)
-      .then(response => {
-        stEditableStoryMapBuilder.modifyStoryMap(svc.storyMap, response.data);
-      })
-      .catch((data, status) => {
-        if (status === 401) {
-          window.console.warn(`Not authorized to see map ${svc.storyMap.id}`);
-          stStoryMapBaseBuilder.defaultMap(svc.storyMap);
-        }
+    if (window.mapstory.layerViewerMode) {
+      svc.addLayer({
+        name: window.mapstory.layername,
+        server: appConfig.servers[0]
       });
+    }
   };
 
   svc.loadMap = options => {
     if (options.id !== null && options.id !== undefined) {
       svc.loadMapFromID(options);
-    } else if (options.url) {
-      svc.loadMapFromUrl(options);
     } else {
       stStoryMapBaseBuilder.defaultMap(svc.storyMap);
     }

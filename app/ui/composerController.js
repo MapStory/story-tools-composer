@@ -58,11 +58,10 @@ function composerController(
     }
   }));
 
-  if (window.mapstory.composerMode === "False") {
-    $scope.composerMode = false;
-  } else {
-    $scope.composerMode = true;
-  }
+  $scope.layerViewerMode = window.mapstory.layerViewerMode;
+
+  $scope.composerMode =
+    !window.mapstory.composerMode === "False" || !$scope.layerViewerMode;
 
   function getUrlParam(name) {
     const results = new RegExp(`[\\?&]${name}=([^&#]*)`).exec(
@@ -127,7 +126,12 @@ function composerController(
     preview: false
   };
   $scope.timeControlsManager = $injector.instantiate(TimeControlsManager);
-  $scope.mapWidth = appConfig.dimensions.mapWidthEditMode;
+  $scope.mapWidth = $scope.layerViewerMode
+    ? appConfig.dimensions.layerViewerMode
+    : appConfig.dimensions.mapWidthEditMode;
+  setTimeout(() => {
+    window.storyMap.getMap().updateSize();
+  });
   $scope.playbackOptions = {
     mode: "instant",
     fixed: false
