@@ -1,4 +1,4 @@
-<form role="form" ng-submit="addLayer(searchValue, asVector)">
+<form role="form" ng-submit="addLayerFromSearchResults(searchValue, asVector)">
     <div class="form-group">
         <label for="typename">Layer Name</label>
         <input autocomplete="off" ng-model="searchValue" type="text" class="form-control" id="typename" typeahead-no-results="noResults" uib-typeahead="suggestion for suggestion in getResults($viewValue)" placeholder="Layer name in mapstory">

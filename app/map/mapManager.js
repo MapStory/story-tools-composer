@@ -27,12 +27,6 @@ function MapManager(
     for (let i = 0; i < options.layers.length; i += 1) {
       svc.buildStoryLayer(options.layers[i]);
     }
-    if (window.mapstory.layerViewerMode) {
-      svc.addLayer({
-        name: window.mapstory.layername,
-        server: appConfig.servers[0]
-      });
-    }
   };
 
   svc.loadMap = options => {

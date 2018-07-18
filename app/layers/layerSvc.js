@@ -1,6 +1,11 @@
-function layerSvc($rootScope, $http, appConfig, stateSvc) {
+function layerSvc($rootScope, $http, appConfig, MapManager, stateSvc) {
   const layerStyleTimeStamps = {};
   const svc = {};
+
+  svc.server = {
+    active: appConfig.servers[0]
+  };
+  svc.servers = appConfig.servers;
 
   svc.baseLayers = [
     {
@@ -55,6 +60,49 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
     window.storyMap.toggleStoryLayer(lyr);
   };
 
+  /*
+     Get the results from Elastic Search based on a query of the layer name
+     and then add the layer to the map. This is useful for adding a layer
+     given only the name, regardless of whether or not it's remote.
+  */
+
+  svc.getApiResultsThenAddLayer = layerName => {
+    svc.getSearchBarResultsIndex(layerName).then(data => {
+      console.log("!!!REX", data);
+      svc.addLayerFromApiResults({
+        searchObjects: data,
+        searchValue: layerName
+      });
+    });
+  };
+
+  svc.addLayerFromApiResults = args => {
+    const searchObjects = args.searchObjects;
+    const searchValue = args.searchValue;
+    const settings = args.settings || {
+      asVector: false,
+      allowZoom: true,
+      allowPan: true
+    };
+    const name = svc.getNameFromSearchResult(searchValue, searchObjects);
+    const remote = svc.getLayerInfoFromIndex(searchValue, searchObjects).remote;
+    if (remote) {
+      svc.getRemoteServiceUrl(name).then(res => {
+        const server = {
+          absolutePath: res.url,
+          canStyleWMS: false,
+          name: "remote",
+          type: "remote",
+          path: ""
+        };
+        settings.params = res.params;
+        MapManager.addLayer({ name, settings, server });
+      });
+    } else {
+      MapManager.addLayer({ name, settings, server: svc.server.active });
+    }
+  };
+
   // Display a layer's title if it has one; else display its name.
   svc.compileLayerTitlesFromSearchIndex = searchIndex => {
     const names = [];
@@ -69,19 +117,19 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
   };
 
   /*
-  getNameFromIndex
+  getNameFromSearchResult
     The name of the layer may differ from the title, which is what appears
-    in the search bar. Use the name of the layer to make the server request
+    in the search bar. Use the name of the layer to make the WMS request
     if the name value is not empty; else use the title.
   */
-  svc.getNameFromIndex = (searchValue, layerIndex) => {
+  svc.getNameFromSearchResult = (searchValue, layerIndex) => {
     const layerInfo = svc.getLayerInfoFromIndex(searchValue, layerIndex);
     return layerInfo.typename || layerInfo.title;
   };
 
   /*
   getLayerInfoFromIndex
-    Search the layer index for the search value provided and return an object
+    Search the nameObjects array for the search value provided and return an object
     containing relevant data
   */
   svc.getLayerInfoFromIndex = (searchValue, layerIndex) => {
@@ -105,7 +153,7 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
     }/api/base/search/?type__in=layer&limit=15&df=typename&q=${searchValue}`;
     return new Promise(resolve => {
       $http.get(url).then(response => {
-        const nameIndex = [];
+        const searchObjects = [];
         const objects = response.data.objects;
 
         for (let i = 0; i < objects.length; i += 1) {
@@ -114,7 +162,7 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
               objects[i].alternate.indexOf("geonode") > -1
                 ? objects[i].alternate.split("geonode:")[1]
                 : objects[i].alternate;
-            nameIndex.push({
+            searchObjects.push({
               title: objects[i].title,
               typename,
               remote: objects[i].subtype
@@ -123,7 +171,7 @@ function layerSvc($rootScope, $http, appConfig, stateSvc) {
             });
           }
         }
-        resolve(nameIndex);
+        resolve(searchObjects);
       });
     });
   };

@@ -89,6 +89,10 @@ function composerController(
     $scope.mapManager.initMapLoad();
   });
 
+  if (window.mapstory.layerViewerMode) {
+    layerSvc.getApiResultsThenAddLayer(window.mapstory.layername);
+  }
+
   $rootScope.$on("chapter-added", (event, config) => {
     pinSvc.addChapter();
   });
