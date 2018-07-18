@@ -1071,11 +1071,9 @@ function pinSvc(
       pin.inTimeline = element.inTimeline || true;
       pinArray.push(pin);
     });
-    // This is null:
-    // TODO: Fix this null object. This should close the modal dialog.
-    // svc.modalInstance.close();
 
     svc.pins[stateSvc.getChapterIndex()].push();
+    svc.onStoryPinSave();
     return pinArray;
   };
 
