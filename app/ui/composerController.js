@@ -15,6 +15,7 @@ function composerController(
   TimeMachine,
   navigationSvc,
   pinSvc,
+  layerSvc,
   frameSvc,
   stateSvc
 ) {
