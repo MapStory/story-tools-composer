@@ -1032,6 +1032,7 @@ function pinSvc(
             inMap: svc.pins[i][p].inMap,
             inTimeline: svc.pins[i][p].inTimeline,
             autoShow: svc.pins[i][p].autoShow,
+            media: svc.pins[i][p].media,
             start_time: svc.pins[i][p].startTime,
             end_time: svc.pins[i][p].endTime,
             title: svc.pins[i][p].title,
