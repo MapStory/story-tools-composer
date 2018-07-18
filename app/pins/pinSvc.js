@@ -1085,13 +1085,12 @@ function pinSvc(
    * @param pinArray
    */
   svc.downloadCSV = pinArray => {
-    const data = svc.exportPinsToCSV(pinArray);
-    const hidden = document.createElement("a");
-    const uri = encodeURI(data);
-    hidden.href = `data:text/csv;charset=utf8,${uri}`;
-    hidden.target = "_blank";
-    hidden.download = "storypins.csv";
-    hidden.click();
+    // Convert the pins to CSV
+    let data = svc.exportPinsToCSV(pinArray);
+    if (!data.match(/^data:text\/csv/i)) {
+      data = `data:text/csv;charset=utf-8,${data}`;
+    }
+    window.open(encodeURI(data));
   };
 
   /**
