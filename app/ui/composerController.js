@@ -61,7 +61,7 @@ function composerController(
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
 
   $scope.composerMode =
-    !window.mapstory.composerMode === "False" || !$scope.layerViewerMode;
+    window.mapstory.composerMode !== "False" && !$scope.layerViewerMode;
 
   function getUrlParam(name) {
     const results = new RegExp(`[\\?&]${name}=([^&#]*)`).exec(
