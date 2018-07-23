@@ -58,6 +58,15 @@ function frameController(
     bbVector.on("addfeature", evt => {
       $scope.coords = evt.feature.getGeometry().getCoordinates();
     });
+    const style = new ol.style.Style({
+      stroke: new ol.style.Stroke({
+        color: '#FFF',
+        width: 3
+      }),
+      fill: new ol.style.Fill({
+        color: [255,255,255, 0]
+      })
+    });
     const geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
     draw = new ol.interaction.Draw({
       source: bbVector,
@@ -65,6 +74,7 @@ function frameController(
       geometryFunction
     });
     vector.set("name", "boundingBox");
+    vector.setStyle(style);
     map.addLayer(vector);
     map.addInteraction(draw);
   };
