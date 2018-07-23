@@ -8,6 +8,7 @@ function MapManager(
   layerOptionsSvc,
   stStoryMapBaseBuilder,
   stateSvc,
+  navigationSvc,
   stEditableStoryMapBuilder
 ) {
   const svc = {};
@@ -21,6 +22,7 @@ function MapManager(
   svc.owner = "";
 
   svc.getChapterCount = () => stateSvc.getConfig().chapters.length;
+  svc.navigationSvc = navigationSvc;
 
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);

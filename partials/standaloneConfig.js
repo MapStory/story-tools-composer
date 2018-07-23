@@ -22,3 +22,11 @@ window.mapstory.composer.config.branding = {
   layerName: "StoryLayer",
   layersName: "StoryLayers",
 }
+window.mapstory.composer.config.classificationBanner = {
+  enabled: false,
+  footerEnabled: false,
+  text: "",
+  textColor:"white",
+  backgroundColor: "white",
+  link: "",
+}
