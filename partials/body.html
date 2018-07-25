@@ -12,13 +12,11 @@
       </div>
       <div id="map" ng-style="{'width':mapWidth}">
       </div>
-
-
       <div id="footer" class='floating-below' ng-style="{'width':mapWidth}"
            ng-show="timeControlsManager.timeControls && timeControlsManager.timeControls.isReady()">
         {% if THEME == 'blue' %}
         <div id="time-controls-panel2" style="background: #34495e; margin-bottom: 20px;">
-        % endif %}
+        {% endif %}
         {% if THEME == 'orange' %}
         <div id="time-controls-panel2" style="background: #34495e;">
         {% endif %}
