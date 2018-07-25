@@ -83,113 +83,21 @@
                             <!-- TODO: Empty text areas don't work in all browsers-->
                             <input id="storypin_media" type="text" name="storypin_media" ng-model="pin.media" required/>
                         </div>
-                        <!-- Start Time -->
-                        <div class="form-field">
-                            <label for="start_time">Start Time</label>
-                            <strong><abbr title="required">*</abbr></strong>
-                            <div class="input-group">
-                                <input id="start_time"
-                                       class="form-control"
-                                       uib-datepicker-popup="{{pinSvc.format}}"
-                                       ng-model="pin.startTime"
-                                       is-open="pinSvc.startDatePopup.opened"
-                                       datepicker-options="pinSvc.dateOptions"
-                                       uib-init-date="false"
-                                       init-date="false"
-                                       ng-required="true"
-                                       close-text="Close"
-                                       alt-input-formats="pinSvc.altInputFormats"
-                                />
-                                <span class="input-group-btn">
-                                    <button type="button"
-                                            class="btn btn-default"
-                                            ng-click="pinSvc.openStartDate()"><i class="glyphicon glyphicon-calendar" aria-label="Open start date"></i>
-                                    </button>
-                                </span>
-                            </div>
-                            <!--<div class="row">-->
-                                <!--<div uib-timepicker ng-model="pinSvc.pinStartTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>-->
-                            <!--</div>-->
+                        <label>*Start Date</label>
+                        <div>
+                            <input required id="startDate-{{$index}}" type="date" ng-model="pin.startTime" aria-label="start date" required/>
+                            <span class="fa fa-calendar input-icons"></span>
+                            <!--<input id="startTime" type="time" ng-model="frameSettings.startTime" aria-label="start time">-->
+                            <!--<span class="fa fa-clock-o input-icons"></span>-->
                         </div>
-                        <!-- End Time -->
-                        <div class="form-field">
-                            <label for="end_time">End Time</label>
-                            <strong><abbr title="required">*</abbr></strong>
-                            <div class="input-group">
-                                <input id="end_time"
-                                    class="form-control"
-                                    uib-datepicker-popup="{{pinSvc.format}}"
-                                    ng-model="pin.endTime"
-                                    is-open="pinSvc.endDatePopup.opened"
-                                    datepicker-options="pinSvc.dateOptions"
-                                    uib-init-date="false"
-                                    init-date="false"
-                                    ng-required="true"
-                                    close-text="Close"
-                                    alt-input-formats="pinSvc.altInputFormats"
-                                />
-                                <span class="input-group-btn">
-                                    <button type="button" class="btn btn-default" ng-click="pinSvc.openEndDate()"><i class="glyphicon glyphicon-calendar" aria-label="Open end date"></i></button>
-                                </span>
-                            </div>
-                            <!--<div class="row">-->
-                                <!--<div uib-timepicker ng-model="pinSvc.pinEndTime" ng-change="pinSvc.onChangedTime()" show-meridian="true"></div>-->
-                            <!--</div>-->
+
+                        <label>*End Date</label>
+                        <div>
+                            <input id="endDate-{{$index}}" type="date" ng-model="pin.endTime" aria-label="end date" required/>
+                            <span class="fa fa-calendar input-icons"></span>
+                            <!--<input id="endTime" type="time" ng-model="frameSettings.endTime" aria-label="end time">-->
+                            <!--<span class="fa fa-clock-o input-icons"></span>-->
                         </div>
-                        <!--<hr>-->
-                        <!--&lt;!&ndash; Latitude &ndash;&gt;-->
-                        <!--<label for="lat-input">Latitude</label>-->
-                        <!--<input id="lat-input" type="number" name="lat" ng-model="pin.mapFeature.getGeometry().getCoordinates()[0]" placeholder="{{pin.coords[0]}}">-->
-                        <!--<br/>-->
-                        <!--&lt;!&ndash; Longitude &ndash;&gt;-->
-                        <!--<label for="long-input">Longitude</label>-->
-                        <!--<input id="long-input" type="number" name="long" ng-model="pin.mapFeature.getGeometry().getCoordinates()[1]" placeholder="{{pin.coords[1]}}">-->
-                        <!--<hr>-->
-                        <!-- TODO: Implement options -->
-                        <!-- Playback Options -->
-                        <!--<div class="form-field">-->
-                            <!--<label for="storypin_playback_options">-->
-                                <!--StoryPin Playback Options-->
-                            <!--</label>-->
-                            <!--<br/>-->
-                            <!--&lt;!&ndash; Show in timeline &ndash;&gt;-->
-                            <!--<label class="switch">-->
-                                <!--<input type="checkbox" for="timeline"-->
-                                       <!--ng-init="pin.inTimeline = false"-->
-                                       <!--ng-model="pin.inTimeline">-->
-                                <!--<div class="slider round"></div>-->
-                            <!--</label>-->
-                            <!--<label for="timeline">Show StoryPin on Timeline</label>-->
-                            <!--<br/>-->
-                            <!--&lt;!&ndash; Show on map &ndash;&gt;-->
-                            <!--<label class="switch">-->
-                                <!--<input type="checkbox" for="map"-->
-                                       <!--ng-init="pin.inMap = true"-->
-                                       <!--ng-model="pin.inMap">-->
-                                <!--<div class="slider round"></div>-->
-                            <!--</label>-->
-                            <!--<label for="map">Show StoryPin on Map</label>-->
-                            <!--<br/>-->
-                            <!--&lt;!&ndash; Pause playback &ndash;&gt;-->
-                            <!--<label class="switch">-->
-                                <!--<input type="checkbox" for="pause_playback">-->
-                                <!--<div class="slider round"></div>-->
-                            <!--</label>-->
-                            <!--<label for="pause_playback">-->
-                                <!--Pause playback when StoryPin appears-->
-                            <!--</label>-->
-                            <!--<br/>-->
-                            <!--&lt;!&ndash; autoplay embedded&ndash;&gt;-->
-                            <!--<label class="switch">-->
-                                <!--<input type="checkbox" for="play_embedded"-->
-                                       <!--ng-init="pin.autoShow = false"-->
-                                       <!--ng-model="pin.autoShow">-->
-                                <!--<div class="slider round"></div>-->
-                            <!--</label>-->
-                            <!--<label for="play_embedded">-->
-                                <!--Play embedded StoryPin media automatically-->
-                            <!--</label>-->
-                        <!--</div>-->
                     </form>
                 </div>
             </div>

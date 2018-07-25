@@ -105,8 +105,8 @@ function pinSvc(
     ol.Feature.call(this, data);
     this.properties = data;
     this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
-    this.startTime = new Date();
-    this.endTime = new Date();
+    this.startTime = data.startTime ? new Date(data.startTime) : new Date();
+    this.endTime = data.endTime ?  new Date(data.endTime) : new Date();
   };
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
@@ -1027,7 +1027,6 @@ function pinSvc(
             type: "Point",
             coordinates: [svc.pins[i][p].coords[0], svc.pins[i][p].coords[1]]
           },
-          // properties: svc.pins[i][p].properties
           properties: {
             inMap: svc.pins[i][p].inMap,
             inTimeline: svc.pins[i][p].inTimeline,
@@ -1044,12 +1043,11 @@ function pinSvc(
     stateSvc.setStoryPinsToConfig(featureCollections);
   };
 
-  svc.exportPinsToJSON = pinArray => {
-    pinArray.forEach(pin => {
-    });
-    return [];
-  };
-
+  /**
+   * Handles the CSV Uploaded data and converts it to actual pins on the map.
+   * @param results The data results from the upload.
+   * @returns {Array} An array of created StoryPins.
+   */
   svc.onBulkPinComplete = results => {
     const pinArray = [];
     results.data.forEach(element => {
@@ -1119,8 +1117,12 @@ function pinSvc(
     return Papa.unparse(csvObjects);
   };
 
+  /**
+   * This reacts to the timepicker being changed.
+   * TODO: Implement this.
+   */
   svc.onChangedTime = () => {
-    // TODO: Set new time here
+
   };
 
   /**
