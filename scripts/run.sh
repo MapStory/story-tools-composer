@@ -8,8 +8,10 @@ for i do # loop over $@
 
     if [ "$i" = "--bundle" ]; then
         pushd deps/story-tools
+        yarn install
         gulp build
         popd
+        yarn install
         yarn run bundle $COMPOSER_BUNDLE_ARGS
     fi
 
