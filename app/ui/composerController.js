@@ -71,9 +71,32 @@ function composerController(
     return (results && results[1]) || undefined;
   }
 
+  // Adds a layer if there is one
   const layer = getUrlParam("layer");
   if (layer > "") {
-    MapManager.addLayer(layer, {}, 0);
+    const simpleName = layer.split(":").pop();
+    const settings = {
+      asVector: false,
+      allowZoom: true,
+      allowPan: true
+    };
+    // TODO: Check if this is remote
+    const remote = false;
+    if (remote) {
+      layerSvc.getRemoteServiceUrl(simpleName).then(res => {
+        const server = {
+          absolutePath: res.url,
+          canStyleWMS: false,
+          name: "remote",
+          type: "remote",
+          path: ""
+        };
+        settings.params = res.params;
+        MapManager.addLayer({ name: simpleName, settings, server });
+      });
+    } else {
+      MapManager.addLayer({ name: simpleName, settings, server: layerSvc.server.active });
+    }
   }
 
   $rootScope.$on("$locationChangeSuccess", () => {
