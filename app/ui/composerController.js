@@ -80,9 +80,7 @@ function composerController(
       allowZoom: true,
       allowPan: true
     };
-    // TODO: Check if this is remote
-    const remote = false;
-    if (remote) {
+    if (layer.remote) {
       layerSvc.getRemoteServiceUrl(simpleName).then(res => {
         const server = {
           absolutePath: res.url,
