@@ -59,6 +59,11 @@ function pinSvc(
     editor: false,
     chooser: false
   };
+  svc.availableDisplayCoordinates = [
+    {display: "Decimal Degrees", value: "dd"},
+    {display: "Degrees Minutes Seconds", value: "dms"}
+  ];
+  svc.displayCoordinates = "dd";
   // Media whitelist
   svc.whitelist = [
     new RegExp(/https?:\/\/.*\.flickr\.com\/photos\/.*/),

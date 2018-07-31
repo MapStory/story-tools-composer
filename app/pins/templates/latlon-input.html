@@ -1,0 +1,43 @@
+<div>
+    <div class="form-field">
+        <label for="coordinate-choice">Coordinate System</label>
+        <div class="input-group">
+            <select id="coordinate-choice" ng-model="displayCoordinates">
+                <option ng-repeat="item in pinSvc.availableDisplayCoordinates" value="{{item.value}}">{{item.display}}</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Latitude -->
+    <div class="form-field">
+        <label for="lat-input">Latitude</label>
+        <strong><abbr title="required">*</abbr></strong>
+        <div class="input-group" ng-if="displayCoordinates === 'dd'">
+            <input id="lat-input"
+                   class="form-control"
+                   type="number"
+                   name="lat"
+                   step="0.0001"
+                   max="90"
+                   min="-90"
+                   ng-model="humanCoords[1]"
+                   placeholder="{{humanCoords[1]}}">
+        </div>
+    </div>
+    <!-- Longitude -->
+    <div class="form-field">
+        <label for="lon-input">Longitude</label>
+        <strong><abbr title="required">*</abbr></strong>
+        <div class="input-group" ng-if="displayCoordinates === 'dd'">
+            <input id="lon-input"
+                   class="form-control"
+                   type="number"
+                   name="lon"
+                   step="0.0001"
+                   max="180"
+                   min="-180"
+                   ng-model="humanCoords[0]"
+                   placeholder="{{humanCoords[0]}}">
+        </div>
+    </div>
+</div>
