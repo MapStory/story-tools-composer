@@ -74,14 +74,16 @@ function composerController(
   // Adds a layer if there is one
   const layer = getUrlParam("layer");
   if (layer > "") {
-    const simpleName = layer.split(":").pop();
+    const nameParts = layer.split(":");
+    const simpleName = nameParts[1];
+    const serviceName = nameParts[0];
     const settings = {
       asVector: false,
       allowZoom: true,
       allowPan: true
     };
-    if (layer.remote) {
-      layerSvc.getRemoteServiceUrl(simpleName).then(res => {
+    if (serviceName !== "geonode") {
+      layerSvc.getRemoteServiceUrl(layer).then(res => {
         const server = {
           absolutePath: res.url,
           canStyleWMS: false,
