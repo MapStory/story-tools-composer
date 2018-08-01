@@ -21,6 +21,7 @@
                    max="90"
                    min="-90"
                    ng-change="convertToMapModelReadable()"
+                   aria-label="Latitude Decimal Degrees"
                    ng-model="humanCoords[1]"
                    placeholder="{{humanCoords[1]}}">
         </div>
@@ -28,9 +29,10 @@
             <input id="lat-input"
                    class="form-control"
                    type="number"
-                   name="lat"
+                   name="lat-degrees"
                    max="90"
                    min="0"
+                   aria-label="Latitude Degrees"
                    ng-blur="convertDMSToDecimal()"
                    ng-model="dms.lat.degrees"
                    placeholder="{{dms.lat.degrees}}">
@@ -40,9 +42,10 @@
             <input id="lat-min"
                    class="form-control"
                    type="number"
-                   name="lat"
+                   name="lat-minutes"
                    max="60"
                    min="0"
+                   aria-label="Latitude Minutes"
                    ng-blur="convertDMSToDecimal()"
                    ng-model="dms.lat.minutes"
                    placeholder="{{dms.lat.minutes}}">
@@ -52,16 +55,17 @@
             <input id="lat-sec"
                    class="form-control"
                    type="number"
-                   name="lat"
+                   name="lat-seconds"
                    max="60"
                    min="0"
+                   aria-label="Latitude Seconds"
                    ng-blur="convertDMSToDecimal()"
                    ng-model="dms.lat.seconds"
                    placeholder="{{dms.lat.seconds}}">
 
             <div class="coordinate-type">″</div>
 
-            <select ng-model="dms.lat.direction" ng-change="convertDMSToDecimal()">
+            <select ng-model="dms.lat.direction" ng-change="convertDMSToDecimal()" aria-label="Latitude Direction">
                 <option value="N">N</option>
                 <option value="S">S</option>
             </select>
@@ -80,6 +84,7 @@
                    max="180"
                    min="-180"
                    ng-change="convertToMapModelReadable()"
+                   aria-label="Longitude Decimal Degrees"
                    ng-model="humanCoords[0]"
                    placeholder="{{humanCoords[0]}}">
         </div>
@@ -87,7 +92,8 @@
             <input id="lon-input"
                    class="form-control"
                    type="number"
-                   name="lat"
+                   name="lon-degrees"
+                   aria-label="Longitude Degrees"
                    max="180"
                    min="0"
                    ng-blur="convertDMSToDecimal()"
@@ -99,7 +105,8 @@
             <input id="lon-min"
                    class="form-control"
                    type="number"
-                   name="lat"
+                   name="lon-minutes"
+                   aria-label="Longitude Minutes"
                    max="60"
                    min="0"
                    ng-blur="convertDMSToDecimal()"
@@ -111,7 +118,8 @@
             <input id="lon-sec"
                    class="form-control"
                    type="number"
-                   name="lat"
+                   name="lon-seconds"
+                   aria-label="Longitude Seconds"
                    max="60"
                    min="0"
                    ng-blur="convertDMSToDecimal()"
@@ -120,7 +128,7 @@
 
             <div class="coordinate-type">″</div>
 
-            <select ng-model="dms.lon.direction" ng-change="convertDMSToDecimal()">
+            <select ng-model="dms.lon.direction" ng-change="convertDMSToDecimal()" aria-label="Longitude Direction">
                 <option value="E">E</option>
                 <option value="W">W</option>
             </select>
