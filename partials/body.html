@@ -14,17 +14,23 @@
       </div>
       <div id="footer" class='floating-below' ng-style="{'width':mapWidth}"
            ng-show="timeControlsManager.timeControls && timeControlsManager.timeControls.isReady()">
+        {% if THEME == 'blue' %}
+        <div id="time-controls-panel2" style="background: #34495e; margin-bottom: 20px;">
+        {% endif %}
+        {% if THEME == 'orange' %}
         <div id="time-controls-panel2" style="background: #34495e;">
-          <div class="navbar" style="margin:3px 0 0; min-height: 32px;" ng-controller="tileProgressController">
-            <st-playback-controls playback-options="playbackOptions" class="pull-left" style="width:100%"
+        {% endif %}
+
+        <div class="navbar" style="margin:3px 0 0; min-height: 32px;">
+        <st-playback-controls playback-options="playbackOptions" class="pull-left" style="width:100%"
                                   time-controls="timeControlsManager.timeControls">
-            </st-playback-controls>
-          </div>
+        </st-playback-controls>
+        </div>
           <div id="timeline" style="background: rgba(255, 255, 255, 0.9); display: none;">
           </div>
         </div>
         <div id="playback-settings" class="panel-collapse collapse"
-             style="height: 0px; color:black; opacity: 0.58; background-color: white;">
+             style="height: 0px; color:black; opacity: 0.58;">
           <div class="panel-heading">
             Playback Options
           </div>

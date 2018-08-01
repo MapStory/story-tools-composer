@@ -1,12 +1,14 @@
 function MapManager(
   $http,
   $rootScope,
+  appConfig,
   stStoryMapBuilder,
   stEditableLayerBuilder,
   EditableStoryMap,
   layerOptionsSvc,
   stStoryMapBaseBuilder,
   stateSvc,
+  navigationSvc,
   stEditableStoryMapBuilder
 ) {
   const svc = {};
@@ -19,6 +21,9 @@ function MapManager(
   svc.title = "";
   svc.owner = "";
 
+  svc.getChapterCount = () => stateSvc.getConfig().chapters.length;
+  svc.navigationSvc = navigationSvc;
+
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     for (let i = 0; i < options.layers.length; i += 1) {
@@ -26,25 +31,9 @@ function MapManager(
     }
   };
 
-  svc.loadMapFromUrl = options => {
-    $http
-      .get(options.url)
-      .then(response => {
-        stEditableStoryMapBuilder.modifyStoryMap(svc.storyMap, response.data);
-      })
-      .catch((data, status) => {
-        if (status === 401) {
-          window.console.warn(`Not authorized to see map ${svc.storyMap.id}`);
-          stStoryMapBaseBuilder.defaultMap(svc.storyMap);
-        }
-      });
-  };
-
   svc.loadMap = options => {
     if (options.id !== null && options.id !== undefined) {
       svc.loadMapFromID(options);
-    } else if (options.url) {
-      svc.loadMapFromUrl(options);
     } else {
       stStoryMapBaseBuilder.defaultMap(svc.storyMap);
     }
@@ -90,15 +79,8 @@ function MapManager(
         $rootScope.$broadcast("layerAdded");
       });
 
-  svc.addLayer = (name, settings, server, fitExtent, styleName, title) => {
-    const options = layerOptionsSvc.getLayerOptions(
-      name,
-      settings,
-      server,
-      fitExtent,
-      styleName,
-      title
-    );
+  svc.addLayer = args => {
+    const options = layerOptionsSvc.getLayerOptions(args);
     stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
   };

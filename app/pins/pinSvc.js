@@ -59,6 +59,11 @@ function pinSvc(
     editor: false,
     chooser: false
   };
+  svc.availableDisplayCoordinates = [
+    {display: "Decimal Degrees", value: "dd"},
+    {display: "Degrees Minutes Seconds", value: "dms"}
+  ];
+  svc.displayCoordinates = "dd";
   // Media whitelist
   svc.whitelist = [
     new RegExp(/https?:\/\/.*\.flickr\.com\/photos\/.*/),
@@ -105,8 +110,8 @@ function pinSvc(
     ol.Feature.call(this, data);
     this.properties = data;
     this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
-    this.startTime = new Date();
-    this.endTime = new Date();
+    this.startTime = data.startTime ? new Date(data.startTime) : new Date();
+    this.endTime = data.endTime ?  new Date(data.endTime) : new Date();
   };
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
@@ -1027,11 +1032,11 @@ function pinSvc(
             type: "Point",
             coordinates: [svc.pins[i][p].coords[0], svc.pins[i][p].coords[1]]
           },
-          // properties: svc.pins[i][p].properties
           properties: {
             inMap: svc.pins[i][p].inMap,
             inTimeline: svc.pins[i][p].inTimeline,
             autoShow: svc.pins[i][p].autoShow,
+            media: svc.pins[i][p].media,
             start_time: svc.pins[i][p].startTime,
             end_time: svc.pins[i][p].endTime,
             title: svc.pins[i][p].title,
@@ -1043,12 +1048,11 @@ function pinSvc(
     stateSvc.setStoryPinsToConfig(featureCollections);
   };
 
-  svc.exportPinsToJSON = pinArray => {
-    pinArray.forEach(pin => {
-    });
-    return [];
-  };
-
+  /**
+   * Handles the CSV Uploaded data and converts it to actual pins on the map.
+   * @param results The data results from the upload.
+   * @returns {Array} An array of created StoryPins.
+   */
   svc.onBulkPinComplete = results => {
     const pinArray = [];
     results.data.forEach(element => {
@@ -1071,11 +1075,9 @@ function pinSvc(
       pin.inTimeline = element.inTimeline || true;
       pinArray.push(pin);
     });
-    // This is null:
-    // TODO: Fix this null object. This should close the modal dialog.
-    // svc.modalInstance.close();
 
     svc.pins[stateSvc.getChapterIndex()].push();
+    svc.onStoryPinSave();
     return pinArray;
   };
 
@@ -1085,13 +1087,12 @@ function pinSvc(
    * @param pinArray
    */
   svc.downloadCSV = pinArray => {
-    const data = svc.exportPinsToCSV(pinArray);
-    const hidden = document.createElement("a");
-    const uri = encodeURI(data);
-    hidden.href = `data:text/csv;charset=utf8,${uri}`;
-    hidden.target = "_blank";
-    hidden.download = "storypins.csv";
-    hidden.click();
+    // Convert the pins to CSV
+    let data = svc.exportPinsToCSV(pinArray);
+    if (!data.match(/^data:text\/csv/i)) {
+      data = `data:text/csv;charset=utf-8,${data}`;
+    }
+    window.open(encodeURI(data));
   };
 
   /**
@@ -1121,8 +1122,12 @@ function pinSvc(
     return Papa.unparse(csvObjects);
   };
 
+  /**
+   * This reacts to the timepicker being changed.
+   * TODO: Implement this.
+   */
   svc.onChangedTime = () => {
-    // TODO: Set new time here
+
   };
 
   /**

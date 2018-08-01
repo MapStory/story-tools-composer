@@ -29,7 +29,5 @@ function bulkUploadCtrl($scope, $uibModal, pinSvc) {
       },() => {});
   };
 }
-bulkUploadCtrl.$inject = ["$scope", "$uibModal"];
 
-// TODO: Use es6
 module.exports = bulkUploadCtrl;

@@ -1,7 +1,11 @@
-<form role="form" ng-submit="addLayer(layerName, asVector)">
+<form role="form" ng-submit="addLayerFromSearchResults(searchValue, asVector)">
     <div class="form-group">
         <label for="typename">Layer Name</label>
-        <input autocomplete="off" ng-model="layerName" type="text" class="form-control" id="typename" uib-typeahead="suggestion for suggestion in results($viewValue)" placeholder="Layer name in mapstory">
+        <input autocomplete="off" ng-model="searchValue" type="text" class="form-control" id="typename" typeahead-no-results="noResults" uib-typeahead="suggestion for suggestion in getResults($viewValue)" placeholder="Layer name in mapstory">
     </div>
-    <button type="submit" ng-disabled="!layerName"> <span ng-if="loading">Loading...</span> <span ng-if="!loading">Add</span></button>
+    <div ng-show="noResults">
+
+        <i class="glyphicon glyphicon-remove"></i> No Results Found
+    </div>
+    <button type="submit" ng-disabled="!searchValue"> <span ng-if="loading">Loading...</span> <span ng-if="!loading">Add</span></button>
 </form>

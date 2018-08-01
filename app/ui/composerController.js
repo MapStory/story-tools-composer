@@ -6,6 +6,8 @@ function composerController(
   $log,
   $injector,
   $uibModal,
+  $window,
+  $location,
   MapManager,
   styleService,
   appConfig,
@@ -13,36 +15,88 @@ function composerController(
   TimeMachine,
   navigationSvc,
   pinSvc,
-  searchSvc,
-  stateSvc,
-  configSvc,
-  $location
+  layerSvc,
+  frameSvc,
+  stateSvc
 ) {
   let lastSelectedTab = null;
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.pinSvc = pinSvc;
-  $scope.searchSvc = searchSvc;
   $scope.navigationSvc = navigationSvc;
   $scope.pin = {};
-  $scope.selected = {toc: true};
+  $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
+  $scope.frameSettings = [];
 
-  if (window.mapstory.composerMode === "False") {
-    $scope.composerMode = false;
-  } else {
-    $scope.composerMode = true;
-  }
+  const map = MapManager.storyMap.getMap();
+
+  $scope.$watch(angular.bind($scope, () => {
+    const fetchedFrameSettings = frameSvc.get("storyFrames");
+    const currentChapter = stateSvc.getChapterIndex();
+    const fetchedFrames = [];
+
+    if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
+      if ($scope.frameSettings.length < fetchedFrameSettings.length) {
+        for (let i = 1; i < fetchedFrameSettings.length; i++) {
+          fetchedFrames[i] = ({
+            id: Date.now(),
+            chapter: currentChapter,
+            title: fetchedFrameSettings[i].title,
+            startDate: fetchedFrameSettings[i].startDate,
+            startTime: fetchedFrameSettings[i].startTime,
+            endDate: fetchedFrameSettings[i].endDate,
+            endTime: fetchedFrameSettings[i].endTime,
+            bb1: [fetchedFrameSettings[i].bb1[0], fetchedFrameSettings[i].bb1[1]],
+            bb2: [fetchedFrameSettings[i].bb2[0], fetchedFrameSettings[i].bb2[1]],
+            bb3: [fetchedFrameSettings[i].bb3[0], fetchedFrameSettings[i].bb3[1]],
+            bb4: [fetchedFrameSettings[i].bb4[0], fetchedFrameSettings[i].bb4[1]]
+          });
+        }
+        $scope.frameSettings = fetchedFrames.reverse();
+      }
+    }
+  }));
+
+  $scope.layerViewerMode = window.mapstory.layerViewerMode;
+
+  $scope.composerMode =
+    window.mapstory.composerMode !== "False" && !$scope.layerViewerMode;
 
   function getUrlParam(name) {
-    const results = new RegExp(`[\\?&]${  name  }=([^&#]*)`).exec(window.location.href);
+    const results = new RegExp(`[\\?&]${name}=([^&#]*)`).exec(
+      window.location.href
+    );
     return (results && results[1]) || undefined;
   }
 
+  // Adds a layer if there is one
   const layer = getUrlParam("layer");
   if (layer > "") {
-    MapManager.addLayer(layer, {}, 0);
+    const nameParts = layer.split(":");
+    const simpleName = nameParts[1];
+    const serviceName = nameParts[0];
+    const settings = {
+      asVector: false,
+      allowZoom: true,
+      allowPan: true
+    };
+    if (serviceName !== "geonode") {
+      layerSvc.getRemoteServiceUrl(layer).then(res => {
+        const server = {
+          absolutePath: res.url,
+          canStyleWMS: false,
+          name: "remote",
+          type: "remote",
+          path: ""
+        };
+        settings.params = res.params;
+        MapManager.addLayer({ name: simpleName, settings, server });
+      });
+    } else {
+      MapManager.addLayer({ name: simpleName, settings, server: layerSvc.server.active });
+    }
   }
 
   $rootScope.$on("$locationChangeSuccess", () => {
@@ -59,7 +113,13 @@ function composerController(
     $scope.mapManager.initMapLoad();
   });
 
-  $rootScope.$on("chapter-added", (event, config) => pinSvc.addChapter());
+  if (window.mapstory.layerViewerMode) {
+    layerSvc.getApiResultsThenAddLayer(window.mapstory.layername);
+  }
+
+  $rootScope.$on("chapter-added", (event, config) => {
+    pinSvc.addChapter();
+  });
 
   $rootScope.$on("chapter-removed", (event, chapterIndex) =>
     pinSvc.removeChapter(chapterIndex)
@@ -94,7 +154,12 @@ function composerController(
     preview: false
   };
   $scope.timeControlsManager = $injector.instantiate(TimeControlsManager);
-  $scope.mapWidth = appConfig.dimensions.mapWidthEditMode;
+  $scope.mapWidth = $scope.layerViewerMode
+    ? appConfig.dimensions.layerViewerMode
+    : appConfig.dimensions.mapWidthEditMode;
+  setTimeout(() => {
+    window.storyMap.getMap().updateSize();
+  });
   $scope.playbackOptions = {
     mode: "instant",
     fixed: false
@@ -110,7 +175,9 @@ function composerController(
     $scope.openPublishedModal();
   };
 
-  $scope.goHome = () => { $location.href = "/"; }
+  $scope.goHome = () => {
+    $window.location.href = "/";
+  };
   $scope.newMap = () => $location.path("/new");
 
   $scope.layerProperties = lyr => {
@@ -122,7 +189,7 @@ function composerController(
 
   $scope.updateSelected = (selected, chapterId, dontCache) => {
     $scope.selected = {};
-    if ((chapterId !== null) && (chapterId !== undefined)) {
+    if (chapterId !== null && chapterId !== undefined) {
       navigationSvc.goToChapter(chapterId);
     }
     $scope.selected[selected] = true;
@@ -134,7 +201,7 @@ function composerController(
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
-  $scope.openStoryModal = (size) => {
+  $scope.openStoryModal = size => {
     const uibmodalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/storyInfoModal.html",
       size,
@@ -142,10 +209,10 @@ function composerController(
     });
     $scope.close = () => {
       uibmodalInstance.dismiss("close");
-    }
+    };
   };
 
-  $scope.openPublishedModal = (size) => {
+  $scope.openPublishedModal = size => {
     const uibmodalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/storyPublished.html",
       size,
@@ -153,7 +220,12 @@ function composerController(
     });
     $scope.close = () => {
       uibmodalInstance.dismiss("close");
-    }
+    };
+  };
+
+  $scope.formatDates = date => {
+    const preFormatDate = moment(date);
+    return preFormatDate.format("YYYY-MM-DD");
   };
 
   /**
@@ -190,6 +262,111 @@ function composerController(
         pin.hide();
       }
     });
+  };
+
+  /**
+   * Callback for timeline update.
+   * @param data Data from the timeline.
+   */
+  window.storypinCallback = data => {
+    // Updates StoryPins.
+    $scope.updateStorypinTimeline(data);
+    // Updates StoryFrames
+    $scope.getCurrentFrame(data);
+  };
+
+  $scope.currentFrame = 0;
+  $scope.zoomedIn = false;
+
+
+  $scope.getCurrentFrame = date => {
+
+
+    if ($scope.currentFrame < $scope.frameSettings.length) {
+      if (typeof $scope.frameSettings[$scope.currentFrame] === "undefined") {
+        $scope.currentFrame += 1;
+      } else {
+        const start = $scope.frameSettings[$scope.currentFrame].startDate;
+        const end = $scope.frameSettings[$scope.currentFrame].endDate;
+        $scope.checkTimes(date, start, end);
+      }
+    }
+  }
+
+  $scope.checkTimes = (date, start, end) => {
+    if (
+      moment(date).isSameOrAfter(start) &&
+      moment(date).isSameOrBefore(end) &&
+      $scope.zoomedIn === false
+    ) {
+      $scope.zoomToExtent();
+      $scope.zoomedIn = true;
+    } else if (moment(date).isAfter(end)) {
+      $scope.zoomOutExtent();
+      $scope.zoomedIn = false;
+    }
+  };
+
+  $scope.zoomToExtent = () => {
+    let polygon;
+
+    if ($scope.frameSettings[$scope.currentFrame]) {
+
+      polygon = new ol.Feature(
+        new ol.geom.Polygon([
+          [
+            $scope.frameSettings[$scope.currentFrame].bb1,
+            $scope.frameSettings[$scope.currentFrame].bb2,
+            $scope.frameSettings[$scope.currentFrame].bb3,
+            $scope.frameSettings[$scope.currentFrame].bb4
+          ]
+        ])
+      )
+    }
+    else if (!$scope.frameSettings[$scope.currentFrame]) {
+      for (let i=1; i < $scope.frameSettings.length; i ++) {
+        polygon = new ol.Feature(
+          new ol.geom.Polygon([
+            [
+              $scope.frameSettings[i].bb1,
+              $scope.frameSettings[i].bb2,
+              $scope.frameSettings[i].bb3,
+              $scope.frameSettings[i].bb4
+            ]
+          ])
+        )
+      }
+    }
+    const vector = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [polygon]
+      })
+    });
+    map.addLayer(vector);
+    map.beforeRender(
+      ol.animation.pan({
+        source: map.getView().getCenter(),
+        duration: 1000
+      }),
+      ol.animation.zoom({
+        resolution: map.getView().getResolution(),
+        duration: 1000,
+        easing: ol.easing.easeIn
+      })
+    );
+    vector.set("name", "boundingBox");
+    map.getView().fit(vector.getSource().getExtent(), map.getSize());
+  };
+
+  $scope.zoomOutExtent = () => {
+    const zoom = ol.animation.zoom({
+      resolution: map.getView().getResolution(),
+      duration: 1000,
+      easing: ol.easing.easeOut
+    });
+    map.beforeRender(zoom);
+    map.getView().setZoom(5);
+    $scope.currentFrame += 1;
   };
 }
 

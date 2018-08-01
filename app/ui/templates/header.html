@@ -1,4 +1,4 @@
-<header>
+<header ng-hide="layerViewerMode">
     <div class="story-info">
         <h1>{{ stateSvc.config.about.title }}</h1>
         <div ng-hide="composerMode">
@@ -19,7 +19,7 @@
         </div>
     </div>
     <div ng-if="composerMode" ng-hide="viewerMode" class="autosave">
-        <button ng-click="saveMap()">Save</button>
+        <button ng-click="saveMap(); updateFrames();">Save</button>
         <button ng-click="publishMap()">Publish</button>
         <button ng-click="goHome()">Exit Composer</button>
     </div>

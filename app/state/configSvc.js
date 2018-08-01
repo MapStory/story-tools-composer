@@ -150,6 +150,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
 
   svc.getMapstoryConfig = data => {
     const brandingCfg = window.mapstory.composer.config.branding;
+    const classificationBannerCfg = window.mapstory.composer.config.classificationBanner;
     if (!data) {
       data = {
         abstract: `${brandingCfg.storyName} description`,
@@ -174,6 +175,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
         slug: data.slug
       },
       branding: brandingCfg,
+      classificationBanner: classificationBannerCfg,
       uuid: data.uuid,
       isPublished: data.is_published || false,
       removedChapters: [],

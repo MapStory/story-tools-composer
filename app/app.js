@@ -21,7 +21,7 @@ const module = angular.module("composer", [
 module.constant("appConfig", {
   dimensions: {
     mapWidthEditMode: "70%",
-    mapWidthPreviewMode: "100%"
+    layerViewerMode: "100%"
   },
   routes: {
     chapter: "/chapter/"
@@ -125,7 +125,6 @@ require("./style");
 require("./layers");
 require("./ui");
 require("./time");
-require("./search");
 require("./state");
 require("./pins");
 require("./frames");

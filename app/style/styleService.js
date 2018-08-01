@@ -66,13 +66,13 @@ function styleService(
         const sld = new storytools.edit.SLDStyleConverter.SLDStyleConverter();
         const xml = sld.generateStyle(
           style,
-          layerSource.getParams().LAYERS,
+          `geonode:${layerSource.getParams().LAYERS}`,
           true
         );
         const csrfToken = $cookies.getAll().csrftoken;
         // @TODO: Use GET request to verify existence of style before POST
         $http({
-          url: `/gs/rest/styles?name=${  style.name}`,
+          url: `/gs/rest/styles?name=${style.name}`,
           method: "POST",
           data: xml,
           headers: {
