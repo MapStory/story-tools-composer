@@ -61,7 +61,7 @@
 
             <div class="coordinate-type">″</div>
 
-            <select ng-model="dms.lat.direction">
+            <select ng-model="dms.lat.direction" ng-change="convertDMSToDecimal()">
                 <option value="N">N</option>
                 <option value="S">S</option>
             </select>
@@ -120,7 +120,7 @@
 
             <div class="coordinate-type">″</div>
 
-            <select ng-model="dms.lon.direction">
+            <select ng-model="dms.lon.direction" ng-change="convertDMSToDecimal()">
                 <option value="E">E</option>
                 <option value="W">W</option>
             </select>
