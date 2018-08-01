@@ -2,7 +2,7 @@ describe("getSearchBarResultsIndex", () => {
   let appConfig;
   let httpBackend;
   let searchBarRes;
-  //let layerSvc;
+  let layerSvc;
 
   beforeEach(module("composer"));
   beforeEach(
