@@ -5,17 +5,15 @@ function frameController(
   $rootScope,
   $log,
   $injector,
-  $timeout,
   $uibModal,
   stateSvc,
-  frameSvc,
   MapManager
 ) {
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.showForm = null;
-  let draw;
 
+  $scope.frameSettings = [];
   const map = MapManager.storyMap.getMap();
 
   function transformCoords(loc) {
@@ -42,6 +40,104 @@ function frameController(
     const preFormatDate = moment(date);
     return preFormatDate.format("YYYY-MM-DD");
   };
+
+  let draw;
+
+  $scope.currentFrame = 0;
+  $scope.zoomedIn = false;
+
+  $scope.getCurrentFrame = date => {
+    if ($scope.currentFrame < $scope.frameSettings.length) {
+      const start = $scope.frameSettings[$scope.currentFrame].startDate;
+      const end = $scope.frameSettings[$scope.currentFrame].endDate;
+      $scope.checkTimes(date, start, end);
+    }
+  };
+
+  $scope.checkTimes = (date, start, end) => {
+    if (
+      moment(date).isSameOrAfter(start) &&
+      moment(date).isSameOrBefore(end) &&
+      $scope.zoomedIn === false
+    ) {
+      $scope.zoomToExtent();
+      $scope.zoomedIn = true;
+    } else if (moment(date).isAfter(end)) {
+      $scope.zoomOutExtent();
+      $scope.zoomedIn = false;
+    }
+  };
+
+  $scope.zoomToExtent = () => {
+    const polygon = new ol.Feature(
+      new ol.geom.Polygon([
+        [
+          $scope.frameSettings[$scope.currentFrame].bb1,
+          $scope.frameSettings[$scope.currentFrame].bb2,
+          $scope.frameSettings[$scope.currentFrame].bb3,
+          $scope.frameSettings[$scope.currentFrame].bb4
+        ]
+      ])
+    );
+    const vector = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [polygon]
+      })
+    });
+    map.addLayer(vector);
+    map.beforeRender(
+      ol.animation.pan({
+        source: map.getView().getCenter(),
+        duration: 1000
+      }),
+      ol.animation.zoom({
+        resolution: map.getView().getResolution(),
+        duration: 1000,
+        easing: ol.easing.easeIn
+      })
+    );
+    vector.set("name", $scope.frameSettings[$scope.currentFrame].title);
+    map.getView().fit(vector.getSource().getExtent(), map.getSize());
+  };
+
+  $scope.zoomOutExtent = () => {
+    const zoom = ol.animation.zoom({
+      resolution: map.getView().getResolution(),
+      duration: 1000,
+      easing: ol.easing.easeOut
+    });
+    map.beforeRender(zoom);
+    map.getView().setZoom(5);
+    $scope.currentFrame += 1;
+  };
+
+  /**
+   * Callback for timeline update.
+   * @param data Data from the timeline.
+   */
+  window.onMoveCallback = data => {
+    // Checks times for storyframes.
+    $scope.getCurrentFrame(data);
+    // Updates StoryPins.
+    $scope.updateStorypinTimeline(data);
+  };
+
+  $rootScope.$on("updateStorypins", (event, chapters) => {
+    for (let c = 0; c < chapters.length; c++) {
+      for (let f = 0; f < chapters[c].storyframes.length; f++) {
+        const coords = JSON.parse(chapters[0].storyframes[f].center);
+        $scope.frameSettings.push({
+          title: chapters[c].storyframes[f].title,
+          startDate: moment.unix(chapters[c].storyframes[f].startTime).format("YYYY-MM-DD"),
+          endDate: moment.unix(chapters[c].storyframes[f].endTime).format("YYYY-MM-DD"),
+          bb1: [coords[0][0], coords[0][1]],
+          bb2: [coords[1][0], coords[1][1]],
+          bb3: [coords[2][0], coords[2][1]],
+          bb4: [coords[3][0], coords[3][1]]
+        });
+      }
+    }
+  });
 
   $scope.formatDates = date => {
     const preFormatDate = moment(date);
@@ -123,7 +219,6 @@ function frameController(
 
   $scope.saveStoryDetails = frameSettings => {
     const currentChapter = stateSvc.getChapterIndex();
-
     $scope.frameSettings.push({
       id: Date.now(),
       chapter: currentChapter,
@@ -199,7 +294,6 @@ function frameController(
   $scope.deleteStoryframe = index => {
     $scope.frameSettings.splice(index, 1);
   };
-
 }
 
 module.exports = frameController;

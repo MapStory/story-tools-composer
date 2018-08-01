@@ -1,15 +1,15 @@
-describe("getSearchBarResultsIndex", () => {
+describe("searchSvc", () => {
   let appConfig;
   let httpBackend;
   let searchConfig;
   let searchBarRes;
-  let layerSvc;
+  let searchSvc;
   let categoryRes;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($httpBackend, _appConfig_, _layerSvc_, _searchConfig_) => {
-      layerSvc = _layerSvc_;
+    inject(($httpBackend, _appConfig_, _searchSvc_, _searchConfig_) => {
+      searchSvc = _searchSvc_;
       searchConfig = _searchConfig_;
       appConfig = _appConfig_;
       httpBackend = $httpBackend;
@@ -18,7 +18,8 @@ describe("getSearchBarResultsIndex", () => {
         objects: [
           {
             title: "Green Iguana",
-            alternate: "geonode:green_iguana"
+            typename: "geonode:green_iguana",
+            type: "layer"
           }
         ]
       };
@@ -41,7 +42,7 @@ describe("getSearchBarResultsIndex", () => {
     let response;
 
     beforeEach(done => {
-      layerSvc.getSearchBarResultsIndex("iguana").then(res => {
+      searchSvc.getSearchBarResultsIndex("iguana").then(res => {
         response = res;
         done();
       });
@@ -52,7 +53,7 @@ describe("getSearchBarResultsIndex", () => {
       expect(response).toEqual([
         {
           title: "Green Iguana",
-          typename: "green_iguana"
+          typename: "geonode:green_iguana"
         }
       ]);
     });

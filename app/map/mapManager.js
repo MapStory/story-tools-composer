@@ -90,8 +90,15 @@ function MapManager(
         $rootScope.$broadcast("layerAdded");
       });
 
-  svc.addLayer = args => {
-    const options = layerOptionsSvc.getLayerOptions(args);
+  svc.addLayer = (name, settings, server, fitExtent, styleName, title) => {
+    const options = layerOptionsSvc.getLayerOptions(
+      name,
+      settings,
+      server,
+      fitExtent,
+      styleName,
+      title
+    );
     stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
   };
