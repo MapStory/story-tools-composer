@@ -1,0 +1,137 @@
+<div>
+    <div class="form-field">
+        <label for="coordinate-choice">Coordinate System</label>
+        <div class="input-group">
+            <select id="coordinate-choice" ng-model="displayCoordinates">
+                <option ng-repeat="item in pinSvc.availableDisplayCoordinates" value="{{item.value}}">{{item.display}}</option>
+            </select>
+        </div>
+    </div>
+
+    <!-- Latitude -->
+    <div class="form-field">
+        <label for="lat-input">Latitude</label>
+        <strong><abbr title="required">*</abbr></strong>
+        <div class="input-group" ng-show="displayCoordinates === 'dd'">
+            <input id="lat-input"
+                   class="form-control"
+                   type="number"
+                   name="lat"
+                   step="0.001"
+                   max="90"
+                   min="-90"
+                   ng-change="convertToMapModelReadable()"
+                   aria-label="Latitude Decimal Degrees"
+                   ng-model="humanCoords[1]"
+                   placeholder="{{humanCoords[1]}}">
+        </div>
+        <div class="input-group dms" ng-show="displayCoordinates === 'dms'">
+            <input id="lat-input"
+                   class="form-control"
+                   type="number"
+                   name="lat-degrees"
+                   max="90"
+                   min="0"
+                   aria-label="Latitude Degrees"
+                   ng-blur="convertDMSToDecimal()"
+                   ng-model="dms.lat.degrees"
+                   placeholder="{{dms.lat.degrees}}">
+
+            <div class="coordinate-type">°</div>
+
+            <input id="lat-min"
+                   class="form-control"
+                   type="number"
+                   name="lat-minutes"
+                   max="60"
+                   min="0"
+                   aria-label="Latitude Minutes"
+                   ng-blur="convertDMSToDecimal()"
+                   ng-model="dms.lat.minutes"
+                   placeholder="{{dms.lat.minutes}}">
+
+            <div class="coordinate-type">′</div>
+
+            <input id="lat-sec"
+                   class="form-control"
+                   type="number"
+                   name="lat-seconds"
+                   max="60"
+                   min="0"
+                   aria-label="Latitude Seconds"
+                   ng-blur="convertDMSToDecimal()"
+                   ng-model="dms.lat.seconds"
+                   placeholder="{{dms.lat.seconds}}">
+
+            <div class="coordinate-type">″</div>
+
+            <select ng-model="dms.lat.direction" ng-change="convertDMSToDecimal()" aria-label="Latitude Direction">
+                <option value="N">N</option>
+                <option value="S">S</option>
+            </select>
+        </div>
+    </div>
+    <!-- Longitude -->
+    <div class="form-field">
+        <label for="lon-input">Longitude</label>
+        <strong><abbr title="required">*</abbr></strong>
+        <div class="input-group" ng-show="displayCoordinates === 'dd'">
+            <input id="lon-input"
+                   class="form-control"
+                   type="number"
+                   name="lon"
+                   step="0.001"
+                   max="180"
+                   min="-180"
+                   ng-change="convertToMapModelReadable()"
+                   aria-label="Longitude Decimal Degrees"
+                   ng-model="humanCoords[0]"
+                   placeholder="{{humanCoords[0]}}">
+        </div>
+        <div class="input-group dms" ng-show="displayCoordinates === 'dms'">
+            <input id="lon-input"
+                   class="form-control"
+                   type="number"
+                   name="lon-degrees"
+                   aria-label="Longitude Degrees"
+                   max="180"
+                   min="0"
+                   ng-blur="convertDMSToDecimal()"
+                   ng-model="dms.lon.degrees"
+                   placeholder="{{dms.lon.degrees}}">
+
+            <div class="coordinate-type">°</div>
+
+            <input id="lon-min"
+                   class="form-control"
+                   type="number"
+                   name="lon-minutes"
+                   aria-label="Longitude Minutes"
+                   max="60"
+                   min="0"
+                   ng-blur="convertDMSToDecimal()"
+                   ng-model="dms.lon.minutes"
+                   placeholder="{{dms.lon.minutes}}">
+
+            <div class="coordinate-type">′</div>
+
+            <input id="lon-sec"
+                   class="form-control"
+                   type="number"
+                   name="lon-seconds"
+                   aria-label="Longitude Seconds"
+                   max="60"
+                   min="0"
+                   ng-blur="convertDMSToDecimal()"
+                   ng-model="dms.lon.seconds"
+                   placeholder="{{dms.lon.seconds}}">
+
+            <div class="coordinate-type">″</div>
+
+            <select ng-model="dms.lon.direction" ng-change="convertDMSToDecimal()" aria-label="Longitude Direction">
+                <option value="E">E</option>
+                <option value="W">W</option>
+            </select>
+        </div>
+    </div>
+</div>
