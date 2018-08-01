@@ -12,7 +12,7 @@
     <div class="form-field">
         <label for="lat-input">Latitude</label>
         <strong><abbr title="required">*</abbr></strong>
-        <div class="input-group" ng-if="displayCoordinates === 'dd'">
+        <div class="input-group" ng-show="displayCoordinates === 'dd'">
             <input id="lat-input"
                    class="form-control"
                    type="number"
@@ -24,7 +24,7 @@
                    ng-model="humanCoords[1]"
                    placeholder="{{humanCoords[1]}}">
         </div>
-        <div class="input-group dms" ng-if="displayCoordinates === 'dms'">
+        <div class="input-group dms" ng-show="displayCoordinates === 'dms'">
             <input id="lat-input"
                    class="form-control"
                    type="number"
@@ -34,6 +34,8 @@
                    ng-blur="convertDMSToDecimal()"
                    ng-model="dms.lat.degrees"
                    placeholder="{{dms.lat.degrees}}">
+
+            <div class="coordinate-type">°</div>
 
             <input id="lat-min"
                    class="form-control"
@@ -45,6 +47,8 @@
                    ng-model="dms.lat.minutes"
                    placeholder="{{dms.lat.minutes}}">
 
+            <div class="coordinate-type">′</div>
+
             <input id="lat-sec"
                    class="form-control"
                    type="number"
@@ -54,6 +58,8 @@
                    ng-blur="convertDMSToDecimal()"
                    ng-model="dms.lat.seconds"
                    placeholder="{{dms.lat.seconds}}">
+
+            <div class="coordinate-type">″</div>
 
             <select ng-model="dms.lat.direction">
                 <option value="N">N</option>
@@ -65,7 +71,7 @@
     <div class="form-field">
         <label for="lon-input">Longitude</label>
         <strong><abbr title="required">*</abbr></strong>
-        <div class="input-group" ng-if="displayCoordinates === 'dd'">
+        <div class="input-group" ng-show="displayCoordinates === 'dd'">
             <input id="lon-input"
                    class="form-control"
                    type="number"
@@ -77,7 +83,7 @@
                    ng-model="humanCoords[0]"
                    placeholder="{{humanCoords[0]}}">
         </div>
-        <div class="input-group dms" ng-if="displayCoordinates === 'dms'">
+        <div class="input-group dms" ng-show="displayCoordinates === 'dms'">
             <input id="lon-input"
                    class="form-control"
                    type="number"
@@ -87,6 +93,8 @@
                    ng-blur="convertDMSToDecimal()"
                    ng-model="dms.lon.degrees"
                    placeholder="{{dms.lon.degrees}}">
+
+            <div class="coordinate-type">°</div>
 
             <input id="lon-min"
                    class="form-control"
@@ -98,6 +106,8 @@
                    ng-model="dms.lon.minutes"
                    placeholder="{{dms.lon.minutes}}">
 
+            <div class="coordinate-type">′</div>
+
             <input id="lon-sec"
                    class="form-control"
                    type="number"
@@ -107,6 +117,8 @@
                    ng-blur="convertDMSToDecimal()"
                    ng-model="dms.lon.seconds"
                    placeholder="{{dms.lon.seconds}}">
+
+            <div class="coordinate-type">″</div>
 
             <select ng-model="dms.lon.direction">
                 <option value="E">E</option>
