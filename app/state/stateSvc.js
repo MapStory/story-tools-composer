@@ -391,9 +391,19 @@ function stateSvc(
       data: JSON.stringify(pinArray)
     }).then(data => {
       svc.updateStorypinIds(data.data.ids, chapterIndex);
+      if(data.status === 200) {
+        svc.showSaveSuccessMessage();
+      } else {
+        alert("Error while saving.");
+      }
     });
     return req;
   };
+
+  svc.showSaveSuccessMessage = () => {
+    alert("Save success!");
+  };
+
 
   /**
    * Broadcasts an event for new storypins being created, so that their new ids can be updated by the Pin manager.
@@ -429,7 +439,7 @@ function stateSvc(
       method: "POST"
     });
 
-  svc.save = () => {
+  svc.saveWithoutAlert= () => {
     // first ensure that story has an id; then ensure chapters have ids
     const config = svc.getConfig();
     const retrieveChapterIdsAndSave = () =>
@@ -438,22 +448,25 @@ function stateSvc(
         return p;
       });
     if (!config.storyId) {
-      svc
-        .getUniqueStoryIdFromServer()
-        .then(() => {
-          const p = retrieveChapterIdsAndSave();
-          return p;
-        })
-        .then(() => {
-          svc
-            .generateStoryThumbnail(config.storyId)
-            .then(() => svc.updateLocationUsingStoryId());
-        });
+      svc.getUniqueStoryIdFromServer().then(() => {
+        const p = retrieveChapterIdsAndSave();
+        return p;
+      }).then(() => {
+        svc.generateStoryThumbnail(config.storyId).then(() =>
+          svc.updateLocationUsingStoryId()
+        );
+      });
     } else {
       retrieveChapterIdsAndSave().then(() =>
         svc.generateStoryThumbnail(config.storyId)
       );
     }
+  }
+
+  svc.save = () => {
+    // alert("Begin save");
+    svc.saveWithoutAlert();
+    // alert("Here");
   };
 
   svc.publish = () => {
