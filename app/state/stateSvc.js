@@ -382,6 +382,11 @@ function stateSvc(
     return false;
   };
 
+  /**
+   * Sends HTTP data to the server to persist StoryPins
+   * @param mapId The Map's ID
+   * @returns {*} An HTTP Request for POSTing storypin data.
+   */
   svc.saveStoryPinsToServer = mapId => {
     const pins = svc.getStorypins();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
@@ -393,18 +398,16 @@ function stateSvc(
     }).then(data => {
       svc.updateStorypinIds(data.data.ids, chapterIndex);
       if(data.status === 200) {
-        svc.showModalMessage("Save Success!");
-      } else {
-        alert("Error while saving.");
+        svc.showSaveOKMessage();
       }
     });
     return req;
   };
 
-
-
-  svc.showModalMessage = message => {
-
+  /**
+   * Shows a modal alert to the user with a save success message.
+   */
+  svc.showSaveOKMessage = () => {
     const modalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/saveNotificationModal.html",
       scope: $rootScope
