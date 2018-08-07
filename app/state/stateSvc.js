@@ -5,7 +5,8 @@ function stateSvc(
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
-  configSvc
+  configSvc,
+  $uibModal
 ) {
   const svc = {};
   svc.currentChapter = null;
@@ -392,7 +393,7 @@ function stateSvc(
     }).then(data => {
       svc.updateStorypinIds(data.data.ids, chapterIndex);
       if(data.status === 200) {
-        svc.showSaveSuccessMessage();
+        svc.showModalMessage("Save Success!");
       } else {
         alert("Error while saving.");
       }
@@ -400,8 +401,17 @@ function stateSvc(
     return req;
   };
 
-  svc.showSaveSuccessMessage = () => {
-    alert("Save success!");
+
+
+  svc.showModalMessage = message => {
+
+    const modalInstance = $uibModal.open({
+      templateUrl: "app/ui/templates/saveNotificationModal.html",
+      scope: $rootScope
+    });
+    $rootScope.closeAlertModal = () => {
+      modalInstance.dismiss("close");
+    };
   };
 
 
