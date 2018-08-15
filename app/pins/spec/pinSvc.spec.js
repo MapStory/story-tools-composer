@@ -8,15 +8,20 @@ Test Pin 5,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TR
 Test Pin 6,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE`;
 
 describe("pinSvc", () => {
-  let rootScope, httpBackend, pinSvc, stateSvc, pin, serverFeatures, validProperties, pinConfigs;
+  let httpBackend,
+    pinSvc,
+    stateSvc,
+    pin,
+    serverFeatures,
+    validProperties,
+    pinConfigs;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($rootScope, $httpBackend, _pinSvc_, _stateSvc_) => {
+    inject(($httpBackend, _pinSvc_, _stateSvc_) => {
       pinSvc = _pinSvc_;
       stateSvc = _stateSvc_;
       httpBackend = $httpBackend;
-      rootScope = $rootScope;
 
       pin = new pinSvc.Pin({
         geometry: {
@@ -337,14 +342,10 @@ describe("pinSvc", () => {
       pinSvc.createPinsWithCSV(results);
       expect(pins.length).toBe(12);
     });
-    xit("exports to JSON", () => {
-
-    });
+    xit("exports to JSON", () => {});
   });
 
   describe("StoryPin Overlay", () => {
-    xit("has an overlay for each StoryPin in the DOM", () => {
-
-    });
+    xit("has an overlay for each StoryPin in the DOM", () => {});
   });
 });

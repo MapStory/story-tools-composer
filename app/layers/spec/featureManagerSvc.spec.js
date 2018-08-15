@@ -3,7 +3,7 @@ describe("featureManagerSvc", () => {
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($rootScope, $location, _featureManagerSvc_) => {
+    inject(($location, _featureManagerSvc_) => {
       featureManagerSvc = _featureManagerSvc_;
     })
   );

@@ -1,4 +1,6 @@
-function legendDirective(layerSvc) {
+import PubSub from "pubsub-js";
+
+export default function legendDirective(layerSvc) {
   let legendOpen = false;
 
   return {
@@ -33,13 +35,13 @@ function legendDirective(layerSvc) {
 
       scope.getLegendUrl = layerSvc.getLegendUrl;
 
-      scope.$on("layerAdded", () => {
+      PubSub.subscribe("layerAdded", () => {
         if (legendOpen === false) {
           openLegend();
         }
       });
 
-      scope.$on("layerRemoved", () => {
+      PubSub.subscribe("layerRemoved", () => {
         // close the legend if the last layer is removed
         if (
           legendOpen === true &&
@@ -51,5 +53,3 @@ function legendDirective(layerSvc) {
     }
   };
 }
-
-export default legendDirective;
