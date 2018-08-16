@@ -1,8 +1,8 @@
-const moment = require("moment");
+import moment from "moment";
+import PubSub from "pubsub-js";
 
 function composerController(
   $scope,
-  $rootScope,
   $log,
   $injector,
   $uibModal,
@@ -32,32 +32,46 @@ function composerController(
 
   const map = MapManager.storyMap.getMap();
 
-  $scope.$watch(angular.bind($scope, () => {
-    const fetchedFrameSettings = frameSvc.get("storyFrames");
-    const currentChapter = stateSvc.getChapterIndex();
-    const fetchedFrames = [];
+  $scope.$watch(
+    angular.bind($scope, () => {
+      const fetchedFrameSettings = frameSvc.get("storyFrames");
+      const currentChapter = stateSvc.getChapterIndex();
+      const fetchedFrames = [];
 
-    if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
-      if ($scope.frameSettings.length < fetchedFrameSettings.length) {
-        for (let i = 1; i < fetchedFrameSettings.length; i++) {
-          fetchedFrames[i] = ({
-            id: Date.now(),
-            chapter: currentChapter,
-            title: fetchedFrameSettings[i].title,
-            startDate: fetchedFrameSettings[i].startDate,
-            startTime: fetchedFrameSettings[i].startTime,
-            endDate: fetchedFrameSettings[i].endDate,
-            endTime: fetchedFrameSettings[i].endTime,
-            bb1: [fetchedFrameSettings[i].bb1[0], fetchedFrameSettings[i].bb1[1]],
-            bb2: [fetchedFrameSettings[i].bb2[0], fetchedFrameSettings[i].bb2[1]],
-            bb3: [fetchedFrameSettings[i].bb3[0], fetchedFrameSettings[i].bb3[1]],
-            bb4: [fetchedFrameSettings[i].bb4[0], fetchedFrameSettings[i].bb4[1]]
-          });
+      if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
+        if ($scope.frameSettings.length < fetchedFrameSettings.length) {
+          for (let i = 1; i < fetchedFrameSettings.length; i++) {
+            fetchedFrames[i] = {
+              id: Date.now(),
+              chapter: currentChapter,
+              title: fetchedFrameSettings[i].title,
+              startDate: fetchedFrameSettings[i].startDate,
+              startTime: fetchedFrameSettings[i].startTime,
+              endDate: fetchedFrameSettings[i].endDate,
+              endTime: fetchedFrameSettings[i].endTime,
+              bb1: [
+                fetchedFrameSettings[i].bb1[0],
+                fetchedFrameSettings[i].bb1[1]
+              ],
+              bb2: [
+                fetchedFrameSettings[i].bb2[0],
+                fetchedFrameSettings[i].bb2[1]
+              ],
+              bb3: [
+                fetchedFrameSettings[i].bb3[0],
+                fetchedFrameSettings[i].bb3[1]
+              ],
+              bb4: [
+                fetchedFrameSettings[i].bb4[0],
+                fetchedFrameSettings[i].bb4[1]
+              ]
+            };
+          }
+          $scope.frameSettings = fetchedFrames.reverse();
         }
-        $scope.frameSettings = fetchedFrames.reverse();
       }
-    }
-  }));
+    })
+  );
 
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
 
@@ -95,11 +109,15 @@ function composerController(
         MapManager.addLayer({ name: simpleName, settings, server });
       });
     } else {
-      MapManager.addLayer({ name: simpleName, settings, server: layerSvc.server.active });
+      MapManager.addLayer({
+        name: simpleName,
+        settings,
+        server: layerSvc.server.active
+      });
     }
   }
 
-  $rootScope.$on("$locationChangeSuccess", () => {
+  const loadMap = () => {
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();
     if (urlChapterId > chapterCount) {
@@ -107,9 +125,12 @@ function composerController(
     }
     $scope.mapManager.initMapLoad();
     $scope.stateSvc.updateCurrentChapterConfig();
-  });
+  };
 
-  $rootScope.$on("configInitialized", () => {
+  window.addEventListener("load", loadMap);
+  window.addEventListener("popstate", loadMap);
+
+  PubSub.subscribe("configInitialized", () => {
     $scope.mapManager.initMapLoad();
   });
 
@@ -117,11 +138,11 @@ function composerController(
     layerSvc.getApiResultsThenAddLayer(window.mapstory.layername);
   }
 
-  $rootScope.$on("chapter-added", (event, config) => {
+  PubSub.subscribe("chapter-added", (event, config) => {
     pinSvc.addChapter();
   });
 
-  $rootScope.$on("chapter-removed", (event, chapterIndex) =>
+  PubSub.subscribe("chapter-removed", (event, chapterIndex) =>
     pinSvc.removeChapter(chapterIndex)
   );
 

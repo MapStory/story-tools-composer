@@ -1,8 +1,7 @@
-const moment = require("moment");
+import moment from "moment";
 
 function frameController(
   $scope,
-  $rootScope,
   $log,
   $injector,
   $timeout,
@@ -51,7 +50,7 @@ function frameController(
 
   $scope.drawBoundingBox = () => {
     $scope.clearBoundingBox();
-    const bbVector = new ol.source.Vector({wrapX: false});
+    const bbVector = new ol.source.Vector({ wrapX: false });
     const vector = new ol.layer.Vector({
       source: bbVector
     });
@@ -60,11 +59,11 @@ function frameController(
     });
     const style = new ol.style.Style({
       stroke: new ol.style.Stroke({
-        color: '#FFF',
+        color: "#FFF",
         width: 3
       }),
       fill: new ol.style.Fill({
-        color: [255,255,255, 0]
+        color: [255, 255, 255, 0]
       })
     });
     const geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
@@ -157,11 +156,18 @@ function frameController(
   };
 
   $scope.editStoryframe = index => {
-    document.getElementById("frameTitle").value = $scope.frameSettings[index].title;
-    document.getElementById("startDate").value = $scope.formatDates($scope.frameSettings[index].startDate);
-    document.getElementById("startTime").value = $scope.frameSettings[index].startTime;
-    document.getElementById("endDate").value = $scope.formatDates($scope.frameSettings[index].endDate);
-    document.getElementById("endTime").value = $scope.frameSettings[index].endTime;
+    document.getElementById("frameTitle").value =
+      $scope.frameSettings[index].title;
+    document.getElementById("startDate").value = $scope.formatDates(
+      $scope.frameSettings[index].startDate
+    );
+    document.getElementById("startTime").value =
+      $scope.frameSettings[index].startTime;
+    document.getElementById("endDate").value = $scope.formatDates(
+      $scope.frameSettings[index].endDate
+    );
+    document.getElementById("endTime").value =
+      $scope.frameSettings[index].endTime;
     $scope.frameSettings.bb1 = transformCoords([
       $scope.coords[0][0][0],
       $scope.coords[0][0][1]
@@ -209,7 +215,5 @@ function frameController(
   $scope.deleteStoryframe = index => {
     $scope.frameSettings.splice(index, 1);
   };
-
 }
-
-module.exports = frameController;
+export default frameController;

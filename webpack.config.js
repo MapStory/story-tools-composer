@@ -52,7 +52,12 @@ module.exports = {
   entry: {
     app: ["babel-polyfill", "./app/app.js"],
     style: "./style/style.js",
-    vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate", "angular-animate", "papaparse"]
+    vendor: [
+      "angular",
+      "angular-bootstrap-colorpicker",
+      "angular-translate",
+      "angular-animate"
+    ]
   },
   output: {
     path: `${__dirname}/build`,

@@ -8,15 +8,20 @@ Test Pin 5,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TR
 Test Pin 6,Example Content about pin,http://#,7/1/91,3/20/92,35.78,28.98,TRUE,TRUE,FALSE,FALSE`;
 
 describe("pinSvc", () => {
-  let rootScope, httpBackend, pinSvc, stateSvc, pin, serverFeatures, validProperties, pinConfigs;
+  let httpBackend,
+    pinSvc,
+    stateSvc,
+    pin,
+    serverFeatures,
+    validProperties,
+    pinConfigs;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($rootScope, $httpBackend, _pinSvc_, _stateSvc_) => {
+    inject(($httpBackend, _pinSvc_, _stateSvc_) => {
       pinSvc = _pinSvc_;
       stateSvc = _stateSvc_;
       httpBackend = $httpBackend;
-      rootScope = $rootScope;
 
       pin = new pinSvc.Pin({
         geometry: {
@@ -118,15 +123,15 @@ describe("pinSvc", () => {
   describe("removeChapter", () => {
     it("remove the specified chapter index", () => {
       expect(pinSvc.pins.length).toBe(1);
-      pinSvc.pins[0].push("ch1");
-      expect(pinSvc.pins[0][0]).toBe("ch1");
+      pinSvc.pins[0].push({ name: "ch1" });
+      expect(pinSvc.pins[0][0].name).toBe("ch1");
       pinSvc.addChapter();
       expect(pinSvc.pins.length).toBe(2);
-      pinSvc.pins[1].push("ch2");
-      expect(pinSvc.pins[1][0]).toBe("ch2");
+      pinSvc.pins[1].push({ name: "ch2" });
+      expect(pinSvc.pins[1][0].name).toBe("ch2");
       pinSvc.removeChapter(0);
       expect(pinSvc.pins.length).toBe(1);
-      expect(pinSvc.pins[0][0]).toBe("ch2");
+      expect(pinSvc.pins[0][0].name).toBe("ch2");
       expect(pinSvc.pins[1]).toBeUndefined();
     });
   });
@@ -236,11 +241,11 @@ describe("pinSvc", () => {
 
   describe("reorderPins", () => {
     it("should reoder a pin collection given the `to` and `from` index", () => {
-      pinSvc.pins = [["1"], ["2"], ["3"]];
+      pinSvc.pins = [[{ name: "1" }], [{ name: "2" }], [{ name: "3" }]];
       pinSvc.reorderPins(0, 1);
-      expect(pinSvc.pins[0][0]).toBe("2");
+      expect(pinSvc.pins[0][0].name).toBe("2");
       pinSvc.reorderPins(2, 0);
-      expect(pinSvc.pins[0][0]).toBe("3");
+      expect(pinSvc.pins[0][0].name).toBe("3");
     });
   });
 
@@ -337,14 +342,10 @@ describe("pinSvc", () => {
       pinSvc.createPinsWithCSV(results);
       expect(pins.length).toBe(12);
     });
-    xit("exports to JSON", () => {
-
-    });
+    xit("exports to JSON", () => {});
   });
 
   describe("StoryPin Overlay", () => {
-    xit("has an overlay for each StoryPin in the DOM", () => {
-
-    });
+    xit("has an overlay for each StoryPin in the DOM", () => {});
   });
 });

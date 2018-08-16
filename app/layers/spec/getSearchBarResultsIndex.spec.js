@@ -2,12 +2,10 @@ describe("getSearchBarResultsIndex", () => {
   let appConfig;
   let httpBackend;
   let searchBarRes;
-  let layerSvc;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($httpBackend, _appConfig_, _layerSvc_) => {
-      layerSvc = _layerSvc_;
+    inject(($httpBackend, _appConfig_) => {
       appConfig = _appConfig_;
       httpBackend = $httpBackend;
 

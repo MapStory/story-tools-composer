@@ -1,7 +1,7 @@
-const angular = require("angular");
-const frameController = require("./frameController.js");
-const frameSvc = require("./frameSvc.js");
+import frameController from "./frameController.js";
+import frameSvc from "./frameSvc.js";
 
-angular.module("composer")
+angular
+  .module("composer")
   .factory("frameSvc", frameSvc)
   .controller("frameController", frameController);
