@@ -1,7 +1,7 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
 
-export default function frameSvc(stateSvc) {
+function frameSvc(stateSvc) {
   const svc = {};
 
   PubSub.subscribe("updateStoryframes", (event, chapters) => {
@@ -31,3 +31,5 @@ export default function frameSvc(stateSvc) {
 
   return svc;
 }
+
+export default frameSvc;

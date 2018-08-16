@@ -1,4 +1,4 @@
-const moment = require("moment");
+import moment from "moment";
 
 function frameController(
   $scope,
@@ -216,5 +216,4 @@ function frameController(
     $scope.frameSettings.splice(index, 1);
   };
 }
-
-module.exports = frameController;
+export default frameController;

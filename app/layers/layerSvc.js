@@ -70,7 +70,6 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
 
   svc.getApiResultsThenAddLayer = layerName => {
     svc.getSearchBarResultsIndex(layerName).then(data => {
-      console.log("!!!REX", data);
       svc.addLayerFromApiResults({
         searchObjects: data,
         searchValue: layerName

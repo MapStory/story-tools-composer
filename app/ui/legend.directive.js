@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 
-export default function legendDirective(layerSvc) {
+function legendDirective(layerSvc) {
   let legendOpen = false;
 
   return {
@@ -53,3 +53,5 @@ export default function legendDirective(layerSvc) {
     }
   };
 }
+
+export default legendDirective;
