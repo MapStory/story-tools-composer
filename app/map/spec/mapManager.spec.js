@@ -4,7 +4,7 @@ describe("mapManager", () => {
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($location, $q, _MapManager_, _stateSvc_) => {
+    inject(($location, _MapManager_, _stateSvc_) => {
       stateSvc = _stateSvc_;
       MapManager = _MapManager_;
     })

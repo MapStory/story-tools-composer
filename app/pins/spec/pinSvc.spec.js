@@ -123,15 +123,15 @@ describe("pinSvc", () => {
   describe("removeChapter", () => {
     it("remove the specified chapter index", () => {
       expect(pinSvc.pins.length).toBe(1);
-      pinSvc.pins[0].push("ch1");
-      expect(pinSvc.pins[0][0]).toBe("ch1");
+      pinSvc.pins[0].push({ name: "ch1" });
+      expect(pinSvc.pins[0][0].name).toBe("ch1");
       pinSvc.addChapter();
       expect(pinSvc.pins.length).toBe(2);
-      pinSvc.pins[1].push("ch2");
-      expect(pinSvc.pins[1][0]).toBe("ch2");
+      pinSvc.pins[1].push({ name: "ch2" });
+      expect(pinSvc.pins[1][0].name).toBe("ch2");
       pinSvc.removeChapter(0);
       expect(pinSvc.pins.length).toBe(1);
-      expect(pinSvc.pins[0][0]).toBe("ch2");
+      expect(pinSvc.pins[0][0].name).toBe("ch2");
       expect(pinSvc.pins[1]).toBeUndefined();
     });
   });
@@ -241,11 +241,11 @@ describe("pinSvc", () => {
 
   describe("reorderPins", () => {
     it("should reoder a pin collection given the `to` and `from` index", () => {
-      pinSvc.pins = [["1"], ["2"], ["3"]];
+      pinSvc.pins = [[{ name: "1" }], [{ name: "2" }], [{ name: "3" }]];
       pinSvc.reorderPins(0, 1);
-      expect(pinSvc.pins[0][0]).toBe("2");
+      expect(pinSvc.pins[0][0].name).toBe("2");
       pinSvc.reorderPins(2, 0);
-      expect(pinSvc.pins[0][0]).toBe("3");
+      expect(pinSvc.pins[0][0].name).toBe("3");
     });
   });
 

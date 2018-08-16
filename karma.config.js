@@ -2,7 +2,7 @@ const webpackConfig = require("./webpack.config.js");
 
 const browserMode = false;
 
-module.exports = (config) => {
+module.exports = config => {
   config.set({
     basePath: ".",
     client: {
@@ -12,7 +12,7 @@ module.exports = (config) => {
     reporters: ["mocha"],
     port: 9876,
     colors: true,
-    logLevel: config.LOG_INFO,
+    logLevel: browserMode ? config.LOG_DEBUG : config.LOG_INFO,
     autoWatch: false,
     browsers: browserMode ? ["Chrome"] : ["PhantomJS"],
     singleRun: !browserMode,
