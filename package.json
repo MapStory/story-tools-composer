@@ -17,6 +17,7 @@
   },
   "keywords": [],
   "devDependencies": {
+    "@babel/plugin-transform-react-jsx-source": "^7.0.0-beta.39",
     "babel-core": "6.26.0",
     "babel-eslint": "^8.2.1",
     "babel-loader": "7.1.2",
@@ -64,11 +65,15 @@
     "angular-mocks": "1.6.9",
     "angular-sortable-view": "0.0.17",
     "angular-translate": "2.17.0",
+    "babel-preset-react": "^6.24.1",
     "bootstrap": "3.3.7",
+    "eslint-plugin-react": "^7.6.1",
     "font-awesome": "^4.7.0",
     "jquery": "3.3.1",
     "moment": "^2.20.1",
     "papaparse": "^4.3.7",
+    "react": "^16.2.0",
+    "react-dom": "^16.2.0",
     "pubsub-js": "^1.6.0",
     "story-tools": "./deps/story-tools"
   },
