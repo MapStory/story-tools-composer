@@ -4,7 +4,7 @@ describe("stateSvc", () => {
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($rootScope, $location, _stateSvc_) => {
+    inject(($location, _stateSvc_) => {
       stateSvc = _stateSvc_;
       location = $location;
     })

@@ -1,11 +1,11 @@
-const Papa = require("papaparse"); // Used for CSV Parsing.
-const moment = require("moment"); // For time and dates
+import Papa from "papaparse"; // Used for CSV Parsing
+import moment from "moment"; // For time and dates
+import PubSub from "pubsub-js"; // For event handling
 
 /**
  * StoryPin Service.
  * All things StoryPins.
  *
- * @param $rootScope .
  * @param $http .
  * @param $translate .
  * @param $q .
@@ -17,7 +17,6 @@ const moment = require("moment"); // For time and dates
  * @returns {{}} pinSvc.
  */
 function pinSvc(
-  $rootScope,
   $http,
   $translate,
   $q,
@@ -60,8 +59,8 @@ function pinSvc(
     chooser: false
   };
   svc.availableDisplayCoordinates = [
-    {display: "Decimal Degrees", value: "dd"},
-    {display: "Degrees Minutes Seconds", value: "dms"}
+    { display: "Decimal Degrees", value: "dd" },
+    { display: "Degrees Minutes Seconds", value: "dms" }
   ];
   svc.displayCoordinates = "dd";
   // Media whitelist
@@ -73,9 +72,13 @@ function pinSvc(
     new RegExp(/https?:\/\/vine\.co\/v\/.*/),
     new RegExp(/https?:\/\/(?:www\.)?vimeo\.com\/.+/),
     new RegExp(/https?:\/\/((?:www\.)|(?:pic\.)?)twitter\.com\/.*/),
-    new RegExp(/https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im),
+    new RegExp(
+      /https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im
+    ),
     new RegExp(/https?:\/\/(w{3}\.)?soundcloud\.com\/.+/im),
-    new RegExp(/https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im)
+    new RegExp(
+      /https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im
+    )
   ];
 
   /**
@@ -111,7 +114,7 @@ function pinSvc(
     this.properties = data;
     this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
     this.startTime = data.startTime ? new Date(data.startTime) : new Date();
-    this.endTime = data.endTime ?  new Date(data.endTime) : new Date();
+    this.endTime = data.endTime ? new Date(data.endTime) : new Date();
   };
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
@@ -279,11 +282,11 @@ function pinSvc(
         } else {
           svc.pins[chapterIndex].splice(spliceIndex, 1);
         }
-        $rootScope.$broadcast("pin-removed", chapterIndex);
+        PubSub.publish("pin-removed", chapterIndex);
         return storyPin.id;
       }
     }
-    return undefined
+    return undefined;
   };
 
   /**
@@ -460,10 +463,7 @@ function pinSvc(
 
       if (goog.isDefAndNotNull(pin.media) && !svc.isUrl(pin.media)) {
         pin.media = pin.media.replace(/width="\d+"/i, `width=${embedWidth}`);
-        pin.media = pin.media.replace(
-          /height="\d+"/i,
-          `height=${embedHeight}`
-        );
+        pin.media = pin.media.replace(/height="\d+"/i, `height=${embedHeight}`);
       }
 
       const storyPin = new svc.Pin(pin);
@@ -608,8 +608,7 @@ function pinSvc(
       resolved => {
         svc.selected = resolved;
       },
-      () => {
-      }
+      () => {}
     );
   };
 
@@ -667,10 +666,7 @@ function pinSvc(
     if (pin.media !== null) {
       if (pin.media !== "") {
         const embbededMedia = document.createElement("iframe");
-        embbededMedia.setAttribute(
-          "src",
-          svc.checkWhitelist(pin.media)
-        );
+        embbededMedia.setAttribute("src", svc.checkWhitelist(pin.media));
         element.appendChild(embbededMedia);
       }
     }
@@ -680,7 +676,7 @@ function pinSvc(
 
     // Add to the DOM as a hidden element.
     let overlayDiv = document.getElementById("hidden-overlays");
-    if (overlayDiv === null){
+    if (overlayDiv === null) {
       overlayDiv = document.createElement("hidden-overlays");
     }
     overlayDiv.appendChild(element);
@@ -793,7 +789,7 @@ function pinSvc(
     };
 
     pin.toggleShow = () => {
-      if(pin.overlay.getPosition()) {
+      if (pin.overlay.getPosition()) {
         pin.hide();
       } else {
         pin.show();
@@ -825,7 +821,6 @@ function pinSvc(
     svc.addStorypinToMap(pin);
     return pin;
   };
-
 
   /**
    * Parses and creates StoryPins with a CSV
@@ -876,7 +871,7 @@ function pinSvc(
     svc.mRemoveStorypin(pin);
     // Remove pin from list:
     svc.pins[chapterIndex].splice(pinIndex, 1);
-    $rootScope.$broadcast("pin-removed", chapterIndex);
+    PubSub.publish("pin-removed", chapterIndex);
   };
 
   /**
@@ -1126,9 +1121,7 @@ function pinSvc(
    * This reacts to the timepicker being changed.
    * TODO: Implement this.
    */
-  svc.onChangedTime = () => {
-
-  };
+  svc.onChangedTime = () => {};
 
   /**
    * Whitelist.
@@ -1160,18 +1153,21 @@ function pinSvc(
       }
       // TODO: Alert the user here
       return "";
-
     }
     return "";
   };
 
-  $rootScope.$on("updateStorypins", (event, chapters) => {
+  PubSub.subscribe("updateStorypins", (event, chapters) => {
     chapters.forEach((chapter, chapterIndex) => {
       chapter.storypins.forEach((pinJSON, pinIndex) => {
         const geomObj = JSON.parse(pinJSON.the_geom);
 
-        const startDateObj = pinJSON.start_time ? moment.unix(pinJSON.start_time).toDate() : new Date();
-        const endDateObj = pinJSON.end_time ? moment.unix(pinJSON.end_time).toDate() : new Date();
+        const startDateObj = pinJSON.start_time
+          ? moment.unix(pinJSON.start_time).toDate()
+          : new Date();
+        const endDateObj = pinJSON.end_time
+          ? moment.unix(pinJSON.end_time).toDate()
+          : new Date();
 
         const pin = svc.createNewPin(
           {
@@ -1182,7 +1178,10 @@ function pinSvc(
               coordinates: geomObj.coordinates
             }
           },
-          chapterIndex, geomObj.coordinates[0], geomObj.coordinates[1]);
+          chapterIndex,
+          geomObj.coordinates[0],
+          geomObj.coordinates[1]
+        );
         pin.content = pinJSON.content || "";
         pin.media = pinJSON.media || "";
         pin.inMap = pinJSON.inMap || true;
@@ -1203,7 +1202,7 @@ function pinSvc(
     svc.onStoryPinSave();
   });
 
-  $rootScope.$on(
+  PubSub.subscribe(
     "changingChapter",
     (event, currentChapterIndex, nextChapterIndex) => {
       const currentPins = svc.getPins(currentChapterIndex);
@@ -1231,7 +1230,7 @@ function pinSvc(
    * @event  *Obj* The event that triggered this callback
    * @idArray *[]* An array of ids for each storypin created on the server.
    * */
-  $rootScope.$on("loadids", (event, idArray, chapterID) => {
+  PubSub.subscribe("loadids", (event, idArray, chapterID) => {
     // Sometimes we get a null idArray.
     if (!idArray) {
       // TODO: log("Received a null ID Array from the server");
@@ -1316,7 +1315,7 @@ function pinSvc(
     const date = data.date;
     const mode = data.mode;
     return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
-  }
+  };
 
   /**
    * Sets current date to today.

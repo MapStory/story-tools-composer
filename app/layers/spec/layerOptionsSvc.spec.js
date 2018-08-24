@@ -4,7 +4,7 @@ describe("layerOptionsSvc", () => {
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($rootScope, _layerOptionsSvc_) => {
+    inject(_layerOptionsSvc_ => {
       layerOptionsSvc = _layerOptionsSvc_;
       testServer = {
         path: "/testpath"

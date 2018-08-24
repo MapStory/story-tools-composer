@@ -1,4 +1,6 @@
-function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
+import PubSub from "pubsub-js";
+
+function navigationSvc($location, $log, stateSvc, appConfig) {
   const svc = {};
 
   /**
@@ -11,17 +13,13 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
     if (nextChapter <= stateSvc.getChapterCount()) {
       // Go to next
       $log.info("Going to Chapter ", nextChapter);
-      $rootScope.$broadcast(
-        "changingChapter",
-        thisChapter - 1,
-        nextChapter - 1
-      ); // (-1 because indeces start at 1)
+      PubSub.publish("changingChapter", thisChapter - 1, nextChapter - 1); // (-1 because indeces start at 1)
       $location.path(appConfig.routes.chapter + nextChapter);
     } else {
       // Go from last to first.
       $log.info("Going to Chapter ", 1);
       $location.path("");
-      $rootScope.$broadcast("changingChapter", thisChapter - 1, 0);
+      PubSub.publish("changingChapter", thisChapter - 1, 0);
     }
   };
 
@@ -35,17 +33,13 @@ function navigationSvc($location, $rootScope, $log, stateSvc, appConfig) {
     if (previousChapter > 0) {
       // Go to previous
       $log.info("Going to the Chapter ", previousChapter);
-      $rootScope.$broadcast(
-        "changingChapter",
-        thisChapter - 1,
-        previousChapter - 1
-      ); // (-1 because indeces start at 1)
+      PubSub.publish("changingChapter", thisChapter - 1, previousChapter - 1); // (-1 because indeces start at 1)
       $location.path(appConfig.routes.chapter + previousChapter);
     } else {
       // Go from first to last.
       $log.info("Going to Chapter ", stateSvc.getChapterCount());
       svc.goToChapter(stateSvc.getChapterCount());
-      $rootScope.$broadcast(
+      PubSub.publish(
         "changingChapter",
         thisChapter - 1,
         stateSvc.getChapterCount() - 1

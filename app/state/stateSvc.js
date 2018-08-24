@@ -1,7 +1,8 @@
+import PubSub from "pubsub-js";
+
 function stateSvc(
   $http,
   $location,
-  $rootScope,
   $q,
   stAnnotationsStore,
   stLocalStorageSvc,
@@ -53,7 +54,7 @@ function stateSvc(
     svc.config = configSvc.getMapstoryConfig();
     window.config = svc.config;
     svc.originalConfig = window.config;
-    $rootScope.$broadcast("configInitialized");
+    PubSub.publish("configInitialized");
   }
 
   svc.initConfig = () => {
@@ -73,7 +74,7 @@ function stateSvc(
           svc.config = configSvc.getMapstoryConfig(data);
           window.config = svc.config;
           svc.originalConfig = data;
-          $rootScope.$broadcast("configInitialized");
+          PubSub.publish("configInitialized");
         })
         .fail(() => {
           initializeNewConfig();
@@ -122,14 +123,14 @@ function stateSvc(
       url: `/api/mapstories/${storyId}`,
       method: "GET"
     }).then(data => {
-      $rootScope.$broadcast("updateStorypins", data.data.chapters);
-      $rootScope.$broadcast("updateStoryframes", data.data.chapters);
+      PubSub.publish("updateStorypins", data.data.chapters);
+      PubSub.publish("updateStoryframes", data.data.chapters);
     });
 
   /**
    * Event responder for Init has finished.
    */
-  $rootScope.$on("configInitialized", () => {
+  PubSub.subscribe("configInitialized", () => {
     // This means we are in a new temp mapstory. No id has been created for this yet.
     if (svc.isTempStory()) {
       // Initialize empty arrays for storypins
@@ -198,7 +199,7 @@ function stateSvc(
     let chapter = 1;
     const path = $location.path();
     if (path && path.indexOf("/chapter") === 0) {
-      const matches = /\d+/.exec(path)
+      const matches = /\d+/.exec(path);
       if (matches !== null) {
         chapter = matches[0];
       }
@@ -430,7 +431,7 @@ function stateSvc(
       // No need to broadcast
       return;
     }
-    $rootScope.$broadcast("loadids", idArray, chapterId);
+    PubSub.publish("loadids", idArray, chapterId);
   };
 
   svc.saveStoryFramesToServer = mapId => {

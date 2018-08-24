@@ -1,6 +1,7 @@
+import PubSub from "pubsub-js";
+
 function MapManager(
   $http,
-  $rootScope,
   appConfig,
   stStoryMapBuilder,
   stEditableLayerBuilder,
@@ -76,7 +77,7 @@ function MapManager(
             .fit(extent, svc.storyMap.getMap().getSize());
         }
         // Brodcast so we can request the legend for this layer.
-        $rootScope.$broadcast("layerAdded");
+        PubSub.publish("layerAdded");
       });
 
   svc.addLayer = args => {

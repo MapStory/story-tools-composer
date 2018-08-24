@@ -1,4 +1,6 @@
-function layerSvc($rootScope, $http, appConfig, MapManager, stateSvc) {
+import PubSub from "pubsub-js";
+
+function layerSvc($http, appConfig, MapManager, stateSvc) {
   const layerStyleTimeStamps = {};
   const svc = {};
 
@@ -53,7 +55,7 @@ function layerSvc($rootScope, $http, appConfig, MapManager, stateSvc) {
   svc.removeLayer = lyr => {
     stateSvc.removeLayer(lyr.values_.uuid);
     window.storyMap.removeStoryLayer(lyr);
-    $rootScope.$broadcast("layerRemoved");
+    PubSub.publish("layerRemoved");
   };
 
   svc.toggleVisibleLayer = lyr => {
@@ -68,7 +70,6 @@ function layerSvc($rootScope, $http, appConfig, MapManager, stateSvc) {
 
   svc.getApiResultsThenAddLayer = layerName => {
     svc.getSearchBarResultsIndex(layerName).then(data => {
-      console.log("!!!REX", data);
       svc.addLayerFromApiResults({
         searchObjects: data,
         searchValue: layerName

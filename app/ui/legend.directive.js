@@ -1,3 +1,5 @@
+import PubSub from "pubsub-js";
+
 function legendDirective(layerSvc) {
   let legendOpen = false;
 
@@ -5,6 +7,10 @@ function legendDirective(layerSvc) {
     restrict: "E",
     templateUrl: "./app/ui/templates/legend.html",
     link: scope => {
+      scope.layers = {
+        list: []
+      };
+
       const openLegend = () => {
         angular.element("#legend-container")[0].style.visibility = "visible";
         angular.element("#legend-panel").collapse("show");
@@ -33,13 +39,16 @@ function legendDirective(layerSvc) {
 
       scope.getLegendUrl = layerSvc.getLegendUrl;
 
-      scope.$on("layerAdded", () => {
+      PubSub.subscribe("layerAdded", () => {
         if (legendOpen === false) {
           openLegend();
+          scope.$apply(() => {
+            scope.layers.list = scope.mapManager.storyMap.getStoryLayers().getArray();
+          });
         }
       });
 
-      scope.$on("layerRemoved", () => {
+      PubSub.subscribe("layerRemoved", () => {
         // close the legend if the last layer is removed
         if (
           legendOpen === true &&
@@ -47,6 +56,9 @@ function legendDirective(layerSvc) {
         ) {
           closeLegend();
         }
+        scope.$apply(() => {
+          scope.layers.list = scope.mapManager.storyMap.getStoryLayers().getArray();
+        });
       });
     }
   };

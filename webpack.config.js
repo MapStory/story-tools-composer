@@ -37,7 +37,7 @@ module.exports = {
         exclude: /node_modules/,
         loader: "babel-loader",
         query: {
-          presets: ["es2015", "stage-0"]
+          presets: ["react", "es2015", "stage-0"]
         }
       },
       {
@@ -52,7 +52,12 @@ module.exports = {
   entry: {
     app: ["babel-polyfill", "./app/app.js"],
     style: "./style/style.js",
-    vendor: ["angular", "angular-bootstrap-colorpicker", "angular-translate", "angular-animate", "papaparse"]
+    vendor: [
+      "angular",
+      "angular-bootstrap-colorpicker",
+      "angular-translate",
+      "angular-animate"
+    ]
   },
   output: {
     path: `${__dirname}/build`,
