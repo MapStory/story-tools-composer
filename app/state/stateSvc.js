@@ -1,7 +1,6 @@
 import PubSub from "pubsub-js";
 
 function stateSvc(
-  $http,
   $location,
   $q,
   stAnnotationsStore,
@@ -118,13 +117,14 @@ function stateSvc(
    * @param storyId The mapstory id.
    */
   svc.fetchComponentsFromAPI = storyId =>
-    $http({
-      url: `/api/mapstories/${storyId}`,
-      method: "GET"
-    }).then(data => {
-      PubSub.publish("updateStorypins", data.data.chapters);
-      PubSub.publish("updateStoryframes", data.data.chapters);
-    });
+    fetch(`/api/mapstories/${storyId}`)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        PubSub.publish("updateStorypins", data.chapters);
+        PubSub.publish("updateStoryframes", data.chapters);
+      });
 
   /**
    * Event responder for Init has finished.
@@ -262,38 +262,63 @@ function stateSvc(
   svc.initConfig();
 
   svc.getCategories = () => {
-    $http({
-      url: "/api/categories/",
-      method: "GET"
-    }).then(data => {
-      svc.categories = data.data.objects;
-    });
+    fetch("/api/categories/")
+      .then(response => {
+        return response.json();
+      })
+      .then((data) => {
+        svc.categories = data.objects;
+      });
   };
 
   svc.getCategories();
 
-  svc.getUniqueStoryIdFromServer = () =>
-    new Promise(res => {
-      const config = svc.getConfig();
-      $http({
-        url: "/story",
-        method: "POST",
-        data: JSON.stringify({
-          about: {
-            title: config.about.title,
-            abstract: config.about.abstract,
-            category: config.about.category
-          },
-          storyId: config.storyId || 0,
-          isPublished: false,
-          removedChapters: []
-        })
-      }).then(data => {
-        config.storyId = data.data.id;
-        svc.set("storyId", data.data.id);
-        res();
-      });
+  function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+      var cookies = document.cookie.split(';');
+      for (var i = 0; i < cookies.length; i++) {
+        var cookie = (cookies[i]).trim();
+        // Does this cookie string begin with the name we want?
+        if (cookie.substring(0, name.length + 1) === (name + '=')) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  let headers = new Headers();
+  headers.append('Accept', 'application/json');
+  headers.append("Content-Type", "application/json");
+  headers.append("X-CSRFToken", getCookie("csrftoken"));
+
+  svc.getUniqueStoryIdFromServer = () => {
+    const config = svc.getConfig();
+    return fetch("/story", {
+      method: "POST",
+      headers: headers,
+      credentials: "same-origin",
+      body: JSON.stringify({
+        about: {
+          title: config.about.title,
+          abstract: config.about.abstract,
+          category: config.about.category
+        },
+        storyId: config.storyId || 0,
+        isPublished: false,
+        removedChapters: []
+      })
+    }).then(response => {
+      return response.json();
+    }).then(data => {
+      config.storyId = data.id;
+      return svc.set("storyId", data.id);
+    }).catch((ex) => {
+      console.log('getUniqueStoryIdFromServer error: ', ex);
     });
+  }
 
   svc.getUniqueChapterIdFromServer = index => {
     let mapId = null;
@@ -301,20 +326,24 @@ function stateSvc(
       const config = svc.getConfig();
       config.chapters[index].storyId = config.storyId;
       config.chapters[index].map.storyId = config.storyId;
-      const chapterConfig = { ...config.chapters[index] };
-      $http({
-        url: "/story/chapter/new",
+      const chapterConfig = {...config.chapters[index]};
+      return fetch("/story/chapter/new", {
         method: "POST",
-        data: JSON.stringify(chapterConfig)
+        headers: headers,
+        credentials: "same-origin",
+        body: JSON.stringify(chapterConfig)
+      }).then(response => {
+        return response.json();
       }).then(data => {
-        chapterConfig.mapId = data.data.id;
+        chapterConfig.mapId = data.id;
         mapId = chapterConfig.mapId;
         config.chapters[index].mapId = mapId;
-        svc
-          .saveStoryPinsToServer(mapId)
-          .then(() => svc.saveStoryFramesToServer(mapId))
+        return svc.saveStoryPinsToServer(mapId)
           .then(() => {
-            res();
+            return svc.saveStoryFramesToServer(mapId)
+          })
+          .then(() => {
+            return res();
           });
       });
     });
@@ -327,10 +356,13 @@ function stateSvc(
   svc.updateChapterOnServer = index =>
     new Promise(res => {
       const config = svc.getChapterConfigs()[index];
-      $http({
-        url: `/maps/${config.mapId}/data`,
+      fetch(`/maps/${config.mapId}/data`, {
         method: "PUT",
-        data: JSON.stringify(config)
+        headers: headers,
+        credentials: "same-origin",
+        body: JSON.stringify(config)
+      }).then(response => {
+        return response.json();
       })
         .then(() => svc.saveStoryPinsToServer(config.mapId))
         .then(() => svc.saveStoryFramesToServer(config.mapId))
@@ -340,16 +372,20 @@ function stateSvc(
     });
 
   svc.generateChapterPromiseQueue = () => {
-    const { chapters } = svc.getConfig();
+    const {chapters} = svc.getConfig();
     const promises = [];
     for (let i = 0; i < chapters.length; i += 1) {
       if (!chapters[i].mapId) {
-        promises.push(svc.getUniqueChapterIdFromServer(i));
+        promises.push(new Promise((resolve, reject) => {
+          svc.getUniqueChapterIdFromServer(i)
+        }));
       } else {
-        promises.push(svc.updateChapterOnServer(i));
+        promises.push(new Promise((resolve, reject) => {
+          svc.updateChapterOnServer(i);
+        }))
       }
+      return promises;
     }
-    return $q.all(promises);
   };
 
   svc.updateLocationUsingStoryId = () => {
@@ -365,10 +401,13 @@ function stateSvc(
       copiedConfig.about.category = copiedConfig.about.category.id;
     }
     const storyId = svc.getConfig().storyId;
-    return $http({
-      url: `/story/${storyId}/save`,
+    return fetch(`/story/${storyId}/save`, {
       method: "PUT",
-      data: JSON.stringify(copiedConfig)
+      headers: headers,
+      credentials: "same-origin",
+      body: JSON.stringify(copiedConfig)
+    }).then(response => {
+      return response.json();
     });
   };
 
@@ -386,14 +425,16 @@ function stateSvc(
     const pins = svc.getStorypins();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const pinArray = pins[chapterIndex] || [];
-    const req = $http({
-      url: `/maps/${mapId}/storypins`,
+    return fetch(`/maps/${mapId}/storypins`, {
       method: "POST",
-      data: JSON.stringify(pinArray)
+      headers: headers,
+      credentials: "same-origin",
+      body: JSON.stringify(pinArray)
+    }).then(response => {
+      return response.json();
     }).then(data => {
-      svc.updateStorypinIds(data.data.ids, chapterIndex);
+      return svc.updateStorypinIds(data.ids, chapterIndex);
     });
-    return req;
   };
 
   /**
@@ -416,32 +457,38 @@ function stateSvc(
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const frameArray = frames[chapterIndex] || [];
 
-    const req = $http({
-      url: `/maps/${mapId}/storyframes`,
+    const req = fetch(`/maps/${mapId}/storyframes`, {
       method: "POST",
-      data: JSON.stringify(frameArray)
+      headers: headers,
+      credentials: "same-origin",
+      body: JSON.stringify(frameArray)
+    }).then(response => {
+      return response.json();
+    }).catch((ex) => {
+        console.log('saveStoryFramesToServer: ', ex);
     });
     return req;
   };
 
-  svc.generateStoryThumbnail = storyId =>
-    $http({
-      url: `/story/${storyId}/generate_thumbnail`,
-      method: "POST"
-    });
+  svc.generateStoryThumbnail = storyId => {
+    return fetch(`/story/${storyId}/generate_thumbnail`, {
+      method: "POST",
+      headers: headers,
+      credentials: "same-origin",
+    })
+  };
 
   svc.save = () => {
     // first ensure that story has an id; then ensure chapters have ids
     const config = svc.getConfig();
     const retrieveChapterIdsAndSave = () =>
-      svc.saveStoryToServer().then(() => {
+    svc.saveStoryToServer().then(() => {
         const p = svc.generateChapterPromiseQueue();
         return p;
       });
     if (!config.storyId) {
-      svc
-        .getUniqueStoryIdFromServer()
-        .then(() => {
+      svc.getUniqueStoryIdFromServer() // undefined, waiting on promise
+      .then(() => {
           const p = retrieveChapterIdsAndSave();
           return p;
         })

@@ -17,7 +17,6 @@ import PubSub from "pubsub-js"; // For event handling
  * @returns {{}} pinSvc.
  */
 function pinSvc(
-  $http,
   $translate,
   $q,
   timeSvc,
@@ -191,8 +190,7 @@ function pinSvc(
   svc.getFeaturesFromServer = config => {
     const featuresURL = `/maps/${config.id}/annotations`;
     const defer = $q.defer();
-    $http({
-      url: featuresURL,
+    fetch(featuresURL, {
       method: "GET"
     }).then(result => {
       defer.resolve(result.data);
