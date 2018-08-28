@@ -301,8 +301,6 @@ function composerController(
 
 
   $scope.getCurrentFrame = date => {
-
-
     if ($scope.currentFrame < $scope.frameSettings.length) {
       if (typeof $scope.frameSettings[$scope.currentFrame] === "undefined") {
         $scope.currentFrame += 1;
@@ -332,7 +330,6 @@ function composerController(
     let polygon;
 
     if ($scope.frameSettings[$scope.currentFrame]) {
-
       polygon = new ol.Feature(
         new ol.geom.Polygon([
           [

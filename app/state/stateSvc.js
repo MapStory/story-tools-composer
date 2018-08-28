@@ -2,7 +2,6 @@ import PubSub from "pubsub-js";
 
 function stateSvc(
   $location,
-  $q,
   stAnnotationsStore,
   stLocalStorageSvc,
   configSvc
@@ -456,18 +455,20 @@ function stateSvc(
     const frames = svc.getStoryframes();
     const chapterIndex = svc.getChapterIndexByMapId(mapId);
     const frameArray = frames[chapterIndex] || [];
-
-    const req = fetch(`/maps/${mapId}/storyframes`, {
+    return fetch(`/maps/${mapId}/storyframes`, {
       method: "POST",
       headers: headers,
       credentials: "same-origin",
       body: JSON.stringify(frameArray)
     }).then(response => {
       return response.json();
+    }).then(data => {
+
+      console.log("data: ", data); // NO DATA COULD BE READ
+
     }).catch((ex) => {
         console.log('saveStoryFramesToServer: ', ex);
     });
-    return req;
   };
 
   svc.generateStoryThumbnail = storyId => {
