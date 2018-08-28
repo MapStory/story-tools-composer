@@ -8,7 +8,6 @@ import PubSub from "pubsub-js"; // For event handling
  *
  * @param $http .
  * @param $translate .
- * @param $q .
  * @param timeSvc .
  * @param featureManagerSvc .
  * @param stateSvc .
@@ -18,7 +17,6 @@ import PubSub from "pubsub-js"; // For event handling
  */
 function pinSvc(
   $translate,
-  $q,
   timeSvc,
   featureManagerSvc,
   stateSvc,
@@ -189,13 +187,14 @@ function pinSvc(
   // TODO: Remove this
   svc.getFeaturesFromServer = config => {
     const featuresURL = `/maps/${config.id}/annotations`;
-    const defer = $q.defer();
-    fetch(featuresURL, {
-      method: "GET"
-    }).then(result => {
-      defer.resolve(result.data);
+
+    const defer = new Promise( (resolve, reject) => {
+      return fetch(featuresURL, {
+        method: "GET"
+      }).then(result => {
+        resolve(result.data);
+      });
     });
-    return defer.promise;
   };
 
   /**
@@ -474,16 +473,17 @@ function pinSvc(
    * @param config The config.
    */
   svc.addChaptersAndPins = config => {
-    const defer = $q.defer();
-    angular.forEach(config.chapters, (chapterConfig, index) => {
-      if (!goog.isDefAndNotNull(svc.pins[index])) {
-        svc.addChapter();
-      }
-      svc.getFeaturesAndConvertToPins(chapterConfig).then(complete => {
-        defer.resolve(complete);
+    const defer = new Promise((resolve, reject) => {
+      angular.forEach(config.chapters, (chapterConfig, index) => {
+        if (!goog.isDefAndNotNull(svc.pins[index])) {
+          svc.addChapter();
+        }
+        svc.getFeaturesAndConvertToPins(chapterConfig).then(complete => {
+          resolve(complete);
+        });
       });
     });
-    return defer.promise;
+    return defer;
   };
 
   /**
@@ -492,27 +492,29 @@ function pinSvc(
    * @return {promise} A promise.
    */
   svc.getFeaturesAndConvertToPins = chapterConfig => {
-    const defer = $q.defer();
-    svc.getFeaturesFromServer(chapterConfig).then(geojson => {
-      svc.addPinsFromGeojsonObj(geojson);
-      defer.resolve(true);
+    const defer = new Promise((resolve, reject) => {
+      svc.getFeaturesFromServer(chapterConfig).then(geojson => {
+        svc.addPinsFromGeojsonObj(geojson);
+        resolve(true);
+      });
     });
-    return defer.promise;
+
+    return defer;
   };
 
   /**
    * Initializes the PinService.
-   * TODO: Verify that this is getting called.
    */
   svc.initPinSvc = () => {
-    const defer = $q.defer();
-    const config = stateSvc.getConfig();
-    if (goog.isDefAndNotNull(config.chapters)) {
-      svc.addChaptersAndPins(config).then(complete => {
-        defer.resolve(complete);
-      });
-    }
-    return defer.promise;
+    const defer = new Promise((resolve, reject) => {
+      const config = stateSvc.getConfig();
+      if (goog.isDefAndNotNull(config.chapters)) {
+        svc.addChaptersAndPins(config).then(complete => {
+          resolve(complete);
+        });
+      }
+    });
+    return defer;
   };
 
   // TODO: Move this somewhere more visible.

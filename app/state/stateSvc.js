@@ -463,9 +463,7 @@ function stateSvc(
     }).then(response => {
       return response.json();
     }).then(data => {
-
-      console.log("data: ", data); // NO DATA COULD BE READ
-
+      console.log("data: ", data);
     }).catch((ex) => {
         console.log('saveStoryFramesToServer: ', ex);
     });
