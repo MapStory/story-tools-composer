@@ -78,6 +78,7 @@ function MapManager(
         }
         // Hide the loading circle after the layer has loaded.
         document.getElementById('loader').style.display = 'none';
+        svc.storyMap.getMap().render();
         // Brodcast so we can request the legend for this layer.
         PubSub.publish("layerAdded");
       });
