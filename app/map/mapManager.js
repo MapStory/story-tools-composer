@@ -76,11 +76,15 @@ function MapManager(
             .getView()
             .fit(extent, svc.storyMap.getMap().getSize());
         }
+        // Hide the loading circle after the layer has loaded.
+        document.getElementById('loader').style.display = 'none';
+        svc.storyMap.getMap().render();
         // Brodcast so we can request the legend for this layer.
         PubSub.publish("layerAdded");
       });
 
   svc.addLayer = args => {
+    document.getElementById('loader').style.display = 'block';
     const options = layerOptionsSvc.getLayerOptions(args);
     stateSvc.addLayer(options);
     return svc.buildStoryLayer(options);
