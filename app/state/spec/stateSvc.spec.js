@@ -82,7 +82,17 @@ describe("stateSvc", () => {
               {
                 uuid: "LAYER_2"
               }
-            ]
+            ],
+            map: {
+              layers: [
+                {
+                  uuid: "LAYER_1"
+                },
+                {
+                  uuid: "LAYER_2"
+                }
+              ]
+            }
           }
         ]
       };
