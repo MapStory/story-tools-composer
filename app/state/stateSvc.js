@@ -46,7 +46,18 @@ function stateSvc(
   };
 
   svc.reorderLayer = (from, to) => {
+    const arr = svc.config.mapManager.storyMap.getMap().getLayers().getArray();
     svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].layers, from, to);
+    svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].map.layers, from, to);
+    arr.forEach(layer => {
+      if (layer.getSource() && layer.getSource().getParams) {
+        const layerName = layer.getSource().getParams().LAYERS;
+        const zIndex = svc.config.chapters[svc.getChapterIndex()].layers.findIndex(item =>
+          item.name === layerName
+        );
+        layer.setZIndex(zIndex);
+      }
+    });
   };
 
   function initializeNewConfig() {

@@ -49,6 +49,7 @@ function MapManager(
     svc.title = config.about.title;
     svc.username = config.about.username;
     svc.owner = config.about.owner;
+    stateSvc.set("mapManager", svc);
     svc.loadMap(config);
   };
 
