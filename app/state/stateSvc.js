@@ -46,7 +46,10 @@ function stateSvc(
   };
 
   svc.reorderLayer = (from, to) => {
-    const arr = svc.config.mapManager.storyMap.getMap().getLayers().getArray();
+    let arr = [];
+    if (svc.config.mapManager) {
+      arr = svc.config.mapManager.storyMap.getMap().getLayers().getArray();
+    }
     svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].layers, from, to);
     svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].map.layers, from, to);
     arr.forEach(layer => {
