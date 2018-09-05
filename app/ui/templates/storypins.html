@@ -8,9 +8,9 @@
         <uib-accordion close-others="false" ng-init="is_open.editor = false; is_open.chooser = true;">
             <!-- Pin List -->
             <div uib-accordion-group heading="StoryPins" is-open="is_open.chooser">
-                <button class="btn btn-inverse" ng-click="onBulkPinAdd()">Bulk Upload</button>
-                <button class="btn btn-inverse" ng-click="on_add_storypin()">Add a StoryPin</button>
-                <button class="btn btn-inverse" ng-click="on_export_pins()">Export StoryPins</button>
+                <button class="btn btn-inverse" ng-click="on_add_storypin()">New StoryPin</button>
+                <button class="btn btn-inverse" ng-click="onBulkPinAdd()">Import</button>
+                <button class="btn btn-inverse" ng-click="on_export_pins()">Export</button>
             </div>
         </uib-accordion>
         <!-- THE MODAL -->
@@ -39,7 +39,7 @@
         <!-- Gets pins from pin service-->
         <section ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
             <!-- A STORYPIN -->
-            <div uib-accordion-group class="panel-default storypin-content" is-open="pin.is_open">
+            <div uib-accordion-group class="panel-default storypin-content" is-open="pin.is_open" id="pin-form-{{$index}}">
                 <!-- Heading -->
                 <uib-accordion-heading>
                         <span>
@@ -49,56 +49,85 @@
                 </uib-accordion-heading>
 
                 <!-- Content -->
-                <div id="pin-form-{{$index}}">
+                <div>
                     <!-- Move Button-->
                     <button class="btn btn-inverse" ng-click="pinSvc.turnPinDrawModeOn($index)">
                         {{pinSvc.isDrawing ? "Done" : "Move Pin"}}
                     </button>
                     <!-- Save Button -->
-                    <button id="storpin-save-button" class="btn btn-inverse" ng-click="pinSvc.onStoryPinSave()">Update Map</button>
-                    <button id="storypin-delete-button" class="btn" ng-click="pinSvc.removePinByIndex($index, stateSvc.getChapterIndex())">Delete</button>
+                    <button id="storpin-save-button" class="btn btn-inverse" ng-disabled="pinSvc.isDrawing" ng-click="pinSvc.onStoryPinSave()">Update Map</button>
+                    <button id="storypin-delete-button"
+                            class="btn"
+                            ng-disabled="pinSvc.isDrawing"
+                            ng-click="pinSvc.removePinByIndex($index, stateSvc.getChapterIndex())">
+                        <i class="fa fa-trash"></i>
+                    </button>
                 </div>
                     <!-- Edit Form -->
                     <form>
-                        <!-- Title -->
-                        <div class="form-field">
-                            <label for="storypin_title">StoryPin Title</label>
-                            <strong><abbr title="required">*</abbr></strong>
-                            <br/>
-                            <input id="storypin_title" type="text" name="storypin_title" ng-model="pin.title"/>
-                        </div>
-                        <!-- Text -->
-                        <div class="form-field">
-                            <label for="storypin_text">StoryPin Text</label>
-                            <strong><abbr title="required">*</abbr></strong>
-                            <br/>
-                            <input id="storypin_text" type="text" name="storypin_text"
-                                   ng-model="pin.content"/>
-                        </div>
+                        <hr />
+                        <fieldset>
+                            <legend>Labels</legend>
+                            <!-- Title -->
+                            <div class="form-field">
+                                <label for="storypin_title">StoryPin Title</label>
+                                <strong><abbr title="required">*</abbr></strong>
+                                <br/>
+                                <input id="storypin_title" type="text" name="storypin_title" ng-model="pin.title"/>
+                            </div>
+                            <!-- Text -->
+                            <div class="form-field">
+                                <label for="storypin_text">StoryPin Text</label>
+                                <strong><abbr title="required">*</abbr></strong>
+                                <br/>
+                                <input id="storypin_text" type="text" name="storypin_text"
+                                       ng-model="pin.content"/>
+                            </div>
+                        </fieldset>
                         <!-- Media -->
-                        <div class="form-field">
-                            <label for="storypin_media">StoryPin Media</label>
-                            <strong><abbr title="required">*</abbr></strong>
-                            <br/>
-                            <!-- TODO: Empty text areas don't work in all browsers-->
-                            <input id="storypin_media" type="text" name="storypin_media" ng-model="pin.media" required/>
-                        </div>
-                        <label>*Start Date</label>
-                        <div>
-                            <input required id="startDate-{{$index}}" type="date" ng-model="pin.startTime" aria-label="start date" required/>
-                            <span class="fa fa-calendar input-icons"></span>
-                            <!--<input id="startTime" type="time" ng-model="frameSettings.startTime" aria-label="start time">-->
-                            <!--<span class="fa fa-clock-o input-icons"></span>-->
-                        </div>
+                        <hr />
+                        <fieldset>
+                            <legend>Embedded Media</legend>
+                            <div class="form-field">
+                                <label for="storypin_media">StoryPin Media</label>
+                                <br/>
+                                <!-- TODO: Empty text areas don't work in all browsers-->
+                                <input id="storypin_media" type="text" name="storypin_media" ng-model="pin.media" required/>
+                            </div>
+                            <!-- Width Height Widget -->
+                            <label for="storypin_width">Width (pixels):</label>
+                            <input type="number" id="storypin_width" name="width"
+                                   placeholder="300" step="10" min="100" ng-model="pin.boxWidth"/>
+                            <label for="storypin_height">Height (pixels):</label>
+                            <input type="number" id="storypin_height" name="height"
+                                   placeholder="400" step="10" min="100" ng-model="pin.boxHeight"/>
+                        </fieldset>
+                        <hr />
+                        <fieldset>
+                            <legend>Time</legend>
+                            <label>*Start Date</label>
+                            <div>
+                                <input required id="startDate-{{$index}}" type="date" ng-model="pin.startTime" aria-label="start date" required/>
+                                <span class="fa fa-calendar input-icons"></span>
+                                <!--<input id="startTime" type="time" ng-model="frameSettings.startTime" aria-label="start time">-->
+                                <!--<span class="fa fa-clock-o input-icons"></span>-->
+                            </div>
 
-                        <label>*End Date</label>
-                        <div>
-                            <input id="endDate-{{$index}}" type="date" ng-model="pin.endTime" aria-label="end date" required/>
-                            <span class="fa fa-calendar input-icons"></span>
-                            <!--<input id="endTime" type="time" ng-model="frameSettings.endTime" aria-label="end time">-->
-                            <!--<span class="fa fa-clock-o input-icons"></span>-->
-                        </div>
-                        <latlon-input pin="pin"/>
+                            <label>*End Date</label>
+                            <div>
+                                <input id="endDate-{{$index}}" type="date" ng-model="pin.endTime" aria-label="end date" required/>
+                                <span class="fa fa-calendar input-icons"></span>
+                                <!--<input id="endTime" type="time" ng-model="frameSettings.endTime" aria-label="end time">-->
+                                <!--<span class="fa fa-clock-o input-icons"></span>-->
+                            </div>
+                        </fieldset>
+                        <hr />
+                        <fieldset>
+                            <legend>Place</legend>
+                            <latlon-input pin="pin"/>
+                        </fieldset>
+
+
                     </form>
                 </div>
             </div>
