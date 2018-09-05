@@ -13,7 +13,6 @@ function frameController(
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.showForm = null;
-  let draw;
 
   const map = MapManager.storyMap.getMap();
 
@@ -22,10 +21,7 @@ function frameController(
   }
 
   $scope.clearBoundingBox = () => {
-    MapManager.storyMap
-      .getMap()
-      .getLayers()
-      .forEach(layer => {
+    map.getLayers().forEach(layer => {
         if (layer.get("name") === "boundingBox") {
           map.removeLayer(layer);
           const zoom = ol.animation.zoom({
@@ -42,40 +38,62 @@ function frameController(
     return preFormatDate.format("YYYY-MM-DD");
   };
 
-  $scope.formatDates = date => {
-    const preFormatDate = moment(date);
-    const formattedDate = preFormatDate.format("YYYY-MM-DD");
-    return formattedDate;
-  };
-
   $scope.drawBoundingBox = () => {
-    $scope.clearBoundingBox();
     const bbVector = new ol.source.Vector({ wrapX: false });
+    const geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
+
     const vector = new ol.layer.Vector({
-      source: bbVector
+      source: bbVector,
+      style: new ol.style.Style({
+        stroke: new ol.style.Stroke({
+          color: [0, 193, 206, 1],
+          width: 3,
+        }),
+        fill: new ol.style.Fill({
+          color: [255, 255, 255, 0],
+        }),
+      })
     });
+
     bbVector.on("addfeature", evt => {
       $scope.coords = evt.feature.getGeometry().getCoordinates();
     });
-    const style = new ol.style.Style({
-      stroke: new ol.style.Stroke({
-        color: "#FFF",
-        width: 3
-      }),
-      fill: new ol.style.Fill({
-        color: [255, 255, 255, 0]
-      })
-    });
-    const geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
-    draw = new ol.interaction.Draw({
+
+    const drawBoundingBox = new ol.interaction.Draw({
       source: bbVector,
       type: "Circle",
-      geometryFunction
+      geometryFunction,
+      style: new ol.style.Style({
+        geometryFunction,
+        stroke: new ol.style.Stroke({
+          color: [0, 193, 206, 1],
+          width: 3,
+        }),
+        fill: new ol.style.Fill({
+          color: [255, 255, 255, 0],
+        }),
+        image: new ol.style.RegularShape({
+          fill: new ol.style.Fill({
+            color: [255, 255, 255, 0],
+          }),
+          stroke: new ol.style.Stroke({
+            color: [0, 193, 206, 1],
+            width: 1
+          }),
+          points: 4,
+          radius: 10,
+          angle: Math.PI / 4
+        }),
+      }),
     });
+
     vector.set("name", "boundingBox");
-    vector.setStyle(style);
     map.addLayer(vector);
-    map.addInteraction(draw);
+    map.addInteraction(drawBoundingBox);
+
+    drawBoundingBox.on('drawend', evt => {
+      drawBoundingBox.setActive(false);
+    });
   };
 
   $scope.checkBBDefined = frameSettings => {
