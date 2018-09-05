@@ -86,7 +86,9 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
       allowPan: true
     };
     const name = svc.getNameFromSearchResult(searchValue, searchObjects);
-    const remote = svc.getLayerInfoFromIndex(searchValue, searchObjects).remote;
+    const layerInfo = svc.getLayerInfoFromIndex(searchValue, searchObjects);
+    const title = layerInfo.title;
+    const remote = layerInfo.remote;
     if (remote) {
       svc.getRemoteServiceUrl(name).then(res => {
         const server = {
@@ -97,10 +99,10 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
           path: ""
         };
         settings.params = res.params;
-        MapManager.addLayer({ name, settings, server });
+        MapManager.addLayer({ name, settings, server, title});
       });
     } else {
-      MapManager.addLayer({ name, settings, server: svc.server.active });
+      MapManager.addLayer({ name, settings, server: svc.server.active, title});
     }
   };
 
