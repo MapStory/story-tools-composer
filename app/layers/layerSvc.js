@@ -217,7 +217,7 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
     }
     const server = "/geoserver/wms/";
     url =
-      `${server}?test=ab&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=${layerName}&transparent=true&legend_options=fontColor:0xFFFFFF;` +
+      `${server}?test=ab&request=GetLegendGraphic&format=image%2Fpng&width=20&height=20&layer=${layerName}&transparent=true&legend_options=fontColor:0x000000;` +
       `fontAntiAliasing:true;fontSize:14;fontStyle:bold;`;
     if (goog.isDefAndNotNull(styleName)) {
       url += `&style=${styleName}`;
