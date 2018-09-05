@@ -29,7 +29,7 @@ function composerController(
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
   $scope.frameSettings = [];
-
+  let queryLayerLoaded = false;
   const map = MapManager.storyMap.getMap();
 
   $scope.$watch(
@@ -85,35 +85,38 @@ function composerController(
     return (results && results[1]) || undefined;
   }
 
-  // Adds a layer if there is one
-  const layer = getUrlParam("layer");
-  if (layer > "") {
-    const nameParts = layer.split(":");
-    const simpleName = nameParts[1];
-    const serviceName = nameParts[0];
-    const settings = {
-      asVector: false,
-      allowZoom: true,
-      allowPan: true
-    };
-    if (serviceName !== "geonode") {
-      layerSvc.getRemoteServiceUrl(layer).then(res => {
-        const server = {
-          absolutePath: res.url,
-          canStyleWMS: false,
-          name: "remote",
-          type: "remote",
-          path: ""
-        };
-        settings.params = res.params;
-        MapManager.addLayer({ name: simpleName, settings, server });
-      });
-    } else {
-      MapManager.addLayer({
-        name: simpleName,
-        settings,
-        server: layerSvc.server.active
-      });
+  // Adds a layer if specified in the url query
+  function addLayerFromUrl() {
+    queryLayerLoaded = true;
+    const layer = getUrlParam("layer");
+    if (layer > "") {
+      const nameParts = layer.split(":");
+      const simpleName = nameParts[1];
+      const serviceName = nameParts[0];
+      const settings = {
+        asVector: false,
+        allowZoom: true,
+        allowPan: true
+      };
+      if (serviceName !== "geonode") {
+        layerSvc.getRemoteServiceUrl(layer).then(res => {
+          const server = {
+            absolutePath: res.url,
+            canStyleWMS: false,
+            name: "remote",
+            type: "remote",
+            path: ""
+          };
+          settings.params = res.params;
+          MapManager.addLayer({ name: simpleName, settings, server });
+        });
+      } else {
+        MapManager.addLayer({
+          name: simpleName,
+          settings,
+          server: layerSvc.server.active
+        });
+      }
     }
   }
 
@@ -127,11 +130,13 @@ function composerController(
     $scope.stateSvc.updateCurrentChapterConfig();
   };
 
-  window.addEventListener("load", loadMap);
   window.addEventListener("popstate", loadMap);
 
   PubSub.subscribe("configInitialized", () => {
     $scope.mapManager.initMapLoad();
+    if (!queryLayerLoaded) {
+      addLayerFromUrl();
+    }
   });
 
   if (window.mapstory.layerViewerMode) {
@@ -168,7 +173,6 @@ function composerController(
       }
     }
     $scope.stateSvc.removeChapter(chapterId);
-    $scope.mapManager.initMapLoad();
   };
 
   $scope.mode = {
