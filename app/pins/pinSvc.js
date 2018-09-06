@@ -688,6 +688,12 @@ function pinSvc(
             const embbededMedia = document.createElement("iframe");
             embbededMedia.setAttribute("src", pin.media);
             element.appendChild(embbededMedia);
+
+            if (pin.boxWidth && pin.boxHeight) {
+              // Set custom box sizes
+              embbededMedia.setAttribute("width", `${pin.boxWidth}px`);
+              embbededMedia.setAttribute("height", `${pin.boxHeight}px`);
+            }
           }
         }
       }
