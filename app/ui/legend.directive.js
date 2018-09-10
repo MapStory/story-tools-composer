@@ -28,37 +28,39 @@ function legendDirective(layerSvc) {
       };
 
       scope.toggleLegend = () => {
-        if (legendOpen === false) {
-          if (angular.element(".legend-item").length > 0) {
-            openLegend();
-          }
+        if (legendOpen === false && scope.layers.list.length > 0) {
+          openLegend();
         } else {
           closeLegend();
         }
       };
 
-      scope.getLegendUrl = layerSvc.getLegendUrl;
+      const updateLayers = () => {
+        scope.$apply(() => {
+          scope.layers.list = scope.mapManager.storyMap.getStoryLayers().getArray();
+          scope.layers.list.forEach(layer => {
+            layer.set("legendURL", layerSvc.getLegendUrl(layer));
+          });
+        });
+      };
+
+      PubSub.subscribe("layerUpdated", () => {
+        updateLayers();
+      });
 
       PubSub.subscribe("layerAdded", () => {
         if (legendOpen === false) {
           openLegend();
-          scope.$apply(() => {
-            scope.layers.list = scope.mapManager.storyMap.getStoryLayers().getArray();
-          });
         }
+        updateLayers();
       });
 
       PubSub.subscribe("layerRemoved", () => {
         // close the legend if the last layer is removed
-        if (
-          legendOpen === true &&
-          angular.element(".legend-item").length === 1
-        ) {
+        if (legendOpen === true && scope.layers.list.length === 1) {
           closeLegend();
         }
-        scope.$apply(() => {
-          scope.layers.list = scope.mapManager.storyMap.getStoryLayers().getArray();
-        });
+        updateLayers();
       });
     }
   };

@@ -63,20 +63,19 @@ function pinSvc(
   svc.displayCoordinates = "dd";
   // Media whitelist
   svc.whitelist = [
-    new RegExp(/https?:\/\/.*\.flickr\.com\/photos\/.*/),
-    new RegExp(/https?:\/\/flic\.kr\/p\/.*/),
-    new RegExp(/https?:\/\/instagram\.com\/p\/.*/),
-    new RegExp(/https?:\/\/instagr\.am\/p\/.*/),
-    new RegExp(/https?:\/\/vine\.co\/v\/.*/),
-    new RegExp(/https?:\/\/(?:www\.)?vimeo\.com\/.+/),
-    new RegExp(/https?:\/\/((?:www\.)|(?:pic\.)?)twitter\.com\/.*/),
-    new RegExp(
-      /https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im
-    ),
-    new RegExp(/https?:\/\/(w{3}\.)?soundcloud\.com\/.+/im),
-    new RegExp(
-      /https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im
-    )
+    { regex: new RegExp(/https?:\/\/.*\.flickr\.com\/photos\/.*/), isImage: true},
+    { regex: new RegExp(/https?:\/\/flic\.kr\/p\/.*/), isImage: true},
+    { regex: new RegExp(/https?:\/\/.*\.staticflickr\.com\/.*/), isImage: true},
+    { regex: new RegExp(/https?:\/\/instagram\.com\/p\/.*/), isImage: true},
+    { regex: new RegExp(/https?:\/\/instagr\.am\/p\/.*/), isImage: true},
+    { regex: new RegExp(/https?:\/\/vine\.co\/v\/.*/), isImage: false},
+    { regex: new RegExp(/https?:\/\/player\.vimeo\.com\/.*/), isImage: false},
+    { regex: new RegExp(/https?:\/\/(?:www\.)?vimeo\.com\/.+/), isImage: false},
+    { regex: new RegExp(/https?:\/\/((?:www\.)|(?:pic\.)?)twitter\.com\/.*/), isImage: true},
+    { regex: new RegExp(/https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im), isImage: false},
+    { regex: new RegExp(/https?:\/\/(w{3}\.)?soundcloud\.com\/.+/im), isImage: false},
+    { regex: new RegExp(/https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im), isImage: true},
+    { regex: new RegExp(/https?:\/\/.*\.wikimedia\.org\/.*/), isImage: true},
   ];
 
   /**
@@ -113,6 +112,8 @@ function pinSvc(
     this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
     this.startTime = data.startTime ? new Date(data.startTime) : new Date();
     this.endTime = data.endTime ? new Date(data.endTime) : new Date();
+    this.boxWidth = 300;
+    this.boxHeight = 200;
   };
   // Set the pin's prototype and constructor
   svc.Pin.prototype = Object.create(ol.Feature.prototype);
@@ -667,9 +668,34 @@ function pinSvc(
     // Need to check for null or empty string.
     if (pin.media !== null) {
       if (pin.media !== "") {
-        const embbededMedia = document.createElement("iframe");
-        embbededMedia.setAttribute("src", svc.checkWhitelist(pin.media));
-        element.appendChild(embbededMedia);
+        const whitelistObj = svc.getWhitelistObject(pin.media);
+        if(whitelistObj != null) {
+          if(whitelistObj.isImage) {
+            const imgDiv = document.createElement("div");
+            const img = document.createElement("img");
+            img.setAttribute("src", pin.media);
+            if (pin.boxWidth && pin.boxHeight) {
+              // Set custom box sizes
+              img.setAttribute("width", `${pin.boxWidth}px`);
+              img.setAttribute("height", `${pin.boxHeight}px`);
+            } else {
+              // Use a default size
+              img.setAttribute("height", "200px");
+            }
+            imgDiv.appendChild(img);
+            element.appendChild(imgDiv);
+          } else {
+            const embbededMedia = document.createElement("iframe");
+            embbededMedia.setAttribute("src", pin.media);
+            element.appendChild(embbededMedia);
+
+            if (pin.boxWidth && pin.boxHeight) {
+              // Set custom box sizes
+              embbededMedia.setAttribute("width", `${pin.boxWidth}px`);
+              embbededMedia.setAttribute("height", `${pin.boxHeight}px`);
+            }
+          }
+        }
       }
     }
 
@@ -1135,7 +1161,7 @@ function pinSvc(
 
     // Loop whitelist and check if it is ok.
     svc.whitelist.forEach(regexExpr => {
-      if (url.match(regexExpr)) {
+      if (url.match(regexExpr.regex)) {
         allowed = true;
       }
     });
@@ -1143,22 +1169,18 @@ function pinSvc(
     return allowed;
   };
 
-  /**
-   * Cleans the url to be used inside the embeded div.
-   * @param url the url to be cleaned.
-   */
-  svc.checkWhitelist = url => {
-    if (svc.isUrl(url)) {
-      // Whitelist
-      if (svc.isWhitelist(url)) {
-        return url;
-      }
-      // TODO: Alert the user here
-      return "";
-    }
-    return "";
-  };
+  svc.getWhitelistObject = url => {
+    let foundObj = null;
 
+    // Loop whitelist and check if it is ok.
+    svc.whitelist.forEach(regexExpr => {
+      if (url.match(regexExpr.regex)) {
+        foundObj = {url, isImage: regexExpr.isImage};
+      }
+    });
+    return foundObj
+  }
+  
   PubSub.subscribe("updateStorypins", (event, chapters) => {
     chapters.forEach((chapter, chapterIndex) => {
       chapter.storypins.forEach((pinJSON, pinIndex) => {

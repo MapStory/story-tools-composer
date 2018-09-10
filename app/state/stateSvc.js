@@ -47,7 +47,21 @@ function stateSvc(
   };
 
   svc.reorderLayer = (from, to) => {
+    let arr = [];
+    if (svc.config.mapManager) {
+      arr = svc.config.mapManager.storyMap.getMap().getLayers().getArray();
+    }
     svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].layers, from, to);
+    svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].map.layers, from, to);
+    arr.forEach(layer => {
+      if (layer.getSource() && layer.getSource().getParams) {
+        const layerName = layer.getSource().getParams().LAYERS;
+        const zIndex = svc.config.chapters[svc.getChapterIndex()].layers.findIndex(item =>
+          item.name === layerName
+        );
+        layer.setZIndex(zIndex);
+      }
+    });
   };
 
   function initializeNewConfig() {
@@ -106,12 +120,20 @@ function stateSvc(
   svc.updateLayerStyle = (layerName, styleName) => {
     const chapter = svc.config.chapters[svc.getChapterIndex()];
     const layerCount = chapter.layers.length;
+    const layerArray = svc.config.mapManager.storyMap.getStoryLayers().getArray();
 
     for (let i = 0; i < layerCount; i += 1) {
       if (chapter.layers[i].name === layerName) {
         chapter.layers[i].styleName = styleName;
       }
     }
+
+    layerArray.forEach(layer => {
+      if (layer.get("name") === layerName) {
+        layer.set("styleName", styleName);
+      }
+    });
+    PubSub.publish("layerUpdated");
   };
 
   /**
@@ -360,6 +382,7 @@ function stateSvc(
 
   svc.saveStoryToServer = () => {
     const config = svc.getConfig();
+    delete config.mapManager;
     // Make a copy so that we don't change the config in scope.
     const copiedConfig = angular.copy(config);
     if (copiedConfig.about.category.id) {

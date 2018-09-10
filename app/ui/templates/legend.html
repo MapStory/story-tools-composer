@@ -15,7 +15,7 @@
         <div class="panel-heading legend-item-header" data-toggle="collapse">{{ layer.get("title") }}
         </div>
         <div class="panel-collapse legend-item in legend-panel-body">
-          <img alt="Layer Symbol" ng-src="{{getLegendUrl(layer)}}">
+          <img alt="Layer Symbol" ng-src="{{layer.get('legendURL')}}">
         </div>
       </div>
     </div>
