@@ -1226,6 +1226,9 @@ function pinSvc(
     svc.onStoryPinSave();
   });
 
+  /**
+   * Callback for changing chapters
+   */
   PubSub.subscribe(
     "changingChapter",
     (event, currentChapterIndex, nextChapterIndex) => {
@@ -1246,6 +1249,9 @@ function pinSvc(
       nextPins.forEach(pin => {
         svc.mShowPinOnMap(pin);
       });
+
+      // Refresh the things
+      svc.onStoryPinSave();
     }
   );
 
