@@ -57,7 +57,7 @@ function legendDirective(layerSvc) {
 
       PubSub.subscribe("layerRemoved", () => {
         // close the legend if the last layer is removed
-        if (legendOpen === true && scope.layers.list.length === 1) {
+        if (legendOpen === true && scope.layers.list.length === 0) {
           closeLegend();
         }
         updateLayers();
