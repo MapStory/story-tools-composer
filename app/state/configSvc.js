@@ -150,7 +150,8 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
 
   svc.getMapstoryConfig = data => {
     const brandingCfg = window.mapstory.composer.config.branding;
-    const classificationBannerCfg = window.mapstory.composer.config.classificationBanner;
+    const classificationBannerCfg =
+      window.mapstory.composer.config.classificationBanner;
     if (!data) {
       data = {
         abstract: `${brandingCfg.storyName} description`,
@@ -179,10 +180,12 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
       uuid: data.uuid,
       isPublished: data.is_published || false,
       removedChapters: [],
+      removedFrames: [],
+      removedPins: [],
       viewerPlaybackMode: "instant",
       thumbnailUrl: data.thumbnail_url,
       id: data.id || 0,
-      storyId: data.id || 0,
+      storyID: data.id || 0,
       chapters: data.chapters
     };
 
@@ -269,7 +272,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
         maxResolution: 156543.03390625,
         maxExtent: [-20037508.34, -20037508.34, 20037508.34, 20037508.34],
         zoom: 5,
-        storyId: data.story_id || null,
+        storyID: data.story_id || null,
         projection: "EPSG:900913",
         layers: svc
           .getBasemapArrayWithActiveBasemap(data.layers)

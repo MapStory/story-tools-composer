@@ -1,29 +1,21 @@
 import Papa from "papaparse"; // Used for CSV Parsing
 import moment from "moment"; // For time and dates
 import PubSub from "pubsub-js"; // For event handling
+import whiteListRegex from "./whiteListRegex";
+import Pin from "./Pin";
 
 /**
  * StoryPin Service.
  * All things StoryPins.
  *
- * @param $http .
  * @param $translate .
  * @param timeSvc .
- * @param featureManagerSvc .
  * @param stateSvc .
  * @param MapManager .
  * @param $uibModal .
  * @returns {{}} pinSvc.
  */
-function pinSvc(
-  $http,
-  $translate,
-  timeSvc,
-  featureManagerSvc,
-  stateSvc,
-  MapManager,
-  $uibModal
-) {
+function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
   const svc = {}; // this
   // The collection of pins
   svc.pins = [[]];
@@ -31,96 +23,21 @@ function pinSvc(
   svc.currentPin = null;
   // For Drag functionality:
   svc.isDrawing = false;
-  svc.selectedFeature = null;
   svc.dragControl = null;
   // This is the openlayers source that stores all the features that are drawn on the map.
   svc.pinLayerSource = null;
   svc.oldInteractions = [];
-  // TODO: Move this to pin editor controller
-  // For Date selection widgets
-  svc.dt = new Date(); // The DT
-  svc.startDatePopup = {
-    opened: false // State for open/close popup
-  };
-  svc.endDatePopup = {
-    opened: false
-  };
-  // Start and end times.
-  // TODO: Move this to pin editor controller
-  svc.pinStartTime = Date.now();
-  // TODO: Move this to pin editor controller
-  svc.pinEndTime = Date.now();
-  // Controlls the accordions
-  // TODO: Move this to a form controller
-  svc.open = {
-    editor: false,
-    chooser: false
-  };
+
   svc.availableDisplayCoordinates = [
     { display: "Decimal Degrees", value: "dd" },
     { display: "Degrees Minutes Seconds", value: "dms" }
   ];
   svc.displayCoordinates = "dd";
   // Media whitelist
-  svc.whitelist = [
-    { regex: new RegExp(/https?:\/\/.*\.flickr\.com\/photos\/.*/), isImage: true},
-    { regex: new RegExp(/https?:\/\/flic\.kr\/p\/.*/), isImage: true},
-    { regex: new RegExp(/https?:\/\/.*\.staticflickr\.com\/.*/), isImage: true},
-    { regex: new RegExp(/https?:\/\/instagram\.com\/p\/.*/), isImage: true},
-    { regex: new RegExp(/https?:\/\/instagr\.am\/p\/.*/), isImage: true},
-    { regex: new RegExp(/https?:\/\/vine\.co\/v\/.*/), isImage: false},
-    { regex: new RegExp(/https?:\/\/player\.vimeo\.com\/.*/), isImage: false},
-    { regex: new RegExp(/https?:\/\/(?:www\.)?vimeo\.com\/.+/), isImage: false},
-    { regex: new RegExp(/https?:\/\/((?:www\.)|(?:pic\.)?)twitter\.com\/.*/), isImage: true},
-    { regex: new RegExp(/https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im), isImage: false},
-    { regex: new RegExp(/https?:\/\/(w{3}\.)?soundcloud\.com\/.+/im), isImage: false},
-    { regex: new RegExp(/https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im), isImage: true},
-    { regex: new RegExp(/https?:\/\/.*\.wikimedia\.org\/.*/), isImage: true},
-  ];
+  svc.whitelist = whiteListRegex;
 
-  /**
-   * Gets the current day
-   * @param data
-   * @returns {string}
-   */
-  svc.getDayClass = data => {
-    const [date, mode] = [data.date, data.mode];
-    if (mode === "day") {
-      const dayToCheck = new Date(date).setHours(0, 0, 0, 0);
-      for (let i = 0; i < svc.events.length; i++) {
-        const currentDay = new Date(svc.events[i].date).setHours(0, 0, 0, 0);
-        if (dayToCheck === currentDay) {
-          return svc.events[i].status;
-        }
-      }
-    }
-    return "";
-  };
+  svc.Pin = Pin;
 
-  /**
-   * Creates a new Pin from data
-   * TODO: Check if this actually works as expected
-   * @param data The data to build the pin from.
-   */
-  svc.Pin = function createPin(data) {
-    // Angular copydata
-    const copyData = angular.copy(data);
-    // Deletes and re-sets geometry
-    delete data.geometry;
-    ol.Feature.call(this, data);
-    this.properties = data;
-    this.setGeometry(new ol.geom.Point(copyData.geometry.coordinates));
-    this.startTime = data.startTime ? new Date(data.startTime) : new Date();
-    this.endTime = data.endTime ? new Date(data.endTime) : new Date();
-    this.boxWidth = 300;
-    this.boxHeight = 200;
-  };
-  // Set the pin's prototype and constructor
-  svc.Pin.prototype = Object.create(ol.Feature.prototype);
-  svc.Pin.prototype.constructor = svc.Pin;
-
-  const embedWidth = '"180"';
-  const embedHeight = '"180"';
   // The model
   const modelAttributes = [
     "title",
@@ -135,6 +52,7 @@ function pinSvc(
     "pause_playback",
     "autoShow"
   ];
+
   // Filters
   const filterPropertiesFromValidation = [
     "id",
@@ -155,25 +73,6 @@ function pinSvc(
   };
 
   /**
-   * Creates a vectorlayer with the storypinlayer metadata.
-   * @returns {*}
-   */
-  svc.createStoryPinLayer = () =>
-    featureManagerSvc.createVectorLayer(
-      featureManagerSvc.storyPinLayerMetadata
-    );
-
-  // TODO: Move this to somewhere more appropiate
-  svc.pinLayer = svc.createStoryPinLayer();
-
-  /**
-   * Adds an empty pin to the current chapter.
-   */
-  svc.addEmptyPinToCurrentChapter = () => {
-    svc.pins[stateSvc.getChapterIndex() - 1].push({});
-  };
-
-  /**
    * Removes a chapter with the given index
    * @param chapterIndex Chapter index to remove.
    */
@@ -182,112 +81,11 @@ function pinSvc(
   };
 
   /**
-   * Gets the geo-features from the server.
-   * @param config Config
-   * @return Returns a promise
-   */
-  // TODO: Remove this
-  svc.getFeaturesFromServer = config => {
-    const featuresURL = `/maps/${config.id}/annotations`;
-    const defer = new Promise( (resolve, reject) => {
-      $http({
-        url: featuresURL,
-        method: "GET"
-      }).then(result => {
-        resolve(result.data);
-      });
-    });
-    return defer;
-  };
-
-  /**
-   * Adds pins from a GEOJSON object
-   * @param geojson The object.
-   * @param chapter Chapter to insert to.
-   */
-  svc.addPinsFromGeojsonObj = (geojson, chapter) => {
-    // eslint-disable-next-line array-callback-return
-    geojson.features.map(feature => {
-      svc.addPinFromGeojsonObj(feature, chapter);
-    });
-  };
-
-  /**
-   * Adds a single pin from a GEOJSON feature object.
-   * @param feature The feature
-   * @param chapter The chapter to insert into.
-   */
-  svc.addPinFromGeojsonObj = (feature, chapter) => {
-    // Convert the data
-    const props = feature.properties;
-    props.geometry = $.parseJSON(feature.geometry);
-    props.geometry.coordinates = ol.proj.transform(
-      props.geometry.coordinates,
-      "EPSG:4326",
-      "EPSG:3857"
-    );
-    props.id = feature.id;
-    props.startTime *= 1000;
-    props.endTime *= 1000;
-
-    // Create the new pin and insert to chapter
-    const storyPin = new svc.Pin(props);
-    storyPin.setId(feature.id);
-    svc.pins[chapter].push(storyPin);
-  };
-
-  /**
-   * TODO: Why is this needed?
-   * @param prop
-   */
-  svc.addGetterAndSetterToPinPrototype = prop => {
-    Object.defineProperty(svc.Pin.prototype, prop, {
-      get() {
-        const val = this.get(prop);
-        return typeof val === "undefined" ? null : val;
-      },
-      set(val) {
-        this.set(prop, val);
-      }
-    });
-  };
-
-  svc.addMultipleGettersAndSettersToPinPrototype = props => {
-    props.forEach(prop => {
-      svc.addGetterAndSetterToPinPrototype(prop);
-    });
-  };
-
-  /**
    * Get pins from chapter index
    * @param chapterIndex The chapter
    * @returns {Array|*} An array of Pins
    */
   svc.getPins = chapterIndex => svc.pins[chapterIndex] || [];
-  svc.reorderPins = (fromIndex, toIndex) => {
-    svc.pins.splice(toIndex, 0, svc.pins.splice(fromIndex, 1)[0]);
-  };
-
-  /**
-   * Removes a pin from a chapter
-   * @param storyPin The Storypin to be removed.
-   * @param chapterIndex The chapter to remove from.
-   */
-  svc.removePin = (storyPin, chapterIndex) => {
-    for (let i = 0; i < svc.pins[chapterIndex].length; i++) {
-      if (storyPin.id_ === svc.pins[chapterIndex][i].id_) {
-        const spliceIndex = i;
-        if (spliceIndex === 0) {
-          svc.pins[chapterIndex].splice(0, 1);
-        } else {
-          svc.pins[chapterIndex].splice(spliceIndex, 1);
-        }
-        PubSub.publish("pin-removed", chapterIndex);
-        return storyPin.id;
-      }
-    }
-    return undefined;
-  };
 
   /**
    * Validates pin config.
@@ -358,6 +156,7 @@ function pinSvc(
     }
 
     // Create the new storypin
+
     const storyPin = new svc.Pin(props);
     // Push to the chapter
     if (!svc.pins[chapterIndex]) {
@@ -367,30 +166,6 @@ function pinSvc(
     return storyPin;
   };
 
-  /**
-   * Updates a pin at the given chapter index
-   * @param pin The Pin
-   * @param chapterIndex The chapter
-   * @ TODO: write test for this after mapService functions are ported over
-   */
-  svc.updatePin = (pin, chapterIndex) => {
-    // Only set new geometry if location was saved on pin object
-    if (goog.isDefAndNotNull(pin.geometry)) {
-      // mapService_.removeDraw();
-      // mapService_.removeSelect();
-      // mapService_.removeModify();
-      // mapService_.map.removeLayer(mapService_.editLayer);
-      const newGeom = new ol.geom.Point(pin.geometry.coordinates);
-      pin.setGeometry(newGeom);
-    }
-    for (let iPin = 0; iPin < svc.pins.length; iPin += 1) {
-      if (pin.id === svc.pins[iPin].id) {
-        svc.pins[iPin] = pin;
-      }
-    }
-    // TODO: Check if this broadcast is behaving OK
-  };
-
   // @ TODO: move to another service
   svc.isUrl = str => {
     if (!/^(f|ht)tps?:\/\//i.test(str)) {
@@ -398,130 +173,6 @@ function pinSvc(
     }
     return true;
   };
-
-  /**
-   * Sets the default values for a given Pin.
-   * @param pin The Pin
-   * @returns {*} The same pin with values changed.
-   */
-  svc.defaultPinValues = pin => {
-    Object.keys(pin).forEach((key, index) => {
-      if (pin[key] === "") {
-        if (
-          key === "inTimeline" ||
-          key === "autoShow" ||
-          key === "pause_playback"
-        ) {
-          pin[key] = false;
-        } else if (key === "inMap") {
-          pin[key] = true;
-        } else {
-          pin[key] = null;
-        }
-      } else if (typeof pin[key] === "string") {
-        if (pin[key].toUpperCase() === "TRUE") {
-          pin[key] = true;
-        } else if (pin[key].toUpperCase() === "FALSE") {
-          pin[key] = false;
-        }
-      }
-    });
-    return pin;
-  };
-
-  /**
-   * Bulk create StoryPins
-   * @param pinConfigs Pin configurations.
-   * @param chapterIndex The chapter index to add them to.
-   * TODO: Remove if not used
-   */
-  svc.bulkPinAdd = (pinConfigs, chapterIndex) => {
-    // let failedToAdd = 0;
-    for (let iPin = 0; iPin < pinConfigs.length; iPin += 1) {
-      let pin = pinConfigs[iPin];
-      pin = svc.defaultPinValues(pin);
-
-      pin.id = new Date().getUTCMilliseconds();
-      pin.geometry = {
-        coordinates: ol.proj.transform(
-          [Number(pin.longitude), Number(pin.latitude)],
-          "EPSG:4326",
-          "EPSG:3857"
-        )
-      };
-      delete pin.longitude;
-      delete pin.latitude;
-      if (
-        svc.validateAllPinProperties(pin) !== true ||
-        timeSvc.getTime(pin.startTime) > timeSvc.getTime(pin.endTime)
-      ) {
-        // failedToAdd += 1;
-        // TODO: This is not OK! Fix!
-        // eslint-disable-next-line no-continue
-        continue;
-      }
-
-      if (goog.isDefAndNotNull(pin.media) && !svc.isUrl(pin.media)) {
-        pin.media = pin.media.replace(/width="\d+"/i, `width=${embedWidth}`);
-        pin.media = pin.media.replace(/height="\d+"/i, `height=${embedHeight}`);
-      }
-
-      const storyPin = new svc.Pin(pin);
-      svc.pins[chapterIndex].push(storyPin);
-    }
-  };
-
-  /**
-   * Convenience method for adding chapters and pins.
-   * @param config The config.
-   */
-  svc.addChaptersAndPins = config => {
-    const defer = new Promise((resolve, reject) => {
-      angular.forEach(config.chapters, (chapterConfig, index) => {
-        if (!goog.isDefAndNotNull(svc.pins[index])) {
-          svc.addChapter();
-        }
-        svc.getFeaturesAndConvertToPins(chapterConfig).then(complete => {
-          resolve(complete);
-        });
-      });
-    });
-    return defer;
-  };
-
-  /**
-   * Gets Features from server and converts them to pins.
-   * @param chapterConfig The config.
-   * @return {promise} A promise.
-   */
-  svc.getFeaturesAndConvertToPins = chapterConfig => {
-    const defer = new Promise((resolve, reject) => {
-      svc.getFeaturesFromServer(chapterConfig).then(geojson => {
-        svc.addPinsFromGeojsonObj(geojson);
-        resolve(true);
-      });
-    });
-
-    return defer;
-  };
-
-  /**
-   * Initializes the PinService.
-   */
-  svc.initPinSvc = () => {
-    const defer = new Promise((resolve, reject) => {
-      const config = stateSvc.getConfig();
-      if (goog.isDefAndNotNull(config.chapters)) {
-        svc.addChaptersAndPins(config).then(complete => {
-          resolve(complete);
-        });
-      }
-    });
-    return defer;
-  };
-
-  // TODO: Move this somewhere more visible.
-  svc.addMultipleGettersAndSettersToPinPrototype(modelAttributes);
 
   /*
     When a user starts creating a new pin, this creates the default pin.
@@ -669,8 +320,8 @@ function pinSvc(
     if (pin.media !== null) {
       if (pin.media !== "") {
         const whitelistObj = svc.getWhitelistObject(pin.media);
-        if(whitelistObj != null) {
-          if(whitelistObj.isImage) {
+        if (whitelistObj != null) {
+          if (whitelistObj.isImage) {
             const imgDiv = document.createElement("div");
             const img = document.createElement("img");
             img.setAttribute("src", pin.media);
@@ -865,74 +516,21 @@ function pinSvc(
   };
 
   /**
-   * Removes a feature from the map for the given pin.
-   * @param pinIndex The pin's index.
-   * @param chapterIndex The chapter's index.
-   */
-  svc.removePinFeatureFromMap = (pinIndex, chapterIndex) => {
-    const chapterPins = svc.pins[chapterIndex];
-    const pin = chapterPins[pinIndex];
-
-    if (!pin) {
-      // TODO: alert("Trying to remove something that isn't");
-      return;
-    }
-
-    if (pin.mapFeature) {
-      // Remove the feature
-      svc.pinLayerSource.removeFeature(pin.mapFeature);
-      // Make the overlay invisible
-      pin.overlay.setPosition(undefined);
-    } else {
-      // Log error
-      // TODO: alert("no map feature to remove!");
-    }
-  };
-
-  /**
    * Removes a pin.
    * @param pinIndex The index of the pin.
    * @param chapterIndex The chapter index of the pin.
    */
   svc.removePinByIndex = (pinIndex, chapterIndex) => {
+    const config = stateSvc.getConfig();
     const pin = svc.pins[stateSvc.getChapterIndex()][pinIndex];
+    const pinConfig = config.storypins[stateSvc.getChapterIndex()].features[pinIndex]
     svc.mRemoveStorypin(pin);
     // Remove pin from list:
     svc.pins[chapterIndex].splice(pinIndex, 1);
+    if (pinConfig.id) {
+      stateSvc.config.removedPins.push(pinConfig.id);
+    }
     PubSub.publish("pin-removed", chapterIndex);
-  };
-
-  /**
-   * Builds a JSON object of all the StoryPins.
-   * @returns {Array} An array of StoryPins.
-   */
-  svc.getPinsJSON = () => {
-    const pinList = [];
-    let chapterCount = 0;
-    // Loop chapters.
-    svc.pins.forEach(chapter => {
-      if (chapter) {
-        chapter.forEach(pin => {
-          pinList.push({
-            chapterIndex: chapterCount,
-            title: pin.title,
-            content: pin.content,
-            latitude: pin.coords[0],
-            longitude: pin.coords[1],
-            media: pin.media,
-            startTime: pin.startTime,
-            endTime: pin.endTime,
-            inMap: pin.inMap,
-            inTimeline: pin.inTimeline
-          });
-        });
-      } else {
-        // TODO: alert("bad chapter!");
-      }
-
-      chapterCount += 1;
-    });
-    return pinList;
   };
 
   /**
@@ -1146,12 +744,6 @@ function pinSvc(
   };
 
   /**
-   * This reacts to the timepicker being changed.
-   * TODO: Implement this.
-   */
-  svc.onChangedTime = () => {};
-
-  /**
    * Whitelist.
    * @param url
    * @returns {boolean}
@@ -1175,12 +767,12 @@ function pinSvc(
     // Loop whitelist and check if it is ok.
     svc.whitelist.forEach(regexExpr => {
       if (url.match(regexExpr.regex)) {
-        foundObj = {url, isImage: regexExpr.isImage};
+        foundObj = { url, isImage: regexExpr.isImage };
       }
     });
-    return foundObj
-  }
-  
+    return foundObj;
+  };
+
   PubSub.subscribe("updateStorypins", (event, chapters) => {
     chapters.forEach((chapter, chapterIndex) => {
       chapter.storypins.forEach((pinJSON, pinIndex) => {
@@ -1256,32 +848,6 @@ function pinSvc(
   );
 
   /**
-   * This event gets triggered once the server has saved a new storypin.
-   * @event  *Obj* The event that triggered this callback
-   * @idArray *[]* An array of ids for each storypin created on the server.
-   * */
-  PubSub.subscribe("loadids", (event, idArray, chapterID) => {
-    // Sometimes we get a null idArray.
-    if (!idArray) {
-      // TODO: log("Received a null ID Array from the server");
-      return;
-    }
-    // Look for the next null id and assign it.
-    idArray.forEach(newPinId => {
-      let wasThisIDUsed = false;
-      svc.pins[chapterID].forEach(pin => {
-        if (wasThisIDUsed) {
-          return;
-        }
-        if (!pin.id) {
-          pin.id = newPinId;
-          wasThisIDUsed = true;
-        }
-      });
-    });
-  });
-
-  /**
    * Removes a storypin and it's overlay from the map.
    * @param pin
    * @private
@@ -1303,92 +869,7 @@ function pinSvc(
     pin.overlay.setPosition(pin.coords);
   };
 
-  svc.addSelectInteraction = features => {
-    const map = MapManager.storyMap.getMap();
-    const selectInteraction = new ol.interaction.Select({
-      features: new ol.Collection(features)
-    });
-    map.addInteraction(selectInteraction);
-    selectInteraction.on("select", e => {
-      // TODO: For debugging only, remove this later.
-      // alert(`selected ${  e.target.getFeatures().getLength()}`);
-    });
-  };
-
-  // For Date selection widgets
-  svc.dt = new Date(); // The DT
-  svc.startDatePopup = {
-    opened: false // Controlls open/close of popup
-  };
-  svc.endDatePopup = {
-    opened: false
-  };
-
-  svc.formats = ["dd-MMMM-yyyy", "yyyy/MM/dd", "dd.MM.yyyy", "shortDate"];
-  svc.format = svc.formats[0];
-  svc.altInputFormats = ["M!/d!/yyyy"];
-  svc.inlineOptions = {
-    customClass: svc.getDayClass,
-    minDate: new Date(1200, 1, 1),
-    showWeeks: true
-  };
-
-  svc.dateOptions = {
-    dateDisabled: svc.disabled,
-    formatYear: "yy",
-    maxDate: new Date(2020, 5, 22),
-    minDate: new Date(1200, 1, 1),
-    startingDay: 1
-  };
-
-  svc.disabled = data => {
-    const date = data.date;
-    const mode = data.mode;
-    return mode === "day" && (date.getDay() === 0 || date.getDay() === 6);
-  };
-
-  /**
-   * Sets current date to today.
-   */
-  svc.today = () => {
-    svc.dt = new Date();
-  };
-
-  /**
-   * Clears the date.
-   */
-  svc.clear = () => {
-    svc.dt = null;
-  };
-
-  /**
-   * Opens the start date popup
-   */
-  svc.openStartDate = () => {
-    svc.startDatePopup.opened = true;
-  };
-
-  /**
-   * Opens the end date popup
-   */
-  svc.openEndDate = () => {
-    svc.endDatePopup.opened = true;
-  };
-
-  svc.setDate = (year, month, day) => {
-    svc.dt = new Date(year, month, day);
-  };
-
   svc.activePin = null;
-
-  svc.togglePinForm = $index => {
-    const i = $index.$index;
-    if (svc.activePin === i) {
-      svc.activePin = null;
-    } else {
-      svc.activePin = i;
-    }
-  };
 
   return svc;
 }

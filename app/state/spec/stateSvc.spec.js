@@ -57,19 +57,6 @@ describe("stateSvc", () => {
     });
   });
 
-  describe("getChapterAbout", () => {
-    it("should return a valid `about` object for the current chapter", () => {
-      const testConfig = { chapters: [{ about: { title: "pass" } }] };
-      stateSvc.setConfig(testConfig);
-      expect(stateSvc.getChapterAbout().title).toBe("pass");
-    });
-    it("should return a valid `about` object when no chapters exist", () => {
-      const testConfig = { about: { title: "pass" } };
-      stateSvc.setConfig(testConfig);
-      expect(stateSvc.getChapterAbout().title).toBe("pass");
-    });
-  });
-
   describe("reorderLayer", () => {
     it("should move the specified layer from the `from` index in the layer array to the `to` index", () => {
       const testConfig = {

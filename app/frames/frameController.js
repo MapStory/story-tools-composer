@@ -2,12 +2,7 @@ import moment from "moment";
 
 function frameController(
   $scope,
-  $log,
-  $injector,
-  $timeout,
-  $uibModal,
   stateSvc,
-  frameSvc,
   MapManager
 ) {
   $scope.mapManager = MapManager;
@@ -22,15 +17,15 @@ function frameController(
 
   $scope.clearBoundingBox = () => {
     map.getLayers().forEach(layer => {
-        if (layer.get("name") === "boundingBox") {
-          map.removeLayer(layer);
-          const zoom = ol.animation.zoom({
-            resolution: map.getView().getResolution()
-          });
-          map.beforeRender(zoom);
-          map.getView().setZoom(5);
-        }
-      });
+      if (layer.get("name") === "boundingBox") {
+        map.removeLayer(layer);
+        const zoom = ol.animation.zoom({
+          resolution: map.getView().getResolution()
+        });
+        map.beforeRender(zoom);
+        map.getView().setZoom(5);
+      }
+    });
   };
 
   $scope.formatDates = date => {
@@ -231,7 +226,12 @@ function frameController(
   };
 
   $scope.deleteStoryframe = index => {
+    const config = stateSvc.getConfig();
+    const frameConfig = config.storyframes[stateSvc.getChapterIndex()].features[index];
     $scope.frameSettings.splice(index, 1);
+    if (frameConfig.id) {
+      stateSvc.config.removedFrames.push(frameConfig.id);
+    }
   };
 }
 export default frameController;
