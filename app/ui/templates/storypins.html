@@ -101,6 +101,17 @@
                             <label for="storypin_height">Height (pixels):</label>
                             <input type="number" id="storypin_height" name="height"
                                    placeholder="400" step="10" min="100" ng-model="pin.boxHeight"/>
+                            <div>
+                                <label>
+                                    <input type="checkbox" id="storypin_autoplay" ng-model="pin.autoPlay"/>
+                                    Autoplay Media
+                                </label>
+                            </div>
+
+                            <label for="storypin_offset">Media Playback Offset:</label>
+                            <input type="number" id="storypin_offset" ng-model="pin.offset"/>
+                            <label for="storypin_playlength">Media Playlength:</label>
+                            <input type="number" id="storypin_playlength" ng-model="pin.playLength"/>
                         </fieldset>
                         <hr />
                         <fieldset>

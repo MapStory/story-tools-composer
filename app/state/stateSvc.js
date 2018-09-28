@@ -10,6 +10,15 @@ function stateSvc(
   svc.originalConfig = null;
   svc.config = null;
   svc.frameSettings = null;
+  svc.timelineSettings = {
+    loop: "none",
+    state: "stopped"
+  };
+
+  PubSub.subscribe("stateChange", (event, data) => {
+    svc.timelineSettings.loop = data.loop;
+    svc.timelineSettings.state = data.state;
+  });
 
   svc.addNewChapter = () => {
     svc.config.chapters.push(
@@ -297,7 +306,6 @@ function stateSvc(
   svc.save = () =>
     new Promise(res => {
       const cfg = svc.config;
-      console.log(cfg);
       // iterate through feature collections and add them
       // to the corresponding chapters
       for (let i = 0; i < cfg.chapters.length; i += 1) {
@@ -322,7 +330,6 @@ function stateSvc(
         removedFrames: cfg.removedFrames,
         removedPins: cfg.removedPins
       };
-      console.log("minimalCfg is", minimalCfg);
       fetch(`/mapstories/save`, {
         method: "POST",
         body: JSON.stringify(minimalCfg),
@@ -352,13 +359,11 @@ function stateSvc(
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];
             svc.config.removedPins = [];
-            console.log("Save success. Config: ", svc.config);
             res();
           });
         })
         .catch(() => {
           // handle fail
-          console.log("Save Failed");
           res();
         });
     });

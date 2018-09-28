@@ -336,14 +336,14 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
             imgDiv.appendChild(img);
             element.appendChild(imgDiv);
           } else {
-            const embbededMedia = document.createElement("iframe");
-            embbededMedia.setAttribute("src", pin.media);
-            element.appendChild(embbededMedia);
+            pin.embeddedMedia = document.createElement("iframe");
+            pin.embeddedMedia.setAttribute("src", pin.media);
+            element.appendChild(pin.embeddedMedia);
 
             if (pin.boxWidth && pin.boxHeight) {
               // Set custom box sizes
-              embbededMedia.setAttribute("width", `${pin.boxWidth}px`);
-              embbededMedia.setAttribute("height", `${pin.boxHeight}px`);
+              pin.embeddedMedia.setAttribute("width", `${pin.boxWidth}px`);
+              pin.embeddedMedia.setAttribute("height", `${pin.boxHeight}px`);
             }
           }
         }
@@ -460,8 +460,40 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
 
     // Add functionality for the pin to show and hide itself from the map:
     pin.show = () => {
+      if (!pin.overlay.getPosition()) {
+        const whitelistObj = svc.getWhitelistObject(pin.media);
+        if (pin.embeddedMedia && whitelistObj && !whitelistObj.isImage){
+          if (stateSvc.timelineSettings.loop !== "none" && pin.autoPlay) {
+            pin.embeddedMedia.setAttribute("allow", "autoplay;");
+            pin.embeddedMedia.setAttribute("src", `${pin.media}?autoplay=1&start=${pin.offset}`);
+            PubSub.publish("mediaPause");
+            pin.windowTimeout = window.setTimeout(() => {
+              PubSub.publish("mediaContinue");
+            }, pin.playLength * 1000);
+            let firstRangeChange = true;
+
+            // If the range changes while we're playing the video reset it rather
+            // then keep playing with the pin not showing because either the user
+            // clicked play or changed the slider
+            pin.rangeListener = PubSub.subscribe("rangeChange", () => {
+              if (pin.embeddedMedia && whitelistObj && !whitelistObj.isImage && !firstRangeChange){
+                pin.embeddedMedia.removeAttribute("allow");
+                pin.embeddedMedia.setAttribute("src", `${pin.media}?start=${pin.offset}`);
+                PubSub.unsubscribe(pin.rangeListener);
+                window.clearTimeout(pin.windowTimeout);
+              } else {
+                firstRangeChange = false;
+              }
+            });
+          } else {
+            pin.embeddedMedia.removeAttribute("allow");
+            pin.embeddedMedia.setAttribute("src", `${pin.media}?start=${pin.offset}`);
+          }
+        }
+      }
       pin.overlay.setPosition(pin.mapFeature.getGeometry().getCoordinates());
     };
+
 
     pin.hide = () => {
       pin.overlay.setPosition(undefined);
@@ -498,6 +530,8 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     // pin.startDate = new Date();
     // pin.endDate = new Date();
     svc.addStorypinToMap(pin);
+
+
     return pin;
   };
 
@@ -646,6 +680,19 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
         features: []
       });
       for (let p = 0; p < svc.pins[i].length; p += 1) {
+        const properties = {
+          inMap: svc.pins[i][p].inMap,
+          inTimeline: svc.pins[i][p].inTimeline,
+          autoShow: svc.pins[i][p].autoShow,
+          media: svc.pins[i][p].media,
+          title: svc.pins[i][p].title,
+          content: svc.pins[i][p].content,
+          offset: svc.pins[i][p].offset,
+        };
+        properties["start_time"] = svc.pins[i][p].startTime;
+        properties["end_time"] = svc.pins[i][p].endTime;
+        properties["auto_play"] = svc.pins[i][p].autoPlay;
+        properties["play_length"] = svc.pins[i][p].playLength;
         featureCollections[i].features.push({
           type: "Feature",
           id: svc.pins[i][p].id,
@@ -653,16 +700,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
             type: "Point",
             coordinates: [svc.pins[i][p].coords[0], svc.pins[i][p].coords[1]]
           },
-          properties: {
-            inMap: svc.pins[i][p].inMap,
-            inTimeline: svc.pins[i][p].inTimeline,
-            autoShow: svc.pins[i][p].autoShow,
-            media: svc.pins[i][p].media,
-            start_time: svc.pins[i][p].startTime,
-            end_time: svc.pins[i][p].endTime,
-            title: svc.pins[i][p].title,
-            content: svc.pins[i][p].content
-          }
+          properties
         });
       }
     }
@@ -803,6 +841,10 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
         pin.inMap = pinJSON.inMap || true;
         pin.inTimeline = pinJSON.inTimeline || true;
         pin.indexID = pinIndex;
+
+        pin.autoPlay = pinJSON.auto_play;
+        pin.offset = pinJSON.offset;
+        pin.playLength = pinJSON.play_length;
         // TODO: Fix these dates
         pin.startTime = startDateObj;
         pin.endTime = endDateObj;
