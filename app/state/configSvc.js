@@ -114,7 +114,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
     if (layers && layers[0]) {
       activeBasemap = layers[0].split("?layers=")[1];
     }
-    return basemapCopy.map(basemap => {
+    const baseMapArray = basemapCopy.map(basemap => {
       if (activeBasemap && basemap.name === activeBasemap) {
         basemap.visibility = true;
         basemap.selected = true;
@@ -127,6 +127,15 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
       }
       return basemap;
     });
+    // Return baseMapArray with the selected basemap first.
+    for (let i = 0; i < baseMapArray.length; i++) {
+      if (baseMapArray[i].selected === true) {
+        const selectedBaseMap = baseMapArray.splice(i,1);
+        baseMapArray.unshift(selectedBaseMap[0]);         
+        break;
+      }
+    }
+    return baseMapArray;
   };
 
   svc.getLayerListFromServerData = layers => {
