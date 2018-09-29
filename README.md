@@ -1,5 +1,7 @@
 # Story-tools Composer
 
+[![Greenkeeper badge](https://badges.greenkeeper.io/MapStory/story-tools-composer.svg)](https://greenkeeper.io/)
+
 ## Deployment
 
 ### Local Standalone
