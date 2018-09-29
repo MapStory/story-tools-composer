@@ -9,7 +9,7 @@ for i do # loop over $@
     if [ "$i" = "--bundle" ]; then
         pushd deps/story-tools
         yarn install
-        gulp build
+        yarn run gulp build
         popd
         yarn install
         yarn run bundle $COMPOSER_BUNDLE_ARGS
@@ -18,7 +18,7 @@ for i do # loop over $@
     if [ "$i" = "--bundle-dev" ]; then
         pushd deps/story-tools
         yarn install
-        gulp build watch &
+        yarn run gulp build watch &
         yarn link
         popd
         yarn install

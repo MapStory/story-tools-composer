@@ -24,13 +24,6 @@ RUN set -ex; \
 RUN yarn global add gulp-cli
 
 WORKDIR /srv/story-tools-composer
-COPY package.json ./
-COPY yarn.lock ./
-COPY deps ./deps
-RUN yarn install
-
-# Symlink for eslint
-RUN ln -s /srv/story-tools-composer/node_modules/eslint/bin/eslint.js /usr/local/bin/eslint
 
 ENV COMPOSER_BUNDLE_ARGS=
 
@@ -41,6 +34,9 @@ RUN set -ex; \
     mv ./node_modules /tmp/story-tools-composer/; \
     mkdir /tmp/story-tools/; \
     mv ./deps/story-tools/node_modules /tmp/story-tools/;
+
+ # Symlink for eslint
+RUN ln -s /srv/story-tools-composer/node_modules/eslint/bin/eslint.js /usr/local/bin/eslint
 
 EXPOSE 9090
 ENTRYPOINT ["./scripts/run.sh"]
