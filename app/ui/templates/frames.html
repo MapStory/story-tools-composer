@@ -9,16 +9,15 @@
     </p>
 </section>
 
-
-<div id="createdStoryframes" ng-show="frameSettings">
-    <h2 class="section-title float-left clearfix" ng-if="frameSettings.length">Created Storyframes</h2>
-    <div class="clearfix" ng-repeat="item in frameSettings">
+<div id="createdStoryframes" ng-show="copiedFrameSettings">
+    <h2 class="section-title float-left clearfix" ng-if="copiedFrameSettings.length">Created Storyframes</h2>
+    <div class="clearfix" ng-if="item.title" ng-repeat="item in copiedFrameSettings">
         <div id="titleBar" ng-show="item.chapter === stateSvc.getChapterIndex()">
             <a ng-click="showDetails = !showDetails" id="storyframeTitle" class="section-title">
                 <i class="fa fa-expand"></i> {{ item.title }}
             </a>
-            <i class="fa fa-trash" ng-click="deleteStoryframe($index)" uib-tooltip="Delete StoryFrame"></i>
-            <i class="fa fa-edit" ng-click="editStoryframe($index)" uib-tooltip="Edit StoryFrame"></i>
+            <i class="fa fa-trash" ng-click="deleteStoryframe($index)" uib-tooltip="Delete StoryFrame"/>
+            <i class="fa fa-edit" ng-click="editStoryframe($index)" uib-tooltip="Edit StoryFrame"/>
         </div>
         <ul class="storyframe-details" ng-show="showDetails">
             <li><strong>Bounding Box:</strong></li>
@@ -35,29 +34,30 @@
         </ul>
     </div>
 </div>
+
 <form name="storyFrameDetails" id="storySettings">
     <label>*Title</label>
-    <input id="frameTitle" type="text" ng-model="frameSettings.title" aria-label="title" required/>
+    <input id="frameTitle" type="text" ng-model="frameSettings[0].title" aria-label="title" required/>
 
     <label>*Start Date</label>
     <div>
-        <input required id="startDate" type="date" ng-model="frameSettings.startDate" aria-label="start date" required/>
-        <span class="fa fa-calendar input-icons"></span>
-        <input id="startTime" type="time" ng-model="frameSettings.startTime" aria-label="start time">
-        <span class="fa fa-clock-o input-icons"></span>
+        <input required id="startDate" type="date" ng-model="frameSettings[0].startDate" aria-label="start date" required/>
+        <span class="fa fa-calendar input-icons"/>
+        <input id="startTime" type="time" ng-model="frameSettings[0].startTime" aria-label="start time">
+        <span class="fa fa-clock-o input-icons"/>
     </div>
 
     <label>*End Date</label>
     <div>
-        <input id="endDate" type="date" ng-model="frameSettings.endDate" aria-label="end date" required/>
-        <span class="fa fa-calendar input-icons"></span>
-        <input id="endTime" type="time" ng-model="frameSettings.endTime" aria-label="end time">
-        <span class="fa fa-clock-o input-icons"></span>
+        <input id="endDate" type="date" ng-model="frameSettings[0].endDate" aria-label="end date" required/>
+        <span class="fa fa-calendar input-icons"/>
+        <input id="endTime" type="time" ng-model="frameSettings[0].endTime" aria-label="end time">
+        <span class="fa fa-clock-o input-icons"/>
     </div>
 
     <div id="setPlacement">
         <button class="btn btn-inverse" ng-click="drawBoundingBox()" uib-tooltip="Select area for your StoryFrame">
-            <i class="fa fa-map"></i>&nbsp;
+            <i class="fa fa-map"/>&nbsp;
             Create Bounding Box
         </button>
     </div>
@@ -69,7 +69,7 @@
 
     <div class="alert alert-danger missingFieldMsg" ng-show="showOverlapMsg" class="missingFieldMsg">
         <p>You have overlapping StoryFrames. Please adjust your dates:</p>
-        <p>{{ frameSettings.startDate | date: 'mediumDate' }} -  {{ frameSettings.endDate | date: 'mediumDate'}}</p>
+        <p>{{ copiedFrameSettings.startDate | date: 'mediumDate' }} -  {{ copiedFrameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
 
     <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings);">Save</button>
