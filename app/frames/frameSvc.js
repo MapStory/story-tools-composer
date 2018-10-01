@@ -26,9 +26,7 @@ function frameSvc(stateSvc) {
     }
     svc.storyFrames = stateSvc.config.storyframes;
   });
-
   svc.get = prop => svc[prop];
-
   return svc;
 }
 

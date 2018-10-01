@@ -192,24 +192,25 @@ function stateSvc(
     }
   };
 
-  svc.setStoryframeDetails = frameSettings => {
+  svc.setStoryframeDetails = copiedFrameSettings => {
     svc.config.frameSettings = [];
     const features = [];
-    for (let i = 0; i < frameSettings.length; i += 1) {
+    for (let i = 0; i < copiedFrameSettings.length; i += 1) {
       features.push({
         type: "Feature",
         geometry: null,
         id: null,
         properties: {
-          chapter: frameSettings[i].chapter,
-          title: frameSettings[i].title,
-          start_time: frameSettings[i].startDate,
-          end_time: frameSettings[i].endDate,
+          id: Date.now(),
+          chapter: copiedFrameSettings[i].chapter,
+          title: copiedFrameSettings[i].title,
+          start_time: copiedFrameSettings[i].startDate,
+          end_time: copiedFrameSettings[i].endDate,
           center: [
-            [frameSettings[i].bb1[0], frameSettings[i].bb1[1]],
-            [frameSettings[i].bb2[0], frameSettings[i].bb2[1]],
-            [frameSettings[i].bb3[0], frameSettings[i].bb3[1]],
-            [frameSettings[i].bb4[0], frameSettings[i].bb4[1]]
+            [copiedFrameSettings[i].bb1[0], copiedFrameSettings[i].bb1[1]],
+            [copiedFrameSettings[i].bb2[0], copiedFrameSettings[i].bb2[1]],
+            [copiedFrameSettings[i].bb3[0], copiedFrameSettings[i].bb3[1]],
+            [copiedFrameSettings[i].bb4[0], copiedFrameSettings[i].bb4[1]]
           ]
         }
       });

@@ -29,12 +29,15 @@ function composerController(
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
   $scope.frameSettings = [];
+  $scope.copiedFrameSettings = [];
   let queryLayerLoaded = false;
   const map = MapManager.storyMap.getMap();
 
   $scope.$watch(
     angular.bind($scope, () => {
+
       const fetchedFrameSettings = frameSvc.get("storyFrames");
+
       const currentChapter = stateSvc.getChapterIndex();
       const fetchedFrames = [];
 
@@ -68,6 +71,7 @@ function composerController(
             };
           }
           $scope.frameSettings = fetchedFrames.reverse();
+          $scope.copiedFrameSettings = angular.copy($scope.frameSettings);
         }
       }
     })
@@ -305,14 +309,12 @@ function composerController(
 
 
   $scope.getCurrentFrame = date => {
-
-
-    if ($scope.currentFrame < $scope.frameSettings.length) {
-      if (typeof $scope.frameSettings[$scope.currentFrame] === "undefined") {
+    if ($scope.currentFrame < $scope.copiedFrameSettings.length) {
+      if (typeof $scope.copiedFrameSettings[$scope.currentFrame] === "undefined") {
         $scope.currentFrame += 1;
       } else {
-        const start = $scope.frameSettings[$scope.currentFrame].startDate;
-        const end = $scope.frameSettings[$scope.currentFrame].endDate;
+        const start = $scope.copiedFrameSettings[$scope.currentFrame].startDate;
+        const end = $scope.copiedFrameSettings[$scope.currentFrame].endDate;
         $scope.checkTimes(date, start, end);
       }
     }
@@ -335,28 +337,27 @@ function composerController(
   $scope.zoomToExtent = () => {
     let polygon;
 
-    if ($scope.frameSettings[$scope.currentFrame]) {
-
+    if ($scope.copiedFrameSettings[$scope.currentFrame]) {
       polygon = new ol.Feature(
         new ol.geom.Polygon([
           [
-            $scope.frameSettings[$scope.currentFrame].bb1,
-            $scope.frameSettings[$scope.currentFrame].bb2,
-            $scope.frameSettings[$scope.currentFrame].bb3,
-            $scope.frameSettings[$scope.currentFrame].bb4
+            $scope.copiedFrameSettings[$scope.currentFrame].bb1,
+            $scope.copiedFrameSettings[$scope.currentFrame].bb2,
+            $scope.copiedFrameSettings[$scope.currentFrame].bb3,
+            $scope.copiedFrameSettings[$scope.currentFrame].bb4
           ]
         ])
       )
     }
-    else if (!$scope.frameSettings[$scope.currentFrame]) {
-      for (let i=1; i < $scope.frameSettings.length; i ++) {
+    else if (!$scope.copiedFrameSettings[$scope.currentFrame]) {
+      for (let i=1; i < $scope.copiedFrameSettings.length; i ++) {
         polygon = new ol.Feature(
           new ol.geom.Polygon([
             [
-              $scope.frameSettings[i].bb1,
-              $scope.frameSettings[i].bb2,
-              $scope.frameSettings[i].bb3,
-              $scope.frameSettings[i].bb4
+              $scope.copiedFrameSettings[i].bb1,
+              $scope.copiedFrameSettings[i].bb2,
+              $scope.copiedFrameSettings[i].bb3,
+              $scope.copiedFrameSettings[i].bb4
             ]
           ])
         )
