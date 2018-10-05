@@ -18,12 +18,12 @@ for i do # loop over $@
     if [ "$i" = "--bundle-dev" ]; then
         pushd deps/story-tools
         yarn install
-        yarn run gulp build watch &
-        yarn link
+        yarn run gulp build
+        #yarn link
         popd
         yarn install
-        yarn link story-tools
-        yarn run bundle-watch $COMPOSER_BUNDLE_ARGS &
+        #yarn link story-tools
+        yarn run bundle $COMPOSER_BUNDLE_ARGS
     fi
 
     if [ "$i" = "--dep-upgrade" ]; then
