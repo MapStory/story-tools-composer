@@ -14,7 +14,10 @@ const modelAttributes = [
   "inMap",
   "inTimeline",
   "pause_playback",
-  "autoShow"
+  "autoShow",
+  "autoPlay",
+  "playLength",
+  "offset"
 ];
 
 class Pin extends ol.Feature {

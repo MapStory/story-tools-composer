@@ -50,7 +50,10 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     "inMap",
     "inTimeline",
     "pause_playback",
-    "autoShow"
+    "autoShow",
+    "autoPlay",
+    "playLength",
+    "offset"
   ];
 
   // Filters
@@ -62,7 +65,10 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     "inMap",
     "inTimeline",
     "pause_playback",
-    "autoShow"
+    "autoShow",
+    "autoPlay",
+    "playLength",
+    "offset"
   ];
 
   /**
@@ -691,8 +697,8 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
         };
         properties["start_time"] = svc.pins[i][p].startTime;
         properties["end_time"] = svc.pins[i][p].endTime;
-        properties["auto_play"] = svc.pins[i][p].autoPlay;
         properties["play_length"] = svc.pins[i][p].playLength;
+        properties["auto_play"] = svc.pins[i][p].autoPlay;
         featureCollections[i].features.push({
           type: "Feature",
           id: svc.pins[i][p].id,
