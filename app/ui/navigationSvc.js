@@ -42,7 +42,7 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
     if (previousChapter > 0) {
       // Go to previous
       $log.info("Going to the Chapter ", previousChapter);
-      // (-1 because indexes start at 1)
+      // (-1 because the getChapter and thisChapter start at 1, rather than 0)
       const data = {
         currentChapterIndex: thisChapter - 1,
         nextChapterIndex: previousChapter - 1
