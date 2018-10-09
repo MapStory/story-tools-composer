@@ -55,13 +55,16 @@ function legendDirective(layerSvc) {
         updateLayers();
       });
 
-      PubSub.subscribe("layerRemoved", () => {
+      const checkLayers = () => {
         // close the legend if the last layer is removed
         if (legendOpen === true && scope.layers.list.length === 0) {
           closeLegend();
         }
         updateLayers();
-      });
+      };
+
+      PubSub.subscribe("layerRemoved", checkLayers);
+      PubSub.subscribe("changingChapter", checkLayers);
     }
   };
 }

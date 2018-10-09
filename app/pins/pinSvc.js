@@ -871,8 +871,10 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
    */
   PubSub.subscribe(
     "changingChapter",
-    (event, currentChapterIndex, nextChapterIndex) => {
-      const currentPins = svc.getPins(currentChapterIndex);
+    (event, data) => {
+      const oldChapterIndex = data.previousChapterIndex;
+      const nextChapterIndex = data.currentChapterIndex;
+      const currentPins = svc.getPins(oldChapterIndex);
       const nextPins = svc.getPins(nextChapterIndex);
       const map = MapManager.storyMap.getMap();
 

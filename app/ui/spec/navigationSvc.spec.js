@@ -13,6 +13,9 @@ describe("navigationSvc", () => {
       location = $location;
     })
   );
+  beforeEach(()=> {
+    window.PubSub.clearAllSubscriptions();
+  });
 
   describe("nextChapter", () => {
     beforeEach(
@@ -25,6 +28,17 @@ describe("navigationSvc", () => {
       stateSvc.setConfig({ chapters: [{}, {}] });
       navigationSvc.nextChapter();
       expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
+    });
+
+    it("broadcast a chapter change when next chapter is selected", (done) => {
+      window.PubSub.subscribe("changingChapter", (msg, data) => {
+        expect(data.currentChapterIndex).toBe(0);
+        expect(data.nextChapterIndex).toBe(1);
+        window.PubSub.clearAllSubscriptions();
+        done();
+      });
+      stateSvc.setConfig({ chapters: [{}, {}] });
+      navigationSvc.nextChapter();
     });
 
     it("should update the location path to the first chapter if there is no next chapter ", () => {
@@ -44,11 +58,57 @@ describe("navigationSvc", () => {
       expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
     });
 
-    it("should update the location path to the first chapter if there is no previous chapter ", () => {
+    it("broadcast a chapter change when previous chapter is selected", (done) => {
+      stateSvc.setConfig({ chapters: [{}, {}, {}] });
+      spyOn(location, "path").and.returnValue("/chapter/3");
+      window.PubSub.subscribe("changingChapter", (msg, data) => {
+        expect(data.currentChapterIndex).toBe(2);
+        expect(data.nextChapterIndex).toBe(1);
+        window.PubSub.clearAllSubscriptions();
+        done();
+      });
+      navigationSvc.previousChapter();
+    });
+
+    it("should update the location path to the first chapter if there is no previous chapter", () => {
       stateSvc.setConfig({ chapters: [{}] });
       spyOn(location, "path");
       navigationSvc.previousChapter();
       expect(location.path).toHaveBeenCalledWith("/chapter/1");
     });
+
+    it("broadcast a chapter change to the first chapter if there is no previous chapter", (done) => {
+      stateSvc.setConfig({ chapters: [{}] });
+      window.PubSub.subscribe("changingChapter", (msg, data) => {
+        expect(data.currentChapterIndex).toBe(0);
+        expect(data.nextChapterIndex).toBe(0);
+        window.PubSub.clearAllSubscriptions();
+        done();
+      });
+      navigationSvc.previousChapter();
+    });
+  });
+  describe("go to chapter", () => {
+    beforeEach(inject($compile => {}));
+
+    it("should update the location path to the new chapter if it exists", () => {
+      stateSvc.setConfig({ chapters: [{}, {}, {}] });
+      spyOn(location, "path").and.returnValue("/chapter/3");
+      navigationSvc.goToChapter(2);
+      expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
+    });
+
+    it("should broadcast the new chapter if it exists", (done) => {
+      stateSvc.setConfig({ chapters: [{}, {}, {}] });
+      spyOn(location, "path").and.returnValue("/chapter/3");
+      window.PubSub.subscribe("changingChapter", (msg, data) => {
+        expect(data.currentChapterIndex).toBe(2);
+        expect(data.nextChapterIndex).toBe(1);
+        window.PubSub.clearAllSubscriptions();
+        done();
+      });
+      navigationSvc.goToChapter(2);
+    });
+
   });
 });

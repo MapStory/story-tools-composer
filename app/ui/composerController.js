@@ -124,14 +124,22 @@ function composerController(
     }
   }
 
-  const loadMap = () => {
+  $scope.stateSvc.previousChapter = $scope.stateSvc.getChapter();
+
+  const loadMap = (event) => {
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();
     if (urlChapterId > chapterCount) {
       $scope.navigationSvc.goToChapter(1);
     }
+    if (event) {
+      PubSub.publish("changingChapter",
+        {currentChapterIndex: $scope.stateSvc.getChapter() - 1,
+          previousChapterIndex: $scope.stateSvc.previousChapter - 1})
+    }
     $scope.mapManager.initMapLoad();
     $scope.stateSvc.updateCurrentChapterConfig();
+    $scope.stateSvc.previousChapter = $scope.stateSvc.getChapter();
   };
 
   window.addEventListener("popstate", loadMap);

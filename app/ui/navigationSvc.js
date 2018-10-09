@@ -13,13 +13,22 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
     if (nextChapter <= stateSvc.getChapterCount()) {
       // Go to next
       $log.info("Going to Chapter ", nextChapter);
-      PubSub.publish("changingChapter", thisChapter - 1, nextChapter - 1); // (-1 because indeces start at 1)
+      // These are array indexes, so subtract 1 from the 1 based chapter number
+      const data = {
+        currentChapterIndex: thisChapter - 1,
+        nextChapterIndex: nextChapter - 1
+      };
+      PubSub.publish("changingChapter", data);
       $location.path(appConfig.routes.chapter + nextChapter);
     } else {
       // Go from last to first.
       $log.info("Going to Chapter ", 1);
       $location.path("");
-      PubSub.publish("changingChapter", thisChapter - 1, 0);
+      const data = {
+        currentChapterIndex: thisChapter - 1,
+        nextChapterIndex: 0
+      };
+      PubSub.publish("changingChapter", data);
     }
   };
 
@@ -33,16 +42,24 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
     if (previousChapter > 0) {
       // Go to previous
       $log.info("Going to the Chapter ", previousChapter);
-      PubSub.publish("changingChapter", thisChapter - 1, previousChapter - 1); // (-1 because indeces start at 1)
+      // (-1 because indexes start at 1)
+      const data = {
+        currentChapterIndex: thisChapter - 1,
+        nextChapterIndex: previousChapter - 1
+      };
+
+      PubSub.publish("changingChapter", data);
       $location.path(appConfig.routes.chapter + previousChapter);
     } else {
       // Go from first to last.
       $log.info("Going to Chapter ", stateSvc.getChapterCount());
       svc.goToChapter(stateSvc.getChapterCount());
+      const data = {
+        currentChapterIndex: thisChapter - 1,
+        nextChapterIndex: stateSvc.getChapterCount() - 1
+      };
       PubSub.publish(
-        "changingChapter",
-        thisChapter - 1,
-        stateSvc.getChapterCount() - 1
+        "changingChapter", data
       );
     }
   };
@@ -52,6 +69,14 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
    * @param number
    */
   svc.goToChapter = number => {
+    const thisChapter = Number(stateSvc.getChapter());
+    const data = {
+      currentChapterIndex: thisChapter - 1,
+      nextChapterIndex: number - 1
+    };
+    PubSub.publish(
+      "changingChapter", data
+    );
     if (number > 0) {
       $log.info("Going to the Chapter ", number);
       $location.path(appConfig.routes.chapter + number);

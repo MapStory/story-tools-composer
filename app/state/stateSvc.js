@@ -7,6 +7,7 @@ function stateSvc(
 ) {
   const svc = {};
   svc.currentChapter = null;
+  svc.previousChapter = null;
   svc.originalConfig = null;
   svc.config = null;
   svc.frameSettings = null;
