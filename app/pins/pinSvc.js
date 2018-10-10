@@ -307,6 +307,12 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     const element = document.createElement("div");
     element.setAttribute("id", `pin-overlay-${pin.indexID}`);
     element.setAttribute("class", "storypin-overlay");
+    /*
+      The extra values added to the height and width are based on the css
+      rules for .storypin-overlay
+    */
+    element.setAttribute("style",
+      `width: calc(${pin.boxWidth + 20}px + 0.45em); height: calc(${pin.boxHeight + 40}px + 0.45em);`);
 
     // Create dynamic content and append to parent element.
     const heading = document.createElement("div");
@@ -698,7 +704,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
         properties["start_time"] = svc.pins[i][p].startTime;
         properties["end_time"] = svc.pins[i][p].endTime;
         properties["play_length"] = svc.pins[i][p].playLength;
-        properties["auto_play"] = svc.pins[i][p].autoPlay;
+        properties["auto_play"] = !!svc.pins[i][p].autoPlay;
         featureCollections[i].features.push({
           type: "Feature",
           id: svc.pins[i][p].id,
