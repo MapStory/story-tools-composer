@@ -15,6 +15,7 @@ describe("navigationSvc", () => {
   );
   beforeEach(()=> {
     window.PubSub.clearAllSubscriptions();
+    stateSvc.setConfig({ chapters: [] });
   });
 
   describe("nextChapter", () => {
