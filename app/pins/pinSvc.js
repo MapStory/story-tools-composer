@@ -800,10 +800,9 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
    */
   svc.isWhitelist = url => {
     let allowed = false;
-
     // Loop whitelist and check if it is ok.
     svc.whitelist.forEach(regexExpr => {
-      if (url.match(regexExpr.regex)) {
+      if (url && url.match(regexExpr.regex)) {
         allowed = true;
       }
     });
@@ -816,7 +815,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
 
     // Loop whitelist and check if it is ok.
     svc.whitelist.forEach(regexExpr => {
-      if (url.match(regexExpr.regex)) {
+      if (url && url.match(regexExpr.regex)) {
         foundObj = { url, isImage: regexExpr.isImage };
       }
     });
