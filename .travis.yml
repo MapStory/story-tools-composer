@@ -27,18 +27,9 @@ before_install:
   - sudo mv docker-compose /usr/local/bin
   - docker --version
   - docker-compose --version
-  - yarn global add gulpjs/gulp.git#4.0
-  - mkdir -p /tmp/story-tools/node_modules
-  - mkdir -p /tmp/story-tools-composer/node_modules
 
 install:
-  # Standard deployment
-  - ./scripts/run.sh --bundle
-  # Docker deployment
   - docker-compose build
 
 script:
-  # Standard deployment
-  - ./scripts/run.sh --test
-  # Docker deployment
   - docker-compose run composer --test
