@@ -1,4 +1,6 @@
 .DS_Store
+.git
+/deps/story-tools/.git
 **/node_modules/
 .travis.yml
 docker-compose.yml

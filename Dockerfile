@@ -1,5 +1,9 @@
-FROM node:9
+FROM node:10
 LABEL maintainer="Tyler Battle <tbattle@boundlessgeo.com>"
+
+ARG DEPLOYMENT=production
+ARG NODE_ENV=$DEPLOYMENT
+ENV NODE_ENV=$DEPLOYMENT
 
 # Install SSL/TLS support
 RUN set -ex; \
@@ -21,21 +25,22 @@ RUN set -ex; \
     rm -rf /var/lib/apt/lists/*;
 
 # Install Gulp for story-tools
-RUN yarn global add gulp-cli
+RUN yarn global add gulpjs/gulp.git#4.0
 
 WORKDIR /srv/story-tools-composer
 
 ENV COMPOSER_BUNDLE_ARGS=
 
 COPY . ./
+
 RUN set -ex; \
+    mkdir -p /tmp/story-tools/node_modules; \
+    mkdir -p /tmp/story-tools-composer/node_modules; \
     ./scripts/run.sh --bundle; \
-    mkdir /tmp/story-tools-composer/; \
     mv ./node_modules /tmp/story-tools-composer/; \
-    mkdir /tmp/story-tools/; \
     mv ./deps/story-tools/node_modules /tmp/story-tools/;
 
- # Symlink for eslint
+# Symlink for eslint
 RUN ln -s /srv/story-tools-composer/node_modules/eslint/bin/eslint.js /usr/local/bin/eslint
 
 EXPOSE 9090

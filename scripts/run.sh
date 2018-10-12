@@ -3,6 +3,16 @@ set -e
 
 echo "Starting"
 
+# Populate node_modules in story-tools-composer if it's missing.
+# If running during a docker build, the dirs are just empty.
+if [ ! -d "./node_modules" ]; then
+    cp -r /tmp/story-tools-composer/node_modules ./
+fi
+# And for composer's story-tools
+if [ ! -d "./deps/story-tools/node_modules" ]; then
+    cp -r /tmp/story-tools/node_modules ./deps/story-tools/
+fi
+
 for i do # loop over $@
     echo "Executing $i"
 
