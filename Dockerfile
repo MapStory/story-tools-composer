@@ -1,15 +1,28 @@
-FROM node:10.12-alpine
+FROM node:10.12
 LABEL maintainer="Tyler Battle <tbattle@boundlessgeo.com>"
 
 ARG DEPLOYMENT=production
 ARG NODE_ENV=$DEPLOYMENT
 ENV NODE_ENV=$DEPLOYMENT
 
-# Install build tools
-RUN apk add --no-cache \
-    git \
-    yarn \
-    ;
+# Install SSL/TLS support
+RUN set -ex; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        apt-transport-https \
+        ca-certificates \
+        ; \
+    rm -rf /var/lib/apt/lists/*;
+
+# Install yarn
+RUN set -ex; \
+    curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | apt-key add -; \
+    echo "deb https://dl.yarnpkg.com/debian/ stable main" | tee /etc/apt/sources.list.d/yarn.list; \
+    apt-get update; \
+    apt-get install -y --no-install-recommends \
+        yarn \
+        ; \
+    rm -rf /var/lib/apt/lists/*;
 
 # Install Gulp for story-tools
 RUN yarn global add gulpjs/gulp.git#4.0
