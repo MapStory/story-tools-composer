@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/sh
 set -e
 
 echo "Starting"
@@ -17,29 +17,29 @@ for i do # loop over $@
     echo "Executing $i"
 
     if [ "$i" = "--bundle" ]; then
-        pushd deps/story-tools
-        yarn install
+        cd deps/story-tools
+        yarn install --production=false
         yarn run gulp build
-        popd
-        yarn install
+        cd ../..
+        yarn install --production=false
         yarn run bundle $COMPOSER_BUNDLE_ARGS
     fi
 
     if [ "$i" = "--bundle-dev" ]; then
-        pushd deps/story-tools
-        yarn install
+        cd deps/story-tools
+        yarn install --production=false
         yarn run gulp build
-        #yarn link
-        popd
-        yarn install
-        #yarn link story-tools
+        yarn link
+        cd ../..
+        yarn install --production=false
+        yarn link story-tools
         yarn run bundle $COMPOSER_BUNDLE_ARGS
     fi
 
     if [ "$i" = "--dep-upgrade" ]; then
-        pushd deps/story-tools
+        cd deps/story-tools
         yarn upgrade
-        popd
+        cd ../..
         yarn upgrade
     fi
 
@@ -60,7 +60,7 @@ for i do # loop over $@
     fi
 
     if [ "$i" = "--shell" ]; then
-        /bin/bash
+        /bin/sh
     fi
 done
 
