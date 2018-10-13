@@ -2,14 +2,15 @@ version: '3.5'
 services:
 
   composer:
-    build: .
+    build:
+      context: .
+      args:
+        - DEPLOYMENT=production
     networks:
       internal:
-    volumes:
-      - .:/srv/story-tools-composer:cached
     ports:
       - "9090:9090"
-    command: [--bundle-dev, --serve-dev]
+    command: [--test --lint]
 
 networks:
   internal:
