@@ -283,15 +283,7 @@ function composerController(
       const endDate = $scope.formatDates(pin.endTime);
       const storyLayerStartDate = $scope.formatDates(date);
 
-      let shouldShow = false;
-      if (moment(storyLayerStartDate).isSameOrAfter(startDate)) {
-        // TODO: Show StoryPin.
-        shouldShow = true;
-      }
-      if (moment(storyLayerStartDate).isSameOrAfter(endDate)) {
-        // TODO: Hide Storypin.
-        shouldShow = false;
-      }
+      const shouldShow = moment(storyLayerStartDate).isSameOrAfter(startDate) && !moment(storyLayerStartDate).isAfter(endDate);
 
       if (shouldShow) {
         pin.show();

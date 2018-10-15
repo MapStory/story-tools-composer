@@ -543,6 +543,8 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     // pin.endDate = new Date();
     svc.addStorypinToMap(pin);
 
+    PubSub.publish("pinAdded");
+
 
     return pin;
   };
@@ -657,6 +659,12 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
   };
 
   /**
+   * Get pins from the current chapter
+   * @returns {Array|*} An array of Pins
+   */
+  svc.getCurrentPins = () => svc.getPins(stateSvc.getChapterIndex());
+
+  /**
    * When the user clicks on save it will reflect his changes on the map.
    */
   svc.onStoryPinSave = () => {
@@ -717,6 +725,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       }
     }
     stateSvc.setStoryPinsToConfig(featureCollections);
+    PubSub.publish("pinAdded");
   };
 
   /**
