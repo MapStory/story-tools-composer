@@ -13,8 +13,7 @@ describe("pinSvc", () => {
     stateSvc,
     pin,
     serverFeatures,
-    validProperties,
-    pinConfigs;
+    validProperties;
 
   beforeEach(module("composer"));
   beforeEach(
@@ -37,18 +36,6 @@ describe("pinSvc", () => {
           coordinates: [0, 0]
         }
       };
-
-      pinConfigs = [
-        validProperties,
-        {
-          title: "test2",
-          startTime: "9/1/2000",
-          endTime: "10/20/2000",
-          geometry: {
-            coordinates: [0, 0]
-          }
-        }
-      ];
 
       serverFeatures = {
         features: [

@@ -28,4 +28,4 @@ install:
   - docker-compose build
 
 script:
-  - docker-compose run composer --test
+  - docker-compose run composer --test --lint

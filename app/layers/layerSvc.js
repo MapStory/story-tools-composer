@@ -53,6 +53,8 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
   ];
 
   svc.removeLayer = lyr => {
+    // TODO: Is this an OpenLayers internal attribute that we shouldn't be depending on?
+    // eslint-disable-next-line no-underscore-dangle
     stateSvc.removeLayer(lyr.values_.uuid);
     window.storyMap.removeStoryLayer(lyr);
     PubSub.publish("layerRemoved");

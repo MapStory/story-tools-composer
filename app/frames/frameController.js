@@ -12,9 +12,11 @@ function frameController(
 
   const map = MapManager.storyMap.getMap();
 
+  /* this function seems to be unused
   function transformCoords(loc) {
     return ol.proj.transform(loc, "EPSG:3857", "EPSG:4326");
   }
+  */
 
   $scope.clearBoundingBox = () => {
     map.getLayers().forEach(layer => {
@@ -87,7 +89,7 @@ function frameController(
     map.addLayer(vector);
     map.addInteraction(drawBoundingBox);
 
-    drawBoundingBox.on('drawend', evt => {
+    drawBoundingBox.on("drawend", evt => {
       drawBoundingBox.setActive(false);
     });
   };
