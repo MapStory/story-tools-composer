@@ -3,30 +3,23 @@ set -e
 
 echo "Starting"
 
-# Populate node_modules in story-tools-composer if it's missing.
-# If running during a docker build, the dirs are just empty.
-if [ ! -d "./node_modules" ]; then
-    echo "Copying composer node_modules"
-    cp -r /tmp/story-tools-composer/node_modules ./
-fi
-# And for composer's story-tools
-if [ ! -d "./deps/story-tools/node_modules" ]; then
-    echo "Copying story-tools node_modules"
-    cp -r /tmp/story-tools/node_modules ./deps/story-tools/
-fi
-
 for i do # loop over $@
     echo "Executing $i"
 
     if [ "$i" = "--bundle" ]; then
-        echo "bundling story-tools for prod"
-        cd deps/story-tools
-        yarn install --production=false
-        yarn run gulp build
-        cd ../..
-        echo "bundling composer for prod"
-        yarn install --production=false
-        yarn run bundle $COMPOSER_BUNDLE_ARGS
+        # hypothesis: when used for dev, symlinks are desired.
+        # when used for prod, Dockerfile COPY will follow symlinks anyway.
+
+        ./scripts/run.sh --bundle-dev
+
+        # echo "bundling story-tools for prod"
+        # cd deps/story-tools
+        # yarn install --production=false
+        # yarn run gulp build
+        # cd ../..
+        # echo "bundling composer for prod"
+        # yarn install --production=false
+        # yarn run bundle $COMPOSER_BUNDLE_ARGS
     fi
 
     if [ "$i" = "--bundle-dev" ]; then

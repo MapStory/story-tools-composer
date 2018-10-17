@@ -33,12 +33,7 @@ ENV COMPOSER_BUNDLE_ARGS=
 
 COPY . ./
 
-RUN set -ex; \
-    mkdir -p /tmp/story-tools/node_modules; \
-    mkdir -p /tmp/story-tools-composer/node_modules; \
-    ./scripts/run.sh --bundle; \
-    mv ./node_modules /tmp/story-tools-composer/; \
-    mv ./deps/story-tools/node_modules /tmp/story-tools/;
+RUN ./scripts/run.sh --bundle
 
 # Symlink for eslint
 RUN ln -s /srv/story-tools-composer/node_modules/eslint/bin/eslint.js /usr/local/bin/eslint
