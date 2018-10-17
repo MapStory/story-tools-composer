@@ -3,8 +3,7 @@
   "parserOptions": {
     "ecmaVersion": 2018,
     "sourceType": "module",
-    "ecmaFeatures": {
-    }
+    "ecmaFeatures": {}
   },
   "env": {
     "browser": true,
@@ -13,7 +12,7 @@
     "protractor": true,
     "es6": true
   },
-  "extends": [ "airbnb-base", "prettier",  "plugin:react/recommended"  ],
+  "extends": ["airbnb-base", "prettier", "plugin:react/recommended"],
   "globals": {
     "ol": true,
     "storytools": true,
@@ -28,18 +27,31 @@
     "react"
   ],
   "rules": {
-    "camelcase": ["error", { "properties": "always" }],
+    "camelcase": ["error", {
+      "properties": "never"
+    }],
     "import/extensions": "off",
     "import/no-unresolved": "off",
-    "import/no-extraneous-dependencies": ["error", {"devDependencies": true}],
+    "import/no-extraneous-dependencies": ["error", {
+      "devDependencies": true
+    }],
     "indent": ["error", 2],
-    "no-bitwise": ["error", { "int32Hint": true }],
+    "no-bitwise": ["error", {
+      "int32Hint": true
+    }],
     "no-param-reassign": "off",
-    "no-plusplus": ["error", { "allowForLoopAfterthoughts": true }],
-    "no-unused-vars": ["error", { "args": "none" }],
+    "no-plusplus": ["error", {
+      "allowForLoopAfterthoughts": true
+    }],
+    "no-unused-vars": ["error", {
+      "args": "none"
+    }],
     "one-var": "off",
     "prefer-destructuring": "off",
     "prettier/prettier": "off",
-    "quotes": ["error", "double", { "allowTemplateLiterals": true, "avoidEscape": true }]
+    "quotes": ["error", "double", {
+      "allowTemplateLiterals": true,
+      "avoidEscape": true
+    }]
   }
 }
