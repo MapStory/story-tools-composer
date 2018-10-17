@@ -155,7 +155,7 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
   svc.getSearchBarResultsIndex = searchValue => {
     const url = `${
       appConfig.servers[0].host
-    }/api/base/search/?type__in=layer&limit=15&df=typename&q=${searchValue}`;
+    }/api/layers/?title__contains=${searchValue}`;
     return new Promise(resolve => {
       $http.get(url).then(response => {
         const searchObjects = [];
