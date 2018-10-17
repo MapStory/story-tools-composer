@@ -23,7 +23,7 @@ describe("getSearchBarResultsIndex", () => {
           "GET",
           `${
             appConfig.servers[0].host
-          }/api/base/search/?type__in=layer&limit=15&df=typename&q=iguana`
+          }/api/layers/?title__contains=american=iguana`
         )
         .respond(searchBarRes);
       httpBackend.when("GET", "/api/categories/").respond([]);
