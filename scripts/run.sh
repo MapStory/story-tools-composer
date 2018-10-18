@@ -7,19 +7,14 @@ for i do # loop over $@
     echo "Executing $i"
 
     if [ "$i" = "--bundle" ]; then
-        # hypothesis: when used for dev, symlinks are desired.
-        # when used for prod, Dockerfile COPY will follow symlinks anyway.
-
-        ./scripts/run.sh --bundle-dev
-
-        # echo "bundling story-tools for prod"
-        # cd deps/story-tools
-        # yarn install --production=false
-        # yarn run gulp build
-        # cd ../..
-        # echo "bundling composer for prod"
-        # yarn install --production=false
-        # yarn run bundle $COMPOSER_BUNDLE_ARGS
+        echo "bundling story-tools for prod"
+        cd deps/story-tools
+        yarn install --production=false
+        yarn run gulp build
+        cd ../..
+        echo "bundling composer for prod"
+        yarn install --production=false
+        yarn run bundle $COMPOSER_BUNDLE_ARGS
     fi
 
     if [ "$i" = "--bundle-dev" ]; then
