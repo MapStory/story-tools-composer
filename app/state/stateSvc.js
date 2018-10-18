@@ -205,8 +205,8 @@ function stateSvc(
           id: Date.now(),
           chapter: copiedFrameSettings[i].chapter,
           title: copiedFrameSettings[i].title,
-          start_time: copiedFrameSettings[i].startDate,
-          end_time: copiedFrameSettings[i].endDate,
+          startTime: copiedFrameSettings[i].startDate,
+          endTime: copiedFrameSettings[i].endDate,
           center: [
             [copiedFrameSettings[i].bb1[0], copiedFrameSettings[i].bb1[1]],
             [copiedFrameSettings[i].bb2[0], copiedFrameSettings[i].bb2[1]],

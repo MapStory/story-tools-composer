@@ -709,10 +709,10 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
           content: svc.pins[i][p].content,
           offset: svc.pins[i][p].offset,
         };
-        properties.start_time = svc.pins[i][p].startTime;
-        properties.end_time = svc.pins[i][p].endTime;
-        properties.play_length = svc.pins[i][p].playLength;
-        properties.auto_play = !!svc.pins[i][p].autoPlay;
+        properties.startTime = svc.pins[i][p].startTime;
+        properties.endTime = svc.pins[i][p].endTime;
+        properties.playLength = svc.pins[i][p].playLength;
+        properties.autoPlay = !!svc.pins[i][p].autoPlay;
         featureCollections[i].features.push({
           type: "Feature",
           id: svc.pins[i][p].id,

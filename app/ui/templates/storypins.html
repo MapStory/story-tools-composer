@@ -5,12 +5,12 @@
     <!-- Bulk upload controller -->
     <div ng-controller="bulkUploadCtrl">
         <!-- Pin Accordion -->
-        <uib-accordion close-others="false" ng-init="is_open.editor = false; is_open.chooser = true;">
+        <uib-accordion close-others="false" ng-init="isOpen.editor = false; isOpen.chooser = true;">
             <!-- Pin List -->
-            <div uib-accordion-group heading="StoryPins" is-open="is_open.chooser">
-                <button class="btn btn-inverse" ng-click="on_add_storypin()">New StoryPin</button>
+            <div uib-accordion-group heading="StoryPins" is-open="isOpen.chooser">
+                <button class="btn btn-inverse" ng-click="onAddStoryPin()">New StoryPin</button>
                 <button class="btn btn-inverse" ng-click="onBulkPinAdd()">Import</button>
-                <button class="btn btn-inverse" ng-click="on_export_pins()">Export</button>
+                <button class="btn btn-inverse" ng-click="onExportPins()">Export</button>
             </div>
         </uib-accordion>
         <!-- THE MODAL -->
@@ -39,7 +39,7 @@
         <!-- Gets pins from pin service-->
         <section ng-repeat="($index,pin) in pinSvc.getPins(stateSvc.getChapterIndex())">
             <!-- A STORYPIN -->
-            <div uib-accordion-group class="panel-default storypin-content" is-open="pin.is_open" id="pin-form-{{$index}}">
+            <div uib-accordion-group class="panel-default storypin-content" is-open="pin.isOpen" id="pin-form-{{$index}}">
                 <!-- Heading -->
                 <uib-accordion-heading>
                         <span>

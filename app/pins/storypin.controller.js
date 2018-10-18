@@ -9,10 +9,7 @@ function storypinController($scope, pinSvc, stateSvc) {
   $scope.pinSvc = pinSvc;
   $scope.stateSvc = stateSvc;
 
-  // Properties
-  $scope.selected_pin = null;
-  $scope.pin_array = [];
-  $scope.is_open = {
+  $scope.isOpen = {
     editor: false,
     chooser: false
   };
@@ -21,11 +18,11 @@ function storypinController($scope, pinSvc, stateSvc) {
   /**
    * When the user presses the 'Add a StoryPin' button
    */
-  $scope.on_add_storypin = () => {
-    $scope.is_open.editor = true;
+  $scope.onAddStoryPin = () => {
+    $scope.isOpen.editor = true;
     const pin = pinSvc.onNewStoryPin(stateSvc.getChapterIndex());
     // Add a property for keeping track of the accordion state.
-    pin.is_open = true;
+    pin.isOpen = true;
     // Save the new pin to the config.
     pinSvc.onStoryPinSave();
   };
@@ -33,15 +30,9 @@ function storypinController($scope, pinSvc, stateSvc) {
   /**
    * Exports the current chapter's pins.
    */
-  $scope.on_export_pins = () => {
+  $scope.onExportPins = () => {
     pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()])
   };
-
-  /**
-   * Returns the given chapter's pins.
-   * @returns {Array|*} An array of StoryPins.
-   */
-  $scope.get_chapter_pins = () => pinSvc.getPins(stateSvc.getChapterIndex());
 }
 
 module.exports = storypinController;

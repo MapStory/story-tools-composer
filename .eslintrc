@@ -28,7 +28,7 @@
   ],
   "rules": {
     "camelcase": ["error", {
-      "properties": "never"
+      "properties": "always"
     }],
     "import/extensions": "off",
     "import/no-unresolved": "off",
