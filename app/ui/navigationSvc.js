@@ -18,16 +18,16 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
         currentChapterIndex: thisChapter - 1,
         nextChapterIndex: nextChapter - 1
       };
-      PubSub.publish("changingChapter", data);
       $location.path(appConfig.routes.chapter + nextChapter);
+      PubSub.publish("changingChapter", data);
     } else {
       // Go from last to first.
       $log.info("Going to Chapter ", 1);
-      $location.path("");
       const data = {
         currentChapterIndex: thisChapter - 1,
         nextChapterIndex: 0
       };
+      $location.path("");
       PubSub.publish("changingChapter", data);
     }
   };
@@ -53,14 +53,14 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
     } else {
       // Go from first to last.
       $log.info("Going to Chapter ", stateSvc.getChapterCount());
-      svc.goToChapter(stateSvc.getChapterCount());
       const data = {
         currentChapterIndex: thisChapter - 1,
         nextChapterIndex: stateSvc.getChapterCount() - 1
       };
-      PubSub.publish(
-        "changingChapter", data
-      );
+      PubSub.publish("changingChapter", data);
+      setTimeout(() => {
+        svc.goToChapter(stateSvc.getChapterCount());
+      });
     }
   };
 
@@ -74,9 +74,7 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
       currentChapterIndex: thisChapter - 1,
       nextChapterIndex: number - 1
     };
-    PubSub.publish(
-      "changingChapter", data
-    );
+    PubSub.publish("changingChapter", data);
     if (number > 0) {
       $log.info("Going to the Chapter ", number);
       $location.path(appConfig.routes.chapter + number);

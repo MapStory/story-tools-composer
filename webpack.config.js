@@ -3,7 +3,7 @@ const Path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const ExtractTextPlugin = require("extract-text-webpack-plugin");
 
-const serverHost = "https://docker";
+// const serverHost = "https://docker";
 
 module.exports = {
   context: __dirname,
@@ -11,7 +11,8 @@ module.exports = {
   resolve: {
     modules: ["node_modules"],
     alias: {
-      jquery: Path.join(__dirname, "node_modules/jquery/dist/jquery")
+      jquery: Path.join(__dirname, "node_modules/jquery/dist/jquery"),
+      app: Path.resolve(__dirname, "app")
     }
   },
   module: {
@@ -67,7 +68,7 @@ module.exports = {
   devServer: {
     compress: true,
     disableHostCheck: true,
-    host: '0.0.0.0',
+    host: "0.0.0.0",
     hot: true,
     port: 9090,
     watchContentBase: true,

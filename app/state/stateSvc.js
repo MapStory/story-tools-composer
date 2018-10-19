@@ -1,10 +1,7 @@
 import PubSub from "pubsub-js";
+import MinimalConfig from "app/state/MinimalConfig";
 
-function stateSvc(
-  $http,
-  $location,
-  configSvc
-) {
+function stateSvc($http, $location, configSvc) {
   const svc = {};
   svc.currentChapter = null;
   svc.previousChapter = null;
@@ -307,20 +304,22 @@ function stateSvc(
 
   svc.save = () =>
     new Promise(res => {
-      const cfg = svc.config;
+      const cfg = new MinimalConfig(svc.config);
       // iterate through feature collections and add them
       // to the corresponding chapters
       for (let i = 0; i < cfg.chapters.length; i += 1) {
         const id = cfg.chapters[i].mapId;
         // ensure key exists even if undefined for server logic
         cfg.chapters[i].mapId = id;
-        cfg.chapters[i].pins =
-          cfg.storypins && cfg.storypins[i] && cfg.storypins[i].features
-            ? cfg.storypins[i]
-            : { features: [] };
+      }
+
+      for (let i = 0; i < svc.config.chapters.length; i += 1) {
+        // ensure key exists even if undefined for server logic
         cfg.chapters[i].frames =
-          cfg.storyframes && cfg.storyframes[i] && cfg.storyframes[i].features
-            ? cfg.storyframes[i]
+          svc.config.storyframes &&
+          svc.config.storyframes[i] &&
+          svc.config.storyframes[i].features
+            ? svc.config.storyframes[i]
             : { features: [] };
       }
       const minimalCfg = {
@@ -346,12 +345,18 @@ function stateSvc(
               svc.config.chapters[i].id = id;
               svc.config.chapters[i].mapId = id;
 
-              for (let j = 0; j < svc.config.chapters[i].frames.features.length; j += 1 ) {
-                svc.config.storyframes[i].features[j].id = data.chapters[i].frames.features[j].id;
+              for (
+                let j = 0;
+                j < data.chapters[i].frames.features.length;
+                j += 1
+              ) {
+                svc.config.storyframes[i].features[j].id =
+                  data.chapters[i].frames.features[j].id;
               }
 
-              for (let j = 0; j < svc.config.chapters[i].pins.features.length; j += 1 ) {
-                svc.config.storypins[i].features[j].id = data.chapters[i].pins.features[j].id;
+              for (let j = 0; j < svc.config.chapters[i].pins.length; j += 1) {
+                svc.config.chapters[i].pins[j].id =
+                  data.chapters[i].pins.features[j].id;
               }
             }
             if (!svc.config.storyID) {

@@ -71,14 +71,17 @@ describe("navigationSvc", () => {
       navigationSvc.previousChapter();
     });
 
-    it("should update the location path to the first chapter if there is no previous chapter", () => {
+    it("should update the location path to the first chapter if there is no previous chapter", done => {
       stateSvc.setConfig({ chapters: [{}] });
       spyOn(location, "path");
       navigationSvc.previousChapter();
-      expect(location.path).toHaveBeenCalledWith("/chapter/1");
+      setTimeout(() => {
+        expect(location.path).toHaveBeenCalledWith("/chapter/1");
+        done();
+      }, 300);
     });
 
-    it("broadcast a chapter change to the first chapter if there is no previous chapter", (done) => {
+    it("broadcast a chapter change to the first chapter if there is no previous chapter", done => {
       stateSvc.setConfig({ chapters: [{}] });
       window.PubSub.subscribe("changingChapter", (msg, data) => {
         expect(data.currentChapterIndex).toBe(0);

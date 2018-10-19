@@ -15,7 +15,14 @@ function latlonInputController($scope, pinSvc, MapManager) {
   };
 
   $scope.convertToHumanReadable = () => {
-    const realCoords = ol.proj.transform($scope.pin.coords, map.getView().getProjection(), "EPSG:4326");
+    if (!$scope.pin) return;
+    const currentPin = $scope.pin.length ? $scope.pin[0] : $scope.pin;
+    if (!$scope.pin.coords) return;
+    const realCoords = ol.proj.transform(
+      currentPin.coords,
+      map.getView().getProjection(),
+      "EPSG:4326"
+    );
     realCoords[0] = +realCoords[0].toFixed(decimalResolution);
     realCoords[1] = +realCoords[1].toFixed(decimalResolution);
     const dmsString = ol.coordinate.toStringHDMS(realCoords);

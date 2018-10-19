@@ -14,7 +14,6 @@ function storypinController($scope, pinSvc, stateSvc) {
     chooser: false
   };
 
-
   /**
    * When the user presses the 'Add a StoryPin' button
    */
@@ -31,7 +30,7 @@ function storypinController($scope, pinSvc, stateSvc) {
    * Exports the current chapter's pins.
    */
   $scope.onExportPins = () => {
-    pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()])
+    pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()]);
   };
 }
 

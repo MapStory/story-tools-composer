@@ -74,30 +74,6 @@ describe("pinSvc", () => {
     it("", () => {});
   });
 
-  describe("addChapter", () => {
-    it("add an additional array to the `pins` array", () => {
-      expect(pinSvc.pins.length).toBe(1);
-      pinSvc.addChapter();
-      expect(pinSvc.pins.length).toBe(2);
-    });
-  });
-
-  describe("removeChapter", () => {
-    it("remove the specified chapter index", () => {
-      expect(pinSvc.pins.length).toBe(1);
-      pinSvc.pins[0].push({ name: "ch1" });
-      expect(pinSvc.pins[0][0].name).toBe("ch1");
-      pinSvc.addChapter();
-      expect(pinSvc.pins.length).toBe(2);
-      pinSvc.pins[1].push({ name: "ch2" });
-      expect(pinSvc.pins[1][0].name).toBe("ch2");
-      pinSvc.removeChapter(0);
-      expect(pinSvc.pins.length).toBe(1);
-      expect(pinSvc.pins[0][0].name).toBe("ch2");
-      expect(pinSvc.pins[1]).toBeUndefined();
-    });
-  });
-
   describe("validateAllPinProperties", () => {
     it("should return true if provided an object containing all valid properties", () => {
       const test = pinSvc.validateAllPinProperties(validProperties);
@@ -123,7 +99,7 @@ describe("pinSvc", () => {
 
     it("should push the pin to the correct svc.pin array", () => {
       pinSvc.mAddPin(validProperties, 0);
-      expect(pinSvc.pins[0][0].get("title")).toBe("test");
+      expect(pinSvc.getCurrentPins()[0].get("title")).toBe("test");
     });
   });
 

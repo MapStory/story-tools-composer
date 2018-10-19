@@ -28,6 +28,22 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
   svc.pinLayerSource = null;
   svc.oldInteractions = [];
 
+  /**
+   * Get pins from the current chapter
+   * @returns {Array|*} An array of Pins
+   */
+  svc.getCurrentPins = () => {
+    if (!stateSvc.getConfig()) {
+      return false;
+    }
+    return stateSvc.getConfig().chapters[stateSvc.getChapterIndex()].pins;
+  };
+
+  svc.getPinsByChapterIndex = i => {
+    const cfg = stateSvc.getConfig().chapters[i];
+    return cfg.pins;
+  };
+
   svc.availableDisplayCoordinates = [
     { display: "Decimal Degrees", value: "dd" },
     { display: "Degrees Minutes Seconds", value: "dms" }
@@ -72,26 +88,11 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
   ];
 
   /**
-   * Adds an empty chapter to the pin list.
-   */
-  svc.addChapter = () => {
-    svc.pins.push([]);
-  };
-
-  /**
-   * Removes a chapter with the given index
-   * @param chapterIndex Chapter index to remove.
-   */
-  svc.removeChapter = chapterIndex => {
-    svc.pins.splice(chapterIndex, 1);
-  };
-
-  /**
    * Get pins from chapter index
    * @param chapterIndex The chapter
    * @returns {Array|*} An array of Pins
    */
-  svc.getPins = chapterIndex => svc.pins[chapterIndex] || [];
+  svc.getPins = chapterIndex => svc.getCurrentPins() || [];
 
   /**
    * Validates pin config.
@@ -165,10 +166,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
 
     const storyPin = new svc.Pin(props);
     // Push to the chapter
-    if (!svc.pins[chapterIndex]) {
-      svc.pins[chapterIndex] = [];
-    }
-    svc.pins[chapterIndex].push(storyPin);
+    svc.getPinsByChapterIndex(chapterIndex).push(storyPin);
     return storyPin;
   };
 
@@ -214,7 +212,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     }
 
     // Set some extra properties.
-    pin.indexID = svc.pins[chapterIndex].length - 1;
+    pin.indexID = svc.getCurrentPins().length - 1;
     pin.coords = coords;
 
     // Update the map with the new Pin
@@ -233,7 +231,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
    * a Pin will be placed and the coordinates for currentPin updated.
    */
   svc.turnPinDrawModeOn = index => {
-    const pin = svc.pins[stateSvc.getChapterIndex()][index];
+    const pin = svc.getCurrentPins()[index];
     svc.currentPin = pin;
     svc.isDrawing = !svc.isDrawing;
     if (svc.isDrawing === true) {
@@ -311,8 +309,11 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       The extra values added to the height and width are based on the css
       rules for .storypin-overlay
     */
-    element.setAttribute("style",
-      `width: calc(${pin.boxWidth + 20}px + 0.45em); height: calc(${pin.boxHeight + 40}px + 0.45em);`);
+    element.setAttribute(
+      "style",
+      `width: calc(${pin.boxWidth +
+        20}px + 0.45em); height: calc(${pin.boxHeight + 40}px + 0.45em);`
+    );
 
     // Create dynamic content and append to parent element.
     const heading = document.createElement("div");
@@ -468,16 +469,21 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       // Remove overlay
       svc.destroyOverlay(pin);
     }
-    svc.createPinOverlay(pin);
+    if (svc.getCurrentPins().indexOf(pin) > -1) {
+      svc.createPinOverlay(pin);
+    }
 
     // Add functionality for the pin to show and hide itself from the map:
     pin.show = () => {
       if (!pin.overlay.getPosition()) {
         const whitelistObj = svc.getWhitelistObject(pin.media);
-        if (pin.embeddedMedia && whitelistObj && !whitelistObj.isImage){
+        if (pin.embeddedMedia && whitelistObj && !whitelistObj.isImage) {
           if (stateSvc.timelineSettings.loop !== "none" && pin.autoPlay) {
             pin.embeddedMedia.setAttribute("allow", "autoplay;");
-            pin.embeddedMedia.setAttribute("src", `${pin.media}?autoplay=1&start=${pin.offset}`);
+            pin.embeddedMedia.setAttribute(
+              "src",
+              `${pin.media}?autoplay=1&start=${pin.offset}`
+            );
             PubSub.publish("mediaPause");
             pin.windowTimeout = window.setTimeout(() => {
               PubSub.publish("mediaContinue");
@@ -488,9 +494,17 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
             // then keep playing with the pin not showing because either the user
             // clicked play or changed the slider
             pin.rangeListener = PubSub.subscribe("rangeChange", () => {
-              if (pin.embeddedMedia && whitelistObj && !whitelistObj.isImage && !firstRangeChange){
+              if (
+                pin.embeddedMedia &&
+                whitelistObj &&
+                !whitelistObj.isImage &&
+                !firstRangeChange
+              ) {
                 pin.embeddedMedia.removeAttribute("allow");
-                pin.embeddedMedia.setAttribute("src", `${pin.media}?start=${pin.offset}`);
+                pin.embeddedMedia.setAttribute(
+                  "src",
+                  `${pin.media}?start=${pin.offset}`
+                );
                 PubSub.unsubscribe(pin.rangeListener);
                 window.clearTimeout(pin.windowTimeout);
               } else {
@@ -499,13 +513,15 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
             });
           } else {
             pin.embeddedMedia.removeAttribute("allow");
-            pin.embeddedMedia.setAttribute("src", `${pin.media}?start=${pin.offset}`);
+            pin.embeddedMedia.setAttribute(
+              "src",
+              `${pin.media}?start=${pin.offset}`
+            );
           }
         }
       }
       pin.overlay.setPosition(pin.mapFeature.getGeometry().getCoordinates());
     };
-
 
     pin.hide = () => {
       pin.overlay.setPosition(undefined);
@@ -542,7 +558,6 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     // pin.startDate = new Date();
     // pin.endDate = new Date();
     svc.addStorypinToMap(pin);
-
     PubSub.publish("pinAdded");
 
 
@@ -569,15 +584,12 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
    * @param chapterIndex The chapter index of the pin.
    */
   svc.removePinByIndex = (pinIndex, chapterIndex) => {
-    const config = stateSvc.getConfig();
-    const pin = svc.pins[stateSvc.getChapterIndex()][pinIndex];
-    const pinConfig = config.storypins[stateSvc.getChapterIndex()].features[pinIndex]
+    const pin = svc.getCurrentPins()[pinIndex];
     svc.mRemoveStorypin(pin);
-    // Remove pin from list:
-    svc.pins[chapterIndex].splice(pinIndex, 1);
-    if (pinConfig.id) {
-      stateSvc.config.removedPins.push(pinConfig.id);
+    if (pin.id) {
+      stateSvc.config.removedPins.push(pin.id);
     }
+    svc.getCurrentPins().splice(pinIndex, 1);
     PubSub.publish("pin-removed", chapterIndex);
   };
 
@@ -659,16 +671,10 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
   };
 
   /**
-   * Get pins from the current chapter
-   * @returns {Array|*} An array of Pins
-   */
-  svc.getCurrentPins = () => svc.getPins(stateSvc.getChapterIndex());
-
-  /**
    * When the user clicks on save it will reflect his changes on the map.
    */
   svc.onStoryPinSave = () => {
-    if (svc.isDrawing) {
+    if (svc.isDrawing || !svc.getPins(stateSvc.getChapterIndex()).forEach) {
       // TODO: alert("Finish moving StoryPin first!");
       return;
     }
@@ -707,7 +713,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
           media: svc.pins[i][p].media,
           title: svc.pins[i][p].title,
           content: svc.pins[i][p].content,
-          offset: svc.pins[i][p].offset,
+          offset: svc.pins[i][p].offset
         };
         properties.startTime = svc.pins[i][p].startTime;
         properties.endTime = svc.pins[i][p].endTime;
@@ -756,7 +762,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       pinArray.push(pin);
     });
 
-    svc.pins[stateSvc.getChapterIndex()].push();
+    svc.getCurrentPins().push();
     svc.onStoryPinSave();
     return pinArray;
   };
@@ -874,7 +880,6 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
         } else {
           pin.id = pinJSON.id;
         }
-        pin.show();
       });
     });
     svc.onStoryPinSave();
@@ -883,33 +888,37 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
   /**
    * Callback for changing chapters
    */
-  PubSub.subscribe(
-    "changingChapter",
-    (event, data) => {
-      const oldChapterIndex = data.previousChapterIndex;
-      const nextChapterIndex = data.currentChapterIndex;
-      const currentPins = svc.getPins(oldChapterIndex);
-      const nextPins = svc.getPins(nextChapterIndex);
-      const map = MapManager.storyMap.getMap();
+  PubSub.subscribe("changingChapter", (event, data) => {
+    const oldChapterIndex = data.previousChapterIndex;
+    const nextChapterIndex = data.currentChapterIndex;
+    if (
+      nextChapterIndex === null ||
+      nextChapterIndex === undefined ||
+      oldChapterIndex === null ||
+      oldChapterIndex === undefined
+    )
+      return;
+    const currentPins = svc.getPinsByChapterIndex(oldChapterIndex);
+    const nextPins = svc.getPinsByChapterIndex(nextChapterIndex);
+    const map = MapManager.storyMap.getMap();
 
-      // Remove previous chapter
-      currentPins.forEach(pin => {
-        svc.mRemoveStorypin(pin);
-      });
+    // Remove previous chapter
+    currentPins.forEach(pin => {
+      svc.mRemoveStorypin(pin);
+    });
 
-      map.removeLayer(svc.vectorLayer);
-      svc.pinLayerSource = null;
-      svc.vectorLayer = null;
+    map.removeLayer(svc.vectorLayer);
+    svc.pinLayerSource = null;
+    svc.vectorLayer = null;
 
-      // // Add the new pins:
-      nextPins.forEach(pin => {
-        svc.mShowPinOnMap(pin);
-      });
+    // // Add the new pins:
+    nextPins.forEach(pin => {
+      svc.mShowPinOnMap(pin);
+    });
 
-      // Refresh the things
-      svc.onStoryPinSave();
-    }
-  );
+    // Refresh the things
+    svc.onStoryPinSave();
+  });
 
   /**
    * Removes a storypin and it's overlay from the map.

@@ -155,14 +155,6 @@ function composerController(
     layerSvc.getApiResultsThenAddLayer(window.mapstory.layername);
   }
 
-  PubSub.subscribe("chapter-added", (event, config) => {
-    pinSvc.addChapter();
-  });
-
-  PubSub.subscribe("chapter-removed", (event, chapterIndex) =>
-    pinSvc.removeChapter(chapterIndex)
-  );
-
   $scope.setPreviewMode = () => {
     $scope.viewerMode = !$scope.viewerMode;
     $scope.adminViewerMode = !$scope.adminViewerMode;
@@ -272,11 +264,10 @@ function composerController(
    */
   $scope.updateStorypinTimeline = date => {
     // TODO: Use pre-cooked timeframe objects to optimize this?
-    let pinArray = pinSvc.pins[stateSvc.getChapterIndex()];
+    let pinArray = pinSvc.getCurrentPins();
     // This should not be null. Why is this happening?
     if (!pinArray) {
       pinArray = [];
-      pinSvc.pins[stateSvc.getChapterIndex()] = pinArray;
     }
     pinArray.forEach(pin => {
       const startDate = $scope.formatDates(pin.startTime);

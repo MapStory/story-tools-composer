@@ -130,8 +130,8 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
     // Return baseMapArray with the selected basemap first.
     for (let i = 0; i < baseMapArray.length; i++) {
       if (baseMapArray[i].selected === true) {
-        const selectedBaseMap = baseMapArray.splice(i,1);
-        baseMapArray.unshift(selectedBaseMap[0]);         
+        const selectedBaseMap = baseMapArray.splice(i, 1);
+        baseMapArray.unshift(selectedBaseMap[0]);
         break;
       }
     }
@@ -228,6 +228,8 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
     const cfg = {
       index,
       id: index,
+      pins: [],
+      frames: [],
       mapId: data.map_id || 0,
       about: {
         abstract: data.abstract || "",
