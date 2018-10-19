@@ -34,8 +34,9 @@ function layerList(
       };
 
       scope.toggleStyle = layer => {
-        scope.styleSvc.setCurrentLayer(layer);
-        scope.styleActivated = scope.styleActivated !== true;
+        scope.styleSvc.setCurrentLayer(layer).then(() => {
+          scope.styleActivated = scope.styleActivated !== true;
+        });
       };
 
       scope.layers = MapManager.storyMap.getStoryLayers().getArray();

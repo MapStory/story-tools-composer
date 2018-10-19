@@ -10,7 +10,31 @@ function styleService(
   svc.currentLayer = null;
 
   svc.setCurrentLayer = layer => {
+    const layerName = layer.get("name");
+    svc.currentLayer = null;
+
+    const styleName =
+      layer.get("styleName") || window.getStyleName(layerName);
+    const mapID = stateSvc.config.id;
+
+    if (mapID) {
+      return fetch(`/style/${mapID}/${styleName}`).then(response => {
+        if (!response.ok) {
+          // TODO: Default Style
+          svc.currentLayer = layer;
+          return false;
+        }
+        return response.json().then(json => {
+          console.log("Setting style", json);
+          layer.set("style", json.style);
+          svc.currentLayer = layer;
+        });
+      });
+    }
+
+    // TODO: Default Style
     svc.currentLayer = layer;
+    return Promise.resolve(true);
   };
 
   svc.handleHeatMapStyle = storyLayer => {
@@ -58,11 +82,13 @@ function styleService(
     style.name = styleName;
     const layer = storyLayer.getLayer();
     const layerSource = layer.getSource();
+    const mapID = stateSvc.config.id;
     const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
       style
     );
     if (style.name) {
       if (isComplete) {
+        console.log(isComplete, "need to store", style);
         const sld = new storytools.edit.SLDStyleConverter.SLDStyleConverter();
         const xml = sld.generateStyle(
           style,
@@ -71,12 +97,10 @@ function styleService(
         );
         const csrfToken = $cookies.getAll().csrftoken;
         // @TODO: Use GET request to verify existence of style before POST
-        $http({
-          url: `/gs/rest/styles?name=${style.name}`,
-          method: "POST",
-          data: xml,
+        $http.put(`/gs/rest/styles/${  style.name  }.xml`, xml, {
           headers: {
-            "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
+            "Content-Type":
+              "application/vnd.ogc.sld+xml; charset=UTF-8",
             "X-CSRFToken": csrfToken,
             "X-Requested-With": "XMLHttpRequest"
           }
@@ -91,15 +115,17 @@ function styleService(
           },
           (response) => {
             if (response.status === 403 || response.status === 500) {
-              $http
-                .put(`/gs/rest/styles/${  style.name  }.xml`, xml, {
-                  headers: {
-                    "Content-Type":
-                      "application/vnd.ogc.sld+xml; charset=UTF-8",
-                    "X-CSRFToken": csrfToken,
-                    "X-Requested-With": "XMLHttpRequest"
-                  }
-                })
+
+              $http({
+                url: `/gs/rest/styles?name=${style.name}`,
+                method: "POST",
+                data: xml,
+                headers: {
+                  "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
+                  "X-CSRFToken": csrfToken,
+                  "X-Requested-With": "XMLHttpRequest"
+                }
+              })
                 .then((result) => {
                   layerSource.updateParams({
                     _dc: new Date().getTime(),
@@ -113,11 +139,18 @@ function styleService(
             // or server returns response with an error status.
           }
         );
+        fetch(`/style/${mapID}/${styleName}`, {
+          method: "POST",
+          body: JSON.stringify({style, version: "1.0"}),
+          headers: {
+            "X-CSRFToken": window.mapstory.composer.config.csrfToken
+          }}).then(response => {console.log("Persisted", response);});
       }
     }
   };
 
   svc.updateStyle = storyLayer => {
+    console.log("Calling updateStyle");
     const style = storyLayer.get("style");
     const layer = storyLayer.getLayer();
     const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
