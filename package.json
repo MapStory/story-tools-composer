@@ -4,12 +4,10 @@
   "description": "",
   "main": "app/app.js",
   "scripts": {
-    "build-serve": "./scripts/run.sh --bundle-dev --serve-dev",
-    "serve": "./scripts/run.sh --serve-dev",
     "bundle": "webpack",
     "bundle-watch": "webpack --watch",
     "changepaths": "./scripts/change_paths.sh",
-    "server": "node_modules/.bin/webpack-dev-server",
+    "serve-dev": "webpack-dev-server --progress",
     "test": "webpack && karma start karma.config.js",
     "lint": "node_modules/eslint/bin/eslint.js .",
     "lint-fix": "node_modules/eslint/bin/eslint.js --fix .",
@@ -53,7 +51,7 @@
     "proxy-middleware": "0.15.0",
     "style-loader": "0.20.1",
     "webpack": "3.10.0",
-    "webpack-dev-server": "2.11.1"
+    "webpack-dev-server": "3.1.8"
   },
   "dependencies": {
     "@turf/intersect": "^6.1.0",

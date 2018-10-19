@@ -50,7 +50,14 @@ for i do # loop over $@
     fi
 
     if [ "$i" = "--serve-dev" ]; then
-        yarn run server --host 0.0.0.0 --watch --disable-host-check
+        echo "serving story-tools for dev"
+        cd deps/story-tools
+        yarn link
+        cd ../..
+        echo "serving composer for dev"
+        yarn link story-tools
+        yarn run bundle-watch & # This really, really, really shouldn't be necessary.
+        yarn run serve-dev
     fi
 
     if [ "$i" = "--shell" ]; then

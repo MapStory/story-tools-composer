@@ -66,32 +66,13 @@ module.exports = {
   },
   devServer: {
     compress: true,
+    disableHostCheck: true,
+    host: '0.0.0.0',
+    hot: true,
     port: 9090,
-    proxy: {
-      "/maps/*": {
-        target: `${serverHost}/maps`,
-        changeOrigin: true,
-        secure: false,
-        pathRewrite: {
-          "^/maps": ""
-        }
-      },
-      "/api/*": {
-        target: `${serverHost}/api/`,
-        changeOrigin: true,
-        secure: false,
-        pathRewrite: {
-          "^/api": ""
-        }
-      },
-      "/geoserver/*": {
-        target: `${serverHost}/geoserver`,
-        changeOrigin: true,
-        secure: false,
-        pathRewrite: {
-          "^/geoserver": ""
-        }
-      }
+    watchContentBase: true,
+    watchOptions: {
+      aggregateTimeout: 300
     }
   },
   plugins: [
