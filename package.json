@@ -51,7 +51,7 @@
     "proxy-middleware": "0.15.0",
     "style-loader": "0.20.1",
     "webpack": "3.10.0",
-    "webpack-dev-server": "3.1.8"
+    "webpack-dev-server": "2.9.1"
   },
   "dependencies": {
     "@turf/intersect": "^6.1.0",
