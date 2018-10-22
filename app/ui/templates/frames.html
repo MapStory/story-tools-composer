@@ -72,7 +72,7 @@
         <p>{{ copiedFrameSettings.startDate | date: 'mediumDate' }} -  {{ copiedFrameSettings.endDate | date: 'mediumDate'}}</p>
     </div>
 
-    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings);">Save</button>
+    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings);">Add</button>
     <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframe(frameSettings, $index)">Update</button>
     <button class="btn btn-inverse" type="reset" ng-click="clearBoundingBox()">Reset</button>
 </form>
