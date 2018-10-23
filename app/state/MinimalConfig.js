@@ -55,6 +55,7 @@ export default class MinimalConfig {
       layers: chapter.layers,
       frames: this.getFrameArray(chapter.frames),
       viewerPlaybackMode: chapter.viewerPlaybackMode,
+      removedPins: chapter.removedPins,
       pins
     };
   };

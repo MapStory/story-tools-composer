@@ -587,6 +587,10 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     const pin = svc.getCurrentPins()[pinIndex];
     svc.mRemoveStorypin(pin);
     if (pin.id) {
+      stateSvc
+        .getConfig()
+        .chapters[stateSvc.getChapterIndex()].removedPins.push(pin.id);
+      // @TODO: rm story level removedPins after server changes
       stateSvc.config.removedPins.push(pin.id);
     }
     svc.getCurrentPins().splice(pinIndex, 1);

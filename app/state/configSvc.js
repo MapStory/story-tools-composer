@@ -230,6 +230,7 @@ function newConfigSvc(layerOptionsSvc, appConfig, utils) {
       id: index,
       pins: [],
       frames: [],
+      removedPins: [],
       mapId: data.map_id || 0,
       about: {
         abstract: data.abstract || "",
