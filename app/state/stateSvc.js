@@ -296,15 +296,6 @@ function stateSvc($http, $location, configSvc) {
 
   svc.initConfig();
 
-  svc.updateSaveStatus = status => {
-    const $saveConfirmationDiv = $("#save-confirmation");
-    if (status === "saving") {
-      $saveConfirmationDiv.text(`Last synced: ${svc.config.lastSynced}`);
-    } else if (status === "saved") {
-      $saveConfirmationDiv.text(`Last synced: ${svc.config.lastSynced}`);
-    }
-  };
-
   svc.getCategories = () => {
     $http({
       url: "/api/categories/",
