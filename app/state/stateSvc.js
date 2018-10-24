@@ -1,5 +1,6 @@
 import PubSub from "pubsub-js";
 import MinimalConfig from "app/state/MinimalConfig";
+import headerSvc from "app/ui/headerSvc";
 
 function stateSvc($http, $location, configSvc) {
   const svc = {};
@@ -52,16 +53,23 @@ function stateSvc($http, $location, configSvc) {
   svc.reorderLayer = (from, to) => {
     let arr = [];
     if (svc.config.mapManager) {
-      arr = svc.config.mapManager.storyMap.getMap().getLayers().getArray();
+      arr = svc.config.mapManager.storyMap
+        .getMap()
+        .getLayers()
+        .getArray();
     }
     svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].layers, from, to);
-    svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].map.layers, from, to);
+    svc.arrayMove(
+      svc.config.chapters[svc.getChapterIndex()].map.layers,
+      from,
+      to
+    );
     arr.forEach(layer => {
       if (layer.getSource() && layer.getSource().getParams) {
         const layerName = layer.getSource().getParams().LAYERS;
-        const zIndex = svc.config.chapters[svc.getChapterIndex()].layers.findIndex(item =>
-          item.name === layerName
-        );
+        const zIndex = svc.config.chapters[
+          svc.getChapterIndex()
+        ].layers.findIndex(item => item.name === layerName);
         layer.setZIndex(zIndex);
       }
     });
@@ -123,7 +131,9 @@ function stateSvc($http, $location, configSvc) {
   svc.updateLayerStyle = (layerName, styleName) => {
     const chapter = svc.config.chapters[svc.getChapterIndex()];
     const layerCount = chapter.layers.length;
-    const layerArray = svc.config.mapManager.storyMap.getStoryLayers().getArray();
+    const layerArray = svc.config.mapManager.storyMap
+      .getStoryLayers()
+      .getArray();
 
     for (let i = 0; i < layerCount; i += 1) {
       if (chapter.layers[i].name === layerName) {
@@ -286,6 +296,15 @@ function stateSvc($http, $location, configSvc) {
 
   svc.initConfig();
 
+  svc.updateSaveStatus = status => {
+    const $saveConfirmationDiv = $("#save-confirmation");
+    if (status === "saving") {
+      $saveConfirmationDiv.text(`Last synced: ${svc.config.lastSynced}`);
+    } else if (status === "saved") {
+      $saveConfirmationDiv.text(`Last synced: ${svc.config.lastSynced}`);
+    }
+  };
+
   svc.getCategories = () => {
     $http({
       url: "/api/categories/",
@@ -304,6 +323,7 @@ function stateSvc($http, $location, configSvc) {
 
   svc.save = () =>
     new Promise(res => {
+      headerSvc.updateSaveStatus("saving");
       const cfg = new MinimalConfig(svc.config);
       // iterate through feature collections and add them
       // to the corresponding chapters
@@ -366,11 +386,14 @@ function stateSvc($http, $location, configSvc) {
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];
             svc.config.removedPins = [];
+            const timestamp = headerSvc.updateSaveStatus("saved");
+            svc.config.lastSynced = timestamp;
             res();
           });
         })
         .catch(() => {
           // handle fail
+          headerSvc.updateSaveStatus("failed");
           res();
         });
     });

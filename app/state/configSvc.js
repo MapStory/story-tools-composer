@@ -1,4 +1,6 @@
-function newConfigSvc(layerOptionsSvc, appConfig, utils) {
+import utils from "app/utils/utils";
+
+function newConfigSvc(layerOptionsSvc, appConfig) {
   const svc = {};
 
   svc.defaultBasemap = "world-dark";
