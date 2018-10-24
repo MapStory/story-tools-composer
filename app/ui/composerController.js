@@ -1,6 +1,7 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
 
+
 function composerController(
   $scope,
   $log,
@@ -30,6 +31,8 @@ function composerController(
   $scope.showForm = null;
   $scope.frameSettings = [];
   $scope.copiedFrameSettings = [];
+  $scope.currentFrame = 0;
+  $scope.zoomedIn = false;
   let queryLayerLoaded = false;
   const map = MapManager.storyMap.getMap();
 
@@ -296,24 +299,19 @@ function composerController(
     // Updates StoryPins.
     $scope.updateStorypinTimeline(data);
     // Updates StoryFrames
-    $scope.getCurrentFrame(data);
+    if ($scope.copiedFrameSettings) {
+      $scope.getCurrentFrame(data);
+    }
   };
 
-  $scope.currentFrame = 0;
-  $scope.zoomedIn = false;
-
-
   $scope.getCurrentFrame = date => {
-    if ($scope.currentFrame < $scope.copiedFrameSettings.length) {
-      if (typeof $scope.copiedFrameSettings[$scope.currentFrame] === "undefined") {
-        $scope.currentFrame += 1;
-      } else {
-        const start = $scope.copiedFrameSettings[$scope.currentFrame].startDate;
-        const end = $scope.copiedFrameSettings[$scope.currentFrame].endDate;
-        $scope.checkTimes(date, start, end);
-      }
+    if ($scope.copiedFrameSettings.length === 0) {
+    } else if ($scope.copiedFrameSettings[$scope.currentFrame]) {
+      const start = $scope.copiedFrameSettings[$scope.currentFrame].startDate;
+      const end = $scope.copiedFrameSettings[$scope.currentFrame].endDate;
+      $scope.checkTimes(date, start, end);
     }
-  }
+  };
 
   $scope.checkTimes = (date, start, end) => {
     if (
@@ -322,10 +320,16 @@ function composerController(
       $scope.zoomedIn === false
     ) {
       $scope.zoomToExtent();
-      $scope.zoomedIn = true;
-    } else if (moment(date).isAfter(end)) {
+    } else if (moment(date).isAfter(end) && $scope.zoomedIn === true) {
       $scope.zoomOutExtent();
-      $scope.zoomedIn = false;
+      if ($scope.currentFrame <= $scope.copiedFrameSettings.length) {
+        $scope.currentFrame += 1;
+        if ($scope.currentFrame === $scope.copiedFrameSettings.length) {
+          $scope.currentFrame = 0;
+        }
+      }
+    } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
+      $scope.clearBB();
     }
   };
 
@@ -345,7 +349,7 @@ function composerController(
       )
     }
     else if (!$scope.copiedFrameSettings[$scope.currentFrame]) {
-      for (let i=1; i < $scope.copiedFrameSettings.length; i ++) {
+      for (let i=0; i < $scope.copiedFrameSettings.length; i ++) {
         polygon = new ol.Feature(
           new ol.geom.Polygon([
             [
@@ -375,6 +379,7 @@ function composerController(
         easing: ol.easing.easeIn
       })
     );
+    $scope.zoomedIn = true;
     vector.set("name", "boundingBox");
     map.getView().fit(vector.getSource().getExtent(), map.getSize());
   };
@@ -387,8 +392,19 @@ function composerController(
     });
     map.beforeRender(zoom);
     map.getView().setZoom(5);
-    $scope.currentFrame += 1;
+    $scope.zoomedIn = false;
+    $scope.clearBB();
   };
+
+  $scope.clearBB = () => {
+    map.getLayers().forEach(layer => {
+      if (layer.get("name") === "boundingBox") {
+        map.removeLayer(layer);
+      }
+    });
+  }
 }
 
 module.exports = composerController;
+
+

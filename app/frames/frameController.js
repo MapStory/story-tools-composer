@@ -12,12 +12,6 @@ function frameController(
 
   const map = MapManager.storyMap.getMap();
 
-  /* this function seems to be unused
-  function transformCoords(loc) {
-    return ol.proj.transform(loc, "EPSG:3857", "EPSG:4326");
-  }
-  */
-
   $scope.clearBoundingBox = () => {
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
