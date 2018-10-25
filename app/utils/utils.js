@@ -22,8 +22,8 @@ export default {
       return strTime;
     }
     const today = new Date();
-    const date = `${today.getDate()}/${today.getMonth() +
-      1}/${today.getFullYear()}`;
+    const date = `${today.getMonth() +
+      1}/${today.getDate()}/${today.getFullYear()}`;
     const datetime = `${date} ${formatAMPM(today)}`;
     return datetime;
   }
