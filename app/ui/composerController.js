@@ -36,11 +36,9 @@ function composerController(
   let queryLayerLoaded = false;
   const map = MapManager.storyMap.getMap();
 
-  $scope.$watch(
+  $scope.$watch("frameSettings", function() {
     angular.bind($scope, () => {
-
       const fetchedFrameSettings = frameSvc.get("storyFrames");
-
       const currentChapter = stateSvc.getChapterIndex();
       const fetchedFrames = [];
 
@@ -77,8 +75,8 @@ function composerController(
           $scope.copiedFrameSettings = angular.copy($scope.frameSettings);
         }
       }
-    })
-  );
+    });
+  });
 
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
 
@@ -305,8 +303,7 @@ function composerController(
   };
 
   $scope.getCurrentFrame = date => {
-    if ($scope.copiedFrameSettings.length === 0) {
-    } else if ($scope.copiedFrameSettings[$scope.currentFrame]) {
+    if ($scope.copiedFrameSettings[$scope.currentFrame]) {
       const start = $scope.copiedFrameSettings[$scope.currentFrame].startDate;
       const end = $scope.copiedFrameSettings[$scope.currentFrame].endDate;
       $scope.checkTimes(date, start, end);
@@ -315,10 +312,7 @@ function composerController(
 
   $scope.checkTimes = (date, start, end) => {
     if (
-      moment(date).isSameOrAfter(start) &&
-      moment(date).isSameOrBefore(end) &&
-      $scope.zoomedIn === false
-    ) {
+      moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
       $scope.zoomToExtent();
     } else if (moment(date).isAfter(end) && $scope.zoomedIn === true) {
       $scope.zoomOutExtent();
@@ -329,6 +323,7 @@ function composerController(
         }
       }
     } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
+      map.getView().setZoom(1);
       $scope.clearBB();
     }
   };
@@ -391,7 +386,7 @@ function composerController(
       easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
-    map.getView().setZoom(5);
+    map.getView().setZoom(1);
     $scope.zoomedIn = false;
     $scope.clearBB();
   };

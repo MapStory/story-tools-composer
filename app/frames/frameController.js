@@ -20,7 +20,7 @@ function frameController(
           resolution: map.getView().getResolution()
         });
         map.beforeRender(zoom);
-        map.getView().setZoom(5);
+        map.getView().setZoom(1);
       }
     });
   };
@@ -120,9 +120,9 @@ function frameController(
   };
 
   $scope.checkTemporalOverlap = copiedFrameSettings => {
-    if (copiedFrameSettings.length <= 1) {
+    if (copiedFrameSettings.length <= 0) {
       $scope.saveStoryDetails(copiedFrameSettings);
-    } else if (copiedFrameSettings.length >= 2) {
+    } else if (copiedFrameSettings.length >= 1) {
       const numFrames = copiedFrameSettings.length;
       $scope.startOverlap = false;
       $scope.endOverlap = false;
