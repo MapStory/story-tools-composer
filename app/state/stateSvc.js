@@ -339,8 +339,7 @@ function stateSvc($http, $location, configSvc) {
         about: cfg.about,
         isPublished: cfg.isPublished,
         removedChapters: cfg.removedChapters,
-        removedFrames: cfg.removedFrames,
-        removedPins: cfg.removedPins
+        removedFrames: cfg.removedFrames
       };
       fetch(`/mapstories/save`, {
         method: "POST",
@@ -355,6 +354,7 @@ function stateSvc($http, $location, configSvc) {
               const id = data.chapters[i].mapId;
               svc.config.chapters[i].id = id;
               svc.config.chapters[i].mapId = id;
+              svc.config.chapters[i].removedPins = [];
 
               for (
                 let j = 0;
@@ -376,7 +376,6 @@ function stateSvc($http, $location, configSvc) {
             }
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];
-            svc.config.removedPins = [];
             const timestamp = headerSvc.updateSaveStatus("saved");
             svc.config.lastSynced = timestamp;
             res();

@@ -13,8 +13,7 @@ export default class MinimalConfig {
       about: cfg.about,
       isPublished: cfg.isPublished,
       removedChapters: cfg.removedChapters,
-      removedFrames: cfg.removedFrames,
-      removedPins: cfg.removedPins
+      removedFrames: cfg.removedFrames
     };
   };
 

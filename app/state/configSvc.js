@@ -192,7 +192,6 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       isPublished: data.is_published || false,
       removedChapters: [],
       removedFrames: [],
-      removedPins: [],
       viewerPlaybackMode: "instant",
       thumbnailUrl: data.thumbnail_url,
       id: data.id || 0,
