@@ -227,6 +227,10 @@ function composerController(
     }
   };
 
+  PubSub.subscribe("chapterCreated", (event, index) => {
+    $scope.updateSelected("info", index)
+  });
+
   $scope.nextChapter = navigationSvc.nextChapter;
   $scope.previousChapter = navigationSvc.previousChapter;
 
