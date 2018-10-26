@@ -36,46 +36,48 @@ function composerController(
   let queryLayerLoaded = false;
   const map = MapManager.storyMap.getMap();
 
-  $scope.$watch("frameSettings", function() {
-    angular.bind($scope, () => {
+  PubSub.subscribe("updateStoryframes", () => {
+    $scope.$apply(() => {
       const fetchedFrameSettings = frameSvc.get("storyFrames");
       const currentChapter = stateSvc.getChapterIndex();
       const fetchedFrames = [];
 
       if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
         if ($scope.frameSettings.length < fetchedFrameSettings.length) {
-          for (let i = 1; i < fetchedFrameSettings.length; i++) {
-            fetchedFrames[i] = {
-              id: Date.now(),
-              chapter: currentChapter,
-              title: fetchedFrameSettings[i].title,
-              startDate: fetchedFrameSettings[i].startDate,
-              startTime: fetchedFrameSettings[i].startTime,
-              endDate: fetchedFrameSettings[i].endDate,
-              endTime: fetchedFrameSettings[i].endTime,
-              bb1: [
-                fetchedFrameSettings[i].bb1[0],
-                fetchedFrameSettings[i].bb1[1]
-              ],
-              bb2: [
-                fetchedFrameSettings[i].bb2[0],
-                fetchedFrameSettings[i].bb2[1]
-              ],
-              bb3: [
-                fetchedFrameSettings[i].bb3[0],
-                fetchedFrameSettings[i].bb3[1]
-              ],
-              bb4: [
-                fetchedFrameSettings[i].bb4[0],
-                fetchedFrameSettings[i].bb4[1]
-              ]
-            };
+          for (let i = 0; i < fetchedFrameSettings.length; i++) {
+            if (fetchedFrameSettings[i].startDate && fetchedFrameSettings[i].endDate) {
+              fetchedFrames[i] = {
+                id: Date.now(),
+                chapter: currentChapter,
+                title: fetchedFrameSettings[i].title,
+                startDate: new Date(fetchedFrameSettings[i].startDate),
+                startTime: fetchedFrameSettings[i].startTime,
+                endDate: new Date(fetchedFrameSettings[i].endDate),
+                endTime: fetchedFrameSettings[i].endTime,
+                bb1: [
+                  fetchedFrameSettings[i].bb1[0],
+                  fetchedFrameSettings[i].bb1[1]
+                ],
+                bb2: [
+                  fetchedFrameSettings[i].bb2[0],
+                  fetchedFrameSettings[i].bb2[1]
+                ],
+                bb3: [
+                  fetchedFrameSettings[i].bb3[0],
+                  fetchedFrameSettings[i].bb3[1]
+                ],
+                bb4: [
+                  fetchedFrameSettings[i].bb4[0],
+                  fetchedFrameSettings[i].bb4[1]
+                ]
+              };
+            }
           }
-          $scope.frameSettings = fetchedFrames.reverse();
+          $scope.frameSettings = fetchedFrames;
           $scope.copiedFrameSettings = angular.copy($scope.frameSettings);
         }
       }
-    });
+    })
   });
 
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
@@ -308,21 +310,22 @@ function composerController(
       const end = $scope.copiedFrameSettings[$scope.currentFrame].endDate;
       $scope.checkTimes(date, start, end);
     }
+    }
   };
 
   $scope.checkTimes = (date, start, end) => {
-    if (
-      moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
+    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
       $scope.zoomToExtent();
     } else if (moment(date).isAfter(end) && $scope.zoomedIn === true) {
       $scope.zoomOutExtent();
-      if ($scope.currentFrame <= $scope.copiedFrameSettings.length) {
+      if ($scope.currentFrame <= $scope.copiedFrameSettings.length) { //  -1 need after publish, loop is starting at 1?
         $scope.currentFrame += 1;
         if ($scope.currentFrame === $scope.copiedFrameSettings.length) {
           $scope.currentFrame = 0;
         }
       }
     } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
+      $scope.zoomOutExtent();
       map.getView().setZoom(1);
       $scope.clearBB();
     }
@@ -398,7 +401,7 @@ function composerController(
       }
     });
   }
-}
+};
 
 module.exports = composerController;
 

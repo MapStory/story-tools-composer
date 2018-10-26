@@ -89,6 +89,7 @@ function frameController(
   };
 
   $scope.checkBBDefined = frameSettings => {
+    $scope.resetFramesForm();
     if (!$scope.copiedFrameSettings) {
       $scope.copiedFrameSettings = [];
     }
@@ -219,4 +220,5 @@ function frameController(
     }
   };
 }
+
 export default frameController;
