@@ -310,7 +310,6 @@ function composerController(
       const end = $scope.copiedFrameSettings[$scope.currentFrame].endDate;
       $scope.checkTimes(date, start, end);
     }
-    }
   };
 
   $scope.checkTimes = (date, start, end) => {
@@ -401,7 +400,7 @@ function composerController(
       }
     });
   }
-};
+}
 
 module.exports = composerController;
 
