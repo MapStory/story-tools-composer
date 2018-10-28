@@ -102,10 +102,12 @@ function styleService(
         );
         const csrfToken = $cookies.getAll().csrftoken;
         // @TODO: Use GET request to verify existence of style before POST
-        $http.put(`/gs/rest/styles/${  style.name  }.xml`, xml, {
+        $http({
+          url: `/gs/rest/styles?name=${style.name}`,
+          method: "POST",
+          data: xml,
           headers: {
-            "Content-Type":
-              "application/vnd.ogc.sld+xml; charset=UTF-8",
+            "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
             "X-CSRFToken": csrfToken,
             "X-Requested-With": "XMLHttpRequest"
           }
@@ -120,17 +122,15 @@ function styleService(
           },
           (response) => {
             if (response.status === 403 || response.status === 500) {
-
-              $http({
-                url: `/gs/rest/styles?name=${style.name}`,
-                method: "POST",
-                data: xml,
-                headers: {
-                  "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
-                  "X-CSRFToken": csrfToken,
-                  "X-Requested-With": "XMLHttpRequest"
-                }
-              })
+              $http
+                .put(`/gs/rest/styles/${  style.name  }.xml`, xml, {
+                  headers: {
+                    "Content-Type":
+                      "application/vnd.ogc.sld+xml; charset=UTF-8",
+                    "X-CSRFToken": csrfToken,
+                    "X-Requested-With": "XMLHttpRequest"
+                  }
+                })
                 .then((result) => {
                   layerSource.updateParams({
                     _dc: new Date().getTime(),
@@ -140,8 +140,11 @@ function styleService(
                   stateSvc.updateLayerStyle(layerName, style.name);
                 });
             }
+            // called asynchronously if an error occurs
+            // or server returns response with an error status.
           }
         );
+
         fetch(`/style/${mapID}/${styleName}`, {
           method: "POST",
           body: JSON.stringify({style, version: "1.0"}),
