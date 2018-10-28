@@ -108,6 +108,7 @@ function frameController(
         });
       }
     }
+
     if (!$scope.coords) {
       $scope.bbDefined = false;
     } else if ($scope.coords) {
