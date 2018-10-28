@@ -90,12 +90,9 @@ function frameController(
 
   $scope.checkBBDefined = frameSettings => {
     $scope.resetFramesForm();
-    if (!$scope.copiedFrameSettings) {
-      $scope.copiedFrameSettings = [];
-    }
     const currentChapter = stateSvc.getChapterIndex();
     for (let x = 0; x < frameSettings.length; x += 1) {
-      if (frameSettings[x]) {
+      if (frameSettings[x] && $scope.coords[x]) {
         $scope.copiedFrameSettings.push({
           id: Date.now(),
           chapter: currentChapter,
@@ -111,7 +108,6 @@ function frameController(
         });
       }
     }
-
     if (!$scope.coords) {
       $scope.bbDefined = false;
     } else if ($scope.coords) {
@@ -222,3 +218,4 @@ function frameController(
 }
 
 export default frameController;
+

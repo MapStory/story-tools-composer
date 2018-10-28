@@ -22,12 +22,10 @@ function frameSvc(stateSvc) {
       }
     }
     svc.storyFrames = stateSvc.config.storyframes;
-
-    console.log(svc.storyFrames);
-
   });
   svc.get = prop => svc[prop];
   return svc;
 }
 
 export default frameSvc;
+
