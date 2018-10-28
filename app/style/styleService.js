@@ -10,9 +10,13 @@ function styleService(
   svc.currentLayer = null;
 
   svc.setCurrentLayer = layer => {
-    const layerName = layer.get("name");
     svc.currentLayer = null;
 
+    if (!layer) {
+      return Promise.resolve(true);
+    }
+
+    const layerName = layer.get("name");
     const styleName =
       layer.get("styleName") || window.getStyleName(layerName);
     const mapID = stateSvc.config.id;
@@ -25,9 +29,11 @@ function styleService(
           return false;
         }
         return response.json().then(json => {
-          console.log("Setting style", json);
+          // Need to set this to true, otherwise the style gets overridden with the default
+          json.style.readOnly = true;
           layer.set("style", json.style);
           svc.currentLayer = layer;
+          svc.updateStyle(layer);
         });
       });
     }
@@ -88,7 +94,6 @@ function styleService(
     );
     if (style.name) {
       if (isComplete) {
-        console.log(isComplete, "need to store", style);
         const sld = new storytools.edit.SLDStyleConverter.SLDStyleConverter();
         const xml = sld.generateStyle(
           style,
@@ -135,8 +140,6 @@ function styleService(
                   stateSvc.updateLayerStyle(layerName, style.name);
                 });
             }
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
           }
         );
         fetch(`/style/${mapID}/${styleName}`, {
@@ -144,13 +147,12 @@ function styleService(
           body: JSON.stringify({style, version: "1.0"}),
           headers: {
             "X-CSRFToken": window.mapstory.composer.config.csrfToken
-          }}).then(response => {console.log("Persisted", response);});
+          }});
       }
     }
   };
 
   svc.updateStyle = storyLayer => {
-    console.log("Calling updateStyle");
     const style = storyLayer.get("style");
     const layer = storyLayer.getLayer();
     const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
