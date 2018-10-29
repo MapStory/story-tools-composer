@@ -30,7 +30,7 @@ function storypinController($scope, pinSvc, stateSvc) {
    * Exports the current chapter's pins.
    */
   $scope.onExportPins = () => {
-    pinSvc.downloadCSV(pinSvc.pins[stateSvc.getChapterIndex()]);
+    pinSvc.downloadCSV(pinSvc.getCurrentPins());
   };
 }
 

@@ -742,20 +742,27 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
    * @returns {Array} An array of created StoryPins.
    */
   svc.onBulkPinComplete = results => {
+    const map = MapManager.storyMap.getMap();
     const pinArray = [];
     results.data.forEach(element => {
+      // Openlayers treats coords as [lon, lat]
+      const [lon, lat] = ol.proj.transform(
+        [element.longitude, element.latitude],
+        "EPSG:4326",
+        map.getView().getProjection(),
+      );
       const pin = svc.createNewPin(
         {
           title: element.title,
           startTime: element.startTime,
           endTime: element.endTime,
           geometry: {
-            coordinates: [element.latitude, element.longitude]
+            coordinates: [lon, lat]
           }
         },
         stateSvc.getChapterIndex(),
-        element.latitude,
-        element.longitude
+        lon,
+        lat,
       );
       pin.content = element.content || "";
       pin.media = element.media || "";
@@ -784,11 +791,12 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
   };
 
   /**
-   * Exoports the current chapter's storypins into comma separated values (CSV).
+   * Exports the current chapter's storypins into comma separated values (CSV).
    * @param pinArray
    * @returns {""} An array of objects in CSV format.
    */
   svc.exportPinsToCSV = pinArray => {
+    const map = MapManager.storyMap.getMap();
     const csvObjects = []; // Holds objects with the CSV format
 
     pinArray.forEach(pin => {
@@ -798,9 +806,14 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       csvPin.media = pin.media;
       csvPin.startTime = pin.startTime;
       csvPin.endTime = pin.endTime;
-      const coords = pin.mapFeature.getGeometry().getCoordinates();
-      csvPin.latitude = coords[0];
-      csvPin.longitude = coords[1];
+      // Openlayers treats coords as [lon, lat]
+      const [lon, lat] = ol.proj.transform(
+        pin.mapFeature.getGeometry().getCoordinates(),
+        map.getView().getProjection(),
+        "EPSG:4326"
+      );
+      csvPin.latitude = lat;
+      csvPin.longitude = lon;
       csvPin.inMap = pin.inMap;
       csvPin.inTimeline = pin.inTimeline;
       csvObjects.push(csvPin);
