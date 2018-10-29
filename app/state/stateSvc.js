@@ -20,9 +20,9 @@ function stateSvc($http, $location, configSvc) {
   });
 
   svc.addNewChapter = () => {
-    svc.config.chapters.push(
-      configSvc.generateChapterConfig(svc.config.chapters.length + 1)
-    );
+    const newChapter = configSvc.generateChapterConfig(svc.config.chapters.length + 1)
+    svc.config.chapters.push(newChapter);
+    PubSub.publish("chapterCreated", newChapter.index)
   };
 
   svc.removeChapter = chapterId => {
