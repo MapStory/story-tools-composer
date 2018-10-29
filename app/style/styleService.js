@@ -24,7 +24,6 @@ function styleService(
     if (mapID) {
       return fetch(`/style/${mapID}/${styleName}`).then(response => {
         if (!response.ok) {
-          // TODO: Default Style
           svc.currentLayer = layer;
           return false;
         }
