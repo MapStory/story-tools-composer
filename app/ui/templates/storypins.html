@@ -56,6 +56,9 @@
                     </button>
                     <!-- Save Button -->
                     <button id="storpin-save-button" class="btn btn-inverse" ng-disabled="pinSvc.isDrawing" ng-click="pinSvc.onStoryPinSave()">Update Map</button>
+                    <button id="storpin-show-button" class="btn btn-inverse" ng-disabled="pinSvc.isDrawing" ng-click="pinSvc.getCurrentPins()[$index].toggleShow()">
+                        <i class="fa fa-eye"/>
+                    </button>
                     <button id="storypin-delete-button"
                             class="btn"
                             ng-disabled="pinSvc.isDrawing"

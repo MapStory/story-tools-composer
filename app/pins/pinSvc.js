@@ -311,8 +311,8 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     */
     element.setAttribute(
       "style",
-      `width: calc(${pin.boxWidth +
-        20}px + 0.45em); height: calc(${pin.boxHeight + 40}px + 0.45em);`
+      `max-width: calc(${pin.boxWidth +
+        20}px + 0.45em); max-height: calc(${pin.boxHeight + 40}px + 0.45em);`
     );
 
     // Create dynamic content and append to parent element.
@@ -697,6 +697,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       // Todo: Set coordinates properly
       // pin.coords = pin.mapFeature.getGeometry().getCoordinates();
       svc.mShowPinOnMap(pin);
+      pin.hide();
     });
 
     // Save to state service

@@ -24,6 +24,7 @@ function storypinController($scope, pinSvc, stateSvc) {
     pin.isOpen = true;
     // Save the new pin to the config.
     pinSvc.onStoryPinSave();
+    pin.show();
   };
 
   /**
