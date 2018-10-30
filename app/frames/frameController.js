@@ -1,16 +1,43 @@
 import moment from "moment";
+import PubSub from "pubsub-js";
 
 
 function frameController(
   $scope,
   stateSvc,
-  MapManager
+  MapManager,
+  TimeMachine
 ) {
+  $scope.momentFormat = "YYYY-MM-DD";
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.showForm = null;
 
   const map = MapManager.storyMap.getMap();
+
+  const updateTimeBounds = () => {
+    const ticks = TimeMachine.lastComputedTicks.ticks;
+    if (ticks.length > 0) {
+      [$scope.minDate] = ticks;
+      $scope.maxDate = ticks[ticks.length -1];
+      $scope.minMoment = moment($scope.minDate);
+      $scope.maxMoment = moment($scope.maxDate);
+
+      $scope.minDate = $scope.minMoment.format($scope.momentFormat);
+      $scope.maxDate = $scope.maxMoment.format($scope.momentFormat);
+    } else {
+      $scope.minDate = undefined;
+      $scope.maxDate = undefined;
+      $scope.minMoment = undefined;
+      $scope.maxMoment = undefined;
+    }
+  };
+
+  PubSub.subscribe("layerUpdated", updateTimeBounds);
+  PubSub.subscribe("layerAdded", updateTimeBounds);
+  PubSub.subscribe("layerRemoved", updateTimeBounds);
+
+  updateTimeBounds();
 
   $scope.clearBoundingBox = () => {
     map.getLayers().forEach(layer => {
@@ -27,7 +54,7 @@ function frameController(
 
   $scope.formatDates = date => {
     const preFormatDate = moment(date);
-    return preFormatDate.format("YYYY-MM-DD");
+    return preFormatDate.format(momentFormat);
   };
 
   $scope.drawBoundingBox = () => {

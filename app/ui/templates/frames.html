@@ -41,17 +41,27 @@
 
     <label>*Start Date</label>
     <div>
-        <input required id="startDate" type="date" ng-model="frameSettings[0].startDate" aria-label="start date" required/>
+        <input name="startDate" id="startDate" type="date" min="{{minDate}}" max="{{maxDate}}" ng-model-options="{updateOn: 'blur'}" ng-model="frameSettings[0].startDate" aria-label="start date" required/>
         <span class="fa fa-calendar input-icons"/>
-        <input id="startTime" type="time" ng-model="frameSettings[0].startTime" aria-label="start time">
+        <div class="invalid-feedback">
+            <div ng-if="storyFrameDetails.startDate.$error.date">Invalid date</div>
+            <div ng-if="storyFrameDetails.startDate.$error.min">Date must be after {{minMoment.format("MM/DD/YYYY")}}</div>
+            <div ng-if="storyFrameDetails.startDate.$error.max">Date must be before {{maxMoment.format("MM/DD/YYYY")}}</div>
+        </div>
+        <input id="startTime" type="time" ng-model="frameSettings[0].startTime" ng-model-options="{updateOn: 'blur'}" aria-label="start time">
         <span class="fa fa-clock-o input-icons"/>
     </div>
 
     <label>*End Date</label>
     <div>
-        <input id="endDate" type="date" ng-model="frameSettings[0].endDate" aria-label="end date" required/>
+        <input id="endDate" name="endDate" type="date" min="{{minDate}}" max="{{maxDate}}" ng-model-options="{updateOn: 'blur'}" ng-model="frameSettings[0].endDate" aria-label="end date" required/>
         <span class="fa fa-calendar input-icons"/>
-        <input id="endTime" type="time" ng-model="frameSettings[0].endTime" aria-label="end time">
+        <div class="invalid-feedback">
+            <div ng-if="storyFrameDetails.endDate.$error.date">Invalid date</div>
+            <div ng-if="storyFrameDetails.endDate.$error.min">Date must be after {{minMoment.format("MM/DD/YYYY")}}</div>
+            <div ng-if="storyFrameDetails.endDate.$error.max">Date must be before {{maxMoment.format("MM/DD/YYYY")}}</div>
+        </div>
+        <input id="endTime" type="time" ng-model="frameSettings[0].endTime" ng-model-options="{updateOn: 'blur'}" aria-label="end time">
         <span class="fa fa-clock-o input-icons"/>
     </div>
 

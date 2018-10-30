@@ -57,3 +57,15 @@ label {
 #storyframeTitle {
   cursor: pointer;
 }
+
+.invalid-feedback {
+  font-size: x-small;
+  color: red;
+}
+
+#storySettings .ng-dirty.ng-invalid {
+  border: 1px solid red;
+  &:focus {
+    outline-color: red;
+  }
+}
