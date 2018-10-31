@@ -378,7 +378,9 @@ function composerController(
     );
     $scope.zoomedIn = true;
     vector.set("name", "boundingBox");
-    map.getView().fit(vector.getSource().getExtent(), map.getSize());
+    const extent = vector.getSource().getExtent();
+    map.getView().fit(extent, map.getSize());
+
   };
 
   $scope.zoomOutExtent = () => {
@@ -403,6 +405,7 @@ function composerController(
 }
 
 module.exports = composerController;
+
 
 
 

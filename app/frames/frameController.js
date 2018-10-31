@@ -31,60 +31,23 @@ function frameController(
   };
 
   $scope.drawBoundingBox = () => {
-    const bbVector = new ol.source.Vector({ wrapX: false });
-    const geometryFunction = ol.interaction.Draw.createRegularPolygon(4);
-
-    const vector = new ol.layer.Vector({
-      source: bbVector,
-      style: new ol.style.Style({
-        stroke: new ol.style.Stroke({
-          color: [0, 193, 206, 1],
-          width: 3,
-        }),
-        fill: new ol.style.Fill({
-          color: [255, 255, 255, 0],
-        }),
-      })
+    const dragBox = new ol.interaction.DragBox({
+      condition: ol.events.condition.shiftKeyOnly
     });
 
-    bbVector.on("addfeature", evt => {
-      $scope.coords = evt.feature.getGeometry().getCoordinates();
-    });
+    map.addInteraction(dragBox);
+    dragBox.on("boxend", e => {
+      const extent = dragBox.getGeometry().getExtent();
 
-    const drawBoundingBox = new ol.interaction.Draw({
-      source: bbVector,
-      type: "Circle",
-      geometryFunction,
-      style: new ol.style.Style({
-        geometryFunction,
-        stroke: new ol.style.Stroke({
-          color: [0, 193, 206, 1],
-          width: 3,
-        }),
-        fill: new ol.style.Fill({
-          color: [255, 255, 255, 0],
-        }),
-        image: new ol.style.RegularShape({
-          fill: new ol.style.Fill({
-            color: [255, 255, 255, 0],
-          }),
-          stroke: new ol.style.Stroke({
-            color: [0, 193, 206, 1],
-            width: 1
-          }),
-          points: 4,
-          radius: 10,
-          angle: Math.PI / 4
-        }),
-      }),
-    });
+      map.getView().fit(extent, map.getSize());
 
-    vector.set("name", "boundingBox");
-    map.addLayer(vector);
-    map.addInteraction(drawBoundingBox);
+      const [botLeftLon, botLeftLat, topRightLon, topRightLat] = extent;
+      const topLeft = [botLeftLon, topRightLat];
+      const topRight = [topRightLon, topRightLat];
+      const bottomLeft = [botLeftLon, botLeftLat];
+      const bottomRight = [topRightLon, botLeftLat];
 
-    drawBoundingBox.on("drawend", evt => {
-      drawBoundingBox.setActive(false);
+      $scope.coords = [[topLeft, topRight, bottomRight, bottomLeft, topLeft]];
     });
   };
 
@@ -101,14 +64,13 @@ function frameController(
           startTime: frameSettings[x].startTime,
           endDate: frameSettings[x].endDate,
           endTime: frameSettings[x].endTime,
-          bb1: [$scope.coords[x][0][0], $scope.coords[x][0][1]],
-          bb2: [$scope.coords[x][1][0], $scope.coords[x][1][1]],
-          bb3: [$scope.coords[x][2][0], $scope.coords[x][2][1]],
-          bb4: [$scope.coords[x][3][0], $scope.coords[x][3][1]]
+          bb1: $scope.coords[x][1],
+          bb2: $scope.coords[x][2],
+          bb3: $scope.coords[x][3],
+          bb4: $scope.coords[x][4]
         });
       }
     }
-
     if (!$scope.coords) {
       $scope.bbDefined = false;
     } else if ($scope.coords) {
