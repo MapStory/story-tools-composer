@@ -54,7 +54,7 @@ function frameController(
 
   $scope.formatDates = date => {
     const preFormatDate = moment(date);
-    return preFormatDate.format(momentFormat);
+    return preFormatDate.format($scope.momentFormat);
   };
 
   $scope.drawBoundingBox = () => {
