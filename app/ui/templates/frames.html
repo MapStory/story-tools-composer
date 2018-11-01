@@ -20,6 +20,8 @@
             <i class="fa fa-edit" ng-click="editStoryframe($index)" uib-tooltip="Edit StoryFrame"/>
         </div>
         <ul class="storyframe-details" ng-show="showDetails">
+            <li><strong>Start Date:</strong> {{ item.startDate | date: 'mediumDate' }}</li>
+            <li><strong>End Date:</strong> {{ item.endDate | date: 'mediumDate' }}</li>
             <li><strong>Bounding Box:</strong></li>
             <ol>
                 <li>{{ item.bb1[0] | limitTo: 7 }}, {{ item.bb1[1] | limitTo: 7 }}</li>
@@ -27,10 +29,6 @@
                 <li>{{ item.bb3[0] | limitTo: 7 }}, {{ item.bb3[1] | limitTo: 7 }}</li>
                 <li>{{ item.bb4[0] | limitTo: 7 }}, {{ item.bb4[1] | limitTo: 7 }}</li>
             </ol>
-            <li><strong>Start Date:</strong> {{ item.startDate | date: 'mediumDate' }}</li>
-            <li><strong>Start Time:</strong> {{ item.startTime | date: 'h:mma' }}</li>
-            <li><strong>End Date:</strong> {{ item.endDate | date: 'mediumDate' }}</li>
-            <li><strong>End Time:</strong> {{ item.endTime | date: 'h:mma' }}</li>
         </ul>
     </div>
 </div>
@@ -48,8 +46,6 @@
             <div ng-if="storyFrameDetails.startDate.$error.min">Date must be after {{minMoment.format("MM/DD/YYYY")}}</div>
             <div ng-if="storyFrameDetails.startDate.$error.max">Date must be before {{maxMoment.format("MM/DD/YYYY")}}</div>
         </div>
-        <input id="startTime" type="time" ng-model="frameSettings[0].startTime" ng-model-options="{updateOn: 'blur'}" aria-label="start time">
-        <span class="fa fa-clock-o input-icons"/>
     </div>
 
     <label>*End Date</label>
@@ -61,8 +57,6 @@
             <div ng-if="storyFrameDetails.endDate.$error.min">Date must be after {{minMoment.format("MM/DD/YYYY")}}</div>
             <div ng-if="storyFrameDetails.endDate.$error.max">Date must be before {{maxMoment.format("MM/DD/YYYY")}}</div>
         </div>
-        <input id="endTime" type="time" ng-model="frameSettings[0].endTime" ng-model-options="{updateOn: 'blur'}" aria-label="end time">
-        <span class="fa fa-clock-o input-icons"/>
     </div>
 
     <div id="setPlacement">
