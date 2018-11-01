@@ -520,11 +520,13 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
           }
         }
       }
+      pin.mapFeature.set("visible", true);
       pin.overlay.setPosition(pin.mapFeature.getGeometry().getCoordinates());
     };
 
     pin.hide = () => {
       pin.overlay.setPosition(undefined);
+      pin.mapFeature.set("visible", false);
     };
 
     pin.toggleShow = () => {
@@ -613,8 +615,11 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
    * @param feature The storypin.mapFeature
    * @returns {*[]} Some CSS
    */
-  svc.getStyle = feature => [
-    new ol.style.Style({
+  svc.getStyle = (feature) => {
+    if (!feature.get("visible")) {
+      return [];
+    }
+    return [new ol.style.Style({
       text: new ol.style.Text({
         text: feature.get("label"),
         fill: new ol.style.Fill({
@@ -636,8 +641,8 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
         }),
         radius: 10
       })
-    })
-  ];
+    })];
+  };
 
   /**
    * Start StoryPin Drag
