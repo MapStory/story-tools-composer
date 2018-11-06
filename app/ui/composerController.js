@@ -317,7 +317,7 @@ function composerController(
       $scope.zoomToExtent();
     } else if (moment(date).isAfter(end) && $scope.zoomedIn === true) {
       $scope.zoomOutExtent();
-      if ($scope.currentFrame <= $scope.copiedFrameSettings.length) { //  -1 need after publish, loop is starting at 1?
+      if ($scope.currentFrame <= $scope.copiedFrameSettings.length) {
         $scope.currentFrame += 1;
         if ($scope.currentFrame === $scope.copiedFrameSettings.length) {
           $scope.currentFrame = 0;
@@ -359,12 +359,13 @@ function composerController(
         )
       }
     }
+
     const vector = new ol.layer.Vector({
       source: new ol.source.Vector({
         features: [polygon]
       })
     });
-    map.addLayer(vector);
+
     map.beforeRender(
       ol.animation.pan({
         source: map.getView().getCenter(),
@@ -378,9 +379,7 @@ function composerController(
     );
     $scope.zoomedIn = true;
     vector.set("name", "boundingBox");
-    const extent = vector.getSource().getExtent();
-    map.getView().fit(extent, map.getSize());
-
+    map.getView().fit(polygon.getGeometry(), map.getSize());
   };
 
   $scope.zoomOutExtent = () => {
@@ -390,7 +389,7 @@ function composerController(
       easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
-    map.getView().setZoom(1);
+    map.getView().setZoom(3);
     $scope.zoomedIn = false;
     $scope.clearBB();
   };
