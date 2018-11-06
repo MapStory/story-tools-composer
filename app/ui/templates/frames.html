@@ -73,7 +73,7 @@
 
     <div class="alert alert-danger missingFieldMsg" ng-show="showOverlapMsg" class="missingFieldMsg">
         <p>You have overlapping StoryFrames. Please adjust your dates:</p>
-        <p>{{ copiedFrameSettings.startDate | date: 'mediumDate' }} -  {{ copiedFrameSettings.endDate | date: 'mediumDate'}}</p>
+        <p>{{ frameSettings[0].startDate | date: 'mediumDate' }} - {{ frameSettings[0].endDate | date: 'mediumDate'}}</p>
     </div>
 
     <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings);">Add</button>

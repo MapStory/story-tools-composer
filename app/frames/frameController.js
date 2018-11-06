@@ -50,6 +50,14 @@ function frameController(
     });
   };
 
+  $scope.$watch("frameSettings[0].endDate", () => {
+    $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+  });
+
+  $scope.$watch("frameSettings[0].startDate", () => {
+    $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+  });
+
   $scope.checkBBDefined = frameSettings => {
     $scope.zoomOutExtent();
     $scope.resetFramesForm();
@@ -76,46 +84,47 @@ function frameController(
     } else if ($scope.coords) {
       $scope.bbDefined = true;
       $scope.checkTemporalOverlap($scope.copiedFrameSettings);
+      if (!$scope.showOverlapMsg) {
+        $scope.saveStoryDetails($scope.copiedFrameSettings);
+      }
     }
   };
 
-  $scope.checkTemporalOverlap = copiedFrameSettings => {
+  $scope.checkTemporalOverlap = (copiedFrameSettings, title, startToCheck, endToCheck) => {
     if (copiedFrameSettings.length <= 0) {
-      $scope.saveStoryDetails(copiedFrameSettings);
+      $scope.startOverlap = false;
+      $scope.endOverlap = false;
+      $scope.showOverlapMsg = false;
     } else if (copiedFrameSettings.length >= 1) {
       const numFrames = copiedFrameSettings.length;
       $scope.startOverlap = false;
       $scope.endOverlap = false;
 
-      let x = 0;
-
-      while (x < numFrames) {
-        const startToCheck = $scope.formatDates(copiedFrameSettings[x].startDate);
-        const endToCheck = $scope.formatDates(copiedFrameSettings[x].endDate);
-        const start = $scope.formatDates(copiedFrameSettings.startDate);
-        const end = $scope.formatDates(copiedFrameSettings.endDate);
-
-        x += 1;
-
-        if (
-          moment(startToCheck).isSameOrAfter(start) &&
-          moment(startToCheck).isSameOrBefore(end)
-        ) {
-          $scope.startOverlap = true;
-        }
-        if (
-          moment(endToCheck).isSameOrAfter(start) &&
-          moment(endToCheck).isSameOrBefore(end)
-        ) {
-          $scope.endOverlap = true;
-        }
-        if ($scope.startOverlap === true || $scope.endOverlap === true) {
-          $scope.showOverlapMsg = true;
-          return 0;
+      for (let y = 0; y < numFrames; ++y) {
+        const start = moment(copiedFrameSettings[y].startDate);
+        const end = moment(copiedFrameSettings[y].endDate);
+        if (copiedFrameSettings[y].title !== title) {
+          if (
+            moment(startToCheck).isSameOrAfter(start) &&
+            moment(startToCheck).isSameOrBefore(end)
+          ) {
+            $scope.startOverlap = true;
+          }
+          if (
+            moment(endToCheck).isSameOrAfter(start) &&
+            moment(endToCheck).isSameOrBefore(end)
+          ) {
+            $scope.endOverlap = true;
+          }
+          if ($scope.startOverlap === true || $scope.endOverlap === true) {
+            $scope.showOverlapMsg = true;
+            return 0;
+          }
         }
       }
+
       if ($scope.startOverlap === false && $scope.endOverlap === false) {
-        $scope.saveStoryDetails(copiedFrameSettings);
+        $scope.showOverlapMsg = false;
       }
     }
     return 0;
