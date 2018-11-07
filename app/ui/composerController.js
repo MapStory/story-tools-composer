@@ -39,16 +39,18 @@ function composerController(
   PubSub.subscribe("updateStoryframes", () => {
     $scope.$apply(() => {
       const fetchedFrameSettings = frameSvc.get("storyFrames");
-      const currentChapter = stateSvc.getChapterIndex();
       const fetchedFrames = [];
 
       if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
         if ($scope.frameSettings.length < fetchedFrameSettings.length) {
           for (let i = 0; i < fetchedFrameSettings.length; i++) {
-            if (fetchedFrameSettings[i].startDate && fetchedFrameSettings[i].endDate) {
+            if (
+              fetchedFrameSettings[i].startDate &&
+              fetchedFrameSettings[i].endDate
+            ) {
               fetchedFrames[i] = {
                 id: Date.now(),
-                chapter: currentChapter,
+                chapter: fetchedFrameSettings[i].chapter,
                 title: fetchedFrameSettings[i].title,
                 startDate: new Date(fetchedFrameSettings[i].startDate),
                 startTime: fetchedFrameSettings[i].startTime,
