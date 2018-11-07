@@ -51,11 +51,15 @@ function frameController(
   };
 
   $scope.$watch("frameSettings[0].endDate", () => {
-    $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+    if ($scope.frameSettings[0]) {
+      $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+    }
   });
 
   $scope.$watch("frameSettings[0].startDate", () => {
-    $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+    if ($scope.frameSettings[0]) {
+      $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+    }
   });
 
   $scope.checkBBDefined = frameSettings => {
@@ -83,7 +87,6 @@ function frameController(
       $scope.bbDefined = false;
     } else if ($scope.coords) {
       $scope.bbDefined = true;
-      $scope.checkTemporalOverlap($scope.copiedFrameSettings);
       if (!$scope.showOverlapMsg) {
         $scope.saveStoryDetails($scope.copiedFrameSettings);
       }
