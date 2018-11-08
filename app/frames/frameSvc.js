@@ -12,6 +12,7 @@ function frameSvc(stateSvc) {
 
         stateSvc.config.storyframes.push({
           title: chapters[c].storyframes[f].title,
+          id: chapters[c].storyframes[f].id,
           chapter: c,
           startDate: moment
             .unix(chapters[c].storyframes[f].start_time)

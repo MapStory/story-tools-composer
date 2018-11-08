@@ -201,10 +201,14 @@ function stateSvc($http, $location, configSvc) {
   };
 
   svc.setStoryframeDetails = copiedFrameSettings => {
+    const chapterLookup = {};
     svc.config.frameSettings = [];
-    const features = [];
     for (let i = 0; i < copiedFrameSettings.length; i += 1) {
-      features.push({
+      if (!chapterLookup[copiedFrameSettings[i].chapter]) {
+        chapterLookup[copiedFrameSettings[i].chapter] = [];
+      }
+
+      chapterLookup[copiedFrameSettings[i].chapter].push({
         type: "Feature",
         geometry: null,
         id: null,
@@ -222,13 +226,16 @@ function stateSvc($http, $location, configSvc) {
           ]
         }
       });
+    }
+
+    Object.keys(chapterLookup).forEach(index => {
       const featureCollection = {
         type: "FeatureCollection",
-        features
+        features: chapterLookup[index]
       };
-      svc.config.frameSettings[svc.getChapterIndex()] = featureCollection;
-      svc.saveStoryframes(svc.config.frameSettings);
-    }
+      svc.config.frameSettings[index] = featureCollection;
+    });
+    svc.saveStoryframes(svc.config.frameSettings);
   };
 
   svc.getChapter = () => {

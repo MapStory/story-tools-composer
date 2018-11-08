@@ -30,7 +30,44 @@ function frameController(
     return preFormatDate.format("YYYY-MM-DD");
   };
 
+
+  const zoomToExtent = extent => {
+    const [botLeftLon, botLeftLat, topRightLon, topRightLat] = extent;
+    const topLeft = [botLeftLon, topRightLat];
+    const topRight = [topRightLon, topRightLat];
+    const bottomLeft = [botLeftLon, botLeftLat];
+    const bottomRight = [topRightLon, botLeftLat];
+    $scope.coords = [[topLeft, topRight, bottomRight, bottomLeft, topLeft]];
+
+    const polygon = new ol.Feature(
+      new ol.geom.Polygon([[topLeft, topRight, bottomRight, bottomLeft, topLeft]])
+    );
+    const vector = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [polygon]
+      })
+    });
+
+    $scope.zoomedIn = true;
+    vector.set("name", "boundingBox");
+    map.addLayer(vector);
+    /*
+      TODO: This really needs to be fixed by setting the map height correctly,
+            but right now there's too large of a chance of that breaking other UI elements
+    */
+    map.getView().fit(polygon.getGeometry(), map.getSize(), {padding:[70, 0, 0, 0]});
+  };
+
+  const removeBoundingBox = () => {
+    const boxLayer = map.getLayers().getArray().find(layer => layer.get("name") === "boundingBox");
+
+    if (boxLayer) {
+      map.removeLayer(boxLayer);
+    }
+  };
+
   $scope.drawBoundingBox = () => {
+    removeBoundingBox();
     const dragBox = new ol.interaction.DragBox({
       condition: ol.events.condition.shiftKeyOnly
     });
@@ -38,17 +75,10 @@ function frameController(
     map.addInteraction(dragBox);
     dragBox.on("boxend", e => {
       const extent = dragBox.getGeometry().getExtent();
-
-      map.getView().fit(extent, map.getSize());
-
-      const [botLeftLon, botLeftLat, topRightLon, topRightLat] = extent;
-      const topLeft = [botLeftLon, topRightLat];
-      const topRight = [topRightLon, topRightLat];
-      const bottomLeft = [botLeftLon, botLeftLat];
-      const bottomRight = [topRightLon, botLeftLat];
-      $scope.coords = [[topLeft, topRight, bottomRight, bottomLeft, topLeft]];
+      zoomToExtent(extent);
     });
   };
+
 
   $scope.$watch("frameSettings[0].endDate", () => {
     if ($scope.frameSettings[0]) {
@@ -154,17 +184,14 @@ function frameController(
     document.getElementById("startDate").value = $scope.formatDates(
       $scope.copiedFrameSettings[index].startDate
     );
-    if (document.getElementById("startTime").value) {
-      document.getElementById("startTime").value =
-      $scope.copiedFrameSettings[index].startTime;
-    }
     document.getElementById("endDate").value = $scope.formatDates(
       $scope.copiedFrameSettings[index].endDate
     );
-    if (document.getElementById("endTime").value) {
-      document.getElementById("endTime").value =
-      $scope.copiedFrameSettings[index].endTime;
-    }
+    const coords =  [$scope.copiedFrameSettings[index].bb3,
+      $scope.copiedFrameSettings[index].bb1
+    ];
+    removeBoundingBox();
+    zoomToExtent(coords.flatten());
   };
 
   $scope.updateStoryframe = () => {
@@ -186,12 +213,12 @@ function frameController(
   $scope.deleteStoryframe = index => {
     $scope.copiedFrameSettings.splice(index, 1);
     const config = stateSvc.getConfig();
-    const frameConfig = config.storyframes[stateSvc.getChapterIndex()].features[index];
+    const frameConfig = config.storyframes[index];
     if (frameConfig.id) {
       stateSvc.config.removedFrames.push(frameConfig.id);
     }
+    removeBoundingBox();
   };
 }
 
 export default frameController;
-
