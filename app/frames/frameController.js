@@ -94,19 +94,20 @@ function frameController(
   };
 
   $scope.checkTemporalOverlap = (copiedFrameSettings, title, startToCheck, endToCheck) => {
-    if (copiedFrameSettings.length <= 0) {
+    const framesInChapter = copiedFrameSettings.filter(item => item.chapter === stateSvc.getChapterIndex());
+    if (framesInChapter.length <= 0) {
       $scope.startOverlap = false;
       $scope.endOverlap = false;
       $scope.showOverlapMsg = false;
-    } else if (copiedFrameSettings.length >= 1) {
-      const numFrames = copiedFrameSettings.length;
+    } else if (framesInChapter.length >= 1) {
+      const numFrames = framesInChapter.length;
       $scope.startOverlap = false;
       $scope.endOverlap = false;
 
       for (let y = 0; y < numFrames; ++y) {
-        const start = moment(copiedFrameSettings[y].startDate);
-        const end = moment(copiedFrameSettings[y].endDate);
-        if (copiedFrameSettings[y].title !== title) {
+        const start = moment(framesInChapter[y].startDate);
+        const end = moment(framesInChapter[y].endDate);
+        if (framesInChapter[y].title !== title) {
           if (
             moment(startToCheck).isSameOrAfter(start) &&
             moment(startToCheck).isSameOrBefore(end)
