@@ -478,7 +478,7 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       if (!pin.overlay.getPosition()) {
         const whitelistObj = svc.getWhitelistObject(pin.media);
         if (pin.embeddedMedia && whitelistObj && !whitelistObj.isImage) {
-          if (stateSvc.timelineSettings.loop !== "none" && pin.autoPlay) {
+          if (pin.autoPlay) {
             pin.embeddedMedia.setAttribute("allow", "autoplay;");
             pin.embeddedMedia.setAttribute(
               "src",
