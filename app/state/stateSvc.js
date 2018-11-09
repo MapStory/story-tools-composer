@@ -385,6 +385,7 @@ function stateSvc($http, $location, configSvc) {
             svc.config.removedFrames = [];
             const timestamp = headerSvc.updateSaveStatus("saved");
             svc.config.lastSynced = timestamp;
+            svc.generateStoryThumbnail(data.storyID);
             res();
           });
         })
