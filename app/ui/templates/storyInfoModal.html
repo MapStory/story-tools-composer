@@ -5,7 +5,7 @@
     Title <input type="text" name="title" ng-model="stateSvc.config.about.title">
     Summary <textarea rows="4" cols="50" ng-model="stateSvc.config.about.abstract"></textarea>
     Category                     
-    <select class="form-control" name="category" ng-model="stateSvc.config.about.category" ng-options="category.id as category.gn_description for category in stateSvc.categories track by category.id">
+    <select class="form-control" name="category" ng-model="stateSvc.config.about.category" ng-options="category as category.gn_description for category in stateSvc.categories track by category.id">
         <option value="">---------</option>
     </select>
 </div>
