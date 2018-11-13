@@ -37,8 +37,20 @@ function styleService(
       });
     }
 
-    // TODO: Default Style
-    svc.currentLayer = layer;
+
+    // if there is no map id, check if there is a style in the state service
+    const layerStyle = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.find(item => item.styleName === styleName);
+
+    if (layerStyle) {
+      const newStyle = layerStyle.styleConfig.style;
+      newStyle.readOnly = true;
+      layer.set("style", newStyle);
+      svc.currentLayer = layer;
+      svc.updateStyle(layer);
+    } else {
+      svc.currentLayer = layer;
+    }
+
     return Promise.resolve(true);
   };
 
@@ -117,7 +129,7 @@ function styleService(
               _olSalt: Math.random(),
               STYLES: style.name
             });
-            stateSvc.updateLayerStyle(layerName, style.name);
+            stateSvc.updateLayerStyle(layerName, style.name, {style, version: "1.0"});
           },
           (response) => {
             if (response.status === 403 || response.status === 500) {
@@ -136,7 +148,7 @@ function styleService(
                     _olSalt: Math.random(),
                     STYLES: style.name
                   });
-                  stateSvc.updateLayerStyle(layerName, style.name);
+                  stateSvc.updateLayerStyle(layerName, style.name, {style, version: "1.0"});
                 });
             }
             // called asynchronously if an error occurs
@@ -144,12 +156,14 @@ function styleService(
           }
         );
 
-        fetch(`/style/${mapID}/${styleName}`, {
-          method: "POST",
-          body: JSON.stringify({style, version: "1.0"}),
-          headers: {
-            "X-CSRFToken": window.mapstory.composer.config.csrfToken
-          }});
+        if (mapID) {
+          fetch(`/style/${mapID}/${styleName}`, {
+            method: "POST",
+            body: JSON.stringify({style, version: "1.0"}),
+            headers: {
+              "X-CSRFToken": window.mapstory.composer.config.csrfToken
+            }});
+        }
       }
     }
   };
