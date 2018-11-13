@@ -44,7 +44,7 @@ export default class MinimalConfig {
     const pins = this.getMinimalPinCfgArray(chapter.pins);
     return {
       id: chapter.id,
-      index: chapter.id,
+      index: chapter.index,
       mapId: chapter.mapId || 0,
       about: chapter.about,
       map: chapter.map,

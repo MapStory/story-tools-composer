@@ -319,6 +319,13 @@ function stateSvc($http, $location, configSvc) {
     window.location.href = `/story/${storyID}/draft`;
   };
 
+  svc.onChapterSort = () => {
+    // Iterate through the chapters and update their indexes anytime they are sorted
+    for (let i = 0; i < svc.config.chapters.length; i += 1 ) {
+      svc.config.chapters[i].index = i + 1;
+    }
+  };
+
   svc.save = () =>
     new Promise(res => {
       headerSvc.updateSaveStatus("saving");
