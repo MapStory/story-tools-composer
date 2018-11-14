@@ -28,7 +28,7 @@ function MapManager(
   svc.loadMapFromID = options => {
     stStoryMapBuilder.modifyStoryMap(svc.storyMap, options);
     for (let i = 0; i < options.layers.length; i += 1) {
-      svc.buildStoryLayer(options.layers[i]);
+      svc.buildStoryLayer(options.layers[i], i);
     }
   };
 
@@ -53,7 +53,7 @@ function MapManager(
     svc.loadMap(config);
   };
 
-  svc.buildStoryLayer = options =>
+  svc.buildStoryLayer = (options, index) =>
     stEditableLayerBuilder
       .buildEditableLayer(options, svc.storyMap.getMap())
       .then(a => {
@@ -66,7 +66,7 @@ function MapManager(
             STYLES: options.styleName
           });
         }
-        svc.storyMap.addStoryLayer(a);
+        svc.storyMap.addStoryLayer(a, index);
         if (options.settings.fitExtent === true) {
           const extent = a.get("extent");
           // prevent getting off the earth
