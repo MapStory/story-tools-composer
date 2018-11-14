@@ -36,9 +36,14 @@ function composerController(
   let queryLayerLoaded = false;
   const map = MapManager.storyMap.getMap();
 
-  PubSub.subscribe("updateStoryframes", () => {
+  const updateStoryframesHandler = () => {
     $scope.$apply(() => {
-      const fetchedFrameSettings = frameSvc.get("storyFrames");
+      $scope.currentFrame = 0;
+      let fetchedFrameSettings = frameSvc.get("storyFrames");
+
+      if (fetchedFrameSettings) {
+        fetchedFrameSettings = fetchedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex());
+      }
       const fetchedFrames = [];
 
       if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
@@ -80,7 +85,10 @@ function composerController(
         }
       }
     })
-  });
+  };
+
+  PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
+  PubSub.subscribe("changingChapter", updateStoryframesHandler);
 
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
 
@@ -307,12 +315,15 @@ function composerController(
   };
 
   $scope.getCurrentFrame = date => {
-    if ($scope.copiedFrameSettings[$scope.currentFrame]) {
-      const start = $scope.copiedFrameSettings[$scope.currentFrame].startDate;
-      const end = $scope.copiedFrameSettings[$scope.currentFrame].endDate;
+    const frame = $scope.copiedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex())[$scope.currentFrame];
+    if (frame) {
+      const start = frame.startDate;
+      const end = frame.endDate;
       $scope.checkTimes(date, start, end);
     }
   };
+
+
 
   $scope.checkTimes = (date, start, end) => {
     if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
