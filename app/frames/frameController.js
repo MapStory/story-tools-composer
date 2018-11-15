@@ -9,6 +9,7 @@ function frameController(
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.showForm = null;
+  $scope.currentIndex = 0;
 
   const map = MapManager.storyMap.getMap();
 
@@ -80,14 +81,14 @@ function frameController(
   };
 
 
-  $scope.$watch("frameSettings[0].endDate", () => {
-    if ($scope.frameSettings[0]) {
+  $scope.$watch("frameSettings[currentIndex].endDate", () => {
+    if ($scope.frameSettings[$scope.currentIndex]) {
       $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
     }
   });
 
-  $scope.$watch("frameSettings[0].startDate", () => {
-    if ($scope.frameSettings[0]) {
+  $scope.$watch("frameSettings[currentIndex].startDate", () => {
+    if ($scope.frameSettings[$scope.currentIndex]) {
       $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
     }
   });

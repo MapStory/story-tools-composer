@@ -337,8 +337,6 @@ function composerController(
         }
       }
     } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
-      $scope.zoomOutExtent();
-      map.getView().setZoom(1);
       $scope.clearBB();
     }
   };
@@ -396,13 +394,19 @@ function composerController(
   };
 
   $scope.zoomOutExtent = () => {
+    const extent = ol.extent.createEmpty();
+    $scope.mapManager.storyMap.getStoryLayers().forEach(layer => {
+      ol.extent.extend(extent, layer.get("extent"));
+    });
+
     const zoom = ol.animation.zoom({
       resolution: map.getView().getResolution(),
       duration: 1000,
       easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
-    map.getView().setZoom(3);
+    map.getView().fit(extent, map.getSize());
+
     $scope.zoomedIn = false;
     $scope.clearBB();
   };
