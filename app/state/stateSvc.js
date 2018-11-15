@@ -212,9 +212,9 @@ function stateSvc($http, $location, configSvc) {
       chapterLookup[copiedFrameSettings[i].chapter].push({
         type: "Feature",
         geometry: null,
-        id: null,
+        id: copiedFrameSettings[i].id,
         properties: {
-          id: Date.now(),
+          id: copiedFrameSettings[i].id,
           chapter: copiedFrameSettings[i].chapter,
           title: copiedFrameSettings[i].title,
           startTime: copiedFrameSettings[i].startDate,

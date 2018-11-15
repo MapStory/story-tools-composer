@@ -54,7 +54,7 @@ function composerController(
               fetchedFrameSettings[i].endDate
             ) {
               fetchedFrames[i] = {
-                id: Date.now(),
+                id: fetchedFrameSettings[i].id,
                 chapter: fetchedFrameSettings[i].chapter,
                 title: fetchedFrameSettings[i].title,
                 startDate: new Date(fetchedFrameSettings[i].startDate),

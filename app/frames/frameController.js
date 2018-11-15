@@ -209,6 +209,7 @@ function frameController(
     $scope.copiedFrameSettings[$scope.currentIndex].bb2 = $scope.coords[0][1];
     $scope.copiedFrameSettings[$scope.currentIndex].bb3 = $scope.coords[0][2];
     $scope.copiedFrameSettings[$scope.currentIndex].bb4 = $scope.coords[0][3];
+    $scope.saveStoryDetails();
   };
 
   $scope.deleteStoryframe = index => {
