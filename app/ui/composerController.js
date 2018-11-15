@@ -405,7 +405,12 @@ function composerController(
       easing: ol.easing.easeOut
     });
     map.beforeRender(zoom);
-    map.getView().fit(extent, map.getSize());
+
+    if ($scope.mapManager.storyMap.getStoryLayers().length > 0) {
+      map.getView().fit(extent, map.getSize());
+    } else {
+      map.getView().setZoom(3);
+    }
 
     $scope.zoomedIn = false;
     $scope.clearBB();
