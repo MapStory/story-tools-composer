@@ -100,7 +100,7 @@ function frameController(
     for (let x = 0; x < frameSettings.length; x += 1) {
       if (frameSettings[x] && $scope.coords[x]) {
         $scope.copiedFrameSettings.push({
-          id: Date.now(),
+          id: null,
           chapter: currentChapter,
           title: frameSettings[x].title,
           startDate: frameSettings[x].startDate,
