@@ -15,9 +15,7 @@ export default [
     isImage: true
   },
   {
-    regex: new RegExp(
-      /https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im
-    ),
+    regex: new RegExp(/https?:\/\/(?:w{3}\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com).+/im),
     isImage: false
   },
   {
@@ -25,10 +23,19 @@ export default [
     isImage: false
   },
   {
-    regex: new RegExp(
-      /https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im
-    ),
+    regex: new RegExp(/https?:\/\/(?:((?:m)\.)|((?:www)\.)|((?:i)\.))?imgur\.com\/?.+/im),
     isImage: true
   },
-  { regex: new RegExp(/https?:\/\/.*\.wikimedia\.org\/.*/), isImage: true }
+  {
+    regex: new RegExp(/https?:\/\/?ivideo.intelink\.gov\/.*/im),
+    isImage: false
+  },
+  {
+    regex: new RegExp(/https?:\/\/?gallery.intelink\.gov\/.*/),
+    isImage: true
+  },
+  {
+    regex: new RegExp(/https?:\/\/.*\.wikimedia\.org\/.*/),
+    isImage: true
+  }
 ];
