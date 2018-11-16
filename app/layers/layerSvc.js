@@ -20,11 +20,15 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
       type: "MapBox",
       name: "world-dark"
     },
+    /*
+    scale of these basemaps is not detailed enough
+    @todo: replace with other natural topo maps
     {
       title: "Geography Class",
       type: "MapBox",
       name: "geography-class"
     },
+
     {
       title: "Natural Earth 2",
       type: "MapBox",
@@ -35,6 +39,7 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
       type: "MapBox",
       name: "natural-earth-1"
     },
+    */
     {
       title: "Humanitarian OpenStreetMap",
       type: "HOT",
@@ -44,12 +49,16 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
       title: "OpenStreetMap",
       type: "OSM",
       name: "osm"
-    },
+    }
+    /*
+    ,
+    @todo: fix saving for esri basemaps
     {
       title: "World Topo Map",
       type: "ESRI",
       name: "world-topo-map"
     }
+    */
   ];
 
   svc.removeLayer = lyr => {
@@ -101,10 +110,10 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
           path: ""
         };
         settings.params = res.params;
-        MapManager.addLayer({ name, settings, server, title});
+        MapManager.addLayer({ name, settings, server, title });
       });
     } else {
-      MapManager.addLayer({ name, settings, server: svc.server.active, title});
+      MapManager.addLayer({ name, settings, server: svc.server.active, title });
     }
   };
 
