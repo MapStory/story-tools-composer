@@ -237,11 +237,13 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
     if (svc.isDrawing === true) {
       // Remove the overlay while moving
       pin.overlay.setPosition(undefined);
+      pin.show();
 
       svc.doBounceAnim(pin.coords);
       // Add the drag interaction
       svc.startDragInteraction([pin.mapFeature]);
     } else {
+      pin.hide();
       // Remove the drag interaction
       svc.stopDragInteraction();
       pin.coords = pin.mapFeature.getGeometry().getCoordinates();
