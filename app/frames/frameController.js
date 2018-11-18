@@ -13,6 +13,10 @@ function frameController(
 
   const map = MapManager.storyMap.getMap();
 
+  const dragBox = new ol.interaction.DragBox({
+    condition: ol.events.condition.shiftKeyOnly
+  });
+
   $scope.clearBoundingBox = () => {
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
@@ -69,14 +73,14 @@ function frameController(
 
   $scope.drawBoundingBox = () => {
     removeBoundingBox();
-    const dragBox = new ol.interaction.DragBox({
-      condition: ol.events.condition.shiftKeyOnly
-    });
+
 
     map.addInteraction(dragBox);
+
     dragBox.on("boxend", e => {
       const extent = dragBox.getGeometry().getExtent();
       zoomToExtent(extent);
+      map.removeInteraction(dragBox);
     });
   };
 
@@ -173,6 +177,7 @@ function frameController(
   $scope.resetFramesForm = () => {
     document.getElementById("storySettings").reset();
     $scope.clearBoundingBox();
+    map.removeInteraction(dragBox);
   };
 
   $scope.editStoryframe = index => {
