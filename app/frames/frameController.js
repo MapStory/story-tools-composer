@@ -220,10 +220,12 @@ function frameController(
   $scope.deleteStoryframe = index => {
     $scope.copiedFrameSettings.splice(index, 1);
     const config = stateSvc.getConfig();
-    const frameConfig = config.storyframes[index];
+    const frameConfig = config.storyframes.filter(item => item.chapter === stateSvc.getChapterIndex())[index];
     if (frameConfig.id) {
       stateSvc.config.removedFrames.push(frameConfig.id);
     }
+    const adjustedIndex = config.storyframes.findIndex(item => item.id === frameConfig.id);
+    config.storyframes.splice(adjustedIndex, 1);
     removeBoundingBox();
   };
 }

@@ -46,44 +46,40 @@ function composerController(
       }
       const fetchedFrames = [];
 
-      if (fetchedFrameSettings && fetchedFrameSettings.length > 0) {
-        if ($scope.frameSettings.length < fetchedFrameSettings.length) {
-          for (let i = 0; i < fetchedFrameSettings.length; i++) {
-            if (
-              fetchedFrameSettings[i].startDate &&
-              fetchedFrameSettings[i].endDate
-            ) {
-              fetchedFrames[i] = {
-                id: fetchedFrameSettings[i].id,
-                chapter: fetchedFrameSettings[i].chapter,
-                title: fetchedFrameSettings[i].title,
-                startDate: new Date(fetchedFrameSettings[i].startDate),
-                startTime: fetchedFrameSettings[i].startTime,
-                endDate: new Date(fetchedFrameSettings[i].endDate),
-                endTime: fetchedFrameSettings[i].endTime,
-                bb1: [
-                  fetchedFrameSettings[i].bb1[0],
-                  fetchedFrameSettings[i].bb1[1]
-                ],
-                bb2: [
-                  fetchedFrameSettings[i].bb2[0],
-                  fetchedFrameSettings[i].bb2[1]
-                ],
-                bb3: [
-                  fetchedFrameSettings[i].bb3[0],
-                  fetchedFrameSettings[i].bb3[1]
-                ],
-                bb4: [
-                  fetchedFrameSettings[i].bb4[0],
-                  fetchedFrameSettings[i].bb4[1]
-                ]
-              };
-            }
-          }
-          $scope.frameSettings = fetchedFrames;
-          $scope.copiedFrameSettings = angular.copy($scope.frameSettings);
+      for (let i = 0; i < fetchedFrameSettings.length; i++) {
+        if (
+          fetchedFrameSettings[i].startDate &&
+          fetchedFrameSettings[i].endDate
+        ) {
+          fetchedFrames[i] = {
+            id: fetchedFrameSettings[i].id,
+            chapter: fetchedFrameSettings[i].chapter,
+            title: fetchedFrameSettings[i].title,
+            startDate: new Date(fetchedFrameSettings[i].startDate),
+            startTime: fetchedFrameSettings[i].startTime,
+            endDate: new Date(fetchedFrameSettings[i].endDate),
+            endTime: fetchedFrameSettings[i].endTime,
+            bb1: [
+              fetchedFrameSettings[i].bb1[0],
+              fetchedFrameSettings[i].bb1[1]
+            ],
+            bb2: [
+              fetchedFrameSettings[i].bb2[0],
+              fetchedFrameSettings[i].bb2[1]
+            ],
+            bb3: [
+              fetchedFrameSettings[i].bb3[0],
+              fetchedFrameSettings[i].bb3[1]
+            ],
+            bb4: [
+              fetchedFrameSettings[i].bb4[0],
+              fetchedFrameSettings[i].bb4[1]
+            ]
+          };
         }
       }
+      $scope.frameSettings = fetchedFrames;
+      $scope.copiedFrameSettings = angular.copy($scope.frameSettings);
     })
   };
 
