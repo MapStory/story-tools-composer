@@ -2,7 +2,7 @@ import PubSub from "pubsub-js";
 import MinimalConfig from "app/state/MinimalConfig";
 import headerSvc from "app/ui/headerSvc";
 
-function stateSvc($http, $location, configSvc) {
+function stateSvc(configSvc) {
   const svc = {};
   svc.currentChapter = null;
   svc.previousChapter = null;
@@ -20,9 +20,11 @@ function stateSvc($http, $location, configSvc) {
   });
 
   svc.addNewChapter = () => {
-    const newChapter = configSvc.generateChapterConfig(svc.config.chapters.length + 1)
+    const newChapter = configSvc.generateChapterConfig(
+      svc.config.chapters.length + 1
+    );
     svc.config.chapters.push(newChapter);
-    PubSub.publish("chapterCreated", newChapter.index)
+    PubSub.publish("chapterCreated", newChapter.index);
   };
 
   svc.removeChapter = chapterId => {
@@ -155,12 +157,11 @@ function stateSvc($http, $location, configSvc) {
    * @param storyID The mapstory id.
    */
   svc.fetchComponentsFromAPI = storyID =>
-    $http({
-      url: `/api/mapstories/${storyID}`,
-      method: "GET"
-    }).then(data => {
-      PubSub.publish("updateStorypins", data.data.chapters);
-      PubSub.publish("updateStoryframes", data.data.chapters);
+    fetch(`/api/mapstories/${storyID}`).then(resp => {
+      resp.json().then(data => {
+        PubSub.publish("updateStorypins", data.chapters);
+        PubSub.publish("updateStoryframes", data.chapters);
+      });
     });
 
   /**
@@ -241,7 +242,8 @@ function stateSvc($http, $location, configSvc) {
 
   svc.getChapter = () => {
     let chapter = 1;
-    const path = $location.path();
+    // @TODO: don't rely on the existence of the hashbang
+    const path = window.location.href.split("#!")[1];
     if (path && path.indexOf("/chapter") === 0) {
       const matches = /\d+/.exec(path);
       if (matches !== null) {
@@ -305,11 +307,10 @@ function stateSvc($http, $location, configSvc) {
   svc.initConfig();
 
   svc.getCategories = () => {
-    $http({
-      url: "/api/categories/",
-      method: "GET"
-    }).then(data => {
-      svc.categories = data.data.objects;
+    fetch(`/api/categories/`).then(resp => {
+      resp.json().then(data => {
+        svc.categories = data.objects;
+      });
     });
   };
 
@@ -322,7 +323,7 @@ function stateSvc($http, $location, configSvc) {
 
   svc.onChapterSort = () => {
     // Iterate through the chapters and update their indexes anytime they are sorted
-    for (let i = 0; i < svc.config.chapters.length; i += 1 ) {
+    for (let i = 0; i < svc.config.chapters.length; i += 1) {
       svc.config.chapters[i].index = i + 1;
     }
   };
@@ -396,11 +397,14 @@ function stateSvc($http, $location, configSvc) {
                     body: JSON.stringify(layer.styleConfig),
                     headers: {
                       "X-CSRFToken": window.mapstory.composer.config.csrfToken
-                    }});
+                    }
+                  });
                 }
                 return Promise.resolve(true);
               });
-              Promise.all(promises).then(() => svc.updateLocationUsingStoryId(data.storyID));
+              Promise.all(promises).then(() =>
+                svc.updateLocationUsingStoryId(data.storyID)
+              );
             }
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];
@@ -418,8 +422,7 @@ function stateSvc($http, $location, configSvc) {
     });
 
   svc.generateStoryThumbnail = storyID =>
-    $http({
-      url: `/story/${storyID}/generate_thumbnail`,
+    fetch(`/story/${storyID}/generate_thumbnail`, {
       method: "POST"
     });
 
