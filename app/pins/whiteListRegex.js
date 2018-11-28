@@ -35,6 +35,14 @@ export default [
     isImage: true
   },
   {
+    regex: new RegExp(/https?:\/\/?ivideo.intelink.ic\.gov\/.*/im),
+    isImage: false
+  },
+  {
+    regex: new RegExp(/https?:\/\/?gallery.intelink.ic\.gov\/.*/),
+    isImage: true
+  },
+  {
     regex: new RegExp(/https?:\/\/.*\.wikimedia\.org\/.*/),
     isImage: true
   }
