@@ -10,7 +10,7 @@ function addLayers(layerSvc, stateSvc) {
 
       scope.getResults = (searchValue) =>
         layerSvc.getSearchBarResultsIndex(searchValue).then(data => {
-          let titles = [];
+          let titles;
           searchObjects = data;
           let searchLayerArray = [];
           let configLayerArray = [];
@@ -24,19 +24,17 @@ function addLayers(layerSvc, stateSvc) {
             searchLayerArray.push(searchLayers[title]);
           }
           for (let layer in configLayerArray) {
-            titles = searchLayerArray.filter(item => item !== configLayerArray[layer]);
+            searchLayerArray = searchLayerArray.filter(item => item !== configLayerArray[layer]);
           }
-          console.log(titles.length);
-          return titles;
+          return searchLayerArray;
         });
-
-
+      
       scope.addLayerFromSearchResults = (layerName) => {
         const errorDiv = document.getElementById("noResults");
         const errorMsg = "<i class='glyphicon glyphicon-remove'></i> No matching layers found.";
 
         if (searchObjects !== undefined && searchObjects.length !== 0) {
-          for (let x=0; x<searchObjects.length; x++) {
+          for (let x = 0; x < searchObjects.length; x++) {
             if (searchObjects[x].title === layerName) {
               errorDiv.innerHTML = "";
               layerSvc.addLayerFromApiResults({
