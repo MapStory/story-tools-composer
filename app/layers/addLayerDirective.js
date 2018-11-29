@@ -1,4 +1,4 @@
-function addLayers(layerSvc) {
+function addLayers(layerSvc, stateSvc) {
   return {
     restrict: "E",
     scope: {
@@ -7,18 +7,35 @@ function addLayers(layerSvc) {
     templateUrl: "./app/layers/templates/add-layers.html",
     link: scope => {
       let searchObjects;
-      let titles;
 
-      scope.getResults = searchValue =>
+      scope.getResults = (searchValue) =>
         layerSvc.getSearchBarResultsIndex(searchValue).then(data => {
+          let titles = [];
           searchObjects = data;
-          titles = layerSvc.compileLayerTitlesFromSearchIndex(data);
+          let searchLayerArray = [];
+          let configLayerArray = [];
+          let searchLayers = layerSvc.compileLayerTitlesFromSearchIndex(data);
+          let configLayers = stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers;
+
+          for (let i in configLayers) {
+            configLayerArray.push(configLayers[i].title);
+          }
+          for (let title in searchLayers) {
+            searchLayerArray.push(searchLayers[title]);
+          }
+          for (let layer in configLayerArray) {
+            // remove configLayer from searchLayer (type ahead)
+            titles = searchLayerArray.filter(item => item !== configLayerArray[layer]);
+            console.log(titles);
+          }
+
           return titles;
         });
 
+
       scope.addLayerFromSearchResults = (layerName) => {
         const errorDiv = document.getElementById("noResults");
-        const errorMsg = "<i class=\"glyphicon glyphicon-remove\"></i> No matching layers found.";
+        const errorMsg = "<i class='glyphicon glyphicon-remove'></i> No matching layers found.";
 
         if (searchObjects !== undefined && searchObjects.length !== 0) {
           for (let x=0; x<searchObjects.length; x++) {
