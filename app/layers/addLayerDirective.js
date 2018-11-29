@@ -24,11 +24,9 @@ function addLayers(layerSvc, stateSvc) {
             searchLayerArray.push(searchLayers[title]);
           }
           for (let layer in configLayerArray) {
-            // remove configLayer from searchLayer (type ahead)
             titles = searchLayerArray.filter(item => item !== configLayerArray[layer]);
-            console.log(titles);
           }
-
+          console.log(titles.length);
           return titles;
         });
 
