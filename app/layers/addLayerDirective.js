@@ -16,15 +16,17 @@ function addLayers(layerSvc, stateSvc) {
           const searchLayers = layerSvc.compileLayerTitlesFromSearchIndex(data);
           const configLayers = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers;
 
-          for (const configLayer in configLayers) {
-            configLayerArray.push(configLayers[configLayer].title);
+          for (let x = 0; x < configLayers.length; x++) {
+            configLayerArray.push(configLayers[x].title);
           }
-          for (const searchTitle in searchLayers) {
-            searchLayerArray.push(searchLayers[searchTitle]);
+          for (let x = 0; x < searchLayers.length; x++) {
+            searchLayerArray.push(searchLayers[x]);
           }
-          for (const layer in configLayerArray) {
-            searchLayerArray = searchLayerArray.filter(item => item !== configLayerArray[layer]);
+          for (let x = 0; x < configLayerArray.length; x++) {
+            searchLayerArray = searchLayerArray.filter(item => item !== configLayerArray[x]);
           }
+
+          
           if(searchLayerArray.length < 1) {
             const errorDiv = document.getElementById("noResults");
             errorDiv.innerHTML = "<i class='glyphicon glyphicon-exclamation-sign'> </i> You have added all available layers.";
