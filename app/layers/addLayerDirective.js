@@ -13,16 +13,16 @@ function addLayers(layerSvc, stateSvc) {
           searchObjects = data;
           let searchLayerArray = [];
           let configLayerArray = [];
-          let searchLayers = layerSvc.compileLayerTitlesFromSearchIndex(data);
-          let configLayers = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers;
+          const searchLayers = layerSvc.compileLayerTitlesFromSearchIndex(data);
+          const configLayers = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers;
 
-          for (let configLayer in configLayers) {
+          for (const configLayer in configLayers) {
             configLayerArray.push(configLayers[configLayer].title);
           }
-          for (let searchTitle in searchLayers) {
+          for (const searchTitle in searchLayers) {
             searchLayerArray.push(searchLayers[searchTitle]);
           }
-          for (let layer in configLayerArray) {
+          for (const layer in configLayerArray) {
             searchLayerArray = searchLayerArray.filter(item => item !== configLayerArray[layer]);
           }
           if(searchLayerArray.length < 1) {
