@@ -15,22 +15,27 @@ function addLayers(layerSvc, stateSvc) {
           let configLayerArray = [];
           let searchLayers = layerSvc.compileLayerTitlesFromSearchIndex(data);
           let configLayers = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers;
-          
-          for (let i in configLayers) {
-            configLayerArray.push(configLayers[i].title);
+
+          for (let configLayer in configLayers) {
+            configLayerArray.push(configLayers[configLayer].title);
           }
-          for (let title in searchLayers) {
-            searchLayerArray.push(searchLayers[title]);
+          for (let searchTitle in searchLayers) {
+            searchLayerArray.push(searchLayers[searchTitle]);
           }
           for (let layer in configLayerArray) {
             searchLayerArray = searchLayerArray.filter(item => item !== configLayerArray[layer]);
           }
-          return searchLayerArray;
+          if(searchLayerArray.length < 1) {
+            const errorDiv = document.getElementById("noResults");
+            errorDiv.innerHTML = "<i class='glyphicon glyphicon-exclamation-sign'> </i> You have added all available layers.";
+          } else {
+            return searchLayerArray;
+          }
         });
 
       scope.addLayerFromSearchResults = (layerName) => {
         const errorDiv = document.getElementById("noResults");
-        const errorMsg = "<i class='glyphicon glyphicon-remove'></i> No matching layers found.";
+        const errorMsg = "<i class='glyphicon glyphicon-remove'> </i> No matching layers found.";
 
         if (searchObjects !== undefined && searchObjects.length !== 0) {
           for (let x = 0; x < searchObjects.length; x++) {
