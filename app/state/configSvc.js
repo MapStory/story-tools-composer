@@ -2,113 +2,28 @@ import utils from "app/utils/utils";
 
 function newConfigSvc(layerOptionsSvc, appConfig) {
   const svc = {};
+  const basemaps = [];
+  const baseLayerEndpoint = '/baselayers';
 
-  svc.defaultBasemap = "world-dark";
-
-  const basemaps = [
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "world-dark",
-      title: "World Dark",
-      visibility: false,
-      selected: false,
-      source: "1",
-      fixed: false
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "natural-earth-1",
-      title: "Natural Earth",
-      visibility: false,
-      source: "1",
-      fixed: false
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "natural-earth-2",
-      title: "Natural Earth 2",
-      visibility: false,
-      source: "1",
-      fixed: false
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "geography-class",
-      title: "Geography Class",
-      visibility: false,
-      source: "1",
-      fixed: false
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "control-room",
-      title: "MapBoxControlRoom",
-      visibility: false,
-      source: "1",
-      fixed: false
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "world-light",
-      title: "World Light",
-      visibility: false,
-      source: "1",
-      fixed: false
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "hot",
-      title: "Humanitarian OpenStreetMap",
-      args: [
-        "Humanitarian OpenStreetMap",
-        [
-          /* eslint-disable no-template-curly-in-string */
-          "//a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
-          "//b.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
-          "//c.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png"
-          /* eslint-enable no-template-curly-in-string */
-        ],
-        { tileOptions: { crossOriginKeyword: null } }
-      ],
-      visibility: false,
-      source: "3",
-      fixed: true,
-      type: "OpenLayers.Layer.OSM"
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "osm",
-      title: "OpenStreetMap",
-      args: ["OpenStreetMap"],
-      visibility: false,
-      source: "3",
-      fixed: true,
-      type: "OpenLayers.Layer.OSM"
-    },
-    {
-      opacity: 1.0,
-      group: "background",
-      name: "world-topo-map",
-      title: "Eri NGS",
-      args: [
-        "Worldmap",
-        "https://services.arcgisonline.com/arcgis/rest/services/NGS_Topo_US_2D/MapServer/",
-        { layers: "basic" }
-      ],
-      visibility: false,
-      source: "2",
-      fixed: true,
-      type: "OpenLayers.Layer"
-    }
-  ];
+  fetch(baseLayerEndpoint)
+    .then((resp) => resp.json())
+    .then(function(data) {
+      svc.defaultBasemap = data.defaultLayer;
+      for (let x = 0; x < data.layers.length; x++) {
+        basemaps.push(
+          {
+            opacity: data.layers[x].opacity,
+            group: data.layers[x].group,
+            name: data.layers[x].name,
+            title: data.layers[x].title,
+            visibility: data.layers[x].visibility,
+            selected: false,
+            source: data.layers[x].source,
+            fixed: data.layers[x].fixed
+          }
+        )
+      }
+    });
 
   svc.getBasemapArrayWithActiveBasemap = layers => {
     let activeBasemap = null;
@@ -241,43 +156,7 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
       layers: data.layersConfig,
       viewerPlaybackMode: "instant",
       storyID: data.story_id || null,
-      sources: {
-        "0": {
-          lazy: true,
-          name: "local geoserver",
-          title: "Local Geoserver",
-          restUrl: "/gs/rest",
-          ptype: "gxp_wmscsource",
-          url: "https://mapstory.org/geoserver/wms",
-          isVirtualService: false
-        },
-        "1": { hidden: true, ptype: "gxp_mapboxsource" },
-        "3": { ptype: "gxp_osmsource" },
-        "2": {
-          ptype: "gxp_arcrestsource",
-          url:
-            "https://services.arcgisonline.com/arcgis/rest/services/NGS_Topo_US_2D/MapServer/",
-          isVirtualService: false,
-          alwaysAnonymous: true,
-          proj: "EPSG:4326"
-        },
-        "5": { ptype: "gxp_olsource" },
-        "4": {
-          lazy: true,
-          name: "local geoserver",
-          title: "Local Geoserver",
-          url: "https://mapstory.org/geoserver/wms",
-          ptype: "gxp_wmscsource",
-          restUrl: "/gs/rest"
-        },
-        "6": {
-          url:
-            "https://services.arcgisonline.com/arcgis/rest/services/NGS_Topo_US_2D/MapServer/",
-          proj: "EPSG:4326",
-          ptype: "gxp_arcrestsource",
-          alwaysAnonymous: true
-        }
-      },
+      sources: {},
       map: {
         id: index,
         center: [-11046067.8315474, 4153282.36890334],

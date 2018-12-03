@@ -25,8 +25,6 @@ function addLayers(layerSvc, stateSvc) {
           for (let x = 0; x < configLayerArray.length; x++) {
             searchLayerArray = searchLayerArray.filter(item => item !== configLayerArray[x]);
           }
-
-
           if(searchLayerArray.length < 1) {
             const errorDiv = document.getElementById("noResults");
             errorDiv.innerHTML = "<i class='glyphicon glyphicon-exclamation-sign'> </i> You have added all available layers.";
