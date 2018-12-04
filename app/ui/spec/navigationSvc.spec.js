@@ -13,7 +13,7 @@ describe("navigationSvc", () => {
       location = $location;
     })
   );
-  beforeEach(()=> {
+  beforeEach(() => {
     window.PubSub.clearAllSubscriptions();
     stateSvc.setConfig({ chapters: [] });
   });
@@ -21,17 +21,19 @@ describe("navigationSvc", () => {
   describe("nextChapter", () => {
     beforeEach(
       inject(($controller, $compile) => {
-        spyOn(location, "path");
+        spyOn(navigationSvc.location, "path");
       })
     );
 
     it("should update the location path to the next chapter if it exists", () => {
       stateSvc.setConfig({ chapters: [{}, {}] });
       navigationSvc.nextChapter();
-      expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
+      expect(navigationSvc.location.path).toHaveBeenCalledWith(
+        config.routes.chapter + 2
+      );
     });
 
-    it("broadcast a chapter change when next chapter is selected", (done) => {
+    it("broadcast a chapter change when next chapter is selected", done => {
       window.PubSub.subscribe("changingChapter", (msg, data) => {
         expect(data.currentChapterIndex).toBe(0);
         expect(data.nextChapterIndex).toBe(1);
@@ -45,7 +47,7 @@ describe("navigationSvc", () => {
     it("should update the location path to the first chapter if there is no next chapter ", () => {
       stateSvc.setConfig({ chapters: [{}] });
       navigationSvc.nextChapter();
-      expect(location.path).toHaveBeenCalledWith("");
+      expect(navigationSvc.location.path).toHaveBeenCalledWith("");
     });
   });
 
@@ -54,14 +56,16 @@ describe("navigationSvc", () => {
 
     it("should update the location path to the previous chapter if it exists", () => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
-      spyOn(location, "path").and.returnValue("/chapter/3");
+      spyOn(navigationSvc.location, "path").and.returnValue("/chapter/3");
       navigationSvc.previousChapter();
-      expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
+      expect(navigationSvc.location.path).toHaveBeenCalledWith(
+        config.routes.chapter + 2
+      );
     });
 
-    it("broadcast a chapter change when previous chapter is selected", (done) => {
+    it("broadcast a chapter change when previous chapter is selected", done => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
-      spyOn(location, "path").and.returnValue("/chapter/3");
+      spyOn(navigationSvc.location, "path").and.returnValue("/chapter/3");
       window.PubSub.subscribe("changingChapter", (msg, data) => {
         expect(data.currentChapterIndex).toBe(2);
         expect(data.nextChapterIndex).toBe(1);
@@ -73,10 +77,10 @@ describe("navigationSvc", () => {
 
     it("should update the location path to the first chapter if there is no previous chapter", done => {
       stateSvc.setConfig({ chapters: [{}] });
-      spyOn(location, "path");
+      spyOn(navigationSvc.location, "path");
       navigationSvc.previousChapter();
       setTimeout(() => {
-        expect(location.path).toHaveBeenCalledWith("/chapter/1");
+        expect(navigationSvc.location.path).toHaveBeenCalledWith("/chapter/1");
         done();
       }, 300);
     });
@@ -97,12 +101,14 @@ describe("navigationSvc", () => {
 
     it("should update the location path to the new chapter if it exists", () => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
-      spyOn(location, "path").and.returnValue("/chapter/3");
+      spyOn(navigationSvc.location, "path").and.returnValue("/chapter/3");
       navigationSvc.goToChapter(2);
-      expect(location.path).toHaveBeenCalledWith(config.routes.chapter + 2);
+      expect(navigationSvc.location.path).toHaveBeenCalledWith(
+        config.routes.chapter + 2
+      );
     });
 
-    it("should broadcast the new chapter if it exists", (done) => {
+    it("should broadcast the new chapter if it exists", done => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
       spyOn(location, "path").and.returnValue("/chapter/3");
       window.PubSub.subscribe("changingChapter", (msg, data) => {
@@ -113,6 +119,5 @@ describe("navigationSvc", () => {
       });
       navigationSvc.goToChapter(2);
     });
-
   });
 });

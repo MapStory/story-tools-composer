@@ -7,6 +7,20 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
    * Navigates to next chapter or loops around.
    * NOTE: Chapter number starts at 1.
    */
+
+  /*
+   * `location.path` replaces the app's hashbang value if an arg is provided,
+   *  otherwise it returns the current value
+   */
+  svc.location = {
+    path: arg => {
+      if (arg !== undefined && arg !== null) {
+        window.location.hash = `#!${arg}`;
+        return window.location.hash;
+      }
+      return window.location.hash.replace("#!", "");
+    }
+  };
   svc.nextChapter = () => {
     const thisChapter = Number(stateSvc.getChapter());
     const nextChapter = thisChapter + 1;
@@ -18,7 +32,8 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
         currentChapterIndex: thisChapter - 1,
         nextChapterIndex: nextChapter - 1
       };
-      $location.path(appConfig.routes.chapter + nextChapter);
+      // $location.path(appConfig.routes.chapter + nextChapter);
+      svc.location.path(appConfig.routes.chapter + nextChapter);
       PubSub.publish("changingChapter", data);
     } else {
       // Go from last to first.
@@ -27,7 +42,7 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
         currentChapterIndex: thisChapter - 1,
         nextChapterIndex: 0
       };
-      $location.path("");
+      svc.location.path("");
       PubSub.publish("changingChapter", data);
     }
   };
@@ -49,7 +64,7 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
       };
 
       PubSub.publish("changingChapter", data);
-      $location.path(appConfig.routes.chapter + previousChapter);
+      svc.location.path(appConfig.routes.chapter + previousChapter);
     } else {
       // Go from first to last.
       $log.info("Going to Chapter ", stateSvc.getChapterCount());
@@ -77,9 +92,9 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
     PubSub.publish("changingChapter", data);
     if (number > 0) {
       $log.info("Going to the Chapter ", number);
-      $location.path(appConfig.routes.chapter + number);
+      svc.location.path(appConfig.routes.chapter + number);
     } else {
-      $location.path("");
+      svc.location.path("");
     }
   };
 
