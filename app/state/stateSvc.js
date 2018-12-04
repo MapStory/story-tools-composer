@@ -2,7 +2,7 @@ import PubSub from "pubsub-js";
 import MinimalConfig from "app/state/MinimalConfig";
 import headerSvc from "app/ui/headerSvc";
 
-function stateSvc($http, $location, configSvc) {
+function stateSvc($location, configSvc) {
   const svc = {};
   svc.currentChapter = null;
   svc.previousChapter = null;
@@ -69,7 +69,7 @@ function stateSvc($http, $location, configSvc) {
         const layerName = layer.getSource().getParams().LAYERS;
         const zIndex = svc.config.chapters[
           svc.getChapterIndex()
-        ].layers.findIndex(item => item.name === layerName);
+          ].layers.findIndex(item => item.name === layerName);
         layer.setZIndex(zIndex);
       }
     });
@@ -155,13 +155,15 @@ function stateSvc($http, $location, configSvc) {
    * @param storyID The mapstory id.
    */
   svc.fetchComponentsFromAPI = storyID =>
-    $http({
-      url: `/api/mapstories/${storyID}`,
-      method: "GET"
-    }).then(data => {
-      PubSub.publish("updateStorypins", data.data.chapters);
-      PubSub.publish("updateStoryframes", data.data.chapters);
-    });
+    fetch(`/api/mapstories/${storyId}`)
+      .then(response => {
+        return response.json();
+      })
+      .then(data => {
+        PubSub.publish("updateStorypins", data.chapters);
+        PubSub.publish("updateStoryframes", data.chapters);
+      });
+
 
   /**
    * Event responder for Init has finished.
@@ -305,12 +307,13 @@ function stateSvc($http, $location, configSvc) {
   svc.initConfig();
 
   svc.getCategories = () => {
-    $http({
-      url: "/api/categories/",
-      method: "GET"
-    }).then(data => {
-      svc.categories = data.data.objects;
-    });
+    fetch("/api/categories/")
+      .then(response => {
+        return response.json();
+      })
+      .then((data) => {
+        svc.categories = data.objects;
+      });
   };
 
   svc.getCategories();
@@ -322,7 +325,7 @@ function stateSvc($http, $location, configSvc) {
 
   svc.onChapterSort = () => {
     // Iterate through the chapters and update their indexes anytime they are sorted
-    for (let i = 0; i < svc.config.chapters.length; i += 1 ) {
+    for (let i = 0; i < svc.config.chapters.length; i += 1) {
       svc.config.chapters[i].index = i + 1;
     }
   };
@@ -346,7 +349,7 @@ function stateSvc($http, $location, configSvc) {
           svc.config.storyframes[i] &&
           svc.config.storyframes[i].features
             ? svc.config.storyframes[i]
-            : { features: [] };
+            : {features: []};
       }
       const minimalCfg = {
         storyID: cfg.storyID || "",
@@ -396,7 +399,8 @@ function stateSvc($http, $location, configSvc) {
                     body: JSON.stringify(layer.styleConfig),
                     headers: {
                       "X-CSRFToken": window.mapstory.composer.config.csrfToken
-                    }});
+                    }
+                  });
                 }
                 return Promise.resolve(true);
               });
@@ -417,11 +421,13 @@ function stateSvc($http, $location, configSvc) {
         });
     });
 
-  svc.generateStoryThumbnail = storyID =>
-    $http({
-      url: `/story/${storyID}/generate_thumbnail`,
-      method: "POST"
-    });
+  svc.generateStoryThumbnail = storyID => {
+    return fetch(`/story/${storyId}/generate_thumbnail`, {
+      method: "POST",
+      headers: headers,
+      credentials: "same-origin",
+    })
+  };
 
   svc.publish = () => {
     const config = svc.getConfig();

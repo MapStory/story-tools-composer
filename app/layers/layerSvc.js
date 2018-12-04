@@ -162,13 +162,13 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
   // Compile search bar results into an array of objects containing the name,
   // title, and whether or not it's a remote service
   svc.getSearchBarResultsIndex = searchValue => {
-    const url = `${
-      appConfig.servers[0].host
-    }/api/layers/?name__icontains=${searchValue}`;
-    return new Promise(resolve => {
-      $http.get(url).then(response => {
+    const url = `${appConfig.servers[0].host}/api/layers/?name__icontains=${searchValue}`;
+
+    return fetch(url)
+      .then((resp) => resp.json())
+      .then(function (data) {
         const searchObjects = [];
-        const objects = response.data.objects;
+        const objects = data.objects;
 
         for (let i = 0; i < objects.length; i += 1) {
           if (objects[i].alternate) {
@@ -185,10 +185,14 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
             });
           }
         }
-        resolve(searchObjects);
-      });
-    });
-  };
+        return searchObjects;
+      })
+    };
+
+
+
+
+
 
   svc.getLayerParam = (query, param) => {
     const urlJson = (() => {
@@ -214,6 +218,13 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
         res({ url, params });
       });
     });
+
+
+
+
+
+
+
 
   svc.getLegendUrl = layer => {
     let url = null;

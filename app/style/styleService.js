@@ -85,7 +85,7 @@ function styleService(
     };
     const styleName = `STYLE_${idParts.user}_${idParts.uuid}-${
       idParts.chapter
-    }-${idParts.layerName}`;
+      }-${idParts.layerName}`;
 
     return styleName;
   };
