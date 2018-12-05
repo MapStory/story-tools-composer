@@ -155,15 +155,12 @@ function stateSvc($location, configSvc) {
    * @param storyID The mapstory id.
    */
   svc.fetchComponentsFromAPI = storyID =>
-    fetch(`/api/mapstories/${storyId}`)
-      .then(response => {
-        return response.json();
-      })
-      .then(data => {
+    fetch(`/api/mapstories/${storyID}`)
+      .then((resp) => resp.json())
+      .then(function(data) {
         PubSub.publish("updateStorypins", data.chapters);
         PubSub.publish("updateStoryframes", data.chapters);
       });
-
 
   /**
    * Event responder for Init has finished.
