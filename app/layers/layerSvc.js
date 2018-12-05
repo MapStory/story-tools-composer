@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 
-function layerSvc($http, appConfig, MapManager, stateSvc) {
+function layerSvc(appConfig, MapManager, stateSvc) {
   const layerStyleTimeStamps = {};
   const svc = {};
 
@@ -189,11 +189,6 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
       })
     };
 
-
-
-
-
-
   svc.getLayerParam = (query, param) => {
     const urlJson = (() => {
       const result = {};
@@ -206,25 +201,18 @@ function layerSvc($http, appConfig, MapManager, stateSvc) {
     return urlJson[param];
   };
 
-  svc.getRemoteServiceUrl = name =>
-    new Promise(res => {
-      $http.get(`/layers/${name}/remote`).then(r => {
+  svc.getRemoteServiceUrl = name => {
+    return fetch(`/layers/${name}/remote`)
+      .then((resp) => resp.json())
+      .then(function (data) {
         const containsQuery = r.data.indexOf("?") > -1;
         const url = containsQuery ? r.data.split("?")[0] : r.data;
         const query = containsQuery ? r.data.split("?")[1] : false;
         const params = {
           map: svc.getLayerParam(query, "map")
         };
-        res({ url, params });
       });
-    });
-
-
-
-
-
-
-
+  }
 
   svc.getLegendUrl = layer => {
     let url = null;
