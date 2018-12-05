@@ -1,26 +1,21 @@
 import PubSub from "pubsub-js";
+import locationSvc from "./locationSvc";
 
 function navigationSvc($location, $log, stateSvc, appConfig) {
-  const svc = {};
+  // locationSvc is being hitched to navigationSvc temporarily in order
+  // for Karma tests to have acces.
+  // @TODO: remove locationSvc after karma tests have been configured to
+  // import ES6 modules.
+
+  const svc = {
+    locationSvc
+  };
 
   /**
    * Navigates to next chapter or loops around.
    * NOTE: Chapter number starts at 1.
    */
 
-  /*
-   * `location.path` replaces the app's hashbang value if an arg is provided,
-   *  otherwise it returns the current value
-   */
-  svc.location = {
-    path: arg => {
-      if (arg !== undefined && arg !== null) {
-        window.location.hash = `#!${arg}`;
-        return window.location.hash;
-      }
-      return window.location.hash.replace("#!", "");
-    }
-  };
   svc.nextChapter = () => {
     const thisChapter = Number(stateSvc.getChapter());
     const nextChapter = thisChapter + 1;
@@ -33,7 +28,7 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
         nextChapterIndex: nextChapter - 1
       };
       // $location.path(appConfig.routes.chapter + nextChapter);
-      svc.location.path(appConfig.routes.chapter + nextChapter);
+      locationSvc.path(appConfig.routes.chapter + nextChapter);
       PubSub.publish("changingChapter", data);
     } else {
       // Go from last to first.
@@ -42,7 +37,7 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
         currentChapterIndex: thisChapter - 1,
         nextChapterIndex: 0
       };
-      svc.location.path("");
+      locationSvc.path("");
       PubSub.publish("changingChapter", data);
     }
   };
@@ -64,7 +59,7 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
       };
 
       PubSub.publish("changingChapter", data);
-      svc.location.path(appConfig.routes.chapter + previousChapter);
+      locationSvc.path(appConfig.routes.chapter + previousChapter);
     } else {
       // Go from first to last.
       $log.info("Going to Chapter ", stateSvc.getChapterCount());
@@ -92,9 +87,9 @@ function navigationSvc($location, $log, stateSvc, appConfig) {
     PubSub.publish("changingChapter", data);
     if (number > 0) {
       $log.info("Going to the Chapter ", number);
-      svc.location.path(appConfig.routes.chapter + number);
+      locationSvc.path(appConfig.routes.chapter + number);
     } else {
-      svc.location.path("");
+      locationSvc.path("");
     }
   };
 

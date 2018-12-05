@@ -1,8 +1,9 @@
 import PubSub from "pubsub-js";
 import MinimalConfig from "app/state/MinimalConfig";
 import headerSvc from "app/ui/headerSvc";
+import locationSvc from "app/ui/locationSvc";
 
-function stateSvc($http, $location, configSvc) {
+function stateSvc($http, configSvc) {
   const svc = {};
   svc.currentChapter = null;
   svc.previousChapter = null;
@@ -20,9 +21,11 @@ function stateSvc($http, $location, configSvc) {
   });
 
   svc.addNewChapter = () => {
-    const newChapter = configSvc.generateChapterConfig(svc.config.chapters.length + 1)
+    const newChapter = configSvc.generateChapterConfig(
+      svc.config.chapters.length + 1
+    );
     svc.config.chapters.push(newChapter);
-    PubSub.publish("chapterCreated", newChapter.index)
+    PubSub.publish("chapterCreated", newChapter.index);
   };
 
   svc.removeChapter = chapterId => {
@@ -241,7 +244,7 @@ function stateSvc($http, $location, configSvc) {
 
   svc.getChapter = () => {
     let chapter = 1;
-    const path = $location.path();
+    const path = locationSvc.path();
     if (path && path.indexOf("/chapter") === 0) {
       const matches = /\d+/.exec(path);
       if (matches !== null) {
@@ -322,7 +325,7 @@ function stateSvc($http, $location, configSvc) {
 
   svc.onChapterSort = () => {
     // Iterate through the chapters and update their indexes anytime they are sorted
-    for (let i = 0; i < svc.config.chapters.length; i += 1 ) {
+    for (let i = 0; i < svc.config.chapters.length; i += 1) {
       svc.config.chapters[i].index = i + 1;
     }
   };
@@ -396,11 +399,14 @@ function stateSvc($http, $location, configSvc) {
                     body: JSON.stringify(layer.styleConfig),
                     headers: {
                       "X-CSRFToken": window.mapstory.composer.config.csrfToken
-                    }});
+                    }
+                  });
                 }
                 return Promise.resolve(true);
               });
-              Promise.all(promises).then(() => svc.updateLocationUsingStoryId(data.storyID));
+              Promise.all(promises).then(() =>
+                svc.updateLocationUsingStoryId(data.storyID)
+              );
             }
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];

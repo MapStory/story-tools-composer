@@ -1,6 +1,7 @@
 describe("navigationSvc", () => {
   let config;
   let navigationSvc;
+  let locationSvc;
   let location;
   let stateSvc;
 
@@ -9,6 +10,7 @@ describe("navigationSvc", () => {
     inject(($location, _navigationSvc_, _stateSvc_, _appConfig_) => {
       config = _appConfig_;
       navigationSvc = _navigationSvc_;
+      locationSvc = navigationSvc.locationSvc;
       stateSvc = _stateSvc_;
       location = $location;
     })
@@ -21,16 +23,14 @@ describe("navigationSvc", () => {
   describe("nextChapter", () => {
     beforeEach(
       inject(($controller, $compile) => {
-        spyOn(navigationSvc.location, "path");
+        spyOn(locationSvc, "path");
       })
     );
 
     it("should update the location path to the next chapter if it exists", () => {
       stateSvc.setConfig({ chapters: [{}, {}] });
       navigationSvc.nextChapter();
-      expect(navigationSvc.location.path).toHaveBeenCalledWith(
-        config.routes.chapter + 2
-      );
+      expect(locationSvc.path).toHaveBeenCalledWith(config.routes.chapter + 2);
     });
 
     it("broadcast a chapter change when next chapter is selected", done => {
@@ -47,7 +47,7 @@ describe("navigationSvc", () => {
     it("should update the location path to the first chapter if there is no next chapter ", () => {
       stateSvc.setConfig({ chapters: [{}] });
       navigationSvc.nextChapter();
-      expect(navigationSvc.location.path).toHaveBeenCalledWith("");
+      expect(locationSvc.path).toHaveBeenCalledWith("");
     });
   });
 
@@ -56,16 +56,14 @@ describe("navigationSvc", () => {
 
     it("should update the location path to the previous chapter if it exists", () => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
-      spyOn(navigationSvc.location, "path").and.returnValue("/chapter/3");
+      spyOn(locationSvc, "path").and.returnValue("/chapter/3");
       navigationSvc.previousChapter();
-      expect(navigationSvc.location.path).toHaveBeenCalledWith(
-        config.routes.chapter + 2
-      );
+      expect(locationSvc.path).toHaveBeenCalledWith(config.routes.chapter + 2);
     });
 
     it("broadcast a chapter change when previous chapter is selected", done => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
-      spyOn(navigationSvc.location, "path").and.returnValue("/chapter/3");
+      spyOn(locationSvc, "path").and.returnValue("/chapter/3");
       window.PubSub.subscribe("changingChapter", (msg, data) => {
         expect(data.currentChapterIndex).toBe(2);
         expect(data.nextChapterIndex).toBe(1);
@@ -77,10 +75,10 @@ describe("navigationSvc", () => {
 
     it("should update the location path to the first chapter if there is no previous chapter", done => {
       stateSvc.setConfig({ chapters: [{}] });
-      spyOn(navigationSvc.location, "path");
+      spyOn(locationSvc, "path");
       navigationSvc.previousChapter();
       setTimeout(() => {
-        expect(navigationSvc.location.path).toHaveBeenCalledWith("/chapter/1");
+        expect(locationSvc.path).toHaveBeenCalledWith("/chapter/1");
         done();
       }, 300);
     });
@@ -101,16 +99,14 @@ describe("navigationSvc", () => {
 
     it("should update the location path to the new chapter if it exists", () => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
-      spyOn(navigationSvc.location, "path").and.returnValue("/chapter/3");
+      spyOn(locationSvc, "path").and.returnValue("/chapter/3");
       navigationSvc.goToChapter(2);
-      expect(navigationSvc.location.path).toHaveBeenCalledWith(
-        config.routes.chapter + 2
-      );
+      expect(locationSvc.path).toHaveBeenCalledWith(config.routes.chapter + 2);
     });
 
     it("should broadcast the new chapter if it exists", done => {
       stateSvc.setConfig({ chapters: [{}, {}, {}] });
-      spyOn(location, "path").and.returnValue("/chapter/3");
+      spyOn(locationSvc, "path").and.returnValue("/chapter/3");
       window.PubSub.subscribe("changingChapter", (msg, data) => {
         expect(data.currentChapterIndex).toBe(2);
         expect(data.nextChapterIndex).toBe(1);

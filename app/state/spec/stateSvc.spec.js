@@ -1,12 +1,12 @@
 describe("stateSvc", () => {
-  let location;
+  let locationSvc;
   let stateSvc;
 
   beforeEach(module("composer"));
   beforeEach(
-    inject(($location, _stateSvc_) => {
+    inject((_stateSvc_, _navigationSvc_) => {
       stateSvc = _stateSvc_;
-      location = $location;
+      locationSvc = _navigationSvc_.locationSvc;
     })
   );
 
@@ -22,7 +22,7 @@ describe("stateSvc", () => {
     });
 
     it("should return the number of the current chapter (value: 2)", () => {
-      spyOn(location, "path").and.returnValue("/chapter/2");
+      spyOn(locationSvc, "path").and.returnValue("/chapter/2");
       expect(stateSvc.getChapter()).toBe(2);
     });
   });
@@ -33,7 +33,7 @@ describe("stateSvc", () => {
     });
 
     it("should return the number of the current chapter (value: 1)", () => {
-      spyOn(location, "path").and.returnValue("/chapter/2");
+      spyOn(locationSvc, "path").and.returnValue("/chapter/2");
       expect(stateSvc.getChapterIndex()).toBe(1);
     });
   });
@@ -102,7 +102,7 @@ describe("stateSvc", () => {
       const testConfig = { chapters: [{}, { test: "pass" }, {}] };
       stateSvc.setConfig(testConfig);
       expect(stateSvc.currentChapter).toBeNull();
-      spyOn(location, "path").and.returnValue("/chapter/2");
+      spyOn(locationSvc, "path").and.returnValue("/chapter/2");
       stateSvc.updateCurrentChapterConfig();
       expect(stateSvc.currentChapter.test).toBe("pass");
     });

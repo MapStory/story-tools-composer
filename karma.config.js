@@ -42,20 +42,11 @@ module.exports = config => {
     },
     babelPreprocessor: {
       options: {
-        presets: ["es2015"]
+        presets: ["react", "es2015", "stage-0"]
       }
     },
     webpackMiddleware: {
       noInfo: true
-    },
-    plugins: [
-      "karma-babel-preprocessor",
-      "karma-ng-html2js-preprocessor",
-      "karma-mocha-reporter",
-      "karma-chrome-launcher",
-      "karma-webpack",
-      "karma-jasmine",
-      "karma-phantomjs-launcher"
-    ]
+    }
   });
 };
