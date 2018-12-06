@@ -207,11 +207,12 @@ function layerSvc(appConfig, MapManager, stateSvc) {
         .then((resp) => resp.json())
         .then((data) => {
           const containsQuery = data.data.indexOf("?") > -1;
-          const url = containsQuery ? r.data.split("?")[0] : r.data;
-          const query = containsQuery ? r.data.split("?")[1] : false;
+          const url = containsQuery ? data.data.split("?")[0] : r.data;
+          const query = containsQuery ? data.data.split("?")[1] : false;
           const params = {
             map: svc.getLayerParam(query, "map")
           };
+          res({ url, params });
         });
       })
     }
