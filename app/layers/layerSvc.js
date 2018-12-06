@@ -166,7 +166,7 @@ function layerSvc(appConfig, MapManager, stateSvc) {
 
     return fetch(url)
       .then((resp) => resp.json())
-      .then(function (data) {
+      .then((data) => {
         const searchObjects = [];
         const objects = data.objects;
 
@@ -202,17 +202,19 @@ function layerSvc(appConfig, MapManager, stateSvc) {
   };
 
   svc.getRemoteServiceUrl = name => {
-    return fetch(`/layers/${name}/remote`)
-      .then((resp) => resp.json())
-      .then(function (data) {
-        const containsQuery = r.data.indexOf("?") > -1;
-        const url = containsQuery ? r.data.split("?")[0] : r.data;
-        const query = containsQuery ? r.data.split("?")[1] : false;
-        const params = {
-          map: svc.getLayerParam(query, "map")
-        };
-      });
-  }
+    new Promise(res => {
+      fetch(`/layers/${name}/remote`)
+        .then((resp) => resp.json())
+        .then((data) => {
+          const containsQuery = data.data.indexOf("?") > -1;
+          const url = containsQuery ? r.data.split("?")[0] : r.data;
+          const query = containsQuery ? r.data.split("?")[1] : false;
+          const params = {
+            map: svc.getLayerParam(query, "map")
+          };
+        });
+      })
+    }
 
   svc.getLegendUrl = layer => {
     let url = null;

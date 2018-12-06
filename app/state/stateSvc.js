@@ -157,7 +157,7 @@ function stateSvc($location, configSvc) {
   svc.fetchComponentsFromAPI = storyID =>
     fetch(`/api/mapstories/${storyID}`)
       .then((resp) => resp.json())
-      .then(function(data) {
+      .then((data) => {
         PubSub.publish("updateStorypins", data.chapters);
         PubSub.publish("updateStoryframes", data.chapters);
       });
@@ -305,7 +305,7 @@ function stateSvc($location, configSvc) {
 
   svc.getCategories = () => {
     fetch("/api/categories/")
-      .then(response => {
+      .then(response  => {
         return response.json();
       })
       .then((data) => {
@@ -418,7 +418,7 @@ function stateSvc($location, configSvc) {
         });
     });
 
-  svc.generateStoryThumbnail = storyID => {
+  svc.generateStoryThumbnail = storyId => {
     return fetch(`/story/${storyId}/generate_thumbnail`, {
       method: "POST",
       headers: {
