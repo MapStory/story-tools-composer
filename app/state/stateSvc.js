@@ -305,7 +305,7 @@ function stateSvc($location, configSvc) {
 
   svc.getCategories = () =>
     fetch("/api/categories/")
-      .then(response  => {
+      .then((response) => {
         return response.json();
       })
       .then((data) => {
