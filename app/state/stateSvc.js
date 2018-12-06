@@ -421,7 +421,9 @@ function stateSvc($location, configSvc) {
   svc.generateStoryThumbnail = storyID => {
     return fetch(`/story/${storyId}/generate_thumbnail`, {
       method: "POST",
-      headers: headers,
+      headers: {
+        "X-CSRFToken": window.mapstory.composer.config.csrfToken
+      },
       credentials: "same-origin",
     })
   };

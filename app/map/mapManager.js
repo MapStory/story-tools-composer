@@ -1,7 +1,6 @@
 import PubSub from "pubsub-js";
 
 function MapManager(
-  $http,
   appConfig,
   stStoryMapBuilder,
   stEditableLayerBuilder,
