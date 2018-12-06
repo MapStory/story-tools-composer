@@ -2,7 +2,6 @@ describe("navigationSvc", () => {
   let config;
   let navigationSvc;
   let locationSvc;
-  let location;
   let stateSvc;
 
   beforeEach(module("composer"));
@@ -12,7 +11,6 @@ describe("navigationSvc", () => {
       navigationSvc = _navigationSvc_;
       locationSvc = navigationSvc.locationSvc;
       stateSvc = _stateSvc_;
-      location = $location;
     })
   );
   beforeEach(() => {
