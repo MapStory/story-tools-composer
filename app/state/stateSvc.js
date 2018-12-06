@@ -303,15 +303,15 @@ function stateSvc($location, configSvc) {
 
   svc.initConfig();
 
-  svc.getCategories = () => {
-    return fetch("/api/categories/")
+  svc.getCategories = () =>
+    fetch("/api/categories/")
       .then(response  => {
-        response.json();
+        return response.json();
       })
       .then((data) => {
         svc.categories = data.objects;
       });
-  };
+
 
   svc.getCategories();
 
@@ -418,15 +418,15 @@ function stateSvc($location, configSvc) {
         });
     });
 
-  svc.generateStoryThumbnail = storyId => {
-    return fetch(`/story/${storyId}/generate_thumbnail`, {
+  svc.generateStoryThumbnail = storyId =>
+    fetch(`/story/${storyId}/generate_thumbnail`, {
       method: "POST",
       headers: {
         "X-CSRFToken": window.mapstory.composer.config.csrfToken
       },
       credentials: "same-origin",
-    })
-  };
+    });
+
 
   svc.publish = () => {
     const config = svc.getConfig();

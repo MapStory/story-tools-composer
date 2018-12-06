@@ -202,12 +202,12 @@ function layerSvc(appConfig, MapManager, stateSvc) {
   };
 
   svc.getRemoteServiceUrl = name => {
-    new Promise(res => {
+    Promise(res => {
       fetch(`/layers/${name}/remote`)
         .then((resp) => resp.json())
         .then((data) => {
           const containsQuery = data.data.indexOf("?") > -1;
-          const url = containsQuery ? data.data.split("?")[0] : r.data;
+          const url = containsQuery ? data.data.split("?")[0] : data.data;
           const query = containsQuery ? data.data.split("?")[1] : false;
           const params = {
             map: svc.getLayerParam(query, "map")
@@ -215,7 +215,7 @@ function layerSvc(appConfig, MapManager, stateSvc) {
           res({ url, params });
         });
       })
-    }
+    };
 
   svc.getLegendUrl = layer => {
     let url = null;
