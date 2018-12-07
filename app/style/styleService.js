@@ -17,8 +17,7 @@ function styleService(
     }
 
     const layerName = layer.get("name");
-    const styleName =
-      layer.get("styleName") || window.getStyleName(layerName);
+    const styleName = layer.get("styleName") || window.getStyleName(layerName);
     const mapID = stateSvc.config.id;
 
     if (mapID) {
@@ -38,7 +37,9 @@ function styleService(
     }
 
     // if there is no map id, check if there is a style in the state service
-    const layerStyle = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.find(item => item.styleName === styleName);
+    const layerStyle = stateSvc.config.chapters[
+      stateSvc.getChapterIndex()
+    ].layers.find(item => item.styleName === styleName);
 
     if (layerStyle) {
       const newStyle = layerStyle.styleConfig.style;
@@ -84,7 +85,7 @@ function styleService(
     };
     const styleName = `STYLE_${idParts.user}_${idParts.uuid}-${
       idParts.chapter
-      }-${idParts.layerName}`;
+    }-${idParts.layerName}`;
 
     return styleName;
   };
@@ -158,10 +159,11 @@ function styleService(
         if (mapID) {
           fetch(`/style/${mapID}/${styleName}`, {
             method: "POST",
-            body: JSON.stringify({style, version: "1.0"}),
+            body: JSON.stringify({ style, version: "1.0" }),
             headers: {
               "X-CSRFToken": window.mapstory.composer.config.csrfToken
-            }});
+            }
+          });
         }
       }
     }
