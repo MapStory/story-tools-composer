@@ -51,7 +51,7 @@ module.exports = {
     ]
   },
   entry: {
-    app: ["babel-polyfill", "./app/app.js"],
+    app: ["whatwg-fetch", "babel-polyfill", "./app/app.js"],
     style: "./style/style.js",
     vendor: [
       "angular",
