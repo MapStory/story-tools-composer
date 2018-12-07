@@ -1,8 +1,9 @@
 import PubSub from "pubsub-js";
 import MinimalConfig from "app/state/MinimalConfig";
 import headerSvc from "app/ui/headerSvc";
+import locationSvc from "app/ui/locationSvc";
 
-function stateSvc($location, configSvc) {
+function stateSvc(configSvc) {
   const svc = {};
   svc.currentChapter = null;
   svc.previousChapter = null;
@@ -20,9 +21,11 @@ function stateSvc($location, configSvc) {
   });
 
   svc.addNewChapter = () => {
-    const newChapter = configSvc.generateChapterConfig(svc.config.chapters.length + 1)
+    const newChapter = configSvc.generateChapterConfig(
+      svc.config.chapters.length + 1
+    );
     svc.config.chapters.push(newChapter);
-    PubSub.publish("chapterCreated", newChapter.index)
+    PubSub.publish("chapterCreated", newChapter.index);
   };
 
   svc.removeChapter = chapterId => {
@@ -69,7 +72,7 @@ function stateSvc($location, configSvc) {
         const layerName = layer.getSource().getParams().LAYERS;
         const zIndex = svc.config.chapters[
           svc.getChapterIndex()
-          ].layers.findIndex(item => item.name === layerName);
+        ].layers.findIndex(item => item.name === layerName);
         layer.setZIndex(zIndex);
       }
     });
@@ -156,8 +159,8 @@ function stateSvc($location, configSvc) {
    */
   svc.fetchComponentsFromAPI = storyID =>
     fetch(`/api/mapstories/${storyID}`)
-      .then((resp) => resp.json())
-      .then((data) => {
+      .then(resp => resp.json())
+      .then(data => {
         PubSub.publish("updateStorypins", data.chapters);
         PubSub.publish("updateStoryframes", data.chapters);
       });
@@ -240,7 +243,7 @@ function stateSvc($location, configSvc) {
 
   svc.getChapter = () => {
     let chapter = 1;
-    const path = $location.path();
+    const path = locationSvc.path();
     if (path && path.indexOf("/chapter") === 0) {
       const matches = /\d+/.exec(path);
       if (matches !== null) {
@@ -306,8 +309,8 @@ function stateSvc($location, configSvc) {
   svc.getCategories = () =>
     fetch("/api/categories/")
       .then(response => response.json())
-      .then((data) => {
-svc.categories = data.objects;
+      .then(data => {
+        svc.categories = data.objects;
       });
 
   svc.getCategories();
@@ -343,7 +346,7 @@ svc.categories = data.objects;
           svc.config.storyframes[i] &&
           svc.config.storyframes[i].features
             ? svc.config.storyframes[i]
-            : {features: []};
+            : { features: [] };
       }
       const minimalCfg = {
         storyID: cfg.storyID || "",
@@ -398,7 +401,9 @@ svc.categories = data.objects;
                 }
                 return Promise.resolve(true);
               });
-              Promise.all(promises).then(() => svc.updateLocationUsingStoryId(data.storyID));
+              Promise.all(promises).then(() =>
+                svc.updateLocationUsingStoryId(data.storyID)
+              );
             }
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];
@@ -421,9 +426,8 @@ svc.categories = data.objects;
       headers: {
         "X-CSRFToken": window.mapstory.composer.config.csrfToken
       },
-      credentials: "same-origin",
+      credentials: "same-origin"
     });
-
 
   svc.publish = () => {
     const config = svc.getConfig();

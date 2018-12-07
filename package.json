@@ -45,6 +45,7 @@
     "karma-phantomjs-launcher": "1.0.4",
     "karma-spec-reporter": "0.0.32",
     "karma-webpack": "2.0.9",
+    "karma-webpack": "^3.0.5",
     "less": "2.7.3",
     "less-loader": "4.0.5",
     "prettier": "1.10.2",
@@ -73,7 +74,7 @@
     "react": "^16.2.0",
     "react-dom": "^16.2.0",
     "pubsub-js": "^1.6.0",
-    "story-tools": "./deps/story-tools"
+    "story-tools": "./deps/story-tools",
     "whatwg-fetch": "^3.0.0"
   },
   "repository": "https://github.com/MapStory/story-tools-composer",
