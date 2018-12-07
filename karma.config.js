@@ -12,7 +12,7 @@ module.exports = config => {
     reporters: ["mocha"],
     port: 9876,
     colors: true,
-    logLevel: browserMode ? config.LOG_DEBUG : config.LOG_INFO,
+    logLevel: browserMode ? config.LOG_DEBUG : config.LOG_DISABLE,
     autoWatch: false,
     browsers: browserMode ? ["Chrome"] : ["PhantomJS"],
     singleRun: !browserMode,
