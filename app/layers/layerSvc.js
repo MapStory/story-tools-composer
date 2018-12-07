@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 
-function layerSvc(appConfig, MapManager, stateSvc) {
+function layerSvc($http, appConfig, MapManager, stateSvc) {
   const layerStyleTimeStamps = {};
   const svc = {};
 
@@ -162,13 +162,13 @@ function layerSvc(appConfig, MapManager, stateSvc) {
   // Compile search bar results into an array of objects containing the name,
   // title, and whether or not it's a remote service
   svc.getSearchBarResultsIndex = searchValue => {
-    const url = `${appConfig.servers[0].host}/api/layers/?name__icontains=${searchValue}`;
-
-    return fetch(url)
-      .then((resp) => resp.json())
-      .then((data) => {
+    const url = `${
+      appConfig.servers[0].host
+      }/api/layers/?name__icontains=${searchValue}`;
+    return new Promise(resolve => {
+      $http.get(url).then(response => {
         const searchObjects = [];
-        const objects = data.objects;
+        const objects = response.data.objects;
 
         for (let i = 0; i < objects.length; i += 1) {
           if (objects[i].alternate) {
@@ -185,9 +185,10 @@ function layerSvc(appConfig, MapManager, stateSvc) {
             });
           }
         }
-        return searchObjects;
-      })
-    };
+        resolve(searchObjects);
+      });
+    });
+  };
 
   svc.getLayerParam = (query, param) => {
     const urlJson = (() => {
@@ -201,21 +202,18 @@ function layerSvc(appConfig, MapManager, stateSvc) {
     return urlJson[param];
   };
 
-  svc.getRemoteServiceUrl = name => {
-    Promise(res => {
-      fetch(`/layers/${name}/remote`)
-        .then((resp) => resp.json())
-        .then((data) => {
-          const containsQuery = data.data.indexOf("?") > -1;
-          const url = containsQuery ? data.data.split("?")[0] : data.data;
-          const query = containsQuery ? data.data.split("?")[1] : false;
-          const params = {
-            map: svc.getLayerParam(query, "map")
-          };
-          res({ url, params });
-        });
-      })
-    };
+  svc.getRemoteServiceUrl = name =>
+    new Promise(res => {
+      $http.get(`/layers/${name}/remote`).then(r => {
+        const containsQuery = r.data.indexOf("?") > -1;
+        const url = containsQuery ? r.data.split("?")[0] : r.data;
+        const query = containsQuery ? r.data.split("?")[1] : false;
+        const params = {
+          map: svc.getLayerParam(query, "map")
+        };
+        res({ url, params });
+      });
+    });
 
   svc.getLegendUrl = layer => {
     let url = null;
