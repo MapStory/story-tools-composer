@@ -17,8 +17,7 @@ function styleService(
     }
 
     const layerName = layer.get("name");
-    const styleName =
-      layer.get("styleName") || window.getStyleName(layerName);
+    const styleName = layer.get("styleName") || window.getStyleName(layerName);
     const mapID = stateSvc.config.id;
 
     if (mapID) {
@@ -37,9 +36,10 @@ function styleService(
       });
     }
 
-
     // if there is no map id, check if there is a style in the state service
-    const layerStyle = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.find(item => item.styleName === styleName);
+    const layerStyle = stateSvc.config.chapters[
+      stateSvc.getChapterIndex()
+    ].layers.find(item => item.styleName === styleName);
 
     if (layerStyle) {
       const newStyle = layerStyle.styleConfig.style;
@@ -113,56 +113,57 @@ function styleService(
         );
         const csrfToken = $cookies.getAll().csrftoken;
         // @TODO: Use GET request to verify existence of style before POST
-        $http({
-          url: `/gs/rest/styles?name=${style.name}`,
+
+        fetch(`/gs/rest/styles?name=${style.name}`, {
           method: "POST",
-          data: xml,
+          body: xml,
           headers: {
             "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
             "X-CSRFToken": csrfToken,
             "X-Requested-With": "XMLHttpRequest"
           }
-        }).then(
-          (result) => {
+        }).then(response => {
+          if (response.status === 403 || response.status === 500) {
+            fetch(`/gs/rest/styles/${style.name}.xml`, {
+              method: "PUT",
+              body: xml,
+              headers: {
+                "Content-Type": "application/vnd.ogc.sld+xml; charset=UTF-8",
+                "X-CSRFToken": window.mapstory.composer.config.csrfToken,
+                "X-Requested-With": "XMLHttpRequest"
+              }
+            }).then(putResponse => {
+              layerSource.updateParams({
+                _dc: new Date().getTime(),
+                _olSalt: Math.random(),
+                STYLES: style.name
+              });
+              stateSvc.updateLayerStyle(layerName, style.name, {
+                style,
+                version: "1.0"
+              });
+            });
+          } else {
             layerSource.updateParams({
               _dc: new Date().getTime(),
               _olSalt: Math.random(),
               STYLES: style.name
             });
-            stateSvc.updateLayerStyle(layerName, style.name, {style, version: "1.0"});
-          },
-          (response) => {
-            if (response.status === 403 || response.status === 500) {
-              $http
-                .put(`/gs/rest/styles/${  style.name  }.xml`, xml, {
-                  headers: {
-                    "Content-Type":
-                      "application/vnd.ogc.sld+xml; charset=UTF-8",
-                    "X-CSRFToken": csrfToken,
-                    "X-Requested-With": "XMLHttpRequest"
-                  }
-                })
-                .then((result) => {
-                  layerSource.updateParams({
-                    _dc: new Date().getTime(),
-                    _olSalt: Math.random(),
-                    STYLES: style.name
-                  });
-                  stateSvc.updateLayerStyle(layerName, style.name, {style, version: "1.0"});
-                });
-            }
-            // called asynchronously if an error occurs
-            // or server returns response with an error status.
+            stateSvc.updateLayerStyle(layerName, style.name, {
+              style,
+              version: "1.0"
+            });
           }
-        );
+        });
 
         if (mapID) {
           fetch(`/style/${mapID}/${styleName}`, {
             method: "POST",
-            body: JSON.stringify({style, version: "1.0"}),
+            body: JSON.stringify({ style, version: "1.0" }),
             headers: {
               "X-CSRFToken": window.mapstory.composer.config.csrfToken
-            }});
+            }
+          });
         }
       }
     }

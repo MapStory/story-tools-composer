@@ -3,7 +3,7 @@ import MinimalConfig from "app/state/MinimalConfig";
 import headerSvc from "app/ui/headerSvc";
 import locationSvc from "app/ui/locationSvc";
 
-function stateSvc($http, configSvc) {
+function stateSvc(configSvc) {
   const svc = {};
   svc.currentChapter = null;
   svc.previousChapter = null;
@@ -158,13 +158,12 @@ function stateSvc($http, configSvc) {
    * @param storyID The mapstory id.
    */
   svc.fetchComponentsFromAPI = storyID =>
-    $http({
-      url: `/api/mapstories/${storyID}`,
-      method: "GET"
-    }).then(data => {
-      PubSub.publish("updateStorypins", data.data.chapters);
-      PubSub.publish("updateStoryframes", data.data.chapters);
-    });
+    fetch(`/api/mapstories/${storyID}`)
+      .then(resp => resp.json())
+      .then(data => {
+        PubSub.publish("updateStorypins", data.chapters);
+        PubSub.publish("updateStoryframes", data.chapters);
+      });
 
   /**
    * Event responder for Init has finished.
@@ -307,14 +306,12 @@ function stateSvc($http, configSvc) {
 
   svc.initConfig();
 
-  svc.getCategories = () => {
-    $http({
-      url: "/api/categories/",
-      method: "GET"
-    }).then(data => {
-      svc.categories = data.data.objects;
-    });
-  };
+  svc.getCategories = () =>
+    fetch("/api/categories/")
+      .then(response => response.json())
+      .then(data => {
+        svc.categories = data.objects;
+      });
 
   svc.getCategories();
 
@@ -423,10 +420,13 @@ function stateSvc($http, configSvc) {
         });
     });
 
-  svc.generateStoryThumbnail = storyID =>
-    $http({
-      url: `/story/${storyID}/generate_thumbnail`,
-      method: "POST"
+  svc.generateStoryThumbnail = storyId =>
+    fetch(`/story/${storyId}/generate_thumbnail`, {
+      method: "POST",
+      headers: {
+        "X-CSRFToken": window.mapstory.composer.config.csrfToken
+      },
+      credentials: "same-origin"
     });
 
   svc.publish = () => {
