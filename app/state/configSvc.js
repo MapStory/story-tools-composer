@@ -5,8 +5,8 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
 
   const compareSources = (a,b) => a.name === b.name && a.ptype === b.ptype && a.restUrl === b.restUrl && a.url === b.url;
 
-  const createBasemaps = (layers, sources) => {
-    return layers.map(layer => (
+  const createBasemaps = (layers, sources) =>
+    layers.map(layer => (
       {
         opacity: layer.opacity,
         group: layer.group,
@@ -17,7 +17,6 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
         source: String(sources.findIndex(source => compareSources(source, layer.source))),
         fixed: layer.fixed
       }));
-  };
 
   const createSources = (sourcesObject, layers) => {
     const sources = [];
