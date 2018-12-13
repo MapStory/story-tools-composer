@@ -30,12 +30,17 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
     return sources;
   };
 
-  svc.defaultBasemap = window.mapstory.composer.config.baselayersConfig.defaultLayer;
 
+  svc.defaultBasemap = "";
   const sourcesObject = {};
-  window.mapstory.composer.config.baselayersConfig.layers = window.mapstory.composer.config.baselayersConfig.layers.filter(layer => layer.name !== null);
-  const sourcesArray = createSources(sourcesObject, window.mapstory.composer.config.baselayersConfig.layers);
-  const basemaps = createBasemaps(window.mapstory.composer.config.baselayersConfig.layers, sourcesArray);
+  let sourcesArray = [];
+  let basemaps = [];
+  if (window.mapstory.composer.config.baselayersConfig) {
+    window.mapstory.composer.config.baselayersConfig.layers = window.mapstory.composer.config.baselayersConfig.layers.filter(layer => layer.name !== null);
+    sourcesArray = createSources(sourcesObject, window.mapstory.composer.config.baselayersConfig.layers);
+    basemaps = createBasemaps(window.mapstory.composer.config.baselayersConfig.layers, sourcesArray);
+    svc.defaultBasemap = window.mapstory.composer.config.baselayersConfig.defaultLayer;
+  }
 
   svc.getBasemapArrayWithActiveBasemap = layers => {
     let activeBasemap = null;
