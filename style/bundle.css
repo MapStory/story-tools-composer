@@ -646,7 +646,7 @@ header .preview i {
 }
 .arrow {
   color: #0f6cba;
-  padding: 4px 8px;
+  padding: 0px 8px;
 }
 .arrow:hover {
   color: #0e83e8;
@@ -670,7 +670,7 @@ header .preview i {
 }
 .chapter-nav .arrow {
   margin-right: 16px;
-  margin-top: 4px;
+  font-size: 40px;
 }
 .flexbox .chapter-nav {
   display: -webkit-box;
