@@ -1,7 +1,6 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
 
-
 function composerController(
   $scope,
   $log,
@@ -42,7 +41,9 @@ function composerController(
       let fetchedFrameSettings = frameSvc.get("storyFrames");
 
       if (fetchedFrameSettings) {
-        fetchedFrameSettings = fetchedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex());
+        fetchedFrameSettings = fetchedFrameSettings.filter(
+          f => f.chapter === stateSvc.getChapterIndex()
+        );
       }
       const fetchedFrames = [];
 
@@ -80,7 +81,7 @@ function composerController(
       }
       $scope.frameSettings = fetchedFrames;
       $scope.copiedFrameSettings = angular.copy($scope.frameSettings);
-    })
+    });
   };
 
   PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
@@ -135,16 +136,17 @@ function composerController(
 
   $scope.stateSvc.previousChapter = $scope.stateSvc.getChapter();
 
-  const loadMap = (event) => {
+  const loadMap = event => {
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();
     if (urlChapterId > chapterCount) {
       $scope.navigationSvc.goToChapter(1);
     }
     if (event) {
-      PubSub.publish("changingChapter",
-        {currentChapterIndex: $scope.stateSvc.getChapter() - 1,
-          previousChapterIndex: $scope.stateSvc.previousChapter - 1})
+      PubSub.publish("changingChapter", {
+        currentChapterIndex: $scope.stateSvc.getChapter() - 1,
+        previousChapterIndex: $scope.stateSvc.previousChapter - 1
+      });
     }
     $scope.mapManager.initMapLoad();
     $scope.stateSvc.updateCurrentChapterConfig();
@@ -237,7 +239,7 @@ function composerController(
   };
 
   PubSub.subscribe("chapterCreated", (event, index) => {
-    $scope.updateSelected("info", index)
+    $scope.updateSelected("info", index);
   });
 
   $scope.nextChapter = navigationSvc.nextChapter;
@@ -287,7 +289,9 @@ function composerController(
       const endDate = $scope.formatDates(pin.endTime);
       const storyLayerStartDate = $scope.formatDates(date);
 
-      const shouldShow = moment(storyLayerStartDate).isSameOrAfter(startDate) && !moment(storyLayerStartDate).isAfter(endDate);
+      const shouldShow =
+        moment(storyLayerStartDate).isSameOrAfter(startDate) &&
+        !moment(storyLayerStartDate).isAfter(endDate);
 
       if (shouldShow) {
         pin.show();
@@ -311,7 +315,9 @@ function composerController(
   };
 
   $scope.getCurrentFrame = date => {
-    const frame = $scope.copiedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex())[$scope.currentFrame];
+    const frame = $scope.copiedFrameSettings.filter(
+      f => f.chapter === stateSvc.getChapterIndex()
+    )[$scope.currentFrame];
     if (frame) {
       const start = frame.startDate;
       const end = frame.endDate;
@@ -319,41 +325,46 @@ function composerController(
     }
   };
 
-
-
   $scope.checkTimes = (date, start, end) => {
-    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && $scope.zoomedIn === false) {
+    if (
+      moment(date).isSameOrAfter(start) &&
+      moment(date).isSameOrBefore(end) &&
+      $scope.zoomedIn === false
+    ) {
       $scope.zoomToExtent();
     } else if (moment(date).isAfter(end) && $scope.zoomedIn === true) {
       $scope.zoomOutExtent();
+      frameSvc.incrementFrameIndex();
+      /*
       if ($scope.currentFrame <= $scope.copiedFrameSettings.length) {
         $scope.currentFrame += 1;
         if ($scope.currentFrame === $scope.copiedFrameSettings.length) {
           $scope.currentFrame = 0;
         }
       }
+      */
     } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
       $scope.clearBB();
     }
   };
 
   $scope.zoomToExtent = () => {
+    const currentFrameIndex = frameSvc.getCurrentFrameIndex();
     let polygon;
 
-    if ($scope.copiedFrameSettings[$scope.currentFrame]) {
+    if ($scope.copiedFrameSettings[currentFrameIndex]) {
       polygon = new ol.Feature(
         new ol.geom.Polygon([
           [
-            $scope.copiedFrameSettings[$scope.currentFrame].bb1,
-            $scope.copiedFrameSettings[$scope.currentFrame].bb2,
-            $scope.copiedFrameSettings[$scope.currentFrame].bb3,
-            $scope.copiedFrameSettings[$scope.currentFrame].bb4
+            $scope.copiedFrameSettings[currentFrameIndex].bb1,
+            $scope.copiedFrameSettings[currentFrameIndex].bb2,
+            $scope.copiedFrameSettings[currentFrameIndex].bb3,
+            $scope.copiedFrameSettings[currentFrameIndex].bb4
           ]
         ])
-      )
-    }
-    else if (!$scope.copiedFrameSettings[$scope.currentFrame]) {
-      for (let i=0; i < $scope.copiedFrameSettings.length; i ++) {
+      );
+    } else if (!$scope.copiedFrameSettings[currentFrameIndex]) {
+      for (let i = 0; i < $scope.copiedFrameSettings.length; i++) {
         polygon = new ol.Feature(
           new ol.geom.Polygon([
             [
@@ -363,7 +374,7 @@ function composerController(
               $scope.copiedFrameSettings[i].bb4
             ]
           ])
-        )
+        );
       }
     }
 
@@ -418,11 +429,7 @@ function composerController(
         map.removeLayer(layer);
       }
     });
-  }
+  };
 }
 
 module.exports = composerController;
-
-
-
-

@@ -1,8 +1,48 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
+import functional from "app/utils/functional";
 
 function frameSvc(stateSvc) {
-  const svc = {};
+  let frameSettings = null;
+  let currentFrameIndex = 0;
+  const svc = {
+    getCurrentFrame: date => {
+      const index = svc.getCurrentFrameIndex();
+      const frame = svc
+        .getFrameSettings()
+        .filter(f => f.chapter === stateSvc.getChapterIndex())[index];
+      if (frame)
+        return {
+          start: frame.startDate,
+          end: frame.endDate
+        };
+      return false;
+    },
+
+    getNextFrameIndex: () => {
+      const current = svc.getCurrentFrameIndex();
+      const frameSettingsLength = svc.getFrameSettings().length;
+      if (current < frameSettingsLength) return current + 1;
+      return 0;
+    },
+
+    incrementFrameIndex: () =>
+      functional.pipe(svc.getNextFrameIndex, svc.setCurrentFrameIndex),
+
+    getCurrentFrameIndex: () => currentFrameIndex,
+
+    setCurrentFrameIndex: int => {
+      currentFrameIndex = int;
+      return true;
+    },
+
+    setFrameSettings: settings => {
+      frameSettings = settings;
+      return true;
+    },
+
+    getFrameSettings: () => frameSettings
+  };
 
   PubSub.subscribe("updateStoryframes", (event, chapters) => {
     stateSvc.config.storyframes = [];
@@ -34,4 +74,3 @@ function frameSvc(stateSvc) {
 }
 
 export default frameSvc;
-
