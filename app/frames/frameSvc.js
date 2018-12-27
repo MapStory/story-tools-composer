@@ -41,7 +41,7 @@ function frameSvc(stateSvc) {
       return true;
     },
 
-    getFrameSettings: () => frameSettings
+    getFrameSettings: () => frameSettings || false
   };
 
   PubSub.subscribe("updateStoryframes", (event, chapters) => {
