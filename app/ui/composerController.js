@@ -29,7 +29,6 @@ function composerController(
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
   $scope.frameSettings = [];
-  $scope.copiedFrameSettings = [];
   $scope.currentFrame = 0;
   $scope.zoomedIn = false;
   let queryLayerLoaded = false;
@@ -80,7 +79,7 @@ function composerController(
         }
       }
       $scope.frameSettings = fetchedFrames;
-      $scope.copiedFrameSettings = angular.copy($scope.frameSettings);
+      frameSvc.setFrameSettings(angular.copy($scope.frameSettings));
     });
   };
 
@@ -309,15 +308,16 @@ function composerController(
     // Updates StoryPins.
     $scope.updateStorypinTimeline(data);
     // Updates StoryFrames
-    if ($scope.copiedFrameSettings) {
+    if (frameSvc.getFrameSettings()) {
       $scope.getCurrentFrame(data);
     }
   };
 
   $scope.getCurrentFrame = date => {
-    const frame = $scope.copiedFrameSettings.filter(
-      f => f.chapter === stateSvc.getChapterIndex()
-    )[$scope.currentFrame];
+    const currentFrame = $scope.currentFrame;
+    const frame = frameSvc
+      .getFrameSettings()
+      .filter(f => f.chapter === stateSvc.getChapterIndex())[currentFrame];
     if (frame) {
       const start = frame.startDate;
       const end = frame.endDate;
@@ -335,14 +335,6 @@ function composerController(
     } else if (moment(date).isAfter(end) && $scope.zoomedIn === true) {
       $scope.zoomOutExtent();
       frameSvc.incrementFrameIndex();
-      /*
-      if ($scope.currentFrame <= $scope.copiedFrameSettings.length) {
-        $scope.currentFrame += 1;
-        if ($scope.currentFrame === $scope.copiedFrameSettings.length) {
-          $scope.currentFrame = 0;
-        }
-      }
-      */
     } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
       $scope.clearBB();
     }
@@ -350,28 +342,30 @@ function composerController(
 
   $scope.zoomToExtent = () => {
     const currentFrameIndex = frameSvc.getCurrentFrameIndex();
+    const frameSettings = frameSvc.getFrameSettings();
+    const currentFrame = frameSvc.getFrameSettings()[currentFrameIndex];
     let polygon;
 
-    if ($scope.copiedFrameSettings[currentFrameIndex]) {
+    if (currentFrame) {
       polygon = new ol.Feature(
         new ol.geom.Polygon([
           [
-            $scope.copiedFrameSettings[currentFrameIndex].bb1,
-            $scope.copiedFrameSettings[currentFrameIndex].bb2,
-            $scope.copiedFrameSettings[currentFrameIndex].bb3,
-            $scope.copiedFrameSettings[currentFrameIndex].bb4
+            currentFrame.bb1,
+            currentFrame.bb2,
+            currentFrame.bb3,
+            currentFrame.bb4
           ]
         ])
       );
-    } else if (!$scope.copiedFrameSettings[currentFrameIndex]) {
-      for (let i = 0; i < $scope.copiedFrameSettings.length; i++) {
+    } else if (!currentFrame) {
+      for (let i = 0; i < frameSettings.length; i++) {
         polygon = new ol.Feature(
           new ol.geom.Polygon([
             [
-              $scope.copiedFrameSettings[i].bb1,
-              $scope.copiedFrameSettings[i].bb2,
-              $scope.copiedFrameSettings[i].bb3,
-              $scope.copiedFrameSettings[i].bb4
+              frameSettings[i].bb1,
+              frameSettings[i].bb2,
+              frameSettings[i].bb3,
+              frameSettings[i].bb4
             ]
           ])
         );
