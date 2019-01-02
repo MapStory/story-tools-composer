@@ -22,65 +22,20 @@ function composerController(
   let lastSelectedTab = null;
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
+  $scope.frameSvc = frameSvc;
   $scope.pinSvc = pinSvc;
   $scope.navigationSvc = navigationSvc;
+  $scope.copiedFrameSettings = [];
   $scope.pin = {};
   $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
-  $scope.frameSettings = [];
-  $scope.currentFrame = 0;
   $scope.zoomedIn = false;
   let queryLayerLoaded = false;
   const map = MapManager.storyMap.getMap();
 
   const updateStoryframesHandler = () => {
-    $scope.$apply(() => {
-      $scope.currentFrame = 0;
-      let fetchedFrameSettings = frameSvc.get("storyFrames");
-
-      if (fetchedFrameSettings) {
-        fetchedFrameSettings = fetchedFrameSettings.filter(
-          f => f.chapter === stateSvc.getChapterIndex()
-        );
-      }
-      const fetchedFrames = [];
-
-      for (let i = 0; i < fetchedFrameSettings.length; i++) {
-        if (
-          fetchedFrameSettings[i].startDate &&
-          fetchedFrameSettings[i].endDate
-        ) {
-          fetchedFrames[i] = {
-            id: fetchedFrameSettings[i].id,
-            chapter: fetchedFrameSettings[i].chapter,
-            title: fetchedFrameSettings[i].title,
-            startDate: new Date(fetchedFrameSettings[i].startDate),
-            startTime: fetchedFrameSettings[i].startTime,
-            endDate: new Date(fetchedFrameSettings[i].endDate),
-            endTime: fetchedFrameSettings[i].endTime,
-            bb1: [
-              fetchedFrameSettings[i].bb1[0],
-              fetchedFrameSettings[i].bb1[1]
-            ],
-            bb2: [
-              fetchedFrameSettings[i].bb2[0],
-              fetchedFrameSettings[i].bb2[1]
-            ],
-            bb3: [
-              fetchedFrameSettings[i].bb3[0],
-              fetchedFrameSettings[i].bb3[1]
-            ],
-            bb4: [
-              fetchedFrameSettings[i].bb4[0],
-              fetchedFrameSettings[i].bb4[1]
-            ]
-          };
-        }
-      }
-      $scope.frameSettings = fetchedFrames;
-      frameSvc.setFrameSettings(angular.copy($scope.frameSettings));
-    });
+    $scope.$apply(frameSvc.updateStoryFrames);
   };
 
   PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
@@ -314,7 +269,7 @@ function composerController(
   };
 
   $scope.getCurrentFrame = date => {
-    const currentFrame = $scope.currentFrame;
+    const currentFrame = frameSvc.getCurrentFrameIndex();
     const frame = frameSvc
       .getFrameSettings()
       .filter(f => f.chapter === stateSvc.getChapterIndex())[currentFrame];

@@ -84,16 +84,25 @@ function frameController(
     });
   };
 
-
   $scope.$watch("frameSettings[currentIndex].endDate", () => {
-    if ($scope.frameSettings[$scope.currentIndex]) {
-      $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+    if ($scope.frameSvc.getFrameSettings()[$scope.currentIndex]) {
+      $scope.checkTemporalOverlap(
+        $scope.copiedFrameSettings,
+        $scope.frameSettings[0].title,
+        $scope.frameSettings[0].startDate,
+        $scope.frameSettings[0].endDate
+      );
     }
   });
 
   $scope.$watch("frameSettings[currentIndex].startDate", () => {
-    if ($scope.frameSettings[$scope.currentIndex]) {
-      $scope.checkTemporalOverlap($scope.copiedFrameSettings, $scope.frameSettings[0].title, $scope.frameSettings[0].startDate, $scope.frameSettings[0].endDate);
+    if ($scope.frameSvc.getFrameSettings()[$scope.currentIndex]) {
+      $scope.checkTemporalOverlap(
+        $scope.copiedFrameSettings,
+        $scope.frameSettings[0].title,
+        $scope.frameSettings[0].startDate,
+        $scope.frameSettings[0].endDate
+      );
     }
   });
 
