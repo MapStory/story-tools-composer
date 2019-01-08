@@ -28,7 +28,6 @@ function composerController(
   $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
-  $scope.currentFrame = 0;
   $scope.zoomedIn = false;
   let queryLayerLoaded = false;
 

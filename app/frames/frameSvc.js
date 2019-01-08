@@ -7,21 +7,13 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
   const map = MapManager.storyMap.getMap();
   svc.frameSettings = [];
   svc.copiedFrameSettings = [];
+  svc.currentFrame = 0;
   
   window.storypinCallback = data => {
-
-    console.log("data: ", data); // fires
-
     // Updates StoryPins
     svc.updateStorypinTimeline(data);
     // Updates StoryFrames
-
-    console.log(svc.frameSettings);
-
     if (svc.copiedFrameSettings) {
-
-      console.log("svc.copiedFrameSettings: ", svc.copiedFrameSettings);
-
       svc.getCurrentFrame(data);
     }
   };
@@ -55,19 +47,18 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
     svc.storyFrames = stateSvc.config.storyframes;
   });
 
-  svc.getCurrentFrame = date => {
-    console.log("date: ", date); // ok
+  svc.getCurrentFrame = date => { 
+    // console.log("chapter index: ", stateSvc.getChapterIndex());
 
-    console
+    console.log("current frame: ", svc.currentFrame); // not defined
+
+    console.log("svc.copiedFrameSettings: ", svc.copiedFrameSettings);
 
     const frame = svc.copiedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex())[svc.currentFrame];
 
-    console.log("frame: ", frame); // no
+    console.log("frame: ", frame);
 
     if (frame) {
-
-      console.log("frame: ", frame); // no
-
       const start = frame.startDate;
       const end = frame.endDate;
       svc.checkTimes(date, start, end);
@@ -119,14 +110,8 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
           };
         }
       }
-
-      console.log("fetched frames: ", fetchedFrames);
-
       svc.frameSettings = fetchedFrames;
-
-
-
-      svc.copiedFrameSettings = angular.copy(svc.frameSettings); // not being copied
+      svc.copiedFrameSettings = angular.copy(svc.frameSettings); 
     })
   };
 
@@ -162,9 +147,6 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
 
 
   svc.checkTimes = (date, start, end) => {
-
-    console.log("checkTimes");
-
     if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && svc.zoomedIn === false) {
       svc.zoomToExtent();
     } else if (moment(date).isAfter(end) && svc.zoomedIn === true) {
