@@ -4,6 +4,7 @@ import moment from "moment";
 function frameController(
   $scope,
   stateSvc,
+  frameSvc,
   MapManager
 ) {
   $scope.mapManager = MapManager;
@@ -34,7 +35,6 @@ function frameController(
     const preFormatDate = moment(date);
     return preFormatDate.format("YYYY-MM-DD");
   };
-
 
   const zoomToExtent = extent => {
     const [botLeftLon, botLeftLat, topRightLon, topRightLat] = extent;
@@ -73,10 +73,7 @@ function frameController(
 
   $scope.drawBoundingBox = () => {
     removeBoundingBox();
-
-
     map.addInteraction(dragBox);
-
     dragBox.on("boxend", e => {
       const extent = dragBox.getGeometry().getExtent();
       zoomToExtent(extent);
@@ -85,34 +82,24 @@ function frameController(
   };
 
   $scope.$watch("frameSettings[currentIndex].endDate", () => {
-    if ($scope.frameSvc.getFrameSettings()[$scope.currentIndex]) {
-      $scope.checkTemporalOverlap(
-        $scope.copiedFrameSettings,
-        $scope.frameSettings[0].title,
-        $scope.frameSettings[0].startDate,
-        $scope.frameSettings[0].endDate
-      );
+    if ($scope.frameSvc.frameSettings[$scope.currentIndex]) {
+      $scope.checkTemporalOverlap($scope.frameSvc.frameSettings, $scope.frameSvc.frameSettings[0].title, $scope.frameSvc.frameSettings[0].startDate, $scope.frameSvc.frameSettings[0].endDate);
     }
   });
 
   $scope.$watch("frameSettings[currentIndex].startDate", () => {
-    if ($scope.frameSvc.getFrameSettings()[$scope.currentIndex]) {
-      $scope.checkTemporalOverlap(
-        $scope.copiedFrameSettings,
-        $scope.frameSettings[0].title,
-        $scope.frameSettings[0].startDate,
-        $scope.frameSettings[0].endDate
-      );
+    if ($scope.frameSvc.frameSettings[$scope.currentIndex]) {
+      $scope.checkTemporalOverlap($scope.frameSvc.frameSettings, $scope.frameSvc.frameSettings[0].title, $scope.frameSvc.frameSettings[0].startDate, $scope.frameSvc.frameSettings[0].endDate);
     }
   });
 
   $scope.checkBBDefined = frameSettings => {
-    $scope.zoomOutExtent();
+    frameSvc.zoomOutExtent();
     $scope.resetFramesForm();
     const currentChapter = stateSvc.getChapterIndex();
     for (let x = 0; x < frameSettings.length; x += 1) {
       if (frameSettings[x] && $scope.coords[x]) {
-        $scope.copiedFrameSettings.push({
+        $scope.frameSvc.copiedFrameSettings.push({
           id: null,
           chapter: currentChapter,
           title: frameSettings[x].title,
@@ -132,13 +119,13 @@ function frameController(
     } else if ($scope.coords) {
       $scope.bbDefined = true;
       if (!$scope.showOverlapMsg) {
-        $scope.saveStoryDetails($scope.copiedFrameSettings);
+        $scope.saveStoryDetails($scope.frameSvc.copiedFrameSettings);
       }
     }
   };
 
   $scope.checkTemporalOverlap = (copiedFrameSettings, title, startToCheck, endToCheck) => {
-    const framesInChapter = copiedFrameSettings.filter(item => item.chapter === stateSvc.getChapterIndex());
+    const framesInChapter = $scope.frameSvc.copiedFrameSettings.filter(item => item.chapter === stateSvc.getChapterIndex());
     if (framesInChapter.length <= 0) {
       $scope.startOverlap = false;
       $scope.endOverlap = false;
@@ -179,7 +166,7 @@ function frameController(
   };
 
   $scope.saveStoryDetails = () => {
-    stateSvc.setStoryframeDetails($scope.copiedFrameSettings);
+    stateSvc.setStoryframeDetails($scope.frameSvc.copiedFrameSettings);
     $scope.resetFramesForm();
   };
 
@@ -195,15 +182,15 @@ function frameController(
     $scope.disableButton = !$scope.disableButton;
 
     document.getElementById("frameTitle").value =
-      $scope.copiedFrameSettings[index].title;
+      $scope.frameSvc.frameSettings[index].title;
     document.getElementById("startDate").value = $scope.formatDates(
-      $scope.copiedFrameSettings[index].startDate
+      $scope.frameSvc.frameSettings[index].startDate
     );
     document.getElementById("endDate").value = $scope.formatDates(
-      $scope.copiedFrameSettings[index].endDate
+      $scope.frameSvc.frameSettings[index].endDate
     );
-    const coords =  [$scope.copiedFrameSettings[index].bb3,
-      $scope.copiedFrameSettings[index].bb1
+    const coords =  [$scope.frameSvc.frameSettings[index].bb3,
+      $scope.frameSvc.frameSettings[index].bb1
     ];
     removeBoundingBox();
     zoomToExtent(coords.flatten());
@@ -214,20 +201,20 @@ function frameController(
     $scope.disableButton = !$scope.disableButton;
     $scope.resetFramesForm();
 
-    $scope.copiedFrameSettings[$scope.currentIndex].title = $scope.frameSettings[$scope.currentIndex].title;
-    $scope.copiedFrameSettings[$scope.currentIndex].startDate = $scope.frameSettings[$scope.currentIndex].startDate;
-    $scope.copiedFrameSettings[$scope.currentIndex].startTime = $scope.frameSettings[$scope.currentIndex].startTime;
-    $scope.copiedFrameSettings[$scope.currentIndex].endDate = $scope.frameSettings[$scope.currentIndex].endDate;
-    $scope.copiedFrameSettings[$scope.currentIndex].endTime = $scope.frameSettings[$scope.currentIndex].endTime;
-    $scope.copiedFrameSettings[$scope.currentIndex].bb1 = $scope.coords[0][0];
-    $scope.copiedFrameSettings[$scope.currentIndex].bb2 = $scope.coords[0][1];
-    $scope.copiedFrameSettings[$scope.currentIndex].bb3 = $scope.coords[0][2];
-    $scope.copiedFrameSettings[$scope.currentIndex].bb4 = $scope.coords[0][3];
+    $scope.frameSvc.frameSettings[$scope.currentIndex].title = $scope.frameSvc.frameSettings[$scope.currentIndex].title;
+    $scope.frameSvc.frameSettings[$scope.currentIndex].startDate = $scope.frameSvc.frameSettings[$scope.currentIndex].startDate;
+    $scope.frameSvc.frameSettings[$scope.currentIndex].startTime = $scope.frameSvc.frameSettings[$scope.currentIndex].startTime;
+    $scope.frameSvc.frameSettings[$scope.currentIndex].endDate = $scope.frameSvc.frameSettings[$scope.currentIndex].endDate;
+    $scope.frameSvc.frameSettings[$scope.currentIndex].endTime = $scope.frameSvc.frameSettings[$scope.currentIndex].endTime;
+    $scope.frameSvc.frameSettings[$scope.currentIndex].bb1 = $scope.coords[0][0];
+    $scope.frameSvc.frameSettings[$scope.currentIndex].bb2 = $scope.coords[0][1];
+    $scope.frameSvc.frameSettings[$scope.currentIndex].bb3 = $scope.coords[0][2];
+    $scope.frameSvc.frameSettings[$scope.currentIndex].bb4 = $scope.coords[0][3];
     $scope.saveStoryDetails();
   };
 
   $scope.deleteStoryframe = index => {
-    $scope.copiedFrameSettings.splice(index, 1);
+    $scope.frameSvc.frameSettings.splice(index, 1);
     const config = stateSvc.getConfig();
     const frameConfig = config.storyframes.filter(item => item.chapter === stateSvc.getChapterIndex())[index];
     if (frameConfig.id) {

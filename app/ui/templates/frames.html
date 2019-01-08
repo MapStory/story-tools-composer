@@ -9,9 +9,9 @@
     </p>
 </section>
 
-<div id="createdStoryframes" ng-show="copiedFrameSettings">
-    <h2 class="section-title float-left clearfix" ng-if="copiedFrameSettings.length">Created Storyframes</h2>
-    <div class="clearfix" ng-if="item.title" ng-repeat="item in copiedFrameSettings">
+<div id="createdStoryframes" ng-show="frameSvc.copiedFrameSettings">
+    <h2 class="section-title float-left clearfix" ng-if="frameSvc.copiedFrameSettings.length">Created Storyframes</h2>
+    <div class="clearfix" ng-if="item.title" ng-repeat="item in frameSvc.copiedFrameSettings">
         <div id="titleBar" ng-show="item.chapter === stateSvc.getChapterIndex()">
             <a ng-click="showDetails = !showDetails" id="storyframeTitle" class="section-title">
                 <i class="fa fa-expand"></i> {{ item.title }}
@@ -35,11 +35,11 @@
 
 <form name="storyFrameDetails" id="storySettings">
     <label>*Title</label>
-    <input id="frameTitle" type="text" ng-model="frameSettings[currentIndex].title" aria-label="title" required/>
+    <input id="frameTitle" type="text" ng-model="frameSvc.frameSettings[currentIndex].title" aria-label="title" required/>
 
     <label>*Start Date</label>
     <div>
-        <input name="startDate" id="startDate" type="date" min="{{minDate}}" max="{{maxDate}}" ng-model-options="{updateOn: 'blur'}" ng-model="frameSettings[currentIndex].startDate" aria-label="start date" required/>
+        <input name="startDate" id="startDate" type="date" min="{{minDate}}" max="{{maxDate}}" ng-model-options="{updateOn: 'blur'}" ng-model="frameSvc.frameSettings[currentIndex].startDate" aria-label="start date" required/>
         <span class="fa fa-calendar input-icons"/>
         <div class="invalid-feedback">
             <div ng-if="storyFrameDetails.startDate.$error.date">Invalid date</div>
@@ -73,11 +73,11 @@
 
     <div class="alert alert-danger missingFieldMsg" ng-show="showOverlapMsg" class="missingFieldMsg">
         <p>You have overlapping StoryFrames. Please adjust your dates:</p>
-        <p>{{ frameSettings[currentIndex].startDate | date: 'mediumDate' }} - {{ frameSettings[currentIndex].endDate | date: 'mediumDate'}}</p>
+        <p>{{ frameSvc.frameSettings[currentIndex].startDate | date: 'mediumDate' }} - {{ frameSvc.frameSettings[currentIndex].endDate | date: 'mediumDate'}}</p>
     </div>
 
-    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSettings);">Add</button>
-    <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframe(frameSettings, $index)">Update</button>
+    <button class="btn btn-inverse" ng-class="{'disabled': disableButton}" ng-click="checkBBDefined(frameSvc.frameSettings);">Add</button>
+    <button class="btn btn-inverse" ng-show="disableButton" ng-click="updateStoryframe(frameSvc.frameSettings, $index)">Update</button>
     <button class="btn btn-inverse" type="reset" ng-click="clearBoundingBox()">Reset</button>
 </form>
 </section>

@@ -1,85 +1,89 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
-import functional from "app/utils/functional";
 
-function frameSvc(stateSvc) {
-  let frameSettings = null;
-  let currentFrameIndex = 0;
-  const svc = {
-    storyFrames: null,
-    getCurrentFrame: date => {
-      const index = svc.getCurrentFrameIndex();
-      const frame = svc
-        .getFrameSettings()
-        .filter(f => f.chapter === stateSvc.getChapterIndex())[index];
-      if (frame)
-        return {
-          start: frame.startDate,
-          end: frame.endDate
-        };
-      return false;
-    },
+function frameSvc(stateSvc, pinSvc, MapManager) {
+  const svc = {};
+  svc.mapManager = MapManager;
+  const map = MapManager.storyMap.getMap();
+  svc.frameSettings = [];
+  svc.copiedFrameSettings = [];
+  
+  window.storypinCallback = data => {
 
-    getCurrentFrameIndex: () => currentFrameIndex,
+    console.log("data: ", data); // fires
 
-    getNextFrameIndex: () => {
-      const current = svc.getCurrentFrameIndex();
-      const frameSettingsLength = svc.getFrameSettings().length;
-      if (current < frameSettingsLength) return current + 1;
-      return 0;
-    },
+    // Updates StoryPins
+    svc.updateStorypinTimeline(data);
+    // Updates StoryFrames
 
-    incrementFrameIndex: () =>
-      functional.pipe(svc.getNextFrameIndex, svc.setCurrentFrameIndex),
+    console.log(svc.frameSettings);
 
-    setCurrentFrameIndex: int => {
-      currentFrameIndex = int;
-      return true;
-    },
+    if (svc.copiedFrameSettings) {
 
-    setFrameSettings: settings => {
-      frameSettings = settings;
-      return true;
-    },
+      console.log("svc.copiedFrameSettings: ", svc.copiedFrameSettings);
 
-    getFrameSettings: () => frameSettings || false,
+      svc.getCurrentFrame(data);
+    }
+  };
 
-    setFrames: frames => {
-      svc.frames = frames;
-    },
+  PubSub.subscribe("updateStoryframes", (event, chapters) => {
 
-    pushFramesToStateSvc: chapters => {
-      stateSvc.config.storyframes = [];
-      for (let c = 0; c < chapters.length; c++) {
-        for (let f = 0; f < chapters[c].storyframes.length; f++) {
-          const coords = JSON.parse(chapters[c].storyframes[f].center);
+    console.log("PubSub.subscribe, updateStoryframes");
 
-          stateSvc.config.storyframes.push({
-            title: chapters[c].storyframes[f].title,
-            id: chapters[c].storyframes[f].id,
-            chapter: c,
-            startDate: moment
-              .unix(chapters[c].storyframes[f].start_time)
-              .format("YYYY-MM-DD"),
-            endDate: moment
-              .unix(chapters[c].storyframes[f].end_time)
-              .format("YYYY-MM-DD"),
-            bb1: [coords[0][0], coords[0][1]],
-            bb2: [coords[1][0], coords[1][1]],
-            bb3: [coords[2][0], coords[2][1]],
-            bb4: [coords[3][0], coords[3][1]]
-          });
-        }
+    stateSvc.config.storyframes = [];
+    for (let c = 0; c < chapters.length; c++) {
+      for (let f = 0; f < chapters[c].storyframes.length; f++) {
+        const coords = JSON.parse(chapters[c].storyframes[f].center);
+
+        stateSvc.config.storyframes.push({
+          title: chapters[c].storyframes[f].title,
+          id: chapters[c].storyframes[f].id,
+          chapter: c,
+          startDate: moment
+            .unix(chapters[c].storyframes[f].start_time)
+            .format("YYYY-MM-DD"),
+          endDate: moment
+            .unix(chapters[c].storyframes[f].end_time)
+            .format("YYYY-MM-DD"),
+          bb1: [coords[0][0], coords[0][1]],
+          bb2: [coords[1][0], coords[1][1]],
+          bb3: [coords[2][0], coords[2][1]],
+          bb4: [coords[3][0], coords[3][1]]
+        });
       }
-      svc.setFrames(stateSvc.config.storyframes);
-    },
-    updateStoryFrames: () => {
-      let fetchedFrameSettings = svc.get("storyFrames");
+    }
+    svc.storyFrames = stateSvc.config.storyframes;
+  });
+
+  svc.getCurrentFrame = date => {
+    console.log("date: ", date); // ok
+
+    console
+
+    const frame = svc.copiedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex())[svc.currentFrame];
+
+    console.log("frame: ", frame); // no
+
+    if (frame) {
+
+      console.log("frame: ", frame); // no
+
+      const start = frame.startDate;
+      const end = frame.endDate;
+      svc.checkTimes(date, start, end);
+    }
+  };
+
+  const updateStoryframesHandler = () => {
+
+    console.log("updateStoryframesHandler");
+
+    svc.$apply(() => {
+      svc.currentFrame = 0;
+      let fetchedFrameSettings = frameSvc.get("storyFrames");
 
       if (fetchedFrameSettings) {
-        fetchedFrameSettings = fetchedFrameSettings.filter(
-          f => f.chapter === stateSvc.getChapterIndex()
-        );
+        fetchedFrameSettings = fetchedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex());
       }
       const fetchedFrames = [];
 
@@ -115,16 +119,159 @@ function frameSvc(stateSvc) {
           };
         }
       }
-      svc.setFrameSettings({ ...fetchedFrames });
+
+      console.log("fetched frames: ", fetchedFrames);
+
+      svc.frameSettings = fetchedFrames;
+
+
+
+      svc.copiedFrameSettings = angular.copy(svc.frameSettings); // not being copied
+    })
+  };
+
+  PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
+  PubSub.subscribe("changingChapter", updateStoryframesHandler);
+
+  /**
+   * Updates the Storypins on timeline.
+   * Loops the current chapter's StoryPins and determines if they should be shown or hidden.
+   * @param date The date for the layer.
+   */
+  svc.updateStorypinTimeline = date => {
+    // TODO: Use pre-cooked timeframe objects to optimize this?
+    let pinArray = pinSvc.getCurrentPins();
+    // This should not be null. Why is this happening?
+    if (!pinArray) {
+      pinArray = [];
+    }
+    pinArray.forEach(pin => {
+      const startDate = svc.formatDates(pin.startTime);
+      const endDate = svc.formatDates(pin.endTime);
+      const storyLayerStartDate = svc.formatDates(date);
+
+      const shouldShow = moment(storyLayerStartDate).isSameOrAfter(startDate) && !moment(storyLayerStartDate).isAfter(endDate);
+
+      if (shouldShow) {
+        pin.show();
+      } else {
+        pin.hide();
+      }
+    });
+  };
+
+
+  svc.checkTimes = (date, start, end) => {
+
+    console.log("checkTimes");
+
+    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && svc.zoomedIn === false) {
+      svc.zoomToExtent();
+    } else if (moment(date).isAfter(end) && svc.zoomedIn === true) {
+      svc.zoomOutExtent();
+      if (svc.currentFrame <= svc.copiedFrameSettings.length) {
+        svc.currentFrame += 1;
+        if (svc.currentFrame === svc.copiedFrameSettings.length) {
+          svc.currentFrame = 0;
+        }
+      }
+    } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
+      svc.clearBB();
     }
   };
 
-  PubSub.subscribe("updateStoryframes", (event, chapters) => {
-    svc.pushFramesToStateSvc(chapters);
-  });
+  svc.formatDates = date => {
+    const preFormatDate = moment(date);
+    return preFormatDate.format("YYYY-MM-DD");
+  };
+
+  svc.zoomToExtent = () => {
+    let polygon;
+
+    if (svc.copiedFrameSettings[svc.currentFrame]) {
+      polygon = new ol.Feature(
+        new ol.geom.Polygon([
+          [
+            svc.copiedFrameSettings[svc.currentFrame].bb1,
+            svc.copiedFrameSettings[svc.currentFrame].bb2,
+            svc.copiedFrameSettings[svc.currentFrame].bb3,
+            svc.copiedFrameSettings[svc.currentFrame].bb4
+          ]
+        ])
+      )
+    }
+    else if (!svc.copiedFrameSettings[svc.currentFrame]) {
+      for (let i=0; i < svc.copiedFrameSettings.length; i ++) {
+        polygon = new ol.Feature(
+          new ol.geom.Polygon([
+            [
+              svc.copiedFrameSettings[i].bb1,
+              svc.copiedFrameSettings[i].bb2,
+              svc.copiedFrameSettings[i].bb3,
+              svc.copiedFrameSettings[i].bb4
+            ]
+          ])
+        )
+      }
+    }
+
+    const vector = new ol.layer.Vector({
+      source: new ol.source.Vector({
+        features: [polygon]
+      })
+    });
+
+    map.beforeRender(
+      ol.animation.pan({
+        source: map.getView().getCenter(),
+        duration: 1000
+      }),
+      ol.animation.zoom({
+        resolution: map.getView().getResolution(),
+        duration: 1000,
+        easing: ol.easing.easeIn
+      })
+    );
+    svc.zoomedIn = true;
+    vector.set("name", "boundingBox");
+    map.getView().fit(polygon.getGeometry(), map.getSize());
+  };
+
+  svc.zoomOutExtent = () => {
+    const extent = ol.extent.createEmpty();
+    svc.mapManager.storyMap.getStoryLayers().forEach(layer => {
+      ol.extent.extend(extent, layer.get("extent"));
+    });
+
+    const zoom = ol.animation.zoom({
+      resolution: map.getView().getResolution(),
+      duration: 1000,
+      easing: ol.easing.easeOut
+    });
+    map.beforeRender(zoom);
+
+    if (svc.mapManager.storyMap.getStoryLayers().length > 0) {
+      map.getView().fit(extent, map.getSize());
+    } else {
+      map.getView().setZoom(3);
+    }
+
+    svc.zoomedIn = false;
+    svc.clearBB();
+  };
+
+  svc.clearBB = () => {
+    map.getLayers().forEach(layer => {
+      if (layer.get("name") === "boundingBox") {
+        map.removeLayer(layer);
+      }
+    });
+  }
+
 
   svc.get = prop => svc[prop];
   return svc;
 }
 
 export default frameSvc;
+
