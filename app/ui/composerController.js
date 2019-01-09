@@ -30,7 +30,7 @@ function composerController(
   $scope.showForm = null;
   $scope.frameSvc.zoomedIn = false;
   let queryLayerLoaded = false;
-    
+
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
 
   $scope.composerMode =
@@ -80,16 +80,17 @@ function composerController(
 
   $scope.stateSvc.previousChapter = $scope.stateSvc.getChapter();
 
-  const loadMap = (event) => {
+  const loadMap = event => {
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();
     if (urlChapterId > chapterCount) {
       $scope.navigationSvc.goToChapter(1);
     }
     if (event) {
-      PubSub.publish("changingChapter",
-        {currentChapterIndex: $scope.stateSvc.getChapter() - 1,
-          previousChapterIndex: $scope.stateSvc.previousChapter - 1})
+      PubSub.publish("changingChapter", {
+        currentChapterIndex: $scope.stateSvc.getChapter() - 1,
+        previousChapterIndex: $scope.stateSvc.previousChapter - 1
+      });
     }
     $scope.mapManager.initMapLoad();
     $scope.stateSvc.updateCurrentChapterConfig();
@@ -149,8 +150,8 @@ function composerController(
   };
 
   $scope.saveMap = () => {
-    pinSvc.onStoryPinSave();
     stateSvc.save();
+    pinSvc.onStoryPinSave();
   };
 
   $scope.publishMap = () => {
@@ -182,7 +183,7 @@ function composerController(
   };
 
   PubSub.subscribe("chapterCreated", (event, index) => {
-    $scope.updateSelected("info", index)
+    $scope.updateSelected("info", index);
   });
 
   $scope.nextChapter = navigationSvc.nextChapter;

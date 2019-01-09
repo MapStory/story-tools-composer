@@ -8,7 +8,7 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
   svc.frameSettings = [];
   svc.copiedFrameSettings = [];
   svc.currentFrame = 0;
-  
+
   window.storypinCallback = data => {
     // Updates StoryPins
     svc.updateStorypinTimeline(data);
@@ -44,14 +44,15 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
     svc.storyFrames = stateSvc.config.storyframes;
   });
 
-
   const updateStoryframesHandler = () => {
     $rootScope.$apply(() => {
       svc.currentFrame = 0;
       let fetchedFrameSettings = svc.get("storyFrames");
 
       if (fetchedFrameSettings) {
-        fetchedFrameSettings = fetchedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex());
+        fetchedFrameSettings = fetchedFrameSettings.filter(
+          f => f.chapter === stateSvc.getChapterIndex()
+        );
       }
       const fetchedFrames = [];
 
@@ -64,9 +65,13 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
             id: fetchedFrameSettings[i].id,
             chapter: fetchedFrameSettings[i].chapter,
             title: fetchedFrameSettings[i].title,
-            startDate: new Date(moment.utc(fetchedFrameSettings[i].startDate).format("l LT")),
+            startDate: new Date(
+              moment.utc(fetchedFrameSettings[i].startDate).format("l LT")
+            ),
             startTime: fetchedFrameSettings[i].startTime,
-            endDate: new Date(moment.utc(fetchedFrameSettings[i].endDate).format("l LT")),
+            endDate: new Date(
+              moment.utc(fetchedFrameSettings[i].endDate).format("l LT")
+            ),
             endTime: fetchedFrameSettings[i].endTime,
             bb1: [
               fetchedFrameSettings[i].bb1[0],
@@ -88,15 +93,17 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
         }
       }
       svc.frameSettings = fetchedFrames;
-      svc.copiedFrameSettings = angular.copy(svc.frameSettings); 
-    })
+      svc.copiedFrameSettings = angular.copy(svc.frameSettings);
+    });
   };
 
   PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
   PubSub.subscribe("changingChapter", updateStoryframesHandler);
 
-  svc.getCurrentFrame = date => { 
-    const frame = svc.copiedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex())[svc.currentFrame];
+  svc.getCurrentFrame = date => {
+    const frame = svc.copiedFrameSettings.filter(
+      f => f.chapter === stateSvc.getChapterIndex()
+    )[svc.currentFrame];
 
     if (frame) {
       const start = frame.startDate;
@@ -122,7 +129,9 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
       const endDate = svc.formatDates(pin.endTime);
       const storyLayerStartDate = svc.formatDates(date);
 
-      const shouldShow = moment(storyLayerStartDate).isSameOrAfter(startDate) && !moment(storyLayerStartDate).isAfter(endDate);
+      const shouldShow =
+        moment(storyLayerStartDate).isSameOrAfter(startDate) &&
+        !moment(storyLayerStartDate).isAfter(endDate);
 
       if (shouldShow) {
         pin.show();
@@ -133,7 +142,11 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
   };
 
   svc.checkTimes = (date, start, end) => {
-    if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && svc.zoomedIn === false) {
+    if (
+      moment(date).isSameOrAfter(start) &&
+      moment(date).isSameOrBefore(end) &&
+      svc.zoomedIn === false
+    ) {
       svc.zoomToExtent();
     } else if (moment(date).isAfter(end) && svc.zoomedIn === true) {
       svc.zoomOutExtent();
@@ -166,10 +179,9 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
             svc.copiedFrameSettings[svc.currentFrame].bb4
           ]
         ])
-      )
-    }
-    else if (!svc.copiedFrameSettings[svc.currentFrame]) {
-      for (let i=0; i < svc.copiedFrameSettings.length; i ++) {
+      );
+    } else if (!svc.copiedFrameSettings[svc.currentFrame]) {
+      for (let i = 0; i < svc.copiedFrameSettings.length; i++) {
         polygon = new ol.Feature(
           new ol.geom.Polygon([
             [
@@ -179,7 +191,7 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
               svc.copiedFrameSettings[i].bb4
             ]
           ])
-        )
+        );
       }
     }
 
@@ -234,11 +246,10 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
         map.removeLayer(layer);
       }
     });
-  }
+  };
 
   svc.get = prop => svc[prop];
   return svc;
 }
 
 export default frameSvc;
-

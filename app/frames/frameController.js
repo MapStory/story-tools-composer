@@ -1,11 +1,6 @@
 import moment from "moment";
 
-function frameController(
-  $scope,
-  stateSvc,
-  frameSvc,
-  MapManager
-) {
+function frameController($scope, stateSvc, frameSvc, MapManager) {
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.showForm = null;
@@ -44,7 +39,9 @@ function frameController(
     $scope.coords = [[topLeft, topRight, bottomRight, bottomLeft, topLeft]];
 
     const polygon = new ol.Feature(
-      new ol.geom.Polygon([[topLeft, topRight, bottomRight, bottomLeft, topLeft]])
+      new ol.geom.Polygon([
+        [topLeft, topRight, bottomRight, bottomLeft, topLeft]
+      ])
     );
     const vector = new ol.layer.Vector({
       source: new ol.source.Vector({
@@ -59,11 +56,16 @@ function frameController(
       TODO: This really needs to be fixed by setting the map height correctly,
             but right now there's too large of a chance of that breaking other UI elements
     */
-    map.getView().fit(polygon.getGeometry(), map.getSize(), {padding:[70, 0, 0, 0]});
+    map
+      .getView()
+      .fit(polygon.getGeometry(), map.getSize(), { padding: [70, 0, 0, 0] });
   };
 
   const removeBoundingBox = () => {
-    const boxLayer = map.getLayers().getArray().find(layer => layer.get("name") === "boundingBox");
+    const boxLayer = map
+      .getLayers()
+      .getArray()
+      .find(layer => layer.get("name") === "boundingBox");
 
     if (boxLayer) {
       map.removeLayer(boxLayer);
@@ -82,13 +84,23 @@ function frameController(
 
   $scope.$watch("frameSettings[currentIndex].endDate", () => {
     if ($scope.frameSvc.frameSettings[$scope.currentIndex]) {
-      $scope.checkTemporalOverlap($scope.frameSvc.frameSettings, $scope.frameSvc.frameSettings[0].title, $scope.frameSvc.frameSettings[0].startDate, $scope.frameSvc.frameSettings[0].endDate);
+      $scope.checkTemporalOverlap(
+        $scope.frameSvc.frameSettings,
+        $scope.frameSvc.frameSettings[0].title,
+        $scope.frameSvc.frameSettings[0].startDate,
+        $scope.frameSvc.frameSettings[0].endDate
+      );
     }
   });
 
   $scope.$watch("frameSettings[currentIndex].startDate", () => {
     if ($scope.frameSvc.frameSettings[$scope.currentIndex]) {
-      $scope.checkTemporalOverlap($scope.frameSvc.frameSettings, $scope.frameSvc.frameSettings[0].title, $scope.frameSvc.frameSettings[0].startDate, $scope.frameSvc.frameSettings[0].endDate);
+      $scope.checkTemporalOverlap(
+        $scope.frameSvc.frameSettings,
+        $scope.frameSvc.frameSettings[0].title,
+        $scope.frameSvc.frameSettings[0].startDate,
+        $scope.frameSvc.frameSettings[0].endDate
+      );
     }
   });
 
@@ -123,8 +135,15 @@ function frameController(
     }
   };
 
-  $scope.checkTemporalOverlap = (copiedFrameSettings, title, startToCheck, endToCheck) => {
-    const framesInChapter = $scope.frameSvc.copiedFrameSettings.filter(item => item.chapter === stateSvc.getChapterIndex());
+  $scope.checkTemporalOverlap = (
+    copiedFrameSettings,
+    title,
+    startToCheck,
+    endToCheck
+  ) => {
+    const framesInChapter = $scope.frameSvc.copiedFrameSettings.filter(
+      item => item.chapter === stateSvc.getChapterIndex()
+    );
     if (framesInChapter.length <= 0) {
       $scope.startOverlap = false;
       $scope.endOverlap = false;
@@ -187,7 +206,8 @@ function frameController(
     document.getElementById("endDate").value = $scope.formatDates(
       $scope.frameSvc.frameSettings[index].endDate
     );
-    const coords =  [$scope.frameSvc.frameSettings[index].bb3,
+    const coords = [
+      $scope.frameSvc.frameSettings[index].bb3,
       $scope.frameSvc.frameSettings[index].bb1
     ];
     removeBoundingBox();
@@ -199,27 +219,40 @@ function frameController(
     $scope.disableButton = !$scope.disableButton;
     $scope.resetFramesForm();
 
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].title = $scope.frameSvc.frameSettings[$scope.currentIndex].title;
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].startDate = $scope.frameSvc.frameSettings[$scope.currentIndex].startDate;
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].startTime = $scope.frameSvc.frameSettings[$scope.currentIndex].startTime;
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].endDate = $scope.frameSvc.frameSettings[$scope.currentIndex].endDate;
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].endTime = $scope.frameSvc.frameSettings[$scope.currentIndex].endTime;
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb1 = $scope.coords[0][0];
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb2 = $scope.coords[0][1];
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb3 = $scope.coords[0][2];
-    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb4 = $scope.coords[0][3];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].title =
+      $scope.frameSvc.frameSettings[$scope.currentIndex].title;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].startDate =
+      $scope.frameSvc.frameSettings[$scope.currentIndex].startDate;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].startTime =
+      $scope.frameSvc.frameSettings[$scope.currentIndex].startTime;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].endDate =
+      $scope.frameSvc.frameSettings[$scope.currentIndex].endDate;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].endTime =
+      $scope.frameSvc.frameSettings[$scope.currentIndex].endTime;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb1 =
+      $scope.coords[0][0];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb2 =
+      $scope.coords[0][1];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb3 =
+      $scope.coords[0][2];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb4 =
+      $scope.coords[0][3];
     $scope.saveStoryDetails();
   };
 
   $scope.deleteStoryframe = index => {
     $scope.frameSvc.copiedFrameSettings.splice(index, 1);
     const config = stateSvc.getConfig();
-    const frameConfig = config.storyframes.filter(item => item.chapter === stateSvc.getChapterIndex())[index]; 
+    const frameConfig = config.storyframes.filter(
+      item => item.chapter === stateSvc.getChapterIndex()
+    )[index];
 
-    if (frameConfig.id) { 
+    if (frameConfig.id) {
       stateSvc.config.removedFrames.push(frameConfig.id);
     }
-    const adjustedIndex = config.storyframes.findIndex(item => item.id === frameConfig.id);
+    const adjustedIndex = config.storyframes.findIndex(
+      item => item.id === frameConfig.id
+    );
     config.storyframes.splice(adjustedIndex, 1);
     removeBoundingBox();
   };
