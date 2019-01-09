@@ -28,9 +28,9 @@ function composerController(
   $scope.selected = { toc: true };
   $scope.viewerMode = $location.search().viewer;
   $scope.showForm = null;
-  $scope.zoomedIn = false;
+  $scope.frameSvc.zoomedIn = false;
   let queryLayerLoaded = false;
-
+    
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
 
   $scope.composerMode =

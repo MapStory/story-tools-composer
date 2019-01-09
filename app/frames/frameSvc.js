@@ -1,7 +1,7 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
 
-function frameSvc(stateSvc, pinSvc, MapManager) {
+function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
   const svc = {};
   svc.mapManager = MapManager;
   const map = MapManager.storyMap.getMap();
@@ -19,9 +19,6 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
   };
 
   PubSub.subscribe("updateStoryframes", (event, chapters) => {
-
-    console.log("PubSub.subscribe, updateStoryframes");
-
     stateSvc.config.storyframes = [];
     for (let c = 0; c < chapters.length; c++) {
       for (let f = 0; f < chapters[c].storyframes.length; f++) {
@@ -47,31 +44,11 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
     svc.storyFrames = stateSvc.config.storyframes;
   });
 
-  svc.getCurrentFrame = date => { 
-    // console.log("chapter index: ", stateSvc.getChapterIndex());
-
-    console.log("current frame: ", svc.currentFrame); // not defined
-
-    console.log("svc.copiedFrameSettings: ", svc.copiedFrameSettings);
-
-    const frame = svc.copiedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex())[svc.currentFrame];
-
-    console.log("frame: ", frame);
-
-    if (frame) {
-      const start = frame.startDate;
-      const end = frame.endDate;
-      svc.checkTimes(date, start, end);
-    }
-  };
 
   const updateStoryframesHandler = () => {
-
-    console.log("updateStoryframesHandler");
-
-    svc.$apply(() => {
+    $rootScope.$apply(() => {
       svc.currentFrame = 0;
-      let fetchedFrameSettings = frameSvc.get("storyFrames");
+      let fetchedFrameSettings = svc.get("storyFrames");
 
       if (fetchedFrameSettings) {
         fetchedFrameSettings = fetchedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex());
@@ -87,9 +64,9 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
             id: fetchedFrameSettings[i].id,
             chapter: fetchedFrameSettings[i].chapter,
             title: fetchedFrameSettings[i].title,
-            startDate: new Date(fetchedFrameSettings[i].startDate),
+            startDate: new Date(moment.utc(fetchedFrameSettings[i].startDate).format("l LT")),
             startTime: fetchedFrameSettings[i].startTime,
-            endDate: new Date(fetchedFrameSettings[i].endDate),
+            endDate: new Date(moment.utc(fetchedFrameSettings[i].endDate).format("l LT")),
             endTime: fetchedFrameSettings[i].endTime,
             bb1: [
               fetchedFrameSettings[i].bb1[0],
@@ -118,6 +95,16 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
   PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
   PubSub.subscribe("changingChapter", updateStoryframesHandler);
 
+  svc.getCurrentFrame = date => { 
+    const frame = svc.copiedFrameSettings.filter(f => f.chapter === stateSvc.getChapterIndex())[svc.currentFrame];
+
+    if (frame) {
+      const start = frame.startDate;
+      const end = frame.endDate;
+      svc.checkTimes(date, start, end);
+    }
+  };
+
   /**
    * Updates the Storypins on timeline.
    * Loops the current chapter's StoryPins and determines if they should be shown or hidden.
@@ -144,7 +131,6 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
       }
     });
   };
-
 
   svc.checkTimes = (date, start, end) => {
     if (moment(date).isSameOrAfter(start) && moment(date).isSameOrBefore(end) && svc.zoomedIn === false) {
@@ -249,7 +235,6 @@ function frameSvc(stateSvc, pinSvc, MapManager) {
       }
     });
   }
-
 
   svc.get = prop => svc[prop];
   return svc;

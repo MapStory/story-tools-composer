@@ -1,6 +1,5 @@
 import moment from "moment";
 
-
 function frameController(
   $scope,
   stateSvc,
@@ -157,7 +156,6 @@ function frameController(
           }
         }
       }
-
       if ($scope.startOverlap === false && $scope.endOverlap === false) {
         $scope.showOverlapMsg = false;
       }
@@ -201,23 +199,24 @@ function frameController(
     $scope.disableButton = !$scope.disableButton;
     $scope.resetFramesForm();
 
-    $scope.frameSvc.frameSettings[$scope.currentIndex].title = $scope.frameSvc.frameSettings[$scope.currentIndex].title;
-    $scope.frameSvc.frameSettings[$scope.currentIndex].startDate = $scope.frameSvc.frameSettings[$scope.currentIndex].startDate;
-    $scope.frameSvc.frameSettings[$scope.currentIndex].startTime = $scope.frameSvc.frameSettings[$scope.currentIndex].startTime;
-    $scope.frameSvc.frameSettings[$scope.currentIndex].endDate = $scope.frameSvc.frameSettings[$scope.currentIndex].endDate;
-    $scope.frameSvc.frameSettings[$scope.currentIndex].endTime = $scope.frameSvc.frameSettings[$scope.currentIndex].endTime;
-    $scope.frameSvc.frameSettings[$scope.currentIndex].bb1 = $scope.coords[0][0];
-    $scope.frameSvc.frameSettings[$scope.currentIndex].bb2 = $scope.coords[0][1];
-    $scope.frameSvc.frameSettings[$scope.currentIndex].bb3 = $scope.coords[0][2];
-    $scope.frameSvc.frameSettings[$scope.currentIndex].bb4 = $scope.coords[0][3];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].title = $scope.frameSvc.frameSettings[$scope.currentIndex].title;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].startDate = $scope.frameSvc.frameSettings[$scope.currentIndex].startDate;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].startTime = $scope.frameSvc.frameSettings[$scope.currentIndex].startTime;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].endDate = $scope.frameSvc.frameSettings[$scope.currentIndex].endDate;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].endTime = $scope.frameSvc.frameSettings[$scope.currentIndex].endTime;
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb1 = $scope.coords[0][0];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb2 = $scope.coords[0][1];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb3 = $scope.coords[0][2];
+    $scope.frameSvc.copiedFrameSettings[$scope.currentIndex].bb4 = $scope.coords[0][3];
     $scope.saveStoryDetails();
   };
 
   $scope.deleteStoryframe = index => {
-    $scope.frameSvc.frameSettings.splice(index, 1);
+    $scope.frameSvc.copiedFrameSettings.splice(index, 1);
     const config = stateSvc.getConfig();
-    const frameConfig = config.storyframes.filter(item => item.chapter === stateSvc.getChapterIndex())[index];
-    if (frameConfig.id) {
+    const frameConfig = config.storyframes.filter(item => item.chapter === stateSvc.getChapterIndex())[index]; 
+
+    if (frameConfig.id) { 
       stateSvc.config.removedFrames.push(frameConfig.id);
     }
     const adjustedIndex = config.storyframes.findIndex(item => item.id === frameConfig.id);
