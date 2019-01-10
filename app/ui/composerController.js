@@ -1,4 +1,5 @@
 import PubSub from "pubsub-js";
+import layerSvc from  "app/layers/layerSvc.js";
 
 function composerController(
   $scope,
@@ -14,7 +15,6 @@ function composerController(
   TimeMachine,
   navigationSvc,
   pinSvc,
-  layerSvc,
   frameSvc,
   stateSvc
 ) {
