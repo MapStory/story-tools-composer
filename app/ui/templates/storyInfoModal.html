@@ -1,15 +1,16 @@
 <div ng-if="composerMode" ng-hide="viewerMode" class="modal-header">
     <h3 class="modal-title">Edit Story Info</h3>
 </div>
-<div class="modal-body">
-    Title <input type="text" name="title" ng-model="stateSvc.config.about.title">
+<div class="modal-body story-info-modal-body">
+    Title <input type="text" name="title" ng-model="stateSvc.config.about.title" aria-label="Title" required>
+    <div class="title-error-message" ng-if="!stateSvc.config.about.title"> Title is required </div>
     Summary <textarea rows="4" cols="50" ng-model="stateSvc.config.about.abstract"></textarea>
     Category                     
     <select class="form-control" name="category" ng-model="stateSvc.config.about.category" ng-options="category as category.gn_description for category in stateSvc.categories track by category.id">
         <option value="">---------</option>
     </select>
 </div>
-<div class="modal-footer">
-    <button ng-click="saveMap()">Save</button>
+<div class="modal-footer story-info-modal-footer">
+    <button ng-click="saveMap()" ng-disabled="!stateSvc.config.about.title">Save</button>
     <button ng-click="close()">Close</button>
 </div>

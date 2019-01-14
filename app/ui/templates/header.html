@@ -19,8 +19,8 @@
         </div>
     </div>
     <div ng-if="composerMode" ng-hide="viewerMode" class="autosave">
-        <button ng-click="saveMap(); updateFrames();">Save</button>
-        <button ng-click="publishMap()">Publish</button>
+        <button ng-disabled="!stateSvc.config.about.title" ng-click="saveMap(); updateFrames();">Save</button>
+        <button ng-disabled="!stateSvc.config.about.title" ng-click="publishMap()">Publish</button>
         <button ng-click="goHome()">Exit Composer</button>
     </div>
     <div id="save-confirmation"></div>
