@@ -1,4 +1,4 @@
-function layerOptionsSvc() {
+export default function layerOptionsSvc() {
   const svc = {};
 
   svc.getLayerOptions = args => {
@@ -46,4 +46,3 @@ function layerOptionsSvc() {
   return svc;
 }
 
-export default layerOptionsSvc;

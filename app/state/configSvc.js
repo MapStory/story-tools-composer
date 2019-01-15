@@ -1,6 +1,6 @@
 import utils from "app/utils/utils";
 
-function newConfigSvc(layerOptionsSvc, appConfig) {
+export default function newConfigSvc(layerOptionsSvc, appConfig) {
   const svc = {};
 
   const compareSources = (a,b) => a.name === b.name && a.ptype === b.ptype && a.restUrl === b.restUrl && a.url === b.url;
@@ -195,4 +195,3 @@ function newConfigSvc(layerOptionsSvc, appConfig) {
   return svc;
 }
 
-export default newConfigSvc;
