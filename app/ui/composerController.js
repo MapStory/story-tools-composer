@@ -150,8 +150,10 @@ function composerController(
   };
 
   $scope.saveMap = () => {
-    stateSvc.save();
-    pinSvc.onStoryPinSave();
+    if (stateSvc.config.about.title) {
+      stateSvc.save();
+      pinSvc.onStoryPinSave();
+    }
   };
 
   $scope.publishMap = () => {

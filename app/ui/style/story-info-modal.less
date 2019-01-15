@@ -1,0 +1,21 @@
+
+.story-info-modal-footer button[disabled], header button[disabled] {
+  background-color: grey;
+
+  &:hover {
+    background-color: grey;
+  }
+}
+
+.story-info-modal-body {
+  input.ng-invalid-required {
+    border-color: red;
+    &:focus {
+      outline-color: red;
+    }
+  }
+  .title-error-message {
+    font-size: x-small;
+    color: red;
+  }
+}
