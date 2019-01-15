@@ -1,20 +1,19 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
 
-function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
-  const svc = {};
-  svc.mapManager = MapManager;
+export default function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
+  frameSvc.mapManager = MapManager;
   const map = MapManager.storyMap.getMap();
-  svc.frameSettings = [];
-  svc.copiedFrameSettings = [];
-  svc.currentFrame = 0;
+  frameSvc.frameSettings = [];
+  frameSvc.copiedFrameSettings = [];
+  frameSvc.currentFrame = 0;
 
   window.storypinCallback = data => {
     // Updates StoryPins
-    svc.updateStorypinTimeline(data);
+    frameSvc.updateStorypinTimeline(data);
     // Updates StoryFrames
-    if (svc.copiedFrameSettings) {
-      svc.getCurrentFrame(data);
+    if (frameSvc.copiedFrameSettings) {
+      frameSvc.getCurrentFrame(data);
     }
   };
 
@@ -41,13 +40,13 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
         });
       }
     }
-    svc.storyFrames = stateSvc.config.storyframes;
+    frameSvc.storyFrames = stateSvc.config.storyframes;
   });
 
   const updateStoryframesHandler = () => {
     $rootScope.$apply(() => {
-      svc.currentFrame = 0;
-      let fetchedFrameSettings = svc.get("storyFrames");
+      frameSvc.currentFrame = 0;
+      let fetchedFrameSettings = frameSvc.get("storyFrames");
 
       if (fetchedFrameSettings) {
         fetchedFrameSettings = fetchedFrameSettings.filter(
@@ -92,23 +91,23 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
           };
         }
       }
-      svc.frameSettings = fetchedFrames;
-      svc.copiedFrameSettings = angular.copy(svc.frameSettings);
+      frameSvc.frameSettings = fetchedFrames;
+      frameSvc.copiedFrameSettings = angular.copy(frameSvc.frameSettings);
     });
   };
 
   PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
   PubSub.subscribe("changingChapter", updateStoryframesHandler);
 
-  svc.getCurrentFrame = date => {
-    const frame = svc.copiedFrameSettings.filter(
+  frameSvc.getCurrentFrame = date => {
+    const frame = frameSvc.copiedFrameSettings.filter(
       f => f.chapter === stateSvc.getChapterIndex()
-    )[svc.currentFrame];
+    )[frameSvc.currentFrame];
 
     if (frame) {
       const start = frame.startDate;
       const end = frame.endDate;
-      svc.checkTimes(date, start, end);
+      frameSvc.checkTimes(date, start, end);
     }
   };
 
@@ -117,7 +116,7 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
    * Loops the current chapter's StoryPins and determines if they should be shown or hidden.
    * @param date The date for the layer.
    */
-  svc.updateStorypinTimeline = date => {
+  frameSvc.updateStorypinTimeline = date => {
     // TODO: Use pre-cooked timeframe objects to optimize this?
     let pinArray = pinSvc.getCurrentPins();
     // This should not be null. Why is this happening?
@@ -125,9 +124,9 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
       pinArray = [];
     }
     pinArray.forEach(pin => {
-      const startDate = svc.formatDates(pin.startTime);
-      const endDate = svc.formatDates(pin.endTime);
-      const storyLayerStartDate = svc.formatDates(date);
+      const startDate = frameSvc.formatDates(pin.startTime);
+      const endDate = frameSvc.formatDates(pin.endTime);
+      const storyLayerStartDate = frameSvc.formatDates(date);
 
       const shouldShow =
         moment(storyLayerStartDate).isSameOrAfter(startDate) &&
@@ -141,54 +140,54 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
     });
   };
 
-  svc.checkTimes = (date, start, end) => {
+  frameSvc.checkTimes = (date, start, end) => {
     if (
       moment(date).isSameOrAfter(start) &&
       moment(date).isSameOrBefore(end) &&
-      svc.zoomedIn === false
+      frameSvc.zoomedIn === false
     ) {
-      svc.zoomToExtent();
-    } else if (moment(date).isAfter(end) && svc.zoomedIn === true) {
-      svc.zoomOutExtent();
-      if (svc.currentFrame <= svc.copiedFrameSettings.length) {
-        svc.currentFrame += 1;
-        if (svc.currentFrame === svc.copiedFrameSettings.length) {
-          svc.currentFrame = 0;
+      frameSvc.zoomToExtent();
+    } else if (moment(date).isAfter(end) && frameSvc.zoomedIn === true) {
+      frameSvc.zoomOutExtent();
+      if (frameSvc.currentFrame <= frameSvc.copiedFrameSettings.length) {
+        frameSvc.currentFrame += 1;
+        if (frameSvc.currentFrame === frameSvc.copiedFrameSettings.length) {
+          frameSvc.currentFrame = 0;
         }
       }
     } else if (moment(date).isBefore(start) || moment(date).isAfter(end)) {
-      svc.clearBB();
+      frameSvc.clearBB();
     }
   };
 
-  svc.formatDates = date => {
+  frameSvc.formatDates = date => {
     const preFormatDate = moment(date);
     return preFormatDate.format("YYYY-MM-DD");
   };
 
-  svc.zoomToExtent = () => {
+  frameSvc.zoomToExtent = () => {
     let polygon;
 
-    if (svc.copiedFrameSettings[svc.currentFrame]) {
+    if (frameSvc.copiedFrameSettings[frameSvc.currentFrame]) {
       polygon = new ol.Feature(
         new ol.geom.Polygon([
           [
-            svc.copiedFrameSettings[svc.currentFrame].bb1,
-            svc.copiedFrameSettings[svc.currentFrame].bb2,
-            svc.copiedFrameSettings[svc.currentFrame].bb3,
-            svc.copiedFrameSettings[svc.currentFrame].bb4
+            frameSvc.copiedFrameSettings[frameSvc.currentFrame].bb1,
+            frameSvc.copiedFrameSettings[frameSvc.currentFrame].bb2,
+            frameSvc.copiedFrameSettings[frameSvc.currentFrame].bb3,
+            frameSvc.copiedFrameSettings[frameSvc.currentFrame].bb4
           ]
         ])
       );
-    } else if (!svc.copiedFrameSettings[svc.currentFrame]) {
-      for (let i = 0; i < svc.copiedFrameSettings.length; i++) {
+    } else if (!frameSvc.copiedFrameSettings[frameSvc.currentFrame]) {
+      for (let i = 0; i < frameSvc.copiedFrameSettings.length; i++) {
         polygon = new ol.Feature(
           new ol.geom.Polygon([
             [
-              svc.copiedFrameSettings[i].bb1,
-              svc.copiedFrameSettings[i].bb2,
-              svc.copiedFrameSettings[i].bb3,
-              svc.copiedFrameSettings[i].bb4
+              frameSvc.copiedFrameSettings[i].bb1,
+              frameSvc.copiedFrameSettings[i].bb2,
+              frameSvc.copiedFrameSettings[i].bb3,
+              frameSvc.copiedFrameSettings[i].bb4
             ]
           ])
         );
@@ -212,14 +211,14 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
         easing: ol.easing.easeIn
       })
     );
-    svc.zoomedIn = true;
+    frameSvc.zoomedIn = true;
     vector.set("name", "boundingBox");
     map.getView().fit(polygon.getGeometry(), map.getSize());
   };
 
-  svc.zoomOutExtent = () => {
+  frameSvc.zoomOutExtent = () => {
     const extent = ol.extent.createEmpty();
-    svc.mapManager.storyMap.getStoryLayers().forEach(layer => {
+    frameSvc.mapManager.storyMap.getStoryLayers().forEach(layer => {
       ol.extent.extend(extent, layer.get("extent"));
     });
 
@@ -230,17 +229,17 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
     });
     map.beforeRender(zoom);
 
-    if (svc.mapManager.storyMap.getStoryLayers().length > 0) {
+    if (frameSvc.mapManager.storyMap.getStoryLayers().length > 0) {
       map.getView().fit(extent, map.getSize());
     } else {
       map.getView().setZoom(3);
     }
 
-    svc.zoomedIn = false;
-    svc.clearBB();
+    frameSvc.zoomedIn = false;
+    frameSvc.clearBB();
   };
 
-  svc.clearBB = () => {
+  frameSvc.clearBB = () => {
     map.getLayers().forEach(layer => {
       if (layer.get("name") === "boundingBox") {
         map.removeLayer(layer);
@@ -248,8 +247,5 @@ function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
     });
   };
 
-  svc.get = prop => svc[prop];
-  return svc;
+  frameSvc.get = prop => frameSvc[prop];
 }
-
-export default frameSvc;

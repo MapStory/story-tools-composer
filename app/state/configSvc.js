@@ -1,27 +1,35 @@
 import utils from "app/utils/utils";
+import layerOptionsSvc from "app/layers/layerOptionsSvc.js";
 
-export default function newConfigSvc(layerOptionsSvc, appConfig) {
+export default function newConfigSvc(appConfig) {
   const svc = {};
 
-  const compareSources = (a,b) => a.name === b.name && a.ptype === b.ptype && a.restUrl === b.restUrl && a.url === b.url;
+  const compareSources = (a, b) =>
+    a.name === b.name &&
+    a.ptype === b.ptype &&
+    a.restUrl === b.restUrl &&
+    a.url === b.url;
 
   const createBasemaps = (layers, sources) =>
-    layers.map(layer => (
-      {
-        opacity: layer.opacity,
-        group: layer.group,
-        name: layer.name,
-        title: layer.title,
-        visibility: false,
-        selected: false,
-        source: String(sources.findIndex(source => compareSources(source, layer.source))),
-        fixed: layer.fixed
-      }));
+    layers.map(layer => ({
+      opacity: layer.opacity,
+      group: layer.group,
+      name: layer.name,
+      title: layer.title,
+      visibility: false,
+      selected: false,
+      source: String(
+        sources.findIndex(source => compareSources(source, layer.source))
+      ),
+      fixed: layer.fixed
+    }));
 
   const createSources = (sourcesObject, layers) => {
     const sources = [];
     layers.forEach(layer => {
-      const found = sources.find(source => compareSources(layer.source, source));
+      const found = sources.find(source =>
+        compareSources(layer.source, source)
+      );
       if (!found) {
         sources.push(layer.source);
         sourcesObject[sources.length - 1] = layer.source;
@@ -30,19 +38,27 @@ export default function newConfigSvc(layerOptionsSvc, appConfig) {
     return sources;
   };
 
-
-  svc.defaultBasemap = "";
+  newConfigSvc.defaultBasemap = "";
   const sourcesObject = {};
   let sourcesArray = [];
   let basemaps = [];
   if (window.mapstory.composer.config.baselayersConfig) {
-    window.mapstory.composer.config.baselayersConfig.layers = window.mapstory.composer.config.baselayersConfig.layers.filter(layer => layer.name !== null);
-    sourcesArray = createSources(sourcesObject, window.mapstory.composer.config.baselayersConfig.layers);
-    basemaps = createBasemaps(window.mapstory.composer.config.baselayersConfig.layers, sourcesArray);
-    svc.defaultBasemap = window.mapstory.composer.config.baselayersConfig.defaultLayer;
+    window.mapstory.composer.config.baselayersConfig.layers = window.mapstory.composer.config.baselayersConfig.layers.filter(
+      layer => layer.name !== null
+    );
+    sourcesArray = createSources(
+      sourcesObject,
+      window.mapstory.composer.config.baselayersConfig.layers
+    );
+    basemaps = createBasemaps(
+      window.mapstory.composer.config.baselayersConfig.layers,
+      sourcesArray
+    );
+    newConfigSvc.defaultBasemap =
+      window.mapstory.composer.config.baselayersConfig.defaultLayer;
   }
 
-  svc.getBasemapArrayWithActiveBasemap = layers => {
+  newConfigSvc.getBasemapArrayWithActiveBasemap = layers => {
     let activeBasemap = null;
     const basemapCopy = angular.copy(basemaps);
     if (layers && layers[0]) {
@@ -52,7 +68,10 @@ export default function newConfigSvc(layerOptionsSvc, appConfig) {
       if (activeBasemap && basemap.name === activeBasemap) {
         basemap.visibility = true;
         basemap.selected = true;
-      } else if (!activeBasemap && basemap.name === svc.defaultBasemap) {
+      } else if (
+        !activeBasemap &&
+        basemap.name === newConfigSvc.defaultBasemap
+      ) {
         basemap.visibility = true;
         basemap.selected = true;
       } else {
@@ -72,7 +91,7 @@ export default function newConfigSvc(layerOptionsSvc, appConfig) {
     return baseMapArray;
   };
 
-  svc.getLayerListFromServerData = layers => {
+  newConfigSvc.getLayerListFromServerData = layers => {
     if (!layers) {
       return [];
     }
@@ -91,7 +110,7 @@ export default function newConfigSvc(layerOptionsSvc, appConfig) {
     return newLayers;
   };
 
-  svc.getMapstoryConfig = data => {
+  newConfigSvc.getMapstoryConfig = data => {
     const brandingCfg = window.mapstory.composer.config.branding;
     const classificationBannerCfg =
       window.mapstory.composer.config.classificationBanner;
@@ -135,17 +154,20 @@ export default function newConfigSvc(layerOptionsSvc, appConfig) {
 
     for (let i = 0; i < data.chapters.length; i += 1) {
       cfg.chapters[i].owner = data.owner;
-      cfg.chapters[i] = svc.generateChapterConfig(i + 1, data.chapters[i]);
+      cfg.chapters[i] = newConfigSvc.generateChapterConfig(
+        i + 1,
+        data.chapters[i]
+      );
     }
     if (data.chapters.length === 0) {
-      cfg.chapters[0] = svc.generateChapterConfig();
+      cfg.chapters[0] = newConfigSvc.generateChapterConfig();
       cfg.chapters[0].owner = data.owner;
     }
 
     return cfg;
   };
 
-  svc.generateChapterConfig = (index, data) => {
+  newConfigSvc.generateChapterConfig = (index, data) => {
     if (!data) {
       data = {
         abstract: "",
@@ -194,4 +216,3 @@ export default function newConfigSvc(layerOptionsSvc, appConfig) {
 
   return svc;
 }
-

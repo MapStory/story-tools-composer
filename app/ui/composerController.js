@@ -1,5 +1,5 @@
 import PubSub from "pubsub-js";
-import layerSvc from  "app/layers/layerSvc.js";
+import layerSvc from "app/layers/layerSvc.js";
 
 function composerController(
   $scope,

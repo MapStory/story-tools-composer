@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 
-function layerSvc(appConfig, MapManager, stateSvc) {
+export default function layerSvc(appConfig, MapManager, stateSvc) {
   const layerStyleTimeStamps = {};
   const svc = {};
 
@@ -247,5 +247,3 @@ function layerSvc(appConfig, MapManager, stateSvc) {
   };
   return svc;
 }
-
-export default layerSvc;

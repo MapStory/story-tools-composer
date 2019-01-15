@@ -2,46 +2,46 @@ import PubSub from "pubsub-js";
 import MinimalConfig from "app/state/MinimalConfig";
 import headerSvc from "app/ui/headerSvc";
 import locationSvc from "app/ui/locationSvc";
+import configSvc from "app/state/configSvc";
 
-function stateSvc(configSvc) {
-  const svc = {};
-  svc.currentChapter = null;
-  svc.previousChapter = null;
-  svc.originalConfig = null;
-  svc.config = null;
-  svc.frameSettings = null;
-  svc.timelineSettings = {
+export default function stateSvc() {
+  stateSvc.currentChapter = null;
+  stateSvc.previousChapter = null;
+  stateSvc.originalConfig = null;
+  stateSvc.config = null;
+  stateSvc.frameSettings = null;
+  stateSvc.timelineSettings = {
     loop: "none",
     state: "stopped"
   };
 
   PubSub.subscribe("stateChange", (event, data) => {
-    svc.timelineSettings.loop = data.loop;
-    svc.timelineSettings.state = data.state;
+    stateSvc.timelineSettings.loop = data.loop;
+    stateSvc.timelineSettings.state = data.state;
   });
 
-  svc.addNewChapter = () => {
+  stateSvc.addNewChapter = () => {
     const newChapter = configSvc.generateChapterConfig(
-      svc.config.chapters.length + 1
+      stateSvc.config.chapters.length + 1
     );
-    svc.config.chapters.push(newChapter);
+    stateSvc.config.chapters.push(newChapter);
     PubSub.publish("chapterCreated", newChapter.index);
   };
 
-  svc.removeChapter = chapterId => {
+  stateSvc.removeChapter = chapterId => {
     const index = chapterId - 1;
-    if (svc.config.chapters[index].mapId) {
-      svc.config.removedChapters.push(svc.config.chapters[index].mapId);
+    if (stateSvc.config.chapters[index].mapId) {
+      stateSvc.config.removedChapters.push(stateSvc.config.chapters[index].mapId);
     }
-    svc.config.chapters.splice(index, 1);
+    stateSvc.config.chapters.splice(index, 1);
 
-    for (let i = 0; i < svc.config.chapters.length; i += 1) {
-      svc.config.chapters[i].index = i + 1;
+    for (let i = 0; i < stateSvc.config.chapters.length; i += 1) {
+      stateSvc.config.chapters[i].index = i + 1;
     }
   };
 
   // mutates the input array
-  svc.arrayMove = (array, oldIndex, newIndex) => {
+  stateSvc.arrayMove = (array, oldIndex, newIndex) => {
     if (newIndex >= array.length) {
       let k = newIndex - array.length;
       while (k) {
@@ -53,25 +53,25 @@ function stateSvc(configSvc) {
     return array; // for testing purposes
   };
 
-  svc.reorderLayer = (from, to) => {
+  stateSvc.reorderLayer = (from, to) => {
     let arr = [];
-    if (svc.config.mapManager) {
-      arr = svc.config.mapManager.storyMap
+    if (stateSvc.config.mapManager) {
+      arr = stateSvc.config.mapManager.storyMap
         .getMap()
         .getLayers()
         .getArray();
     }
-    svc.arrayMove(svc.config.chapters[svc.getChapterIndex()].layers, from, to);
-    svc.arrayMove(
-      svc.config.chapters[svc.getChapterIndex()].map.layers,
+    stateSvc.arrayMove(stateSvc.config.chapters[stateSvc.getChapterIndex()].layers, from, to);
+    stateSvc.arrayMove(
+      stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers,
       from,
       to
     );
     arr.forEach(layer => {
       if (layer.getSource() && layer.getSource().getParams) {
         const layerName = layer.getSource().getParams().LAYERS;
-        const zIndex = svc.config.chapters[
-          svc.getChapterIndex()
+        const zIndex = stateSvc.config.chapters[
+          stateSvc.getChapterIndex()
         ].layers.findIndex(item => item.name === layerName);
         layer.setZIndex(zIndex);
       }
@@ -79,13 +79,13 @@ function stateSvc(configSvc) {
   };
 
   function initializeNewConfig() {
-    svc.config = configSvc.getMapstoryConfig();
-    window.config = svc.config;
-    svc.originalConfig = window.config;
+    stateSvc.config = configSvc.getMapstoryConfig();
+    window.config = stateSvc.config;
+    stateSvc.originalConfig = window.config;
     PubSub.publish("configInitialized");
   }
 
-  svc.initConfig = () => {
+  stateSvc.initConfig = () => {
     const path = window.location.pathname;
     const mapID = /\/story\/([A-Za-z0-9-_]+)/.exec(path)
       ? /\/story\/([A-Za-z0-9-_]+)/.exec(path)[1]
@@ -99,9 +99,9 @@ function stateSvc(configSvc) {
         url: mapJsonUrl
       })
         .done(data => {
-          svc.config = configSvc.getMapstoryConfig(data);
-          window.config = svc.config;
-          svc.originalConfig = data;
+          stateSvc.config = configSvc.getMapstoryConfig(data);
+          window.config = stateSvc.config;
+          stateSvc.originalConfig = data;
           PubSub.publish("configInitialized");
         })
         .fail(() => {
@@ -112,29 +112,29 @@ function stateSvc(configSvc) {
     }
   };
 
-  svc.getConfig = () => svc.config;
+  stateSvc.getConfig = () => stateSvc.config;
 
-  svc.setConfig = config => {
-    svc.config = config;
+  stateSvc.setConfig = config => {
+    stateSvc.config = config;
   };
 
-  svc.set = (k, v) => {
-    svc.config[k] = v;
+  stateSvc.set = (k, v) => {
+    stateSvc.config[k] = v;
   };
 
-  svc.updateCurrentChapterConfig = () => {
-    svc.currentChapter = svc.getChapterConfig();
+  stateSvc.updateCurrentChapterConfig = () => {
+    stateSvc.currentChapter = stateSvc.getChapterConfig();
   };
 
-  svc.addLayer = layerOptions => {
-    svc.config.chapters[svc.getChapterIndex()].layers.push(layerOptions);
-    svc.config.chapters[svc.getChapterIndex()].map.layers.push(layerOptions);
+  stateSvc.addLayer = layerOptions => {
+    stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.push(layerOptions);
+    stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers.push(layerOptions);
   };
 
-  svc.updateLayerStyle = (layerName, styleName, style) => {
-    const chapter = svc.config.chapters[svc.getChapterIndex()];
+  stateSvc.updateLayerStyle = (layerName, styleName, style) => {
+    const chapter = stateSvc.config.chapters[stateSvc.getChapterIndex()];
     const layerCount = chapter.layers.length;
-    const layerArray = svc.config.mapManager.storyMap
+    const layerArray = stateSvc.config.mapManager.storyMap
       .getStoryLayers()
       .getArray();
 
@@ -157,7 +157,7 @@ function stateSvc(configSvc) {
    * Gets storypins and storyframes for the given mapstory id from the server.
    * @param storyID The mapstory id.
    */
-  svc.fetchComponentsFromAPI = storyID =>
+  stateSvc.fetchComponentsFromAPI = storyID =>
     fetch(`/api/mapstories/${storyID}`)
       .then(resp => resp.json())
       .then(data => {
@@ -170,12 +170,12 @@ function stateSvc(configSvc) {
    */
   PubSub.subscribe("configInitialized", () => {
     // This means we are in a new temp mapstory. No id has been created for this yet.
-    if (svc.isTempStory()) {
+    if (stateSvc.isTempStory()) {
       // Initialize empty arrays for storypins
-      svc.getConfig().storypins = [[]];
+      stateSvc.getConfig().storypins = [[]];
     } else {
       // Data should exist for this mapstory. Get saved components from API:
-      svc.fetchComponentsFromAPI(svc.getConfig().storyID);
+      stateSvc.fetchComponentsFromAPI(stateSvc.getConfig().storyID);
     }
   });
 
@@ -183,29 +183,29 @@ function stateSvc(configSvc) {
    * True if this is a temp unsaved mapstory.
    * @returns {boolean} True if this is a temp unsaved mapstory.
    */
-  svc.isTempStory = () => {
-    if (svc.getConfig().storyID === 0) {
+  stateSvc.isTempStory = () => {
+    if (stateSvc.getConfig().storyID === 0) {
       return true;
     }
     return false;
   };
 
   // !DJA @TODO: write test
-  svc.removeLayer = uuid => {
-    const layers = svc.config.chapters[svc.getChapterIndex()].layers;
+  stateSvc.removeLayer = uuid => {
+    const layers = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers;
     for (let i = 0; i < layers.length; i += 1) {
       if (layers[i].uuid === uuid) {
         const index = layers.indexOf(layers[i]);
         if (index > -1) {
-          svc.config.chapters[svc.getChapterIndex()].layers.splice(index, 1);
+          stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.splice(index, 1);
         }
       }
     }
   };
 
-  svc.setStoryframeDetails = copiedFrameSettings => {
+  stateSvc.setStoryframeDetails = copiedFrameSettings => {
     const chapterLookup = {};
-    svc.config.frameSettings = [];
+    stateSvc.config.frameSettings = [];
     for (let i = 0; i < copiedFrameSettings.length; i += 1) {
       if (!chapterLookup[copiedFrameSettings[i].chapter]) {
         chapterLookup[copiedFrameSettings[i].chapter] = [];
@@ -236,12 +236,12 @@ function stateSvc(configSvc) {
         type: "FeatureCollection",
         features: chapterLookup[index]
       };
-      svc.config.frameSettings[index] = featureCollection;
+      stateSvc.config.frameSettings[index] = featureCollection;
     });
-    svc.saveStoryframes(svc.config.frameSettings);
+    stateSvc.saveStoryframes(stateSvc.config.frameSettings);
   };
 
-  svc.getChapter = () => {
+  stateSvc.getChapter = () => {
     let chapter = 1;
     const path = locationSvc.path();
     if (path && path.indexOf("/chapter") === 0) {
@@ -253,11 +253,11 @@ function stateSvc(configSvc) {
     return parseInt(chapter, 10);
   };
 
-  svc.getChapterIndex = () => svc.getChapter() - 1;
+  stateSvc.getChapterIndex = () => stateSvc.getChapter() - 1;
 
-  svc.getChapterConfig = () => {
-    const chapter = svc.getChapter();
-    const config = svc.getConfig();
+  stateSvc.getChapterConfig = () => {
+    const chapter = stateSvc.getChapter();
+    const config = stateSvc.getConfig();
     if (!config) {
       return undefined;
     }
@@ -271,8 +271,8 @@ function stateSvc(configSvc) {
     return config;
   };
 
-  svc.updateBaseLayer = baselayer => {
-    const layers = svc.config.chapters[svc.getChapterIndex()].map.layers;
+  stateSvc.updateBaseLayer = baselayer => {
+    const layers = stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers;
     /*
      The first base layer in the config when a map is reloaded will be set as `selected`
     */
@@ -292,45 +292,45 @@ function stateSvc(configSvc) {
     }
   };
 
-  svc.getChapterConfigs = () => {
-    const config = svc.getConfig();
+  stateSvc.getChapterConfigs = () => {
+    const config = stateSvc.getConfig();
     return config.chapters;
   };
 
-  svc.getChapterCount = () => {
-    if (!svc.getConfig()) {
+  stateSvc.getChapterCount = () => {
+    if (!stateSvc.getConfig()) {
       return false;
     }
-    return svc.getChapterConfigs() ? svc.getChapterConfigs().length : 0;
+    return stateSvc.getChapterConfigs() ? stateSvc.getChapterConfigs().length : 0;
   };
 
-  svc.initConfig();
+  stateSvc.initConfig();
 
-  svc.getCategories = () =>
+  stateSvc.getCategories = () =>
     fetch("/api/categories/")
       .then(response => response.json())
       .then(data => {
-        svc.categories = data.objects;
+        stateSvc.categories = data.objects;
       });
 
-  svc.getCategories();
+  stateSvc.getCategories();
 
-  svc.updateLocationUsingStoryId = () => {
-    const storyID = svc.getConfig().storyID;
+  stateSvc.updateLocationUsingStoryId = () => {
+    const storyID = stateSvc.getConfig().storyID;
     window.location.href = `/story/${storyID}/draft`;
   };
 
-  svc.onChapterSort = () => {
+  stateSvc.onChapterSort = () => {
     // Iterate through the chapters and update their indexes anytime they are sorted
-    for (let i = 0; i < svc.config.chapters.length; i += 1) {
-      svc.config.chapters[i].index = i + 1;
+    for (let i = 0; i < stateSvc.config.chapters.length; i += 1) {
+      stateSvc.config.chapters[i].index = i + 1;
     }
   };
 
-  svc.save = () =>
+  stateSvc.save = () =>
     new Promise(res => {
       headerSvc.updateSaveStatus("saving");
-      const cfg = new MinimalConfig(svc.config);
+      const cfg = new MinimalConfig(stateSvc.config);
       // iterate through feature collections and add them
       // to the corresponding chapters
       for (let i = 0; i < cfg.chapters.length; i += 1) {
@@ -339,13 +339,13 @@ function stateSvc(configSvc) {
         cfg.chapters[i].mapId = id;
       }
 
-      for (let i = 0; i < svc.config.chapters.length; i += 1) {
+      for (let i = 0; i < stateSvc.config.chapters.length; i += 1) {
         // ensure key exists even if undefined for server logic
         cfg.chapters[i].frames =
-          svc.config.storyframes &&
-          svc.config.storyframes[i] &&
-          svc.config.storyframes[i].features
-            ? svc.config.storyframes[i]
+          stateSvc.config.storyframes &&
+          stateSvc.config.storyframes[i] &&
+          stateSvc.config.storyframes[i].features
+            ? stateSvc.config.storyframes[i]
             : { features: [] };
       }
       const minimalCfg = {
@@ -366,29 +366,29 @@ function stateSvc(configSvc) {
         .then(resp => {
           resp.json().then(data => {
             const stylesToPersist = [];
-            for (let i = 0; i < svc.config.chapters.length; i += 1) {
+            for (let i = 0; i < stateSvc.config.chapters.length; i += 1) {
               const id = data.chapters[i].mapId;
-              svc.config.chapters[i].id = id;
-              svc.config.chapters[i].mapId = id;
-              svc.config.chapters[i].removedPins = [];
-              stylesToPersist.push(svc.config.chapters[i].layers.flatten());
+              stateSvc.config.chapters[i].id = id;
+              stateSvc.config.chapters[i].mapId = id;
+              stateSvc.config.chapters[i].removedPins = [];
+              stylesToPersist.push(stateSvc.config.chapters[i].layers.flatten());
 
               for (
                 let j = 0;
                 j < data.chapters[i].frames.features.length;
                 j += 1
               ) {
-                svc.config.storyframes[i].features[j].id =
+                stateSvc.config.storyframes[i].features[j].id =
                   data.chapters[i].frames.features[j].id;
               }
 
-              for (let j = 0; j < svc.config.chapters[i].pins.length; j += 1) {
-                svc.config.chapters[i].pins[j].id =
+              for (let j = 0; j < stateSvc.config.chapters[i].pins.length; j += 1) {
+                stateSvc.config.chapters[i].pins[j].id =
                   data.chapters[i].pins.features[j].id;
               }
             }
-            if (!svc.config.storyID) {
-              svc.set("storyID", data.storyID);
+            if (!stateSvc.config.storyID) {
+              stateSvc.set("storyID", data.storyID);
               const promises = stylesToPersist.flatten().map(layer => {
                 if (layer.styleName && layer.styleConfig) {
                   return fetch(`/style/${data.storyID}/${layer.styleName}`, {
@@ -402,14 +402,14 @@ function stateSvc(configSvc) {
                 return Promise.resolve(true);
               });
               Promise.all(promises).then(() =>
-                svc.updateLocationUsingStoryId(data.storyID)
+                stateSvc.updateLocationUsingStoryId(data.storyID)
               );
             }
-            svc.config.removedChapters = [];
-            svc.config.removedFrames = [];
+            stateSvc.config.removedChapters = [];
+            stateSvc.config.removedFrames = [];
             const timestamp = headerSvc.updateSaveStatus("saved");
-            svc.config.lastSynced = timestamp;
-            svc.generateStoryThumbnail(data.storyID);
+            stateSvc.config.lastSynced = timestamp;
+            stateSvc.generateStoryThumbnail(data.storyID);
             res();
           });
         })
@@ -420,7 +420,7 @@ function stateSvc(configSvc) {
         });
     });
 
-  svc.generateStoryThumbnail = storyId =>
+  stateSvc.generateStoryThumbnail = storyId =>
     fetch(`/story/${storyId}/generate_thumbnail`, {
       method: "POST",
       headers: {
@@ -429,25 +429,22 @@ function stateSvc(configSvc) {
       credentials: "same-origin"
     });
 
-  svc.publish = () => {
-    const config = svc.getConfig();
+  stateSvc.publish = () => {
+    const config = stateSvc.getConfig();
     config.isPublished = true;
-    svc.save();
+    stateSvc.save();
   };
 
   /**
    * Sets the storypins to the config that will be saved.
    * @param storypins [[]] An Array chapters containing an array of Storypins each.
    */
-  svc.setStoryPinsToConfig = storypins => {
-    svc.config.storypins = storypins;
+  stateSvc.setStoryPinsToConfig = storypins => {
+    stateSvc.config.storypins = storypins;
   };
 
-  svc.saveStoryframes = storyframes => {
-    svc.config.storyframes = storyframes;
+  stateSvc.saveStoryframes = storyframes => {
+    stateSvc.config.storyframes = storyframes;
   };
-
-  return svc;
 }
 
-export default stateSvc;

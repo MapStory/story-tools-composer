@@ -1,11 +1,11 @@
 import PubSub from "pubsub-js";
+import layerOptionsSvc from "app/layers/layerOptionsSvc.js"
 
 function MapManager(
   appConfig,
   stStoryMapBuilder,
   stEditableLayerBuilder,
   EditableStoryMap,
-  layerOptionsSvc,
   stStoryMapBaseBuilder,
   stateSvc,
   navigationSvc,
