@@ -1,7 +1,9 @@
 import PubSub from "pubsub-js";
-import locationSvc from "./locationSvc";
+import appConfig from "app/appConfig";
+import stateSvc from "app/state/stateSvc";
+import locationSvc from "app/ui/locationSvc";
 
-function navigationSvc($location, $log, stateSvc, appConfig) {
+function navigationSvc($location, $log) {
   // locationSvc is being hitched to navigationSvc temporarily in order
   // for Karma tests to have acces.
   // @TODO: remove locationSvc after karma tests have been configured to

@@ -1,7 +1,8 @@
 import moment from "moment";
 import PubSub from "pubsub-js";
+import stateSvc from "app/state/stateSvc";
 
-function frameSvc(stateSvc, pinSvc, MapManager, $rootScope) {
+function frameSvc(pinSvc, MapManager, $rootScope) {
   const svc = {};
   svc.mapManager = MapManager;
   const map = MapManager.storyMap.getMap();

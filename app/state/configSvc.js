@@ -1,4 +1,4 @@
-import utils from "app/utils/utils";
+import utils from "app/utils/utils.js";
 import appConfig from "app/appConfig";
 import layerOptionsSvc from "app/layers/layerOptionsSvc";
 

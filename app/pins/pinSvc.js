@@ -1,5 +1,6 @@
 import Papa from "papaparse"; // Used for CSV Parsing
 import moment from "moment"; // For time and dates
+import stateSvc from "app/state/stateSvc";
 import PubSub from "pubsub-js"; // For event handling
 import whiteListRegex from "./whiteListRegex";
 import Pin from "./Pin";
@@ -15,7 +16,7 @@ import Pin from "./Pin";
  * @param $uibModal .
  * @returns {{}} pinSvc.
  */
-function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
+function pinSvc($translate, timeSvc, MapManager, $uibModal) {
   const svc = {}; // this
   // The collection of pins
   svc.pins = [[]];

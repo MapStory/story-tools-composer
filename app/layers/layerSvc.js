@@ -1,6 +1,8 @@
 import PubSub from "pubsub-js";
+import appConfig from "app/appConfig";
+import stateSvc from "app/state/stateSvc";
 
-export default function layerSvc(appConfig, MapManager, stateSvc) {
+function layerSvc(MapManager) {
   const layerStyleTimeStamps = {};
   const svc = {};
 
@@ -113,12 +115,7 @@ export default function layerSvc(appConfig, MapManager, stateSvc) {
         MapManager.addLayer({ name, settings, server, title });
       });
     } else {
-      MapManager.addLayer({
-        name,
-        settings,
-        server: svc.server.active,
-        title
-      });
+      MapManager.addLayer({ name, settings, server: svc.server.active, title });
     }
   };
 
@@ -245,5 +242,8 @@ export default function layerSvc(appConfig, MapManager, stateSvc) {
     }
     return url;
   };
+
   return svc;
 }
+
+export default layerSvc;

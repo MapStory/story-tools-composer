@@ -1,4 +1,6 @@
 import PubSub from "pubsub-js";
+import appConfig from "app/appConfig";
+import stateSvc from "app/state/stateSvc";
 import layerSvc from "app/layers/layerSvc.js";
 
 function composerController(
@@ -10,13 +12,11 @@ function composerController(
   $location,
   MapManager,
   styleService,
-  appConfig,
   TimeControlsManager,
   TimeMachine,
   navigationSvc,
   pinSvc,
-  frameSvc,
-  stateSvc
+  frameSvc
 ) {
   let lastSelectedTab = null;
   $scope.frameSvc = frameSvc;

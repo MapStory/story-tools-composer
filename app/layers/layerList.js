@@ -1,10 +1,11 @@
+import stateSvc from "app/state/stateSvc";
+
 function layerList(
   stStoryMapBaseBuilder,
   stEditableStoryMapBuilder,
   MapManager,
   layerSvc,
-  styleService,
-  stateSvc
+  styleService
 ) {
   return {
     restrict: "E",

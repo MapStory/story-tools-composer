@@ -1,9 +1,10 @@
+import stateSvc from "app/state/stateSvc";
+
 function styleService(
   $http,
   $cookies,
   ol3StyleConverter,
   stEditableStoryMapBuilder,
-  stateSvc
 ) {
   const svc = {};
 

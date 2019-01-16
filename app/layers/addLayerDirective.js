@@ -1,4 +1,6 @@
-function addLayers(layerSvc, stateSvc) {
+import stateSvc from "app/state/stateSvc";
+
+function addLayers(layerSvc) {
   return {
     restrict: "E",
     scope: {

@@ -1,6 +1,7 @@
 import moment from "moment";
+import stateSvc from "app/state/stateSvc";
 
-function frameController($scope, stateSvc, frameSvc, MapManager) {
+function frameController($scope, frameSvc, MapManager) {
   $scope.mapManager = MapManager;
   $scope.stateSvc = stateSvc;
   $scope.showForm = null;

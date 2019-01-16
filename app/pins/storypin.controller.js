@@ -1,10 +1,12 @@
+import stateSvc from "app/state/stateSvc";
+
 /**
  * Controller for the StoryPin Tab.
  * @param $scope The current Scope.
  * @param pinSvc StoryPin Service.
  * @param stateSvc State Service.
  */
-function storypinController($scope, pinSvc, stateSvc) {
+function storypinController($scope, pinSvc) {
   // Services
   $scope.pinSvc = pinSvc;
   $scope.stateSvc = stateSvc;
