@@ -1,5 +1,5 @@
-export default function layerOptionsSvc() {
-  layerOptionsSvc.getLayerOptions = args => {
+const layerOptionsSvc = {
+  getLayerOptions: args => {
     let name = args.name;
     const settings = { ...args.settings };
     settings.fitExtent = true;
@@ -39,5 +39,7 @@ export default function layerOptionsSvc() {
       settings
     };
     return options;
-  };
+  },
 }
+
+export default layerOptionsSvc;

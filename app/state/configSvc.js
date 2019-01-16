@@ -1,66 +1,42 @@
 import utils from "app/utils/utils";
-import layerOptionsSvc from "app/layers/layerOptionsSvc.js";
+import appConfig from "app/appConfig";
+import layerOptionsSvc from "app/layers/layerOptionsSvc";
 
-export default function newConfigSvc(appConfig) {
-  const svc = {};
+const newConfigSvc = {
+  compareSources: (a,b) => a.name === b.name && a.ptype === b.ptype && a.restUrl === b.restUrl && a.url === b.url,
 
-  const compareSources = (a, b) =>
-    a.name === b.name &&
-    a.ptype === b.ptype &&
-    a.restUrl === b.restUrl &&
-    a.url === b.url;
+  createBasemaps: (layers, sources) =>
+    layers.map(layer => (
+      {
+        opacity: layer.opacity,
+        group: layer.group,
+        name: layer.name,
+        title: layer.title,
+        visibility: false,
+        selected: false,
+        source: String(sources.findIndex(source => newConfigSvc.compareSources(source, layer.source))),
+        fixed: layer.fixed
+      })),
 
-  const createBasemaps = (layers, sources) =>
-    layers.map(layer => ({
-      opacity: layer.opacity,
-      group: layer.group,
-      name: layer.name,
-      title: layer.title,
-      visibility: false,
-      selected: false,
-      source: String(
-        sources.findIndex(source => compareSources(source, layer.source))
-      ),
-      fixed: layer.fixed
-    }));
-
-  const createSources = (sourcesObject, layers) => {
+  createSources: (sourcesObject, layers) => {
     const sources = [];
     layers.forEach(layer => {
-      const found = sources.find(source =>
-        compareSources(layer.source, source)
-      );
+      const found = sources.find(source => newConfigSvc.compareSources(layer.source, source));
       if (!found) {
         sources.push(layer.source);
         sourcesObject[sources.length - 1] = layer.source;
       }
     });
     return sources;
-  };
-
-  newConfigSvc.defaultBasemap = "";
-  const sourcesObject = {};
-  let sourcesArray = [];
-  let basemaps = [];
-  if (window.mapstory.composer.config.baselayersConfig) {
-    window.mapstory.composer.config.baselayersConfig.layers = window.mapstory.composer.config.baselayersConfig.layers.filter(
-      layer => layer.name !== null
-    );
-    sourcesArray = createSources(
-      sourcesObject,
-      window.mapstory.composer.config.baselayersConfig.layers
-    );
-    basemaps = createBasemaps(
-      window.mapstory.composer.config.baselayersConfig.layers,
-      sourcesArray
-    );
-    newConfigSvc.defaultBasemap =
-      window.mapstory.composer.config.baselayersConfig.defaultLayer;
-  }
-
-  newConfigSvc.getBasemapArrayWithActiveBasemap = layers => {
+  },
+  defaultBasemap: "",
+  sourcesObject: {},
+  sourcesArray: [],
+  basemaps: [],
+  
+  getBasemapArrayWithActiveBasemap: layers => {
     let activeBasemap = null;
-    const basemapCopy = angular.copy(basemaps);
+    const basemapCopy = angular.copy(newConfigSvc.basemaps);
     if (layers && layers[0]) {
       activeBasemap = layers[0].split("?layers=")[1];
     }
@@ -68,10 +44,7 @@ export default function newConfigSvc(appConfig) {
       if (activeBasemap && basemap.name === activeBasemap) {
         basemap.visibility = true;
         basemap.selected = true;
-      } else if (
-        !activeBasemap &&
-        basemap.name === newConfigSvc.defaultBasemap
-      ) {
+      } else if (!activeBasemap && basemap.name === newConfigSvc.defaultBasemap) {
         basemap.visibility = true;
         basemap.selected = true;
       } else {
@@ -89,9 +62,9 @@ export default function newConfigSvc(appConfig) {
       }
     }
     return baseMapArray;
-  };
+  },
 
-  newConfigSvc.getLayerListFromServerData = layers => {
+  getLayerListFromServerData: layers => {
     if (!layers) {
       return [];
     }
@@ -108,9 +81,9 @@ export default function newConfigSvc(appConfig) {
       }
     }
     return newLayers;
-  };
+  },
 
-  newConfigSvc.getMapstoryConfig = data => {
+  getMapstoryConfig: data => {
     const brandingCfg = window.mapstory.composer.config.branding;
     const classificationBannerCfg =
       window.mapstory.composer.config.classificationBanner;
@@ -154,10 +127,7 @@ export default function newConfigSvc(appConfig) {
 
     for (let i = 0; i < data.chapters.length; i += 1) {
       cfg.chapters[i].owner = data.owner;
-      cfg.chapters[i] = newConfigSvc.generateChapterConfig(
-        i + 1,
-        data.chapters[i]
-      );
+      cfg.chapters[i] = newConfigSvc.generateChapterConfig(i + 1, data.chapters[i]);
     }
     if (data.chapters.length === 0) {
       cfg.chapters[0] = newConfigSvc.generateChapterConfig();
@@ -165,9 +135,9 @@ export default function newConfigSvc(appConfig) {
     }
 
     return cfg;
-  };
+  },
 
-  newConfigSvc.generateChapterConfig = (index, data) => {
+  generateChapterConfig: (index, data) => {
     if (!data) {
       data = {
         abstract: "",
@@ -195,7 +165,7 @@ export default function newConfigSvc(appConfig) {
       layers: data.layersConfig,
       viewerPlaybackMode: "instant",
       storyID: data.story_id || null,
-      sources: sourcesObject,
+      sources: newConfigSvc.sourcesObject,
       map: {
         id: index,
         center: [-11046067.8315474, 4153282.36890334],
@@ -205,14 +175,22 @@ export default function newConfigSvc(appConfig) {
         zoom: 5,
         storyID: data.story_id || null,
         projection: "EPSG:900913",
-        layers: svc
+        layers: newConfigSvc
           .getBasemapArrayWithActiveBasemap(data.layers)
           .concat(data.layersConfig),
         keywords: []
       }
     };
     return cfg;
-  };
-
-  return svc;
+  },
 }
+
+export default newConfigSvc;
+
+if (window.mapstory.composer.config.baselayersConfig) {
+  window.mapstory.composer.config.baselayersConfig.layers = window.mapstory.composer.config.baselayersConfig.layers.filter(layer => layer.name !== null);
+  newConfigSvc.sourcesArray = newConfigSvc.createSources(newConfigSvc.sourcesObject, window.mapstory.composer.config.baselayersConfig.layers);
+  newConfigSvc.basemaps = newConfigSvc.createBasemaps(window.mapstory.composer.config.baselayersConfig.layers, newConfigSvc.sourcesArray);
+  newConfigSvc.defaultBasemap = window.mapstory.composer.config.baselayersConfig.defaultLayer;
+}
+

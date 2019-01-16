@@ -1,47 +1,44 @@
 import PubSub from "pubsub-js";
-import MinimalConfig from "app/state/MinimalConfig";
 import headerSvc from "app/ui/headerSvc";
-import locationSvc from "app/ui/locationSvc";
 import configSvc from "app/state/configSvc";
+import locationSvc from "app/ui/locationSvc";
+import MinimalConfig from "app/state/MinimalConfig";
 
-export default function stateSvc() {
-  stateSvc.currentChapter = null;
-  stateSvc.previousChapter = null;
-  stateSvc.originalConfig = null;
-  stateSvc.config = null;
-  stateSvc.frameSettings = null;
-  stateSvc.timelineSettings = {
+const stateSvc = {
+  currentChapter: null,
+  previousChapter: null,
+  originalConfig: null,
+  config: null,
+  frameSettings: null,
+  timelineSettings: {
     loop: "none",
     state: "stopped"
-  };
+  },
 
-  PubSub.subscribe("stateChange", (event, data) => {
-    stateSvc.timelineSettings.loop = data.loop;
-    stateSvc.timelineSettings.state = data.state;
-  });
-
-  stateSvc.addNewChapter = () => {
+  addNewChapter: () => {
     const newChapter = configSvc.generateChapterConfig(
       stateSvc.config.chapters.length + 1
     );
     stateSvc.config.chapters.push(newChapter);
     PubSub.publish("chapterCreated", newChapter.index);
-  };
+  },
 
-  stateSvc.removeChapter = chapterId => {
+  removeChapter: chapterId => {
     const index = chapterId - 1;
     if (stateSvc.config.chapters[index].mapId) {
-      stateSvc.config.removedChapters.push(stateSvc.config.chapters[index].mapId);
+      stateSvc.config.removedChapters.push(
+        stateSvc.config.chapters[index].mapId
+      );
     }
     stateSvc.config.chapters.splice(index, 1);
 
     for (let i = 0; i < stateSvc.config.chapters.length; i += 1) {
       stateSvc.config.chapters[i].index = i + 1;
     }
-  };
+  },
 
   // mutates the input array
-  stateSvc.arrayMove = (array, oldIndex, newIndex) => {
+  arrayMove: (array, oldIndex, newIndex) => {
     if (newIndex >= array.length) {
       let k = newIndex - array.length;
       while (k) {
@@ -51,9 +48,9 @@ export default function stateSvc() {
     }
     array.splice(newIndex, 0, array.splice(oldIndex, 1)[0]);
     return array; // for testing purposes
-  };
+  },
 
-  stateSvc.reorderLayer = (from, to) => {
+  reorderLayer: (from, to) => {
     let arr = [];
     if (stateSvc.config.mapManager) {
       arr = stateSvc.config.mapManager.storyMap
@@ -62,11 +59,7 @@ export default function stateSvc() {
         .getArray();
     }
     stateSvc.arrayMove(stateSvc.config.chapters[stateSvc.getChapterIndex()].layers, from, to);
-    stateSvc.arrayMove(
-      stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers,
-      from,
-      to
-    );
+    stateSvc.arrayMove(stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers, from, to);
     arr.forEach(layer => {
       if (layer.getSource() && layer.getSource().getParams) {
         const layerName = layer.getSource().getParams().LAYERS;
@@ -76,16 +69,16 @@ export default function stateSvc() {
         layer.setZIndex(zIndex);
       }
     });
-  };
+  },
 
-  function initializeNewConfig() {
+  initializeNewConfig: () => {
     stateSvc.config = configSvc.getMapstoryConfig();
     window.config = stateSvc.config;
     stateSvc.originalConfig = window.config;
     PubSub.publish("configInitialized");
-  }
+  },
 
-  stateSvc.initConfig = () => {
+  initConfig: () => {
     const path = window.location.pathname;
     const mapID = /\/story\/([A-Za-z0-9-_]+)/.exec(path)
       ? /\/story\/([A-Za-z0-9-_]+)/.exec(path)[1]
@@ -100,38 +93,38 @@ export default function stateSvc() {
       })
         .done(data => {
           stateSvc.config = configSvc.getMapstoryConfig(data);
-          window.config = stateSvc.config;
+          window.stateSvc.config = stateSvc.config;
           stateSvc.originalConfig = data;
           PubSub.publish("configInitialized");
         })
         .fail(() => {
-          initializeNewConfig();
+          stateSvc.initializeNewConfig();
         });
     } else {
-      initializeNewConfig();
+      stateSvc.initializeNewConfig();
     }
-  };
+  },
 
-  stateSvc.getConfig = () => stateSvc.config;
+  getConfig: () => stateSvc.config,
 
-  stateSvc.setConfig = config => {
-    stateSvc.config = config;
-  };
+  setConfig: config => {
+    stateSvc.config = stateSvc.config;
+  },
 
-  stateSvc.set = (k, v) => {
+  set: (k, v) => {
     stateSvc.config[k] = v;
-  };
+  },
 
-  stateSvc.updateCurrentChapterConfig = () => {
-    stateSvc.currentChapter = stateSvc.getChapterConfig();
-  };
+  updateCurrentChapterConfig: () => {
+    stateSvc.currentChapter = getChapterConfig();
+  },
 
-  stateSvc.addLayer = layerOptions => {
+  addLayer: layerOptions => {
     stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.push(layerOptions);
     stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers.push(layerOptions);
-  };
+  },
 
-  stateSvc.updateLayerStyle = (layerName, styleName, style) => {
+  updateLayerStyle: (layerName, styleName, style) => {
     const chapter = stateSvc.config.chapters[stateSvc.getChapterIndex()];
     const layerCount = chapter.layers.length;
     const layerArray = stateSvc.config.mapManager.storyMap
@@ -151,47 +144,48 @@ export default function stateSvc() {
       }
     });
     PubSub.publish("layerUpdated");
-  };
+  },
 
   /**
    * Gets storypins and storyframes for the given mapstory id from the server.
    * @param storyID The mapstory id.
    */
-  stateSvc.fetchComponentsFromAPI = storyID =>
+  fetchComponentsFromAPI: storyID =>
     fetch(`/api/mapstories/${storyID}`)
       .then(resp => resp.json())
       .then(data => {
         PubSub.publish("updateStorypins", data.chapters);
         PubSub.publish("updateStoryframes", data.chapters);
-      });
+      }),
 
   /**
    * Event responder for Init has finished.
    */
-  PubSub.subscribe("configInitialized", () => {
-    // This means we are in a new temp mapstory. No id has been created for this yet.
-    if (stateSvc.isTempStory()) {
-      // Initialize empty arrays for storypins
-      stateSvc.getConfig().storypins = [[]];
-    } else {
-      // Data should exist for this mapstory. Get saved components from API:
-      stateSvc.fetchComponentsFromAPI(stateSvc.getConfig().storyID);
-    }
-  });
+  onConfigInitialized: () =>
+    PubSub.subscribe("configInitialized", () => {
+      // This means we are in a new temp mapstory. No id has been created for this yet.
+      if (stateSvc.isTempStory()) {
+        // Initialize empty arrays for storypins
+        stateSvc.getConfig().storypins = [[]];
+      } else {
+        // Data should exist for this mapstory. Get saved components from API:
+        stateSvc.fetchComponentsFromAPI(stateSvc.getConfig().storyID);
+      }
+    }),
 
   /**
    * True if this is a temp unsaved mapstory.
    * @returns {boolean} True if this is a temp unsaved mapstory.
    */
-  stateSvc.isTempStory = () => {
+  isTempStory: () => {
     if (stateSvc.getConfig().storyID === 0) {
       return true;
     }
     return false;
-  };
+  },
 
   // !DJA @TODO: write test
-  stateSvc.removeLayer = uuid => {
+  removeLayer: uuid => {
     const layers = stateSvc.config.chapters[stateSvc.getChapterIndex()].layers;
     for (let i = 0; i < layers.length; i += 1) {
       if (layers[i].uuid === uuid) {
@@ -201,9 +195,9 @@ export default function stateSvc() {
         }
       }
     }
-  };
+  },
 
-  stateSvc.setStoryframeDetails = copiedFrameSettings => {
+  setStoryframeDetails: copiedFrameSettings => {
     const chapterLookup = {};
     stateSvc.config.frameSettings = [];
     for (let i = 0; i < copiedFrameSettings.length; i += 1) {
@@ -239,9 +233,9 @@ export default function stateSvc() {
       stateSvc.config.frameSettings[index] = featureCollection;
     });
     stateSvc.saveStoryframes(stateSvc.config.frameSettings);
-  };
+  },
 
-  stateSvc.getChapter = () => {
+  getChapter: () => {
     let chapter = 1;
     const path = locationSvc.path();
     if (path && path.indexOf("/chapter") === 0) {
@@ -251,27 +245,31 @@ export default function stateSvc() {
       }
     }
     return parseInt(chapter, 10);
-  };
+  },
 
-  stateSvc.getChapterIndex = () => stateSvc.getChapter() - 1;
+  getChapterIndex: () => stateSvc.getChapter() - 1,
 
-  stateSvc.getChapterConfig = () => {
+  getChapterConfig: () => {
     const chapter = stateSvc.getChapter();
     const config = stateSvc.getConfig();
-    if (!config) {
+    if (!stateSvc.config) {
       return undefined;
     }
     const i = chapter - 1;
-    if (config.chapters && chapter > 0 && chapter <= config.chapters.length) {
-      if (config.chapters[i]) {
-        return config.chapters[i];
+    if (
+      stateSvc.config.chapters &&
+      chapter > 0 &&
+      chapter <= stateSvc.config.chapters.length
+    ) {
+      if (stateSvc.config.chapters[i]) {
+        return stateSvc.config.chapters[i];
       }
-      return config.chapters[0];
+      return stateSvc.config.chapters[0];
     }
-    return config;
-  };
+    return stateSvc.config;
+  },
 
-  stateSvc.updateBaseLayer = baselayer => {
+  updateBaseLayer: baselayer => {
     const layers = stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers;
     /*
      The first base layer in the config when a map is reloaded will be set as `selected`
@@ -290,44 +288,40 @@ export default function stateSvc() {
         layers[i].selected = false;
       }
     }
-  };
+  },
 
-  stateSvc.getChapterConfigs = () => {
+  getChapterConfigs: () => {
     const config = stateSvc.getConfig();
-    return config.chapters;
-  };
+    return stateSvc.config.chapters;
+  },
 
-  stateSvc.getChapterCount = () => {
-    if (!stateSvc.getConfig()) {
+  getChapterCount: () => {
+    if (!getConfig()) {
       return false;
     }
     return stateSvc.getChapterConfigs() ? stateSvc.getChapterConfigs().length : 0;
-  };
+  },
 
-  stateSvc.initConfig();
-
-  stateSvc.getCategories = () =>
+  getCategories: () =>
     fetch("/api/categories/")
       .then(response => response.json())
       .then(data => {
         stateSvc.categories = data.objects;
-      });
+      }),
 
-  stateSvc.getCategories();
-
-  stateSvc.updateLocationUsingStoryId = () => {
+  updateLocationUsingStoryId: () => {
     const storyID = stateSvc.getConfig().storyID;
     window.location.href = `/story/${storyID}/draft`;
-  };
+  },
 
-  stateSvc.onChapterSort = () => {
+  onChapterSort: () => {
     // Iterate through the chapters and update their indexes anytime they are sorted
     for (let i = 0; i < stateSvc.config.chapters.length; i += 1) {
       stateSvc.config.chapters[i].index = i + 1;
     }
-  };
+  },
 
-  stateSvc.save = () =>
+  save: () =>
     new Promise(res => {
       headerSvc.updateSaveStatus("saving");
       const cfg = new MinimalConfig(stateSvc.config);
@@ -360,7 +354,7 @@ export default function stateSvc() {
         method: "POST",
         body: JSON.stringify(minimalCfg),
         headers: {
-          "X-CSRFToken": window.mapstory.composer.config.csrfToken
+          "X-CSRFToken": window.mapstory.composer.stateSvc.config.csrfToken
         }
       })
         .then(resp => {
@@ -371,7 +365,9 @@ export default function stateSvc() {
               stateSvc.config.chapters[i].id = id;
               stateSvc.config.chapters[i].mapId = id;
               stateSvc.config.chapters[i].removedPins = [];
-              stylesToPersist.push(stateSvc.config.chapters[i].layers.flatten());
+              stylesToPersist.push(
+                stateSvc.config.chapters[i].layers.flatten()
+              );
 
               for (
                 let j = 0;
@@ -382,27 +378,32 @@ export default function stateSvc() {
                   data.chapters[i].frames.features[j].id;
               }
 
-              for (let j = 0; j < stateSvc.config.chapters[i].pins.length; j += 1) {
+              for (
+                let j = 0;
+                j < stateSvc.config.chapters[i].pins.length;
+                j += 1
+              ) {
                 stateSvc.config.chapters[i].pins[j].id =
                   data.chapters[i].pins.features[j].id;
               }
             }
             if (!stateSvc.config.storyID) {
-              stateSvc.set("storyID", data.storyID);
+              set("storyID", data.storyID);
               const promises = stylesToPersist.flatten().map(layer => {
                 if (layer.styleName && layer.styleConfig) {
                   return fetch(`/style/${data.storyID}/${layer.styleName}`, {
                     method: "POST",
                     body: JSON.stringify(layer.styleConfig),
                     headers: {
-                      "X-CSRFToken": window.mapstory.composer.config.csrfToken
+                      "X-CSRFToken":
+                        window.mapstory.composer.stateSvc.config.csrfToken
                     }
                   });
                 }
                 return Promise.resolve(true);
               });
               Promise.all(promises).then(() =>
-                stateSvc.updateLocationUsingStoryId(data.storyID)
+              stateSvc.updateLocationUsingStoryId(data.storyID)
               );
             }
             stateSvc.config.removedChapters = [];
@@ -418,33 +419,42 @@ export default function stateSvc() {
           headerSvc.updateSaveStatus("failed");
           res();
         });
-    });
+    }),
 
-  stateSvc.generateStoryThumbnail = storyId =>
+  generateStoryThumbnail: storyId =>
     fetch(`/story/${storyId}/generate_thumbnail`, {
       method: "POST",
       headers: {
-        "X-CSRFToken": window.mapstory.composer.config.csrfToken
+        "X-CSRFToken": window.mapstory.composer.stateSvc.config.csrfToken
       },
       credentials: "same-origin"
-    });
+    }),
 
-  stateSvc.publish = () => {
-    const config = stateSvc.getConfig();
-    config.isPublished = true;
+  publish: () => {
+    const config = getConfig();
+    stateSvc.config.isPublished = true;
     stateSvc.save();
-  };
+  },
 
   /**
    * Sets the storypins to the config that will be saved.
    * @param storypins [[]] An Array chapters containing an array of Storypins each.
    */
-  stateSvc.setStoryPinsToConfig = storypins => {
+  setStoryPinsToConfig: storypins => {
     stateSvc.config.storypins = storypins;
-  };
+  },
 
-  stateSvc.saveStoryframes = storyframes => {
+  saveStoryframes: storyframes => {
     stateSvc.config.storyframes = storyframes;
-  };
-}
+  }
+};
 
+PubSub.subscribe("stateChange", (event, data) => {
+  stateSvc.timelineSettings.loop = data.loop;
+  stateSvc.timelineSettings.state = data.state;
+});
+
+export default stateSvc;
+
+stateSvc.initConfig();
+stateSvc.getCategories();
