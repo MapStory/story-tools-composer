@@ -116,7 +116,7 @@ const stateSvc = {
   },
 
   updateCurrentChapterConfig: () => {
-    stateSvc.currentChapter = getChapterConfig();
+    stateSvc.currentChapter = stateSvc.getChapterConfig();
   },
 
   addLayer: layerOptions => {
@@ -251,7 +251,7 @@ const stateSvc = {
 
   getChapterConfig: () => {
     const chapter = stateSvc.getChapter();
-    const config = stateSvc.getConfig();
+    stateSvc.config = stateSvc.getConfig();
     if (!stateSvc.config) {
       return undefined;
     }
@@ -291,12 +291,12 @@ const stateSvc = {
   },
 
   getChapterConfigs: () => {
-    const config = stateSvc.getConfig();
+    stateSvc.config = stateSvc.getConfig();
     return stateSvc.config.chapters;
   },
 
   getChapterCount: () => {
-    if (!getConfig()) {
+    if (!stateSvc.getConfig()) {
       return false;
     }
     return stateSvc.getChapterConfigs() ? stateSvc.getChapterConfigs().length : 0;
@@ -431,7 +431,7 @@ const stateSvc = {
     }),
 
   publish: () => {
-    const config = getConfig();
+    stateSvc.config = stateSvc.getConfig();
     stateSvc.config.isPublished = true;
     stateSvc.save();
   },
