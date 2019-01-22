@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 import headerSvc from "app/ui/headerSvc";
-import configSvc from "app/state/configSvc";
+import newConfigSvc from "app/state/configSvc";
 import locationSvc from "app/ui/locationSvc";
 import MinimalConfig from "app/state/MinimalConfig";
 
@@ -16,7 +16,7 @@ const stateSvc = {
   },
 
   addNewChapter: () => {
-    const newChapter = configSvc.generateChapterConfig(
+    const newChapter = newConfigSvc.generateChapterConfig(
       stateSvc.config.chapters.length + 1
     );
     stateSvc.config.chapters.push(newChapter);
@@ -58,8 +58,16 @@ const stateSvc = {
         .getLayers()
         .getArray();
     }
-    stateSvc.arrayMove(stateSvc.config.chapters[stateSvc.getChapterIndex()].layers, from, to);
-    stateSvc.arrayMove(stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers, from, to);
+    stateSvc.arrayMove(
+      stateSvc.config.chapters[stateSvc.getChapterIndex()].layers,
+      from,
+      to
+    );
+    stateSvc.arrayMove(
+      stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers,
+      from,
+      to
+    );
     arr.forEach(layer => {
       if (layer.getSource() && layer.getSource().getParams) {
         const layerName = layer.getSource().getParams().LAYERS;
@@ -72,7 +80,7 @@ const stateSvc = {
   },
 
   initializeNewConfig: () => {
-    stateSvc.config = configSvc.getMapstoryConfig();
+    stateSvc.config = newConfigSvc.getMapstoryConfig();
     window.config = stateSvc.config;
     stateSvc.originalConfig = window.config;
     PubSub.publish("configInitialized");
@@ -92,8 +100,8 @@ const stateSvc = {
         url: mapJsonUrl
       })
         .done(data => {
-          stateSvc.config = configSvc.getMapstoryConfig(data);
-          window.stateSvc.config = stateSvc.config;
+          stateSvc.config = newConfigSvc.getMapstoryConfig(data);
+          window.config = stateSvc.config;
           stateSvc.originalConfig = data;
           PubSub.publish("configInitialized");
         })
@@ -108,7 +116,7 @@ const stateSvc = {
   getConfig: () => stateSvc.config,
 
   setConfig: config => {
-    stateSvc.config = stateSvc.config;
+    stateSvc.config = config;
   },
 
   set: (k, v) => {
@@ -120,8 +128,12 @@ const stateSvc = {
   },
 
   addLayer: layerOptions => {
-    stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.push(layerOptions);
-    stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers.push(layerOptions);
+    stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.push(
+      layerOptions
+    );
+    stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers.push(
+      layerOptions
+    );
   },
 
   updateLayerStyle: (layerName, styleName, style) => {
@@ -159,21 +171,6 @@ const stateSvc = {
       }),
 
   /**
-   * Event responder for Init has finished.
-   */
-  onConfigInitialized: () =>
-    PubSub.subscribe("configInitialized", () => {
-      // This means we are in a new temp mapstory. No id has been created for this yet.
-      if (stateSvc.isTempStory()) {
-        // Initialize empty arrays for storypins
-        stateSvc.getConfig().storypins = [[]];
-      } else {
-        // Data should exist for this mapstory. Get saved components from API:
-        stateSvc.fetchComponentsFromAPI(stateSvc.getConfig().storyID);
-      }
-    }),
-
-  /**
    * True if this is a temp unsaved mapstory.
    * @returns {boolean} True if this is a temp unsaved mapstory.
    */
@@ -191,7 +188,10 @@ const stateSvc = {
       if (layers[i].uuid === uuid) {
         const index = layers.indexOf(layers[i]);
         if (index > -1) {
-          stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.splice(index, 1);
+          stateSvc.config.chapters[stateSvc.getChapterIndex()].layers.splice(
+            index,
+            1
+          );
         }
       }
     }
@@ -200,11 +200,11 @@ const stateSvc = {
   setStoryframeDetails: copiedFrameSettings => {
     const chapterLookup = {};
     stateSvc.config.frameSettings = [];
+
     for (let i = 0; i < copiedFrameSettings.length; i += 1) {
       if (!chapterLookup[copiedFrameSettings[i].chapter]) {
         chapterLookup[copiedFrameSettings[i].chapter] = [];
       }
-
       chapterLookup[copiedFrameSettings[i].chapter].push({
         type: "Feature",
         geometry: null,
@@ -270,7 +270,8 @@ const stateSvc = {
   },
 
   updateBaseLayer: baselayer => {
-    const layers = stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers;
+    const layers =
+      stateSvc.config.chapters[stateSvc.getChapterIndex()].map.layers;
     /*
      The first base layer in the config when a map is reloaded will be set as `selected`
     */
@@ -299,7 +300,9 @@ const stateSvc = {
     if (!stateSvc.getConfig()) {
       return false;
     }
-    return stateSvc.getChapterConfigs() ? stateSvc.getChapterConfigs().length : 0;
+    return stateSvc.getChapterConfigs()
+      ? stateSvc.getChapterConfigs().length
+      : 0;
   },
 
   getCategories: () =>
@@ -354,7 +357,7 @@ const stateSvc = {
         method: "POST",
         body: JSON.stringify(minimalCfg),
         headers: {
-          "X-CSRFToken": window.mapstory.composer.stateSvc.config.csrfToken
+          "X-CSRFToken": window.mapstory.composer.config.csrfToken
         }
       })
         .then(resp => {
@@ -388,22 +391,21 @@ const stateSvc = {
               }
             }
             if (!stateSvc.config.storyID) {
-              set("storyID", data.storyID);
+              stateSvc.set("storyID", data.storyID);
               const promises = stylesToPersist.flatten().map(layer => {
                 if (layer.styleName && layer.styleConfig) {
                   return fetch(`/style/${data.storyID}/${layer.styleName}`, {
                     method: "POST",
                     body: JSON.stringify(layer.styleConfig),
                     headers: {
-                      "X-CSRFToken":
-                        window.mapstory.composer.stateSvc.config.csrfToken
+                      "X-CSRFToken": window.mapstory.composer.config.csrfToken
                     }
                   });
                 }
                 return Promise.resolve(true);
               });
               Promise.all(promises).then(() =>
-              stateSvc.updateLocationUsingStoryId(data.storyID)
+                stateSvc.updateLocationUsingStoryId(data.storyID)
               );
             }
             stateSvc.config.removedChapters = [];
@@ -425,7 +427,7 @@ const stateSvc = {
     fetch(`/story/${storyId}/generate_thumbnail`, {
       method: "POST",
       headers: {
-        "X-CSRFToken": window.mapstory.composer.stateSvc.config.csrfToken
+        "X-CSRFToken": window.mapstory.composer.config.csrfToken
       },
       credentials: "same-origin"
     }),
@@ -452,6 +454,20 @@ const stateSvc = {
 PubSub.subscribe("stateChange", (event, data) => {
   stateSvc.timelineSettings.loop = data.loop;
   stateSvc.timelineSettings.state = data.state;
+});
+
+/**
+ * Event responder for Init has finished.
+ */
+PubSub.subscribe("configInitialized", () => {
+  // This means we are in a new temp mapstory. No id has been created for this yet.
+  if (stateSvc.isTempStory()) {
+    // Initialize empty arrays for storypins
+    stateSvc.getConfig().storypins = [[]];
+  } else {
+    // Data should exist for this mapstory. Get saved components from API:
+    stateSvc.fetchComponentsFromAPI(stateSvc.getConfig().storyID);
+  }
 });
 
 export default stateSvc;

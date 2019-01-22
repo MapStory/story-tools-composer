@@ -565,7 +565,6 @@ function pinSvc($translate, timeSvc, MapManager, $uibModal) {
     svc.addStorypinToMap(pin);
     PubSub.publish("pinAdded");
 
-
     return pin;
   };
 
@@ -618,33 +617,35 @@ function pinSvc($translate, timeSvc, MapManager, $uibModal) {
    * @param feature The storypin.mapFeature
    * @returns {*[]} Some CSS
    */
-  svc.getStyle = (feature) => {
+  svc.getStyle = feature => {
     if (!feature.get("visible")) {
       return [];
     }
-    return [new ol.style.Style({
-      text: new ol.style.Text({
-        text: feature.get("label"),
-        fill: new ol.style.Fill({
-          color: "#333"
+    return [
+      new ol.style.Style({
+        text: new ol.style.Text({
+          text: feature.get("label"),
+          fill: new ol.style.Fill({
+            color: "#333"
+          }),
+          stroke: new ol.style.Stroke({
+            color: [255, 255, 255, 0.8],
+            width: 2
+          }),
+          font: "18px 'Helvetica Neue', Arial"
         }),
-        stroke: new ol.style.Stroke({
-          color: [255, 255, 255, 0.8],
-          width: 2
-        }),
-        font: "18px 'Helvetica Neue', Arial"
-      }),
-      image: new ol.style.Circle({
-        fill: new ol.style.Fill({
-          color: [255, 255, 255, 0.3]
-        }),
-        stroke: new ol.style.Stroke({
-          color: [51, 153, 204, 0.4],
-          width: 1.5
-        }),
-        radius: 10
+        image: new ol.style.Circle({
+          fill: new ol.style.Fill({
+            color: [255, 255, 255, 0.3]
+          }),
+          stroke: new ol.style.Stroke({
+            color: [51, 153, 204, 0.4],
+            width: 1.5
+          }),
+          radius: 10
+        })
       })
-    })];
+    ];
   };
 
   /**
@@ -758,7 +759,7 @@ function pinSvc($translate, timeSvc, MapManager, $uibModal) {
       const [lon, lat] = ol.proj.transform(
         [element.longitude, element.latitude],
         "EPSG:4326",
-        map.getView().getProjection(),
+        map.getView().getProjection()
       );
       const pin = svc.createNewPin(
         {
@@ -771,7 +772,7 @@ function pinSvc($translate, timeSvc, MapManager, $uibModal) {
         },
         stateSvc.getChapterIndex(),
         lon,
-        lat,
+        lat
       );
       pin.content = element.content || "";
       pin.media = element.media || "";

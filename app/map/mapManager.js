@@ -1,6 +1,6 @@
 import PubSub from "pubsub-js";
 import stateSvc from "app/state/stateSvc";
-import layerOptionsSvc from "app/layers/layerOptionsSvc"
+import layerOptionsSvc from "app/layers/layerOptionsSvc";
 
 function MapManager(
   stStoryMapBuilder,
@@ -16,6 +16,7 @@ function MapManager(
     overlayElement: document.getElementById("info-box")
   });
 
+  
   window.storyMap = svc.storyMap;
   svc.title = "";
   svc.owner = "";

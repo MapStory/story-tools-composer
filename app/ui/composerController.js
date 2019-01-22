@@ -30,9 +30,8 @@ function composerController(
   $scope.showForm = null;
   $scope.frameSvc.zoomedIn = false;
   let queryLayerLoaded = false;
-
+  $scope.mapManager.initMapLoad();
   $scope.layerViewerMode = window.mapstory.layerViewerMode;
-
   $scope.composerMode =
     window.mapstory.composerMode !== "False" && !$scope.layerViewerMode;
 
@@ -81,6 +80,8 @@ function composerController(
   $scope.stateSvc.previousChapter = $scope.stateSvc.getChapter();
 
   const loadMap = event => {
+    console.log("loadMap");
+
     const urlChapterId = $location.path().split("chapter/")[1];
     const chapterCount = stateSvc.getChapterCount();
     if (urlChapterId > chapterCount) {

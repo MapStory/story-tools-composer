@@ -39,7 +39,7 @@ const layerOptionsSvc = {
       settings
     };
     return options;
-  },
-}
+  }
+};
 
 export default layerOptionsSvc;

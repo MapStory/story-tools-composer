@@ -10,15 +10,6 @@ function frameSvc(pinSvc, MapManager, $rootScope) {
   svc.copiedFrameSettings = [];
   svc.currentFrame = 0;
 
-  window.storypinCallback = data => {
-    // Updates StoryPins
-    svc.updateStorypinTimeline(data);
-    // Updates StoryFrames
-    if (svc.copiedFrameSettings) {
-      svc.getCurrentFrame(data);
-    }
-  };
-
   PubSub.subscribe("updateStoryframes", (event, chapters) => {
     stateSvc.config.storyframes = [];
     for (let c = 0; c < chapters.length; c++) {
@@ -45,18 +36,28 @@ function frameSvc(pinSvc, MapManager, $rootScope) {
     svc.storyFrames = stateSvc.config.storyframes;
   });
 
+  window.storypinCallback = data => {
+    // Updates StoryPins
+    svc.updateStorypinTimeline(data);
+    // Updates StoryFrames
+    if (svc.copiedFrameSettings) {
+      svc.getCurrentFrame(data);
+    }
+  };
+
   const updateStoryframesHandler = () => {
     $rootScope.$apply(() => {
       svc.currentFrame = 0;
       let fetchedFrameSettings = svc.get("storyFrames");
 
-      console.log("fetchedFrameSettings: ", fetchedFrameSettings);  
-
       if (fetchedFrameSettings) {
         fetchedFrameSettings = fetchedFrameSettings.filter(
           f => f.chapter === stateSvc.getChapterIndex()
         );
+      } else {
+        fetchedFrameSettings = [];
       }
+
       const fetchedFrames = [];
 
       for (let i = 0; i < fetchedFrameSettings.length; i++) {
@@ -100,6 +101,8 @@ function frameSvc(pinSvc, MapManager, $rootScope) {
     });
   };
 
+  PubSub.subscribe("updateStoryframes", updateStoryframesHandler);
+  PubSub.subscribe("changingChapter", updateStoryframesHandler);
 
   svc.getCurrentFrame = date => {
     const frame = svc.copiedFrameSettings.filter(
@@ -251,13 +254,7 @@ function frameSvc(pinSvc, MapManager, $rootScope) {
 
   svc.get = prop => svc[prop];
 
-  console.log("svc: ", svc);
-
   return svc;
 }
 
 export default frameSvc;
-
-
-PubSub.subscribe("updateStoryframes", frameSvc.updateStoryframesHandler);
-PubSub.subscribe("changingChapter", frameSvc.updateStoryframesHandler);
