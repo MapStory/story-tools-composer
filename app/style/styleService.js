@@ -1,3 +1,5 @@
+import SLDStyleConverter from "../utils/SLDStyleConverter";
+
 function styleService(
   $http,
   $cookies,
@@ -105,7 +107,7 @@ function styleService(
     );
     if (style.name) {
       if (isComplete) {
-        const sld = new storytools.edit.SLDStyleConverter.SLDStyleConverter();
+        const sld = new SLDStyleConverter();
         const xml = sld.generateStyle(
           style,
           `geonode:${layerSource.getParams().LAYERS}`,
