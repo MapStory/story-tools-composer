@@ -7,7 +7,6 @@ const module = angular.module("composer", [
   "ui.bootstrap",
   ngCookies,
   "storytools.core.time",
-  "storytools.core.loading",
   "storytools.edit.pins",
   "colorpicker.module",
   "pascalprecht.translate",
@@ -126,3 +125,4 @@ require("./state");
 require("./pins");
 require("./frames");
 require("./ogc");
+require("./loading");
