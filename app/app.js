@@ -7,7 +7,6 @@ const module = angular.module("composer", [
   "ui.bootstrap",
   ngCookies,
   "storytools.core.time",
-  "storytools.edit.pins",
   "colorpicker.module",
   "pascalprecht.translate",
   "angular-sortable-view"
