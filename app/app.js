@@ -9,7 +9,6 @@ const module = angular.module("composer", [
   "storytools.core.time",
   "storytools.core.mapstory",
   "storytools.core.loading",
-  "storytools.edit.style",
   "storytools.edit.pins",
   "storytools.core.ogc",
   "colorpicker.module",

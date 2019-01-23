@@ -1,7 +1,5 @@
 import {Jsonix, mappings} from "./owsjs"
 
-console.log("New style converter");
-
 export default function SLDStyleConverter() {
   return {
     generateStyle(style, layerName, asString) {
