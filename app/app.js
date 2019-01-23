@@ -10,7 +10,6 @@ const module = angular.module("composer", [
   "storytools.core.mapstory",
   "storytools.core.loading",
   "storytools.edit.pins",
-  "storytools.core.ogc",
   "colorpicker.module",
   "pascalprecht.translate",
   "angular-sortable-view"
@@ -126,3 +125,4 @@ require("./time");
 require("./state");
 require("./pins");
 require("./frames");
+require("./ogc");
