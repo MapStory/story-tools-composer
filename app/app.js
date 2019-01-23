@@ -7,7 +7,6 @@ const module = angular.module("composer", [
   "ui.bootstrap",
   ngCookies,
   "storytools.core.time",
-  "storytools.core.mapstory",
   "storytools.core.loading",
   "storytools.edit.pins",
   "colorpicker.module",
@@ -118,6 +117,7 @@ module.config([
 // }
 
 require("./map");
+require("./mapstory");
 require("./style");
 require("./layers");
 require("./ui");
