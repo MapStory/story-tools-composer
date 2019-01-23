@@ -6,7 +6,6 @@ const module = angular.module("composer", [
   ngAnimate,
   "ui.bootstrap",
   ngCookies,
-  "storytools.core.time",
   "colorpicker.module",
   "pascalprecht.translate",
   "angular-sortable-view"
