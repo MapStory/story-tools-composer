@@ -13,6 +13,8 @@
 /* eslint no-use-before-define: 0 */
 /* eslint no-unused-vars: 0 */
 
+import {createRange} from "../time/core/utils";
+import pins from "../time/core/pins";
 
 
 let service_ = null;
@@ -165,8 +167,7 @@ export function mediaService() {
 }
 
 
-const pins = storytools.core.maps.pins;
-const stutils = storytools.core.time.utils;
+
 let rootScope_ = null;
 
 function StoryPinLayerManager($rootScope) {
@@ -179,7 +180,7 @@ StoryPinLayerManager.prototype.autoDisplayPins = function (range) {
 
   for (let iPin = 0; iPin < pinsToCheck.length; iPin += 1) {
     const pin = pinsToCheck[iPin];
-    const pinRange = stutils.createRange(pin.start_time, pin.end_time);
+    const pinRange = createRange(pin.start_time, pin.end_time);
     if (pinRange.intersects(range)) {
       rootScope_.$broadcast("showPin", pin);
     } else {
@@ -211,9 +212,9 @@ StoryPinLayerManager.prototype.pinsChanged = function(pins, action) {
   // @todo optimize by looking at changes
   const times = this.storyPins.map((p) => {
     if (p.start_time > p.end_time) {
-      return storytools.core.utils.createRange(p.end_time, p.start_time);
+      return createRange(p.end_time, p.start_time);
     } 
-    return storytools.core.utils.createRange(p.start_time, p.end_time);
+    return createRange(p.start_time, p.end_time);
     
   });
   this.map.storyPinsLayer.set("times", times);

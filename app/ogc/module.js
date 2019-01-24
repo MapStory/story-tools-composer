@@ -13,6 +13,11 @@
 /* eslint no-use-before-define: 0 */
 /* eslint no-unused-vars: 0 */
 
+import {isRangeLike, Interval} from "../time/core/utils";
+import {readCapabilitiesTimeDimensions, filterVectorLayer} from "../time/core/maps";
+import WFSDescribeFeatureType from "../style/WFSDescribeFeatureType";
+import MapConfigTransformer from "../mapstory/MapConfigTransformer";
+
 
 // @todo - provisional default story pins style
 const defaultStyle = [
@@ -396,8 +401,8 @@ function StoryLayer(data) {
   const layerParams = data.params || {};
   layerParams.style = data.style || defaultStyle;
 
-  if (data.times && storytools.core.time.utils.isRangeLike(data.times)) {
-    data.times = new storytools.core.time.utils.Interval(data.times);
+  if (data.times && isRangeLike(data.times)) {
+    data.times = new Interval(data.times);
   }
   ol.Object.call(this, data);
   let layer;
@@ -562,7 +567,7 @@ const stAnnotateLayer = ($rootScope) => ({
             );
             storyLayer.set("extent", extent);
           }
-          const found = storytools.core.time.maps.readCapabilitiesTimeDimensions(
+          const found = readCapabilitiesTimeDimensions(
             caps
           );
           const name = storyLayer.get("name");
@@ -601,7 +606,8 @@ const stAnnotateLayer = ($rootScope) => ({
           return;
         }
         return rawResponse.json().then(response => {
-          const parser = storytools.edit ? new storytools.edit.WFSDescribeFeatureType.WFSDescribeFeatureType() : null;
+          //TODO: DOuble check this
+          const parser = WFSDescribeFeatureType();
           if (parser) {
             const layerInfo = parser.parseResult(response);
             if (layerInfo.timeAttribute) {
@@ -905,7 +911,7 @@ const stEditableLayerBuilder = (stAnnotateLayer, stBaseLayerBuilder) => ({
           const times = layer.get("times");
           if (times) {
             const start = times.start || times[0];
-            storytools.core.time.maps.filterVectorLayer(layer, {
+            filterVectorLayer(layer, {
               start,
               end: start
             });
@@ -958,7 +964,7 @@ const stStoryMapBaseBuilder = ($rootScope, $compile, stBaseLayerBuilder) => ({
 const stStoryMapBuilder = ($rootScope, $compile, stLayerBuilder, stStoryMapBaseBuilder) => ({
   modifyStoryMap(storymap, data) {
     storymap.clear();
-    const mapConfig = storytools.mapstory.MapConfigTransformer.MapConfigTransformer(
+    const mapConfig = MapConfigTransformer(
       data
     );
     if (mapConfig.id >= 0) {
@@ -1018,7 +1024,7 @@ const stEditableStoryMapBuilder = ($rootScope, $compile, stStoryMapBaseBuilder, 
   },
   modifyStoryMap(storymap, data) {
     storymap.clear();
-    const mapConfig = storytools.mapstory.MapConfigTransformer.MapConfigTransformer(
+    const mapConfig = MapConfigTransformer(
       data
     );
     if (mapConfig.id >= 0) {

@@ -1,3 +1,4 @@
+import WPSClassify from "../style/WPSClassify";
 
 export default function stLayerClassificationService($uibModal, $sce) {
   function getCookie(name) {
@@ -31,7 +32,7 @@ export default function stLayerClassificationService($uibModal, $sce) {
       }
       let xml,
         service = this;
-      const wps = new storytools.edit.WPSClassify.WPSClassify();
+      const wps = new WPSClassify();
       const url = `${layer.get("path")  }wps`;
       if (method === "unique") {
         xml = wps.getUniqueValues(

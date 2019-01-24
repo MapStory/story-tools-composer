@@ -1,10 +1,11 @@
 import angular from "angular";
 import ngAnimate from "angular-animate";
 import ngCookies from "angular-cookies";
+import ngBootstrap from "angular-ui-bootstrap";
 
 const module = angular.module("composer", [
   ngAnimate,
-  "ui.bootstrap",
+  ngBootstrap,
   ngCookies,
   "colorpicker.module",
   "pascalprecht.translate",

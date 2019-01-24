@@ -1,5 +1,6 @@
 import moment from "moment";
 import {getTime, computeRange, isRangeLike, createRange} from "./core/utils";
+import create from "./core/controls";
 
 
 /**
@@ -118,7 +119,7 @@ function TimeControlsManager($log, $rootScope, StoryPinLayerManager, MapManager,
     const range = computeTicks(MapManager.storyMap, pinSvc.getCurrentPins());
     if (range.length) {
       const annotations = pinSvc.getCurrentPins();
-      timeControlsManager.timeControls = storytools.core.time.create({
+      timeControlsManager.timeControls = create({
         annotations,
         storyMap: MapManager.storyMap,
         storyLayers: MapManager.storyMap.getStoryLayers().getArray(),

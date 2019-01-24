@@ -1,4 +1,5 @@
 import SLDStyleConverter from "../utils/SLDStyleConverter";
+import StyleComplete from "../style/StyleComplete";
 
 function styleService(
   $http,
@@ -102,7 +103,7 @@ function styleService(
     const layer = storyLayer.getLayer();
     const layerSource = layer.getSource();
     const mapID = stateSvc.config.id;
-    const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
+    const isComplete = new StyleComplete().isComplete(
       style
     );
     if (style.name) {
@@ -174,7 +175,7 @@ function styleService(
   svc.updateStyle = storyLayer => {
     const style = storyLayer.get("style");
     const layer = storyLayer.getLayer();
-    const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
+    const isComplete = new StyleComplete().isComplete(
       style
     );
     svc.handleHeatMapStyle(storyLayer);
