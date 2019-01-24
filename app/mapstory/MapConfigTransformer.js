@@ -45,15 +45,15 @@ export default function MapConfigTransformer(data) {
           }
           layerConfig.title = layer.title;
         } else if (layerConfig.type === "WMS") {
-          var params;
+          let params;
           if (source.ptype === "gx_olsource") {
             params = layer.args[2] || {};
-            for (const key in params) {
+            Object.keys(params).forEach((key) => {
               if (params[key].constructor === Array) {
                 params[key.toUpperCase()] = params[key].join(",");
                 delete params[key];
               }
-            }
+            });
             layerConfig.url = layer.args[1];
           } else {
             params = {
@@ -84,10 +84,9 @@ export default function MapConfigTransformer(data) {
             }
             // info for custom tileGrid
             if (layer.capability.tileSets) {
-              for (const srs in layer.capability.tileSets[0].bbox) {
-                const bbox = layer.capability.tileSets[0].bbox[srs].bbox;
-                layerConfig.bbox = bbox;
-              }
+              Object.keys(layer.capability.tileSets[0].bbox).forEach((srs) => {
+                layerConfig.bbox = layer.capability.tileSets[0].bbox[srs].bbox;
+              });
               layerConfig.resolutions = layer.capability.tileSets[0].resolutions;
             }
           }

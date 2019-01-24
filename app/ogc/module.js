@@ -1,20 +1,8 @@
 /* eslint no-underscore-dangle: 0 */
-/* eslint func-names: 0 */
-/* eslint no-plusplus: 0 */
-/* eslint no-console: 0 */
-/* eslint consistent-return: 0 */
-/* eslint no-throw-literal: 0 */
-/* eslint no-prototype-builtins: 0 */
-/* eslint no-restricted-syntax: 0 */
 /* eslint no-shadow: 0 */
-/* eslint prefer-const: 0 */
 /* eslint camelcase: 0 */
-/* eslint prefer-rest-params: 0 */
-/* eslint no-use-before-define: 0 */
-/* eslint no-unused-vars: 0 */
-
-import {isRangeLike, Interval} from "../time/core/utils";
-import {readCapabilitiesTimeDimensions, filterVectorLayer} from "../time/core/maps";
+import { Interval, isRangeLike } from "../time/core/utils";
+import { filterVectorLayer, readCapabilitiesTimeDimensions } from "../time/core/maps";
 import WFSDescribeFeatureType from "../style/WFSDescribeFeatureType";
 import MapConfigTransformer from "../mapstory/MapConfigTransformer";
 
@@ -32,74 +20,136 @@ const defaultStyle = [
   })
 ];
 
-const enabled_ = true;
-
 $("#map .metric-scale-line").css("bottom", "-=40px");
 $("#map .imperial-scale-line").css("bottom", "-=40px");
 $("#map .nautical-scale-line").css("bottom", "-=40px");
 $("#map .ol-mouse-position").css("bottom", "-=40px");
 $("#switch-coords-border").css("bottom", "-=40px");
 
-const nauticalScale = new ol.control.ScaleLine({
-  className: "nautical-scale-line ol-scale-line",
-  units: ol.control.ScaleLineUnits.NAUTICAL,
-  render(mapEvent) {
-    // Have to write a custom render function as this scale always needs to display 20 nautical miles
-    const frameState = mapEvent.frameState;
-    if (!frameState) {
-      this.viewState_ = null;
-    } else {
-      this.viewState_ = frameState.viewState;
-    }
 
-    const viewState = this.viewState_;
+function StoryLayer(data) {
+  const layerParams = data.params || {};
+  layerParams.style = data.style || defaultStyle;
 
-    if (!viewState) {
-      if (this.renderedVisible_) {
-        this.element_.style.display = "none";
-        this.renderedVisible_ = false;
-      }
-      return;
-    }
-
-    const center = viewState.center;
-    const projection = viewState.projection;
-    const metersPerUnit = projection.getMetersPerUnit();
-    let pointResolution =
-        projection.getPointResolution(viewState.resolution, center) *
-        metersPerUnit;
-
-    pointResolution /= 1852;
-    const suffix = "nm";
-
-    const nauticalMiles = 20;
-    const width = Math.round(nauticalMiles / pointResolution);
-
-    const html = `${nauticalMiles  } ${  suffix}`;
-    if (this.renderedHTML_ != html) {
-      this.innerElement_.innerHTML = html;
-      this.renderedHTML_ = html;
-    }
-
-    // If the scale is wider than 60% the screen, hide it
-    // If it's smaller than 15 pixels, hide it as the text won't fit inside the scale
-    if (width > mapEvent.frameState.size[0] * 0.6 || width < 15) {
-      this.element_.style.display = "none";
-      this.renderedVisible_ = false;
-      return;
-    }
-
-    if (this.renderedWidth_ != width) {
-      this.innerElement_.style.width = `${width  }px`;
-      this.renderedWidth_ = width;
-    }
-
-    if (!this.renderedVisible_) {
-      this.element_.style.display = "";
-      this.renderedVisible_ = true;
-    }
+  if (data.times && isRangeLike(data.times)) {
+    data.times = new Interval(data.times);
   }
-});
+  ol.Object.call(this, data);
+  let layer;
+  if (this.get("type") === "VECTOR") {
+    const vectorSource = new ol.source.Vector({});
+
+    if (data.cluster) {
+      layerParams.source = new ol.source.Cluster({
+        distance: 20,
+        source: vectorSource
+      });
+    } else {
+      layerParams.source = vectorSource;
+    }
+
+    layer = new ol.layer.Vector(layerParams);
+
+    if (data.animate) {
+      window.setInterval(() => {
+        vectorSource.dispatchEvent("change");
+      }, 1000 / 75);
+    }
+  } else if (this.get("type") === "HEATMAP") {
+    layer = new ol.layer.Heatmap({
+      radius: data.style.radius,
+      opacity: data.style.opacity,
+      source: new ol.source.Vector()
+    });
+  } else if (this.get("type") === "WMS") {
+    const config = {
+      useOldAsInterimTiles: true
+    };
+    if (this.get("singleTile") === true) {
+      layer = new ol.layer.Image(config);
+    } else {
+      layer = new ol.layer.Tile(config);
+    }
+  } else {
+    layer = data.layer;
+  }
+  this.params = layerParams;
+  this.layer_ = layer;
+}
+
+StoryLayer.prototype = Object.create(ol.Object.prototype);
+StoryLayer.prototype.constructor = StoryLayer;
+
+StoryLayer.prototype.getStoryMap = function getStoryMap() {
+  return this.storyMap_;
+};
+
+StoryLayer.prototype.setWMSSource = function setWMSSource() {
+  const layer = this.getLayer();
+  const name = this.get("name");
+  const times = this.get("times");
+  const singleTile = this.get("singleTile");
+  const prms = {
+    LAYERS: name,
+    VERSION: "1.1.0",
+    TILED: true
+  };
+  const params = $.extend(this.get("params"), prms) || prms;
+  if (times) {
+    params.TIME = new Date(times.start || times[0]).toISOString();
+  }
+  if (singleTile) {
+    layer.setSource(
+      new ol.source.ImageWMS({
+        params,
+        url: this.get("url"),
+        serverType: "geoserver"
+      })
+    );
+  } else {
+    let tileGrid;
+    const
+      resolutions = this.get("resolutions"),
+      bbox = this.get("bbox");
+    if (resolutions && bbox) {
+      tileGrid = new ol.tilegrid.TileGrid({
+        extent: bbox,
+        resolutions
+      });
+    }
+    // @todo use urls for subdomain loading
+    layer.setSource(
+      new ol.source.TileWMS({
+        url: this.get("url"),
+        params,
+        tileGrid,
+        serverType: "geoserver"
+      })
+    );
+  }
+};
+
+StoryLayer.prototype.getState = function getState() {
+  const state = this.getProperties();
+  delete state.features;
+  return state;
+};
+
+StoryLayer.prototype.getLayer = function getLayer() {
+  return this.layer_;
+};
+
+StoryLayer.prototype.setLayer = function setLayer(layer) {
+  if (this.layer_ && this.storyMap_) {
+    const map = this.storyMap_.map_;
+    const idx = map
+      .getLayers()
+      .getArray()
+      .indexOf(this.layer_);
+    map.getLayers().setAt(idx, layer);
+  }
+  this.layer_ = layer;
+};
 
 function StoryMap(data) {
   ol.Object.call(this, data);
@@ -170,61 +220,61 @@ function StoryMap(data) {
 StoryMap.prototype = Object.create(ol.Object.prototype);
 StoryMap.prototype.constructor = StoryMap;
 
-StoryMap.prototype.addStoryPinsLayer = function() {
+StoryMap.prototype.addStoryPinsLayer = function addStoryPinsLayer() {
   this.map_.addLayer(this.storyPinsLayer.getLayer());
 };
 
-StoryMap.prototype.addStoryBoxesLayer = function() {
+StoryMap.prototype.addStoryBoxesLayer = function addStoryBoxesLayer() {
   this.map_.addLayer(this.storyBoxesLayer.getLayer());
 };
 
-StoryMap.prototype.setStoryOwner = function(storyOwner) {
+StoryMap.prototype.setStoryOwner = function setStoryOwner(storyOwner) {
   this.owner = storyOwner;
 };
 
-StoryMap.prototype.getStoryOwner = function() {
+StoryMap.prototype.getStoryOwner = function setStoryOwner() {
   return this.owner;
 };
 
-StoryMap.prototype.getCenter = function() {
+StoryMap.prototype.getCenter = function getCenter() {
   return this.center;
 };
 
-StoryMap.prototype.getZoom = function() {
+StoryMap.prototype.getZoom = function getZoom() {
   return this.zoom;
 };
 
-StoryMap.prototype.setStoryTitle = function(storyTitle) {
+StoryMap.prototype.setStoryTitle = function setStoryTitle(storyTitle) {
   this.title = storyTitle;
 };
 
-StoryMap.prototype.setCenter = function(center) {
+StoryMap.prototype.setCenter = function setCenter(center) {
   this.center = center;
 };
 
-StoryMap.prototype.setZoom = function(zoom) {
+StoryMap.prototype.setZoom = function setZoom(zoom) {
   this.zoom = zoom;
 };
 
-StoryMap.prototype.setMode = function(playbackMode) {
+StoryMap.prototype.setMode = function setMode(playbackMode) {
   this.mode = playbackMode;
 };
 
-StoryMap.prototype.setStoryAbstract = function(storyAbstract) {
+StoryMap.prototype.setStoryAbstract = function setStoryAbstract(storyAbstract) {
   this.abstract = storyAbstract;
 };
 
-StoryMap.prototype.getStoryTitle = function() {
+StoryMap.prototype.getStoryTitle = function getStoryTitle() {
   return this.title;
 };
 
-StoryMap.prototype.getStoryAbstract = function() {
+StoryMap.prototype.getStoryAbstract = function getStoryAbstract() {
   return this.abstract;
 };
 
-StoryMap.prototype.setBaseLayer = function(baseLayer) {
+StoryMap.prototype.setBaseLayer = function setBaseLayer(baseLayer) {
   this.set("baselayer", baseLayer);
-  this.map_.getLayers().forEach(function(lyr) {
+  this.map_.getLayers().forEach(function layerForeach(lyr) {
     if (lyr.get("group") === "background") {
       this.map_.removeLayer(lyr);
     }
@@ -232,7 +282,7 @@ StoryMap.prototype.setBaseLayer = function(baseLayer) {
   this.map_.getLayers().insertAt(0, this.get("baselayer"));
 };
 
-StoryMap.prototype.addStoryLayer = function(storyLayer, idx) {
+StoryMap.prototype.addStoryLayer = function addStoryLayer(storyLayer, idx) {
   storyLayer.storyMap_ = this;
   if (idx !== undefined) {
     this.storyLayers_.insertAt(idx, storyLayer);
@@ -254,27 +304,27 @@ StoryMap.prototype.addStoryLayer = function(storyLayer, idx) {
   this.map_.getLayers().insertAt(idx, storyLayer.getLayer());
 };
 
-StoryMap.prototype.getStoryLayers = function() {
+StoryMap.prototype.getStoryLayers = function getStoryLayers() {
   return this.storyLayers_;
 };
 
-StoryMap.prototype.getMap = function() {
+StoryMap.prototype.getMap = function getMap() {
   return this.map_;
 };
 
-StoryMap.prototype.clear = function() {
+StoryMap.prototype.clear = function clear() {
   this.map_.getLayers().clear();
   this.storyLayers_.clear();
   this.addStoryPinsLayer();
 };
 
-StoryMap.prototype.animatePanAndBounce = function(center, zoom) {
+StoryMap.prototype.animatePanAndBounce = function animatePanAndBounce(center, zoom) {
   const duration = 2000;
   const start = +new Date();
 
   const view = this.map_.getView();
 
-  if (view.getCenter() != center) {
+  if (view.getCenter() !== center) {
     const pan = ol.animation.pan({
       duration: this.animationDuration_,
       source: view.getCenter(),
@@ -294,7 +344,7 @@ StoryMap.prototype.animatePanAndBounce = function(center, zoom) {
   }
 };
 
-StoryMap.prototype.animateCenterAndZoom = function(center, zoom) {
+StoryMap.prototype.animateCenterAndZoom = function animateCenterAndZoom(center, zoom) {
   const view = this.map_.getView();
   if (view.getCenter() !== center || view.getZoom() !== zoom) {
     this.map_.beforeRender(
@@ -314,7 +364,7 @@ StoryMap.prototype.animateCenterAndZoom = function(center, zoom) {
   }
 };
 
-StoryMap.prototype.setAllowPan = function(allowPan) {
+StoryMap.prototype.setAllowPan = function setAllowPan(allowPan) {
   this.map_.getInteractions().forEach((i) => {
     if (
       i instanceof ol.interaction.KeyboardPan ||
@@ -325,7 +375,7 @@ StoryMap.prototype.setAllowPan = function(allowPan) {
   });
 };
 
-StoryMap.prototype.setAllowZoom = function(allowZoom) {
+StoryMap.prototype.setAllowZoom = function setAllowZoom(allowZoom) {
   let zoomCtrl;
   this.map_.getControls().forEach((c) => {
     if (c instanceof ol.control.Zoom) {
@@ -349,7 +399,7 @@ StoryMap.prototype.setAllowZoom = function(allowZoom) {
   });
 };
 
-StoryMap.prototype.toggleStoryLayer = function(storyLayer) {
+StoryMap.prototype.toggleStoryLayer = function toggleStoryLayer(storyLayer) {
   const layer = storyLayer.getLayer();
   storyLayer.set("visibility", !layer.getVisible());
   layer.setVisible(!layer.getVisible());
@@ -364,7 +414,7 @@ function EditableStoryMap(data) {
 EditableStoryMap.prototype = Object.create(StoryMap.prototype);
 EditableStoryMap.prototype.constructor = EditableStoryMap;
 
-EditableStoryMap.prototype.getState = function() {
+EditableStoryMap.prototype.getState = function getState() {
   const config = {};
   config.map = {
     center: this.map_.getView().getCenter(),
@@ -392,133 +442,9 @@ EditableStoryMap.prototype.getState = function() {
   return config;
 };
 
-EditableStoryMap.prototype.removeStoryLayer = function(storyLayer) {
+EditableStoryMap.prototype.removeStoryLayer = function removeStoryLayer(storyLayer) {
   this.storyLayers_.remove(storyLayer);
   this.map_.removeLayer(storyLayer.getLayer());
-};
-
-function StoryLayer(data) {
-  const layerParams = data.params || {};
-  layerParams.style = data.style || defaultStyle;
-
-  if (data.times && isRangeLike(data.times)) {
-    data.times = new Interval(data.times);
-  }
-  ol.Object.call(this, data);
-  let layer;
-  if (this.get("type") === "VECTOR") {
-    const vectorSource = new ol.source.Vector({});
-
-    if (data.cluster) {
-      const clusterSource = new ol.source.Cluster({
-        distance: 20,
-        source: vectorSource
-      });
-      layerParams.source = clusterSource;
-    } else {
-      layerParams.source = vectorSource;
-    }
-
-    layer = new ol.layer.Vector(layerParams);
-
-    if (data.animate) {
-      window.setInterval(() => {
-        vectorSource.dispatchEvent("change");
-      }, 1000 / 75);
-    }
-  } else if (this.get("type") === "HEATMAP") {
-    layer = new ol.layer.Heatmap({
-      radius: data.style.radius,
-      opacity: data.style.opacity,
-      source: new ol.source.Vector()
-    });
-  } else if (this.get("type") === "WMS") {
-    const config = {
-      useOldAsInterimTiles: true
-    };
-    if (this.get("singleTile") === true) {
-      layer = new ol.layer.Image(config);
-    } else {
-      layer = new ol.layer.Tile(config);
-    }
-  } else {
-    layer = data.layer;
-  }
-  this.params = layerParams;
-  this.layer_ = layer;
-}
-
-StoryLayer.prototype = Object.create(ol.Object.prototype);
-StoryLayer.prototype.constructor = StoryLayer;
-
-StoryLayer.prototype.getStoryMap = function() {
-  return this.storyMap_;
-};
-
-StoryLayer.prototype.setWMSSource = function() {
-  const layer = this.getLayer();
-  const name = this.get("name");
-  const times = this.get("times");
-  const singleTile = this.get("singleTile");
-  const prms = {
-    LAYERS: name,
-    VERSION: "1.1.0",
-    TILED: true
-  };
-  const params = $.extend(this.get("params"), prms) || prms;
-  if (times) {
-    params.TIME = new Date(times.start || times[0]).toISOString();
-  }
-  if (singleTile) {
-    layer.setSource(
-      new ol.source.ImageWMS({
-        params,
-        url: this.get("url"),
-        serverType: "geoserver"
-      })
-    );
-  } else {
-    let tileGrid,
-      resolutions = this.get("resolutions"),
-      bbox = this.get("bbox");
-    if (resolutions && bbox) {
-      tileGrid = new ol.tilegrid.TileGrid({
-        extent: bbox,
-        resolutions
-      });
-    }
-    // @todo use urls for subdomain loading
-    layer.setSource(
-      new ol.source.TileWMS({
-        url: this.get("url"),
-        params,
-        tileGrid,
-        serverType: "geoserver"
-      })
-    );
-  }
-};
-
-StoryLayer.prototype.getState = function() {
-  const state = this.getProperties();
-  delete state.features;
-  return state;
-};
-
-StoryLayer.prototype.getLayer = function() {
-  return this.layer_;
-};
-
-StoryLayer.prototype.setLayer = function(layer) {
-  if (this.layer_ && this.storyMap_) {
-    const map = this.storyMap_.map_;
-    const idx = map
-      .getLayers()
-      .getArray()
-      .indexOf(this.layer_);
-    map.getLayers().setAt(idx, layer);
-  }
-  this.layer_ = layer;
 };
 
 function EditableStoryLayer(data) {
@@ -530,7 +456,7 @@ EditableStoryLayer.prototype.constructor = EditableStoryLayer;
 
 const stAnnotateLayer = ($rootScope) => ({
   loadCapabilities(storyLayer, map) {
-    let request = "GetCapabilities",
+    const request = "GetCapabilities",
       service = "WMS";
     // always use the virtual service for GetCapabilities
     let url = storyLayer.get("url");
@@ -552,8 +478,7 @@ const stAnnotateLayer = ($rootScope) => ({
     return fetch(`${url}?REQUEST=${request}&SERVICE=${service}&VERSION=1.3.0&TILED=true`)
       .then(rawResponse => {
         if (!rawResponse.ok) {
-          console.error(rawResponse);
-          return;
+          return null;
         }
         return rawResponse.text().then(response => {
           const parser = new ol.format.WMSCapabilities();
@@ -583,12 +508,11 @@ const stAnnotateLayer = ($rootScope) => ({
         });
       })
       .catch(response => {
-        console.error(url, "failed to load", response);
       });
   },
   describeFeatureType(storyLayer) {
     const me = this;
-    let request = "DescribeFeatureType",
+    const request = "DescribeFeatureType",
       service = "WFS";
     const id = storyLayer.get("id");
     $rootScope.$broadcast("layer-status", {
@@ -602,8 +526,7 @@ const stAnnotateLayer = ($rootScope) => ({
     return fetch(url)
       .then(rawResponse => {
         if (!rawResponse.ok) {
-          console.error(rawResponse);
-          return;
+          return null;
         }
         return rawResponse.json().then(response => {
           const parser = WFSDescribeFeatureType();
@@ -629,14 +552,12 @@ const stAnnotateLayer = ($rootScope) => ({
         });
       })
       .catch(response => {
-        console.error(storyLayer.get("url").replace("http:", ""), response);
       });
   },
   getTimeAttribute(storyLayer) {
     return fetch(storyLayer.get("timeEndpoint")).then(rawResponse => {
       if (!rawResponse.ok) {
-        console.error(rawResponse);
-        return;
+        return null;
       }
       return rawResponse.json().then(response => {
         storyLayer.set("timeAttribute", response.attribute);
@@ -645,7 +566,6 @@ const stAnnotateLayer = ($rootScope) => ({
         }
       });
     }).catch(response  => {
-      console.error(response);
     });
   },
   getStyleName(storyLayer) {
@@ -658,8 +578,7 @@ const stAnnotateLayer = ($rootScope) => ({
       )
         .then(rawResponse => {
           if (!rawResponse.ok) {
-            console.error(rawResponse);
-            return;
+            return null;
           }
           return rawResponse.json().then(response => {
             storyLayer.set(
@@ -668,7 +587,7 @@ const stAnnotateLayer = ($rootScope) => ({
             );
           });
         })
-        .catch(response =>{console.error(response);});
+        .catch(response =>{});
     }
     return Promise.resolve("");
 
@@ -702,8 +621,7 @@ const stAnnotateLayer = ($rootScope) => ({
     return fetch(wfsUrl)
       .then(rawResponse => {
         if (!rawResponse.ok) {
-          console.error(rawResponse);
-          return;
+          return null;
         }
         rawResponse.json().then((response) => {
           const layer = storyLayer.getLayer();
@@ -736,9 +654,9 @@ const stAnnotateLayer = ($rootScope) => ({
             status: "done"
           });
         });
+        return true;
       })
       .catch(response => {
-        console.error(response);
       });
   }
 });
@@ -812,7 +730,7 @@ const stBaseLayerBuilder = () => ({
         "//c.tiles.mapbox.com/v1/mapbox.",
         "//d.tiles.mapbox.com/v1/mapbox."
       ];
-      const tileUrlFunction = function(tileCoord, pixelRatio, projection) {
+      const tileUrlFunction = function tileUrl(tileCoord) {
         const zxy = tileCoord;
         if (zxy[1] < 0 || zxy[2] < 0) {
           return "";
@@ -880,14 +798,14 @@ const stBaseLayerBuilder = () => ({
   }
 });
 
-const stEditableLayerBuilder = (stAnnotateLayer, stBaseLayerBuilder) => ({
+const stEditableLayerBuilder = (stAnnotateLayer) => ({
   buildEditableLayer(data, map) {
     const layer = new EditableStoryLayer(data);
     const promises = [];
     // TODO add this back when we have WMS-C GetCaps
     const needsCaps = !(
       data.latlonBBOX && data.times
-    ) /* && data.bbox && data.resolutions */;
+    );
     if (needsCaps) {
       promises.push(stAnnotateLayer.loadCapabilities(layer, map));
     }
@@ -925,16 +843,14 @@ const stEditableLayerBuilder = (stAnnotateLayer, stBaseLayerBuilder) => ({
         }
         return Promise.resolve(layer);
       },
-      function() {
-        return Promise.reject(arguments);
-      }
+      (...rest) => Promise.reject(rest)
     );
   }
 });
 
 
 const stLayerBuilder = () => ({
-  buildLayer(data, map) {
+  buildLayer(data) {
     const layer = new StoryLayer(data);
     layer.setWMSSource();
     return Promise.resolve(layer);
@@ -1065,7 +981,7 @@ const stEditableStoryMapBuilder = ($rootScope, $compile, stStoryMapBaseBuilder, 
   }
 });
 
-ol.Overlay.Popup = function(opt_options) {
+ol.Overlay.Popup = function overlayPopup(opt_options) {
   const options = opt_options || {};
 
   this.panMapIfOutOfView = options.panMapIfOutOfView;
@@ -1085,7 +1001,7 @@ ol.Overlay.Popup = function(opt_options) {
 
   this.container = document.createElement("div");
   this.container.className = "ol-popup";
-  this.container.id = options.hasOwnProperty("id") ? options.id : "";
+  this.container.id = (options.id !== null && options.id !== undefined) ? options.id : "";
 
   this.closer = document.createElement("a");
   this.closer.className = "ol-popup-closer";
@@ -1108,21 +1024,21 @@ ol.Overlay.Popup = function(opt_options) {
   this.container.appendChild(this.content);
 
   ol.Overlay.call(this, {
-    id: options.hasOwnProperty("id") ? options.id : "popup",
+    id: (options.id !== undefined && options.id !== null) ? options.id : "popup",
     element: this.container,
-    positioning: options.hasOwnProperty("positioning") ? options.positioning : "top-left",
-    stopEvent: options.hasOwnProperty("stopEvent") ? options.stopEvent : true,
-    insertFirst: options.hasOwnProperty("insertFirst") ? options.insertFirst : true
+    positioning: (options.positioning !== null && options.positioning !== undefined) ? options.positioning : "top-left",
+    stopEvent: (options.stopEvent !== null && options.stopEvent !== undefined) ? options.stopEvent : true,
+    insertFirst: (options.insertFirst !== null && options.insertFirst !== undefined) ? options.insertFirst : true
   });
 };
 
 ol.inherits(ol.Overlay.Popup, ol.Overlay);
 
-ol.Overlay.Popup.prototype.getId = function() {
+ol.Overlay.Popup.prototype.getId = function getId() {
   return this.container.id;
 };
 
-ol.Overlay.Popup.prototype.show = function(coord, html) {
+ol.Overlay.Popup.prototype.show = function popupShow(coord, html) {
   this.setPosition(coord);
   if (html instanceof HTMLElement) {
     this.content.innerHTML = "";
@@ -1141,26 +1057,26 @@ ol.Overlay.Popup.prototype.show = function(coord, html) {
 /**
    * @private
    */
-ol.Overlay.Popup.prototype.panIntoView_ = function(coord) {
-  let popSize = {
+ol.Overlay.Popup.prototype.panIntoView_ = function popupPanIntoView(coord) {
+  const popSize = {
       width: this.getElement().clientWidth + 20,
       height: this.getElement().clientHeight + 20
     },
     mapSize = this.getMap().getSize();
 
-  let tailHeight = 20,
+  const tailHeight = 20,
     tailOffsetLeft = 60,
     tailOffsetRight = popSize.width - tailOffsetLeft,
     popOffset = this.getOffset(),
     popPx = this.getMap().getPixelFromCoordinate(coord);
 
-  let fromLeft = popPx[0] - tailOffsetLeft,
+  const fromLeft = popPx[0] - tailOffsetLeft,
     fromRight = mapSize[0] - (popPx[0] + tailOffsetRight);
 
-  let fromTop = popPx[1] - popSize.height + popOffset[1],
+  const fromTop = popPx[1] - popSize.height + popOffset[1],
     fromBottom = mapSize[1] - (popPx[1] + tailHeight) - popOffset[1];
 
-  let center = this.getMap()
+  const center = this.getMap()
       .getView()
       .getCenter(),
     curPx = this.getMap().getPixelFromCoordinate(center),
@@ -1197,7 +1113,7 @@ ol.Overlay.Popup.prototype.panIntoView_ = function(coord) {
 /**
    * Hide the popup.
    */
-ol.Overlay.Popup.prototype.hide = function() {
+ol.Overlay.Popup.prototype.hide = function popupHide() {
   this.container.style.display = "none";
   return this;
 };
@@ -1205,8 +1121,8 @@ ol.Overlay.Popup.prototype.hide = function() {
 /**
    * Indicates if the popup is in open state
    */
-ol.Overlay.Popup.prototype.isOpened = function() {
-  return this.container.style.display == "block";
+ol.Overlay.Popup.prototype.isOpened = function popupIsOpened() {
+  return this.container.style.display === "block";
 };
 
 

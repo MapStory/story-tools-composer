@@ -1,4 +1,3 @@
-
 export default function stLocalStorageSvc() {
   function path(mapid) {
     return `/maps/${  mapid}`;
@@ -6,17 +5,17 @@ export default function stLocalStorageSvc() {
 
   const localStorageHandler = {};
 
-  localStorageHandler.get = function(mapid) {
+  localStorageHandler.get = (mapid) => {
     let saved = localStorage.getItem(path(mapid));
     saved = (saved === null) ? {} : angular.fromJson(saved);
     return saved;
   };
 
-  localStorageHandler.set = function(mapConfig) {
+  localStorageHandler.set = (mapConfig) => {
     localStorage.setItem(path(mapConfig.id), angular.toJson(mapConfig));
   };
 
-  localStorageHandler.list = function() {
+  localStorageHandler.list = () => {
     const maps = [];
     const pattern = new RegExp("/maps/(\\d+)$");
     Object.getOwnPropertyNames(localStorage).forEach((key) => {
@@ -31,12 +30,12 @@ export default function stLocalStorageSvc() {
     return maps;
   };
 
-  localStorageHandler.nextId = function() {
+  localStorageHandler.nextId = () => {
     let lastId = 0;
     const existing = localStorageHandler.list().map((m) => m.id);
     existing.sort();
     if (existing.length) {
-      lastId = parseInt(existing[existing.length - 1]);
+      lastId = parseInt(existing[existing.length - 1], 10);
     }
     return lastId + 1;
   };

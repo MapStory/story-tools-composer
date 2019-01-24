@@ -1,11 +1,4 @@
 /* eslint no-underscore-dangle: 0 */
-/* eslint func-names: 0 */
-/* eslint no-plusplus: 0 */
-/* eslint no-console: 0 */
-/* eslint consistent-return: 0 */
-/* eslint no-throw-literal: 0 */
-/* eslint no-prototype-builtins: 0 */
-/* eslint no-restricted-syntax: 0 */
 
 let featureInfoPerLayer_ = [];
 // valid values: 'layers', 'layer', 'feature', or ''
@@ -49,16 +42,16 @@ function registerOnMapClick($rootScope, $compile) {
     let validRequestCount = 0;
     let completedRequestCount = 0;
 
-    goog.array.forEach(layers, (layer, index) => {
+    goog.array.forEach(layers, (layer) => {
       const source = layer.getLayer().getSource();
       if (goog.isDefAndNotNull(source.getGetFeatureInfoUrl)) {
-        validRequestCount++;
+        validRequestCount += 1;
       }
     });
     // This function is called each time a get feature info request returns (call is made below).
     // when the completedRequestCount == validRequestCount, we can display the popup
-    const getFeatureInfoCompleted = function() {
-      completedRequestCount++;
+    const getFeatureInfoCompleted = () => {
+      completedRequestCount += 1;
 
       if (completedRequestCount === validRequestCount) {
         if (infoPerLayer.length > 0) {
@@ -123,7 +116,7 @@ function registerOnMapClick($rootScope, $compile) {
 }
 
 export default function stFeatureInfoService() {
-  this.$get = function($rootScope, MapManager, $compile) {
+  this.$get = ($rootScope, MapManager, $compile) => {
     rootScope_ = $rootScope;
     service_ = this;
     mapService_ = MapManager.storyMap;
@@ -158,11 +151,10 @@ export default function stFeatureInfoService() {
         type = "layers";
       }
     }
-    console.log(type);
     return type;
   }
 
-  this.show = function(item, position) {
+  this.show = (item, position) => {
     // if item is not specified, return
     if (!goog.isDefAndNotNull(item)) {
       return false;
@@ -187,14 +179,12 @@ export default function stFeatureInfoService() {
       } else if (type === "layers") {
         featureInfoPerLayer_ = item;
       } else {
-        throw {
-          name: "featureInfoBox",
-          level: "High",
-          message: "Expected layers, layer, or feature.",
-          toString() {
-            return `${this.name  }: ${  this.message}`;
-          }
-        };
+        const err = new Error();
+        err.name = "featureInfoBox";
+        err.level = "High";
+        err.message = "Expected layers, layer, or feature.";
+        err.toString = () => `${err.name  }: ${ err.message}`;
+        throw err;
       }
     }
 
@@ -232,18 +222,13 @@ export default function stFeatureInfoService() {
         selectedItem_ = item;
       }
     } else {
-      throw {
-        name: "featureInfoBox",
-        level: "High",
-        message:
-            "Invalid item passed in. Expected layers, layer, or feature.",
-        toString() {
-          return `${this.name  }: ${  this.message}`;
-        }
-      };
+      const err = new Error();
+      err.name = "featureInfoBox";
+      err.level = "High";
+      err.message = "Invalid item passed in. Expected layers, layer, or feature.";
+      err.toString = () => `${err.name  }: ${ err.message}`;
+      throw err;
     }
-    const forceUpdate = true;
-
     // ---- if selected item changed
     if (selectedItem_ !== selectedItemOld) {
       // -- select the geometry if it is a feature, clear otherwise
@@ -262,31 +247,10 @@ export default function stFeatureInfoService() {
           tempProps[k] = [k, v];
         });
 
-        // ensure we only take properties that are defined in the layer schema, the selectedLayer_
-        // may be some other layer so
-        let propName = null;
-        /*  if (goog.isDefAndNotNull(selectedLayer_) && goog.isDefAndNotNull(selectedLayer_.get('metadata').schema)) {
-                     for (propName in selectedLayer_.get('metadata').schema) {
-                     if (tempProps.hasOwnProperty(propName)) {
-                     props.push(tempProps[propName]);
-                     }
-                     }
-                     } else { */
-        for (propName in tempProps) {
-          if (tempProps.hasOwnProperty(propName)) {
-            props.push(tempProps[propName]);
-          }
-        }
-        // }
+        Object.keys(tempProps).forEach((propName) => {
+          props.push(tempProps[propName]);
+        });
         selectedItemProperties_ = props;
-        console.log(
-          "---- selectedItemProperties_: ",
-          selectedItemProperties_
-        );
-
-        // -- update the selectedItemMedia_
-        // selectedItemMedia_ = service_.getSelectedItemMediaByProp(null);
-        // console.log('---- selectedItemMedia_: ', selectedItemMedia_);
       }
     }
 
@@ -297,14 +261,12 @@ export default function stFeatureInfoService() {
         .getOverlays()
         .array_[0].setPosition(position_);
     }
+    return true;
   };
 
-  this.getSelectedItemLayer = function() {
+  this.getSelectedItemLayer = () => {
     for (let i = 0; i < featureInfoPerLayer_.length; i++) {
       for (let j = 0; j < featureInfoPerLayer_[i].features.length; j++) {
-        console.log(featureInfoPerLayer_[i].features[j] === selectedItem_);
-        console.log(featureInfoPerLayer_[i].features[j]);
-        console.log(selectedItem_);
         if (featureInfoPerLayer_[i].features[j].id === selectedItem_.id) {
           return featureInfoPerLayer_[i];
         }
@@ -313,7 +275,7 @@ export default function stFeatureInfoService() {
     return null;
   };
 
-  this.showPreviousState = function() {
+  this.showPreviousState = () => {
     // Note: might want to get position and pass it in again
     this.show(this.getPreviousState().item);
   };
@@ -362,15 +324,15 @@ export default function stFeatureInfoService() {
     return "";
   };
 
-  this.getState = function() {
+  this.getState = () => {
     return state_;
   };
 
-  this.getSelectedItem = function() {
+  this.getSelectedItem = () => {
     return selectedItem_;
   };
 
-  this.getMediaUrl = function(mediaItem) {
+  this.getMediaUrl = (mediaItem) => {
     let url = mediaItem;
     // if the item doesn't start with 'http' then assume the item can be found in the fileservice and so convert it to
     // a url. This means if the item is, say, at https://mysite.com/mypic.jpg, leave it as is
@@ -438,52 +400,27 @@ export default function stFeatureInfoService() {
     return type;
   };
 
-  this.getMediaUrlThumbnail = function(mediaItem) {
-    let url = mediaItem;
-    if (goog.isDefAndNotNull(mediaItem) && typeof mediaItem === "string") {
-      const ext = mediaItem
-        .split(".")
-        .pop()
-        .split("/")[0]; // handle cases; /file.ext or /file.ext/endpoint
-      if (supportedVideoFormats_.indexOf(ext) >= 0) {
-        url = service_.getMediaUrlDefault();
-      } else {
-        url = service_.getMediaUrl(mediaItem);
-      }
-    }
-    return url;
-  };
+  // Supported video formats isn't defined anywhere, so we're just going to return the media item
+  this.getMediaUrlThumbnail = (mediaURL) => mediaURL;
 
-  this.getMediaUrlDefault = function() {
-    return "/static/maploom/assets/media-default.png";
-  };
+  this.getMediaUrlDefault = () => "/static/maploom/assets/media-default.png";
 
-  this.getMediaUrlError = function() {
-    return "/static/maploom/assets/media-error.png";
-  };
+  this.getMediaUrlError = () => "/static/maploom/assets/media-error.png";
 
-  this.getSelectedItemProperties = function() {
-    return selectedItemProperties_;
-  };
+  this.getSelectedItemProperties = () => selectedItemProperties_;
 
   // this method is intended for unit testing only
-  this.setSelectedItemProperties = function(props) {
+  this.setSelectedItemProperties = (props) => {
     selectedItemProperties_ = props;
   };
 
-  this.getSelectedLayer = function() {
-    return selectedLayer_;
-  };
+  this.getSelectedLayer = () => selectedLayer_;
 
-  this.getPosition = function() {
-    return position_;
-  };
+  this.getPosition = () => position_;
 
-  this.getEnabled = function() {
-    return enabled_;
-  };
+  this.getEnabled = () => enabled_;
 
-  this.hide = function() {
+  this.hide = () => {
     selectedItem_ = null;
     selectedItemMedia_ = null;
     selectedItemProperties_ = null;
