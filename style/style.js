@@ -1,3 +1,4 @@
+require("../node_modules/nouislider/distribute/nouislider.css");
 require("./css/index.css");
 require("../app/time/style/time.less");
 // Warning: the order of these less files does matter
