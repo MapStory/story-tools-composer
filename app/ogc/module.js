@@ -606,7 +606,6 @@ const stAnnotateLayer = ($rootScope) => ({
           return;
         }
         return rawResponse.json().then(response => {
-          //TODO: DOuble check this
           const parser = WFSDescribeFeatureType();
           if (parser) {
             const layerInfo = parser.parseResult(response);

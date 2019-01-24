@@ -1,5 +1,5 @@
 export default function WFSDescribeFeatureType() {
-  this.parseResult = function(data) {
+  function parseResult(data) {
     const element = data.featureTypes[0].properties;
     const fields = [];
     let geometryType;
@@ -36,5 +36,6 @@ export default function WFSDescribeFeatureType() {
       type: geometryType,
       attributes: fields
     };
-  };
+  }
+  return {parseResult};
 };
