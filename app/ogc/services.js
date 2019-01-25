@@ -280,7 +280,7 @@ export default function stFeatureInfoService() {
     this.show(this.getPreviousState().item);
   };
 
-  this.getPreviousState = function() {
+  this.getPreviousState = () => {
     let state = null;
     let item = null;
 
@@ -298,14 +298,11 @@ export default function stFeatureInfoService() {
           state = "layers";
         }
       } else {
-        throw {
-          name: "featureInfoBox",
-          level: "High",
-          message: "Could not find feature!",
-          toString() {
-            return `${this.name  }: ${  this.message}`;
-          }
-        };
+        const err = new Error();
+        err.name = "featureInfoBox";
+        err.level = "High";
+        err.message = "Could not find feature!";
+        throw err;
       }
     } else if (state_ === "layer") {
       if (featureInfoPerLayer_.length > 1) {
@@ -324,13 +321,9 @@ export default function stFeatureInfoService() {
     return "";
   };
 
-  this.getState = () => {
-    return state_;
-  };
+  this.getState = () => state_;
 
-  this.getSelectedItem = () => {
-    return selectedItem_;
-  };
+  this.getSelectedItem = () => selectedItem_;
 
   this.getMediaUrl = (mediaItem) => {
     let url = mediaItem;
@@ -345,12 +338,10 @@ export default function stFeatureInfoService() {
     return url;
   };
 
-  this.getSelectedItemMedia = function() {
-    return selectedItemMedia_;
-  };
+  this.getSelectedItemMedia = () => selectedItemMedia_;
 
   // Warning, returns new array objects, not to be 'watched' / bound. use getSelectedItemMedia instead.
-  this.getSelectedItemMediaByProp = function(propName) {
+  this.getSelectedItemMediaByProp = (propName) => {
     let media = null;
 
     if (
@@ -377,7 +368,7 @@ export default function stFeatureInfoService() {
     return media;
   };
 
-  this.isMediaPropertyName = function(name) {
+  this.isMediaPropertyName = (name) => {
     const lower = name.toLowerCase();
     return (
       lower.indexOf("fotos") === 0 ||
@@ -387,7 +378,7 @@ export default function stFeatureInfoService() {
     );
   };
 
-  this.getMediaTypeFromPropertyName = function(name) {
+  this.getMediaTypeFromPropertyName = (name) => {
     const lower = name.toLowerCase();
     let type = null;
     if (lower.indexOf("fotos") === 0 || lower.indexOf("photos") === 0) {

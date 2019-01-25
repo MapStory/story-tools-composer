@@ -1,25 +1,16 @@
 /* eslint no-underscore-dangle: 0 */
-/* eslint func-names: 0 */
-/* eslint no-plusplus: 0 */
-/* eslint no-console: 0 */
-/* eslint consistent-return: 0 */
-/* eslint no-throw-literal: 0 */
-/* eslint no-prototype-builtins: 0 */
-/* eslint no-restricted-syntax: 0 */
 /* eslint no-shadow: 0 */
-/* eslint prefer-const: 0 */
 /* eslint camelcase: 0 */
-/* eslint prefer-rest-params: 0 */
-/* eslint no-use-before-define: 0 */
-/* eslint no-unused-vars: 0 */
 
 import {createRange} from "../time/core/utils";
 import pins from "../time/core/pins";
 
 
 let service_ = null;
+let http_ = null;
 let mediaHandlers_ = null;
 let noembedProviders_ = null;
+let sce_ = null;
 
 export function configuration($sceDelegateProvider) {
   $sceDelegateProvider.resourceUrlWhitelist([
@@ -38,11 +29,47 @@ export function configuration($sceDelegateProvider) {
   ]);
 }
 
+
+
+// Handler callbacks
+function getNOEmbedRequestUrl(url, params) {
+  let api_url = `https://noembed.com/embed?url=${  url}`,
+    qs = "";
+
+  Object.keys(params).forEach((i) => {
+    if (params[i] !== null) {
+      qs += `&${  encodeURIComponent(i)  }=${  params[i]}`;
+    }
+  });
+
+  api_url += qs;
+
+  return api_url;
+}
+
+function noembed_handler(url, embed_params) {
+
+  const request_url = getNOEmbedRequestUrl(url, embed_params);
+
+  return http_.jsonp(sce_.trustAsResourceUrl(request_url), {
+    jsonCallbackParam: "cb",
+    headers: {
+      "Content-Type": "application/json"
+    }
+  }).then(
+    /* success */
+    (result) => Promise.resolve(result.data.html),
+    /* failure */
+    (result) => {
+    });
+
+}
+
 export function mediaService() {
-  this.$get = function($rootScope, $http, $sce) {
-    const http_ = $http;
+  this.$get = function get($rootScope, $http, $sce) {
+    http_ = $http;
     service_ = this;
-    const sce_ = $sce;
+    sce_ = $sce;
 
     http_.jsonp($sce.trustAsResourceUrl("https://noembed.com/providers"), {
       jsonCallbackParam: "cb",
@@ -58,7 +85,26 @@ export function mediaService() {
     return service_;
   };
 
-  this.isNOEmbedProvided = function(url) {
+  function embed_imgur(url, embed_params) {
+    const regex = /(https?:\/\/(\w+\.)?imgur\.com)/ig;
+
+    const matches = url.match(regex);
+
+    let embed = "";
+    if (matches.length > 1) {
+      // dealing with a basic image link from something like i.imgur.blah.png
+      embed = `<iframe src="${  url  }" width="${  embed_params.maxwidth  }" height="${  embed_params.maxheight  }"></iframe>`;
+    } else {
+      // dealing with link to post or album
+      const id_regex = /https?:\/\/imgur\.com\/(?:\w+)\/?(.*?)(?:[#/].*|$)/i;
+      embed = url.replace(id_regex,
+        '<blockquote class="imgur-embed-pub" lang="en" data-id="a/$1"></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>');
+    }
+
+    return Promise.resolve(embed);
+  }
+
+  this.isNOEmbedProvided = (url) => {
     for (let iProvider = 0; iProvider < noembedProviders_.length; iProvider += 1) {
       const provider = noembedProviders_[iProvider];
       for (let iUrlScheme = 0; iUrlScheme < provider.patterns.length; iUrlScheme += 1) {
@@ -71,24 +117,18 @@ export function mediaService() {
     return false;
   };
 
-  this.configureDefaultHandlers = function() {
+  this.configureDefaultHandlers = () => [
+    {name: "imgur", regex: /(https?:\/\/(\w+\.)?imgur\.com)/i, callback: embed_imgur}
+  ];
 
-    const defaultHandlers = [
-      // {name: 'youtube', regex: /https?:\/\/(?:[0-9A-Z-]+\.)?(?:youtu\.be\/|youtube(?:-nocookie)?\.com\S*?[^\w\s-])/i, callback: embed_youtube},
-      {name: "imgur", regex: /(https?:\/\/(\w+\.)?imgur\.com)/i, callback: embed_imgur}
-    ];
-
-    return defaultHandlers;
-  };
-
-  this.isUrl = function(str) {
+  this.isUrl = (str) => {
     if (!/^(f|ht)tps?:\/\//i.test(str)) {
       return false;
     }
     return true;
   };
 
-  this.getEmbedContent = function(url, embed_params) {
+  this.getEmbedContent = (url, embed_params) => {
 
     const unsafeReturn = `<a href="${  url  }"> Unable to Embed Content </a>`;
 
@@ -109,61 +149,6 @@ export function mediaService() {
     return unsafeReturn;
   };
 
-  // Handler callbacks
-  function getNOEmbedRequestUrl(url, params) {
-    let api_url = `https://noembed.com/embed?url=${  url}`,
-      qs = "",
-      i;
-
-    for (i in params) {
-      if (params[i] !== null) {
-        qs += `&${  encodeURIComponent(i)  }=${  params[i]}`;
-      }
-    }
-
-    api_url += qs;
-
-    return api_url;
-  }
-
-  function noembed_handler(url, embed_params) {
-
-    const request_url = getNOEmbedRequestUrl(url, embed_params);
-
-    return http_.jsonp(sce_.trustAsResourceUrl(request_url), {
-      jsonCallbackParam: "cb",
-      headers: {
-        "Content-Type": "application/json"
-      }
-    }).then(
-      /* success */
-      (result) => Promise.resolve(result.data.html),
-      /* failure */
-      (result) => {
-        console.log("error", result);
-      });
-
-  }
-
-  function embed_imgur(url, embed_params) {
-    console.log("EMBEDDING IMGURE");
-    const regex = /(https?:\/\/(\w+\.)?imgur\.com)/ig;
-
-    const matches = url.match(regex);
-
-    let embed = "";
-    if (matches.length > 1) {
-      // dealing with a basic image link from something like i.imgur.blah.png
-      embed = `<iframe src="${  url  }" width="${  embed_params.maxwidth  }" height="${  embed_params.maxheight  }"></iframe>`;
-    } else {
-      // dealing with link to post or album
-      const id_regex = /https?:\/\/imgur\.com\/(?:\w+)\/?(.*?)(?:[#\/].*|$)/i;
-      embed = url.replace(id_regex,
-        '<blockquote class="imgur-embed-pub" lang="en" data-id="a/$1"></blockquote><script async src="//s.imgur.com/min/embed.js" charset="utf-8"></script>');
-    }
-
-    return Promise.resolve(embed);
-  }
 }
 
 
@@ -175,7 +160,7 @@ function StoryPinLayerManager($rootScope) {
   this.map = null;
   rootScope_ = $rootScope;
 }
-StoryPinLayerManager.prototype.autoDisplayPins = function (range) {
+StoryPinLayerManager.prototype.autoDisplayPins = function autoDisplayPins(range) {
   const pinsToCheck = this.storyPins.filter((pin) => pin.get("auto_show"));
 
   for (let iPin = 0; iPin < pinsToCheck.length; iPin += 1) {
@@ -188,23 +173,23 @@ StoryPinLayerManager.prototype.autoDisplayPins = function (range) {
     }
   }
 };
-StoryPinLayerManager.prototype.pinsChanged = function(pins, action) {
+StoryPinLayerManager.prototype.pinsChanged = function pinsChanged(pins, action) {
   let i;
-  if (action == "delete") {
+  if (action === "delete") {
     for (i = 0; i < pins.length; i++) {
       const pin = pins[i];
       for (let j = 0, jj = this.storyPins.length; j < jj; j++) {
-        if (this.storyPins[j].id == pin.id) {
+        if (this.storyPins[j].id === pin.id) {
           this.storyPins.splice(j, 1);
           break;
         }
       }
     }
-  } else if (action == "add") {
+  } else if (action === "add") {
     for (i = 0; i < pins.length; i++) {
       this.storyPins.push(pins[i]);
     }
-  } else if (action == "change") {
+  } else if (action === "change") {
     // provided edits could be used to optimize below
   } else {
     throw new Error(`action? :${  action}`);
@@ -221,13 +206,13 @@ StoryPinLayerManager.prototype.pinsChanged = function(pins, action) {
   this.map.storyPinsLayer.set("features", this.storyPins);
 };
 
-StoryPinLayerManager.prototype.clear = function(){
+StoryPinLayerManager.prototype.clear = function clear(){
   this.storyPins = [];
   this.map.storyPinsLayer.set("times", []);
   this.map.storyPinsLayer.set("features", this.storyPins);
 };
 
-StoryPinLayerManager.prototype.loadFromGeoJSON = function(geojson, projection, overwrite) {
+StoryPinLayerManager.prototype.loadFromGeoJSON = function loadFromGeoJSON(geojson, projection, overwrite) {
 
   if (overwrite){
     this.storyPins = [];
@@ -289,7 +274,8 @@ export function stAnnotationsStore(StoryPinLayerManager) {
       const clones = [];
       annotations.forEach((a) => {
         if (typeof a.id === "undefined") {
-          a.id = ++maxId;
+          maxId += 1;
+          a.id = maxId;
         }
         const clone = a.clone();
         if (a.get("start_time") !== undefined) {
