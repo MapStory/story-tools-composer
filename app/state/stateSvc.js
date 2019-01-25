@@ -405,6 +405,7 @@ function stateSvc(configSvc) {
                 svc.updateLocationUsingStoryId(data.storyID)
               );
             }
+            svc.config.about.slug = data.about.slug;
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];
             const timestamp = headerSvc.updateSaveStatus("saved");
