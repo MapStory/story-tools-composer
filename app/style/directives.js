@@ -1,3 +1,19 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+
+const classPoint = require("./templates/types/class-point.html"),
+  classPolygon = require("./templates/types/class-polygon.html"),
+  graduatedPoint = require("./templates/types/graduated-point.html"),
+  heatmap = require("./templates/types/heatmap.html"),
+  simpleLine = require("./templates/types/simple-line.html"),
+  simplePoint = require("./templates/types/simple-point.html"),
+  simplePolygon = require("./templates/types/simple-polygon.html"),
+  uniqueLine = require("./templates/types/unique-line.html"),
+  uniquePoint = require("./templates/types/unique-point.html"),
+  uniquePolygon = require("./templates/types/unique-polygon.html");
+
+
 export function attributeCombo($log) {
   return {
     restrict: "E",
@@ -49,7 +65,7 @@ export function attributeCombo($log) {
       }
       // @todo is watch actually needed here (possibly the case if reusing the editor)
       scope.$watch("layer", (neu, old) => {
-        if (neu != old) {
+        if (neu !== old) {
           readAttributes();
         }
       });
@@ -58,7 +74,7 @@ export function attributeCombo($log) {
       scope.property = attrs.property || "attribute";
       // if not provided, the default behavior is to change the model
       if (!scope.onChange) {
-        scope.onChange = function(property, val) {
+        scope.onChange = (property, val) => {
           scope.model[property] = val;
         };
       }
@@ -131,7 +147,7 @@ export function graphicEditor( stStyleChoices, ol3MarkRenderer, iconCommons, ico
       scope.$watch("model.graphicColorType", () => {
         current();
       });
-      const clicked = function() {
+      const clicked = function clicked() {
         const el = angular.element(this);
         if (el.attr("shape")) {
           scope.symbol.shape = el.attr("shape");
@@ -175,12 +191,12 @@ export function graphicEditor( stStyleChoices, ol3MarkRenderer, iconCommons, ico
         });
       }
       // only in scope for triggering in tests
-      scope._updateRecent = function() {
+      scope._updateRecent = () => {
         updateRecent();
         current();
       };
       scope._updateRecent();
-      scope.showIconCommons = function() {
+      scope.showIconCommons = () => {
         iconCommonsSearch.search().then((selected) => {
           // since ol3 style creation is sync, preload icon before setting
           stSvgIcon.getImageData(selected.href).then(() => {
@@ -227,7 +243,7 @@ export function colorRamp() {
         const gradient = ctx.createLinearGradient(0, 0, attrs.width, 0);
         Object.getOwnPropertyNames(scope.ramp).forEach((stop) => {
           stop = parseFloat(stop);
-          if (!isNaN(stop)) {
+          if (!Number.isNaN(stop)) {
             gradient.addColorStop(stop, scope.ramp[stop]);
           }
         });
@@ -274,29 +290,25 @@ export function noClose() {
 }
 
 const typeURLS = {
-  "class-point": require("raw-loader!./templates/types/class-point.html"),
-  "class-polygon": require("raw-loader!./templates/types/class-polygon.html"),
-  "graduated-point": require("raw-loader!./templates/types/graduated-point.html"),
-  "heatmap": require("raw-loader!./templates/types/heatmap.html"),
-  "simple-line": require("raw-loader!./templates/types/simple-line.html"),
-  "simple-point": require("raw-loader!./templates/types/simple-point.html"),
-  "simple-polygon": require("raw-loader!./templates/types/simple-polygon.html"),
-  "unique-line": require("raw-loader!./templates/types/unique-line.html"),
-  "unique-point": require("raw-loader!./templates/types/unique-point.html"),
-  "unique-polygon": require("raw-loader!./templates/types/unique-polygon.html"),
+  "class-point": classPoint,
+  "class-polygon": classPolygon,
+  "graduated-point": graduatedPoint,
+  "heatmap": heatmap,
+  "simple-line": simpleLine,
+  "simple-point": simplePoint,
+  "simple-polygon": simplePolygon,
+  "unique-line": uniqueLine,
+  "unique-point": uniquePoint,
+  "unique-polygon": uniquePolygon,
 };
 
-export function styleTypeEditor($compile, $templateCache) {
+export function styleTypeEditor($compile) {
   return {
     restrict: "E",
-    link(scope, element, attrs) {
-      console.log("styletype");
+    link(scope, element) {
       scope.$watch("currentEditor", () => {
         const currentEditor = scope.currentEditor;
         if (scope.currentEditor) {
-          // const templateUrl =
-          //     `./app/style/templates/types/${  currentEditor.name.replace(" ", "-")  }.html`;
-          // element.html($templateCache.get(templateUrl));
           const templateUrl = currentEditor.name.replace(" ", "-");
           element.html(typeURLS[templateUrl]);
           $compile(element.contents())(scope);
@@ -312,8 +324,8 @@ export function rulesEditor() {
   return {
     restrict: "E",
     templateUrl: "./app/style/templates/rules-editor.html",
-    link(scope, element, attrs) {
-      scope.deleteRule = function(rule) {
+    link(scope) {
+      scope.deleteRule = (rule) => {
         scope.activeStyle.rules = scope.activeStyle.rules.filter((r) => r !== rule);
       };
     }
@@ -324,7 +336,7 @@ export function rulesEditor() {
 function editorDirective(module, name, templateUrl, property, linker) {
   module.directive(name, [
     "stStyleChoices",
-    function(styleChoices) {
+    function styleChoices(styleChoices) {
       return {
         restrict: "E",
         scope: {
@@ -367,12 +379,8 @@ export function loadOtherDirectives(module) {
     ["showGraphic", "showRotation", "hideColor", "hideSize"].forEach((opt) => {
       scope[opt] = attrs[opt];
     });
-    scope.getSymbolizerText = function(model) {
-      return model.shape || model.graphic;
-    };
-    scope.getSymbolizerImage = function(name) {
-      return "";
-    };
+    scope.getSymbolizerText = (model) => model.shape || model.graphic;
+    scope.getSymbolizerImage = () => "";
   });
   editorDirective(module,"strokeEditor", "stroke-editor.html", "stroke");
   editorDirective(module,"numberEditor", "number-editor.html", null, (
@@ -412,7 +420,7 @@ export function loadOtherDirectives(module) {
       underline: scope.model.underlineText,
       halo: scope.model.halo
     };
-    scope.styleModelChange = function() {
+    scope.styleModelChange = () => {
       scope.model.fontWeight = scope.styleModel.bold ? "bold" : "normal";
       scope.model.fontStyle = scope.styleModel.italic ? "italic" : "normal";
       scope.model.underlineText = scope.styleModel.underline;

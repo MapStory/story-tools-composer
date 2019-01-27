@@ -18,6 +18,11 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /\.html$/,
+        use: "raw-loader",
+        include: Path.join(__dirname, "app/style/templates/types")
+      },
+      {
         test: /\.spec\.js$/,
         exclude: /(node_modules)/,
         loader: "babel-loader",
