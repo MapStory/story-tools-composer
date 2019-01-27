@@ -1,3 +1,8 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+import {Jsonix, mappings} from "../utils/owsjs"
+
 export default function WPSClassify() {
 
   this.parseResult = function(xml) {
@@ -30,16 +35,16 @@ export default function WPSClassify() {
   };
 
   this.createContext = function() {
-    this.context = new owsjs.Jsonix.Context([
-      owsjs.mappings.XLink_1_0,
-      owsjs.mappings.OWS_1_1_0,
-      owsjs.mappings.Filter_1_1_0,
-      owsjs.mappings.OWS_1_0_0,
-      owsjs.mappings.SMIL_2_0,
-      owsjs.mappings.SMIL_2_0_Language,
-      owsjs.mappings.GML_3_1_1,
-      owsjs.mappings.WFS_1_1_0,
-      owsjs.mappings.WPS_1_0_0
+    this.context = new Jsonix.Context([
+      mappings.XLink_1_0,
+      mappings.OWS_1_1_0,
+      mappings.Filter_1_1_0,
+      mappings.OWS_1_0_0,
+      mappings.SMIL_2_0,
+      mappings.SMIL_2_0_Language,
+      mappings.GML_3_1_1,
+      mappings.WFS_1_1_0,
+      mappings.WPS_1_0_0
     ], {
       namespacePrefixes: {
         "http://www.w3.org/1999/xlink": "xlink",

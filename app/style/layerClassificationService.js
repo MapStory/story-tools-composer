@@ -1,3 +1,7 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+
 import WPSClassify from "../style/WPSClassify";
 
 export default function stLayerClassificationService($uibModal, $sce) {
@@ -18,20 +22,21 @@ export default function stLayerClassificationService($uibModal, $sce) {
   }
   const csrftoken = getCookie("csrftoken");
   return {
-    classify(layer, attribute, method, numClasses) {
+    classify: function classify(layer, attribute, method, numClasses) {
+
       if (!this.cache) {
         this.cache = {};
       }
       if (attribute === null || method === null) {
-        return Promise.reject("Not enough info to perform WPS request.");
+        return new Error("Not enough info to perform WPS request.");
       }
       const key =
-          `${layer.get("id")  }|${  attribute  }|${  method  }|${  numClasses}`;
+        `${layer.get("id")  }|${  attribute  }|${  method  }|${  numClasses}`;
       if (this.cache[key]) {
         return Promise.resolve(this.cache[key]);
       }
-      let xml,
-        service = this;
+      let xml;
+      const service = this;
       const wps = new WPSClassify();
       const url = `${layer.get("path")  }wps`;
       if (method === "unique") {
@@ -68,9 +73,8 @@ export default function stLayerClassificationService($uibModal, $sce) {
           service.cache[key] = results;
           return results;
         }), err => {
-          console.error(err);
         });
-      } 
+      }
       let wpsMethod;
       if (method === "Natural Breaks") {
         wpsMethod = "NATURAL_BREAKS";
@@ -106,26 +110,23 @@ export default function stLayerClassificationService($uibModal, $sce) {
           if (response.success === true) {
             service.cache[key] = response.rules;
             return response.rules;
-          } 
+          }
           $uibModal.open({
             templateUrl: "/lib/templates/core/error-dialog.html",
             controller($scope) {
               $scope.title = "Error";
               $scope.msg = $sce.trustAsHtml(
                 `${"An error occurred when communicating with the classification " +
-                        "service: <br/>"}${ 
+                "service: <br/>"}${
                   response.msg}`
               );
             }
           });
-          console.warn(response.msg);
           return [];
-                
+
         }), err => {
-          console.error(err);
         });
       }
-        
     }
   };
 }
