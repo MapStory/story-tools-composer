@@ -1,4 +1,6 @@
-
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 
 export function stStyleChoices() {
   return {
@@ -63,12 +65,12 @@ function RecentChoices(name, max) {
   this.recent = saved ? JSON.parse(saved) : [];
 }
 
-RecentChoices.prototype.clear = function() {
+RecentChoices.prototype.clear = function clear() {
   this.recent = [];
   localStorage.setItem(this._key, JSON.stringify(this.recent));
 };
 
-RecentChoices.prototype.add = function(choice) {
+RecentChoices.prototype.add = function add(choice) {
   if (this.recent.indexOf(choice) === -1) {
     this.recent.push(choice);
     if (this.recent.length > this._max) {

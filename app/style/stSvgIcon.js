@@ -1,3 +1,6 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 
 export default function stSvgIcon ($cacheFactory, $log) {
   const element = angular.element(document.createElement("div"));
@@ -14,24 +17,24 @@ export default function stSvgIcon ($cacheFactory, $log) {
           opacity: 1
         };
         const existingFill = e.css("fill") || e.attr("fill") || "";
-        if (existingFill != "none" && existingFill != "rgb(255, 255, 255)" && existingFill.toLowerCase() != "#ffffff") {
+        if (existingFill !== "none" && existingFill !== "rgb(255, 255, 255)" && existingFill.toLowerCase() !== "#ffffff") {
           css.fill = fill;
         }
         const existingStroke = e.css("stroke") || e.attr("stroke");
-        if (existingStroke != "none") {
+        if (existingStroke !== "none") {
           css.stroke = stroke;
         }
         e.css(css);
       });
     });
     const root = element.find("svg");
-    let width = parseInt(root.attr("width"));
-    let height = parseInt(root.attr("height"));
+    let width = parseInt(root.attr("width"), 10);
+    let height = parseInt(root.attr("height"), 10);
     // ugh - we're totally guessing here but things go badly without:
     // on firefox: ns_error_not_available on calling canvas.drawimage
     // on chrome: very large icon (default size as it renders)
     // we might be able to set the src on an img element and figure this out...
-    if (isNaN(width) || isNaN(height)) {
+    if (Number.isNaN(Number(width)) || Number.isNaN(Number(height))) {
       root.attr("width", 64);
       root.attr("height", 64);
       width = 64;
@@ -70,21 +73,19 @@ export default function stSvgIcon ($cacheFactory, $log) {
         imageInfo.uri = svgURI;
         imageCache.put(key, imageInfo);
         return Promise.resolve(imageInfo);
-      }, () => Promise.reject("error"));
+      }, () => new Error("error"));
         
     },
     getImageData(svgURI) {
       return fetch(svgURI, {cache: "force-cache"}).then(rawResponse => {
         if (!rawResponse.ok) {
-          console.warn(`error fetching ${  svgURI}`);
-          return;
+          return undefined;
         }
         return rawResponse.text().then(response => {
           dataCache.put(svgURI, response);
           return response;
         });
       }, (err) => {
-        console.warn(`error fetching ${  svgURI}`, err);
       });
     }
   };

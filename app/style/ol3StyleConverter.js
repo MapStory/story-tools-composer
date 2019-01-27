@@ -1,5 +1,10 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+import angular from "angular";
+
 export function ol3MarkRenderer(ol3StyleConverter) {
-  return function(shapeName, size) {
+  return (shapeName, size) => {
     const black = ol3StyleConverter.getColor("#000000");
     const strokeWidth = 3; // hack to fix down-scaling for x and cross
     const opts = {color: black, width: strokeWidth};
@@ -15,7 +20,7 @@ export function ol3MarkRenderer(ol3StyleConverter) {
 export function ol3StyleConverter(stSvgIcon) {
   return {
     generateShapeConfig(style, fill, stroke) {
-      let shape = style.symbol.shape,
+      const shape = style.symbol.shape,
         // final size is actually (2 * (radius + stroke.width)) + 1
         radius = style.symbol.size / 2;
       if (shape === "circle") {
@@ -68,6 +73,7 @@ export function ol3StyleConverter(stSvgIcon) {
           angle: Math.PI / 4
         };
       }
+      return undefined;
     },
     calculateRotation(style, feature) {
       if (style.symbol && style.symbol.rotationAttribute) {
@@ -115,6 +121,7 @@ export function ol3StyleConverter(stSvgIcon) {
           text: this.getText(style, feature)
         });
       }
+      return undefined;
     },
     getColor(color, opacity) {
       let rgba = ol.color.asArray(color);
@@ -130,7 +137,7 @@ export function ol3StyleConverter(stSvgIcon) {
       const rotation = (style.symbol && style.symbol.rotationAttribute) ? feature.get(style.symbol.rotationAttribute): undefined;
       return `${text  }|${  classify  }|${  rotation}`;
     },
-    generateStyle(style, feature, resolution) {
+    generateStyle(style, feature) {
       let result, key2;
       if (!this.styleCache_) {
         this.styleCache_ = {};

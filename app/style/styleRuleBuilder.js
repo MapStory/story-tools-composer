@@ -1,3 +1,6 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 
 export default function stStyleRuleBuilder(stStyleTypes, stStyleChoices) {
   function hex(v) {
@@ -8,17 +11,17 @@ export default function stStyleRuleBuilder(stStyleTypes, stStyleChoices) {
       return [ramp[0]];
     }
     const colors = [];
-    const rampStops = Object.keys(ramp).filter((x) => x.toString().charAt(0) != "$");
+    const rampStops = Object.keys(ramp).filter((x) => x.toString().charAt(0) !== "$");
     rampStops.sort();
     const ms = rampStops.map((k) => {
       const val = ramp[k];
-      return [parseInt(`0x${  val.substr(1, 2)}`),
-        parseInt(`0x${  val.substr(3, 2)}`),
-        parseInt(`0x${  val.substr(5, 2)}`)
+      return [parseInt(val.substr(1, 2), 16),
+        parseInt(val.substr(3, 2), 16),
+        parseInt(val.substr(5, 2), 16)
       ];
     });
     const step = 1.0 / (num - 1);
-    function getStops(val) {
+    function getStops() {
       // @todo find stops
       return [rampStops[0], rampStops[1]];
     }
@@ -56,7 +59,7 @@ export default function stStyleRuleBuilder(stStyleTypes, stStyleChoices) {
           }
           break;
         default:
-          throw `invalid copySource ${  copySource}`;
+          throw new Error(`invalid copySource ${  copySource}`);
         }
         if (val !== null) {
           target[copyDest] = val;

@@ -1,3 +1,7 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+
 export function iconCommons(stSvgIcon, stRecentChoices) {
   return {
     defaults() {
@@ -89,45 +93,43 @@ export function iconCommonsController($scope, $uibModalInstance, iconCommonsSear
     collection._nextPage = response.page + 1;
     $scope.icons = collection;
   }
-  $scope.loadMore = function() {
+  $scope.loadMore = () => {
     iconCommonsSearch.getMore($scope.icons).then(data => {
       handleCollections($scope.icons, data);
     });
   };
-  $scope.close = function() {
+  $scope.close = () => {
     stRecentChoices.icons.add($scope.selectedIcon.href);
     $uibModalInstance.close($scope.selectedIcon);
   };
-  $scope.dismiss = function() {
+  $scope.dismiss = () => {
     $uibModalInstance.dismiss();
   };
-  $scope.tagSelect = function(tag) {
+  $scope.tagSelect = (tag) => {
     tagCollection._icons = [];
     iconCommonsSearch.getByTag(tag).then(data => {
       handleCollections(tagCollection, data);
     });
   };
-  $scope.viewCollections = function() {
+  $scope.viewCollections = () => {
     $scope.icons = collection;
   };
-  $scope.viewTags = function() {
+  $scope.viewTags = () => {
     $scope.icons = tagCollection;
   };
-  $scope.collectionSelect = function(collection) {
+  $scope.collectionSelect = (collection) => {
     collection._icons = [];
     iconCommonsSearch.getCollectionIcons(collection).then(data => {
       handleCollections(collection, data);
     });
   };
-  $scope.iconSelected = function(icon, done) {
+  $scope.iconSelected = (icon, done) => {
     $scope.selectedIcon = icon;
     if (done) {
       $scope.close();
     }
   };
-  $scope.selectedClass = function(icon) {
-    return icon === $scope.selectedIcon ? "active" : null;
-  };
+  $scope.selectedClass = (icon) => icon === $scope.selectedIcon ? "active" : null;
   $scope.getTags = iconCommonsSearch.getTags;
   iconCommonsSearch.getCollections().then(response => {
     $scope.collections = response.collections;

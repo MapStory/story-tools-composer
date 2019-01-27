@@ -23,7 +23,6 @@ export default function stLayerClassificationService($uibModal, $sce) {
   const csrftoken = getCookie("csrftoken");
   return {
     classify: function classify(layer, attribute, method, numClasses) {
-
       if (!this.cache) {
         this.cache = {};
       }
@@ -127,6 +126,9 @@ export default function stLayerClassificationService($uibModal, $sce) {
         }), err => {
         });
       }
+      // TODO: We should fix how we handle creating rules, right now this just throws
+      // an error whenever there's an invalid rule input
+      return undefined;
     }
   };
 }

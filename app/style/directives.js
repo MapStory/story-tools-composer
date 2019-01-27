@@ -243,7 +243,7 @@ export function colorRamp() {
         const gradient = ctx.createLinearGradient(0, 0, attrs.width, 0);
         Object.getOwnPropertyNames(scope.ramp).forEach((stop) => {
           stop = parseFloat(stop);
-          if (!Number.isNaN(stop)) {
+          if (!Number.isNaN(Number(stop))) {
             gradient.addColorStop(stop, scope.ramp[stop]);
           }
         });

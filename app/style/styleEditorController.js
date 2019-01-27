@@ -1,14 +1,9 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 
 export default function styleEditorController($scope, stStyleTypes, stStyleChoices, stLayerClassificationService, stStyleRuleBuilder) {
   const styles = {};
-
-  function promptClassChange() {
-    // @todo should check for rule edits?
-    if ($scope.activeStyle.rules.length > 0) {
-      return window.confirm("delete existing rules?");
-    }
-    return true;
-  }
 
   function classify() {
     const activeStyle = $scope.activeStyle;
@@ -30,9 +25,9 @@ export default function styleEditorController($scope, stStyleTypes, stStyleChoic
     if (styleTyle.name in styles) {
       style = styles[styleTyle.name];
     } else {
-      const styleType = $scope.styleTypes.filter((t) => t.name == styleTyle.name);
+      const styleType = $scope.styleTypes.filter((t) => t.name === styleTyle.name);
       if (styleType.length === 0) {
-        throw `invalid style type: ${  styleTyle.name}`;
+        throw new Error(`invalid style type: ${  styleTyle.name}`);
       }
       style = stStyleTypes.createStyle(styleType[0]);
     }
@@ -78,22 +73,19 @@ export default function styleEditorController($scope, stStyleTypes, stStyleChoic
   });
 
   $scope.$watch("layer",(neu, old) => {
-    if (neu != old) {
+    if (neu !== old) {
       setLayer(neu);
     }
   });
 
-  $scope.changeClassifyProperty = function(prop, value) {
-    if (false && !promptClassChange()) {
-      return;
-    }
+  $scope.changeClassifyProperty = (prop, value) => {
     if (prop) {
       $scope.activeStyle.classify[prop] = value;
     }
     classify();
   };
 
-  $scope.$watch("activeStyle", (neu) => {
+  $scope.$watch("activeStyle", () => {
     if ($scope.editorForm.$valid) {
       const style = $scope.layer.get("style");
       if (style && style.readOnly === true) {

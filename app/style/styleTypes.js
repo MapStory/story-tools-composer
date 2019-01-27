@@ -1,5 +1,6 @@
-
-
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 
 const defaultSymbol = {
   size: 10,
@@ -173,9 +174,9 @@ export function stStyleTypes() {
       return angular.copy(types).filter((f) => f.prototype.geomType === storyLayer.get("geomType"));
     },
     getStyleType(typeName) {
-      const match = types.filter((t) => t.name == typeName);
+      const match = types.filter((t) => t.name === typeName);
       if (match.length >  1) {
-        throw "duplicate type names!";
+        throw new Error("duplicate type names!");
       }
       return match.length === 0 ? null : match[0];
     },

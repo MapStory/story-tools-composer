@@ -5,7 +5,7 @@ import {Jsonix, mappings} from "../utils/owsjs"
 
 export default function WPSClassify() {
 
-  this.parseResult = function(xml) {
+  this.parseResult = function parseResult(xml) {
     const doc = new DOMParser().parseFromString(xml, "application/xml");
     const exceptions = doc.getElementsByTagNameNS("http://www.opengis.net/ows/1.1", "ExceptionText");
     if (exceptions.length ===0) {
@@ -34,7 +34,7 @@ export default function WPSClassify() {
         
   };
 
-  this.createContext = function() {
+  this.createContext = function createContext() {
     this.context = new Jsonix.Context([
       mappings.XLink_1_0,
       mappings.OWS_1_1_0,
@@ -56,7 +56,7 @@ export default function WPSClassify() {
     this.marshaller = this.context.createMarshaller();
   };
 
-  this.getUniqueValues = function(data, asString) {
+  this.getUniqueValues = function getUniqueValues(data, asString) {
     if (!this.context) {
       this.createContext();
     }
@@ -78,7 +78,7 @@ export default function WPSClassify() {
         
   };
 
-  this.generateMainConfig = function(processId, mimeType, data) {
+  this.generateMainConfig = function generateMainConfig(processId, mimeType, data) {
     const rawDataOutputVal = processId.toLowerCase().indexOf("unique") > -1 ?
       "result" : "results";
     return {
@@ -133,7 +133,7 @@ export default function WPSClassify() {
     };
   };
 
-  this.classifyVector = function(data, asString) {
+  this.classifyVector = function classifyVector(data, asString) {
     if (!this.context) {
       this.createContext();
     }
