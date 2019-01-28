@@ -327,7 +327,7 @@ function stateSvc(configSvc) {
     }
   };
 
-  svc.save = () =>
+  svc.save = (isPublish) =>
     new Promise(res => {
       headerSvc.updateSaveStatus("saving");
       const cfg = new MinimalConfig(svc.config);
@@ -356,7 +356,7 @@ function stateSvc(configSvc) {
         removedChapters: cfg.removedChapters,
         removedFrames: cfg.removedFrames
       };
-      fetch(`/mapstories/save`, {
+      return fetch(`/mapstories/save`, {
         method: "POST",
         body: JSON.stringify(minimalCfg),
         headers: {
@@ -401,10 +401,13 @@ function stateSvc(configSvc) {
                 }
                 return Promise.resolve(true);
               });
-              Promise.all(promises).then(() =>
-                svc.updateLocationUsingStoryId(data.storyID)
-              );
+              if (!isPublish) {
+                Promise.all(promises).then(() =>
+                  svc.updateLocationUsingStoryId(data.storyID)
+                );
+              }
             }
+            svc.config.about.slug = data.about.slug;
             svc.config.removedChapters = [];
             svc.config.removedFrames = [];
             const timestamp = headerSvc.updateSaveStatus("saved");
@@ -432,7 +435,7 @@ function stateSvc(configSvc) {
   svc.publish = () => {
     const config = svc.getConfig();
     config.isPublished = true;
-    svc.save();
+    return svc.save(true);
   };
 
   /**
