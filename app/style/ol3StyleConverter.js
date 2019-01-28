@@ -104,7 +104,8 @@ export function ol3StyleConverter(stSvgIcon) {
           scale: style.symbol.size / Math.max(info.width, info.height),
           opacity: style.symbol.opacity
         });
-      } else if (style.symbol.shape === "circle") {
+      }
+      if (style.symbol.shape === "circle") {
         return new ol.style.Circle(config);
       } 
       return new ol.style.RegularShape(config);

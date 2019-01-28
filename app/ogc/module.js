@@ -719,7 +719,8 @@ const stBaseLayerBuilder = () => ({
         group: "background",
         source: new ol.source.OSM()
       });
-    } else if (data.type === "MapBox") {
+    }
+    if (data.type === "MapBox") {
       const layer = new ol.layer.Tile({
         state: data,
         name: data.title,
