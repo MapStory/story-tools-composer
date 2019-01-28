@@ -157,8 +157,14 @@ function composerController(
   };
 
   $scope.publishMap = () => {
-    stateSvc.publish();
-    $scope.openPublishedModal();
+    const wasPublished = stateSvc.getConfig().isPublished;
+    stateSvc.publish().then(() => {
+      let callback;
+      if (!wasPublished) {
+        callback = stateSvc.updateLocationUsingStoryId.bind(stateSvc, stateSvc.getConfig().storyID);
+      }
+      $scope.openPublishedModal(undefined, callback);
+    });
   };
 
   $scope.goHome = () => {
@@ -202,7 +208,7 @@ function composerController(
     };
   };
 
-  $scope.openPublishedModal = size => {
+  $scope.openPublishedModal = (size, callOnClose) => {
     const uibmodalInstance = $uibModal.open({
       templateUrl: "app/ui/templates/storyPublished.html",
       size,
@@ -210,6 +216,9 @@ function composerController(
     });
     $scope.close = () => {
       uibmodalInstance.dismiss("close");
+      if (callOnClose) {
+        callOnClose();
+      }
     };
   };
 }
