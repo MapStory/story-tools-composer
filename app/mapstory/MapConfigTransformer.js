@@ -6,24 +6,26 @@ function convert(layer, data) {
       group: layer.group
     };
 
-    if (source.ptype === "gxp_mapquestsource") {
+    switch (source.ptype){
+    case "gxp_mapquestsource":
       layerConfig.type = "MapQuest";
       layerConfig.layer = layer.name === "naip" ? "sat" : "osm";
       layerConfig.title = layer.title;
-      return layerConfig;
-    }
-    if (source.ptype === "gxp_mapboxsource") {
+      break;
+    case "gxp_mapboxsource":
       layerConfig.type = "MapBox";
       layerConfig.name = layer.name;
       layerConfig.title = layer.title;
-      return layerConfig;
-    }
-    if (source.ptype === "gxp_osmsource") {
+      break;
+    case "gxp_osmsource":
       layerConfig.type = "OSM";
       layerConfig.title = "OpenStreetMap";
       layerConfig.name = "mapnik";
-      return layerConfig;
+      break;
+    default:
+      break;
     }
+
     if (source.ptype === "gx_olsource" || source.ptype === "gxp_wmscsource") {
       layerConfig.type = (source.ptype === "gx_olsource") ? layer.type.replace("OpenLayers.Layer.", "") : "WMS";
       if (layerConfig.type === "OSM") {
@@ -78,8 +80,8 @@ function convert(layer, data) {
           }
         }
       }
-      return layerConfig;
     }
+    return layerConfig;
   }
   return undefined;
 }

@@ -150,6 +150,45 @@ export function ol3StyleConverter(stSvgIcon) {
       const rotation = (style.symbol && style.symbol.rotationAttribute) ? feature.get(style.symbol.rotationAttribute): undefined;
       return `${text  }|${  classify  }|${  rotation}`;
     },
+    generateStyleClassify(style, feature, stroke, ) {
+      let label, result;
+      for (let i=0, ii=style.rules.length; i<ii; ++i) {
+        const rule = style.rules[i];
+        const attrVal = feature.get(style.classify.attribute);
+        let match = false;
+        if (rule.value !== undefined) {
+          match = attrVal === rule.value;
+        } else if (rule.range) {
+          match = (attrVal >= rule.range.min && attrVal <= rule.range.max);
+        }
+        if (match) {
+          label = this.generateText(style, stroke, feature);
+          if (style.geomType === "point" && rule.style.symbol.fillColor) {
+            result = [new ol.style.Style({
+              text: label,
+              image: this.generateShape(style, new ol.style.Fill({color: rule.style.symbol.fillColor}), stroke, feature)
+            })];
+          } else if (style.geomType === "line" && rule.style.stroke.strokeColor) {
+            result = [new ol.style.Style({
+              text: label,
+              stroke: new ol.style.Stroke({
+                color: rule.style.stroke.strokeColor,
+                width: 2
+              })
+            })];
+          } else if (style.geomType === "polygon" && rule.style.symbol.fillColor) {
+            result = [new ol.style.Style({
+              text: label,
+              stroke,
+              fill: new ol.style.Fill({
+                color: rule.style.symbol.fillColor
+              })
+            })];
+          }
+        }
+      }
+      return result;
+    },
     generateStyle(style, feature) {
       let result, key2;
       if (!this.styleCache_) {
@@ -181,42 +220,7 @@ export function ol3StyleConverter(stSvgIcon) {
         });
       }
       if (style.classify && style.classify.attribute !== null) {
-        let label;
-        for (let i=0, ii=style.rules.length; i<ii; ++i) {
-          const rule = style.rules[i];
-          const attrVal = feature.get(style.classify.attribute);
-          let match = false;
-          if (rule.value !== undefined) {
-            match = attrVal === rule.value;
-          } else if (rule.range) {
-            match = (attrVal >= rule.range.min && attrVal <= rule.range.max);
-          }
-          if (match) {
-            label = this.generateText(style, stroke, feature);
-            if (style.geomType === "point" && rule.style.symbol.fillColor) {
-              result = [new ol.style.Style({
-                text: label,
-                image: this.generateShape(style, new ol.style.Fill({color: rule.style.symbol.fillColor}), stroke, feature)
-              })];
-            } else if (style.geomType === "line" && rule.style.stroke.strokeColor) {
-              result = [new ol.style.Style({
-                text: label,
-                stroke: new ol.style.Stroke({
-                  color: rule.style.stroke.strokeColor,
-                  width: 2
-                })
-              })];
-            } else if (style.geomType === "polygon" && rule.style.symbol.fillColor) {
-              result = [new ol.style.Style({
-                text: label,
-                stroke,
-                fill: new ol.style.Fill({
-                  color: rule.style.symbol.fillColor
-                })
-              })];
-            }
-          }
-        }
+        result = this.generateStyleClassify();
         if (result) {
           if (!this.styleCache_[key]) {
             this.styleCache_[key] = {};
