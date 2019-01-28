@@ -31,6 +31,7 @@
         <carousel id="feature-info-box-carousel" interval="2000">
           <slide ng-repeat="mediaItem in featureInfoService.getSelectedItemMedia() track by $index">
             <img ng-src="{{featureInfoService.getMediaUrlThumbnail(mediaItem)}}"
+                 alt="Media Thumbnail"
                  onerror="this.src='/static/maploom/assets/media-error.png'"
                  style="margin: auto" ng-click="featureInfoService.showMedia(null, $index)">
           </slide>
