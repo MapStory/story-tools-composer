@@ -336,7 +336,7 @@ export function rulesEditor() {
 function editorDirective(module, name, templateUrl, property, linker) {
   module.directive(name, [
     "stStyleChoices",
-    function styleChoices(styleChoices) {
+    function styleChoices(styleChoicesSelected) {
       return {
         restrict: "E",
         scope: {
@@ -357,7 +357,7 @@ function editorDirective(module, name, templateUrl, property, linker) {
           );
           // endbleck
           scope.model = scope.stModel[property || scope.property];
-          scope.styleChoices = styleChoices;
+          scope.styleChoices = styleChoicesSelected;
           if (linker) {
             linker(scope, element, attrs);
           }

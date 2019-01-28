@@ -2,7 +2,7 @@
 /* eslint no-shadow: 0 */
 /* eslint camelcase: 0 */
 
-import WPSClassify from "../style/WPSClassify";
+import WPSClassify from "./WPSClassify";
 
 export default function stLayerClassificationService($uibModal, $sce) {
   function getCookie(name) {

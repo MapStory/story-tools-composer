@@ -671,7 +671,8 @@ const stBaseLayerBuilder = () => ({
         group: "background",
         source: new ol.source.MapQuest({ layer: data.layer })
       });
-    } else if (data.type === "ESRI") {
+    }
+    if (data.type === "ESRI") {
       return new ol.layer.Tile({
         state: data,
         name: data.title,
@@ -690,7 +691,8 @@ const stBaseLayerBuilder = () => ({
                 "NatGeo_World_Map/MapServer/tile/{z}/{y}/{x}"
         })
       });
-    } else if (data.type === "HOT") {
+    }
+    if (data.type === "HOT") {
       return new ol.layer.Tile({
         state: data,
         name: data.title,
@@ -708,7 +710,8 @@ const stBaseLayerBuilder = () => ({
           url: "//{a-c}.tile.openstreetmap.fr/hot/{z}/{x}/{y}.png"
         })
       });
-    } else if (data.type === "OSM") {
+    }
+    if (data.type === "OSM") {
       return new ol.layer.Tile({
         state: data,
         name: data.title,
@@ -784,7 +787,8 @@ const stBaseLayerBuilder = () => ({
         })
       );
       return layer;
-    } else if (data.type === "WMS") {
+    }
+    if (data.type === "WMS") {
       return new ol.layer.Tile({
         group: "background",
         source: new ol.source.TileWMS({
@@ -794,7 +798,6 @@ const stBaseLayerBuilder = () => ({
       });
     }
     throw new Error(`no type for : ${  JSON.stringify(data)}`);
-
   }
 });
 

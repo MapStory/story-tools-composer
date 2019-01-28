@@ -29,7 +29,8 @@ export function ol3StyleConverter(stSvgIcon) {
           stroke,
           radius
         };
-      } else if (shape === "square") {
+      }
+      if (shape === "square") {
         return {
           fill,
           stroke,
@@ -37,7 +38,8 @@ export function ol3StyleConverter(stSvgIcon) {
           radius,
           angle: Math.PI / 4
         };
-      } else if (shape === "triangle") {
+      }
+      if (shape === "triangle") {
         return {
           fill,
           stroke,
@@ -45,7 +47,8 @@ export function ol3StyleConverter(stSvgIcon) {
           radius,
           angle: 0
         };
-      } else if (shape === "star") {
+      }
+      if (shape === "star") {
         return {
           fill,
           stroke,
@@ -54,7 +57,8 @@ export function ol3StyleConverter(stSvgIcon) {
           radius2: 0.5*radius,
           angle: 0
         };
-      } else if (shape === "cross") {
+      }
+      if (shape === "cross") {
         return {
           fill,
           stroke,
@@ -63,7 +67,8 @@ export function ol3StyleConverter(stSvgIcon) {
           radius2: 0,
           angle: 0
         };
-      } else if (shape === "x") {
+      }
+      if (shape === "x") {
         return {
           fill,
           stroke,

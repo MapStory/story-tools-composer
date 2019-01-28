@@ -1,5 +1,5 @@
 import SLDStyleConverter from "../utils/SLDStyleConverter";
-import StyleComplete from "../style/StyleComplete";
+import StyleComplete from "./StyleComplete";
 
 function styleService(
   $http,

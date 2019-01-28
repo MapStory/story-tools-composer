@@ -269,7 +269,9 @@ export function MapController(options, timeControls) {
 
     if (currentPinFeatures && currentPinFeatures.length > 0) {
       return undefined;
-    } else if (currentBoxes && currentBoxes.length > 0) {
+    }
+
+    if (currentBoxes && currentBoxes.length > 0) {
       const currentBox = currentBoxes[0];
 
       if (currentBox.center) {
