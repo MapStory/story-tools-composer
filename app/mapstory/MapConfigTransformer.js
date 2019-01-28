@@ -1,89 +1,91 @@
+
+function handleBasicSourceTypes(source, layerConfig, layer){
+  switch (source.ptype){
+  case "gxp_mapquestsource":
+    layerConfig.type = "MapQuest";
+    layerConfig.layer = layer.name === "naip" ? "sat" : "osm";
+    layerConfig.title = layer.title;
+    break;
+  case "gxp_mapboxsource":
+    layerConfig.type = "MapBox";
+    layerConfig.name = layer.name;
+    layerConfig.title = layer.title;
+    break;
+  case "gxp_osmsource":
+    layerConfig.type = "OSM";
+    layerConfig.title = "OpenStreetMap";
+    layerConfig.name = "mapnik";
+    break;
+  default:
+    break;
+  }
+}
+
 function convert(layer, data) {
-  if (layer.visibility === true) {
-    const source = data.sources[layer.source];
-    const layerConfig = {
-      visibility: layer.visibility,
-      group: layer.group
-    };
+  const source = data.sources[layer.source];
+  const layerConfig = {
+    visibility: layer.visibility,
+    group: layer.group
+  };
 
-    switch (source.ptype){
-    case "gxp_mapquestsource":
-      layerConfig.type = "MapQuest";
-      layerConfig.layer = layer.name === "naip" ? "sat" : "osm";
-      layerConfig.title = layer.title;
-      break;
-    case "gxp_mapboxsource":
-      layerConfig.type = "MapBox";
-      layerConfig.name = layer.name;
-      layerConfig.title = layer.title;
-      break;
-    case "gxp_osmsource":
-      layerConfig.type = "OSM";
-      layerConfig.title = "OpenStreetMap";
-      layerConfig.name = "mapnik";
-      break;
-    default:
-      break;
-    }
+  handleBasicSourceTypes(source, layerConfig, layer);
 
-    if (source.ptype === "gx_olsource" || source.ptype === "gxp_wmscsource") {
-      layerConfig.type = (source.ptype === "gx_olsource") ? layer.type.replace("OpenLayers.Layer.", "") : "WMS";
-      if (layerConfig.type === "OSM") {
-        if (layerConfig.args && layerConfig.args[0] === "Humanitarian OpenStreetMap") {
-          layerConfig.type = "HOT";
+  if (source.ptype === "gx_olsource" || source.ptype === "gxp_wmscsource") {
+    layerConfig.type = (source.ptype === "gx_olsource") ? layer.type.replace("OpenLayers.Layer.", "") : "WMS";
+    if (layerConfig.type === "OSM") {
+      if (layerConfig.args && layerConfig.args[0] === "Humanitarian OpenStreetMap") {
+        layerConfig.type = "HOT";
+      }
+      layerConfig.title = layer.title;
+    } else if (layerConfig.type === "WMS") {
+      let params;
+      if (source.ptype === "gx_olsource") {
+        params = layer.args[2] || {};
+        Object.keys(params).forEach((key) => {
+          if (params[key].constructor === Array) {
+            params[key.toUpperCase()] = params[key].join(",");
+            delete params[key];
+          }
+        });
+        layerConfig.url = layer.args[1];
+      } else {
+        params = {
+          LAYERS: layer.name,
+          STYLES: layer.styles,
+          TILED: "TRUE",
+          FORMAT: layer.format || "image/png",
+          TRANSPARENT: layer.transparent || "TRUE"
+        };
+        if (layer.tiled === false) {
+          layerConfig.singleTile = true;
         }
-        layerConfig.title = layer.title;
-      } else if (layerConfig.type === "WMS") {
-        let params;
-        if (source.ptype === "gx_olsource") {
-          params = layer.args[2] || {};
-          Object.keys(params).forEach((key) => {
-            if (params[key].constructor === Array) {
-              params[key.toUpperCase()] = params[key].join(",");
-              delete params[key];
-            }
+        layerConfig.id = layer.name;
+        layerConfig.name = layer.name;
+        layerConfig.title = layer.titleAlias || layer.title;
+        layerConfig.maskings = layer.maskings;
+        // TODO not sure if this is the best place to do this?
+        layerConfig.url = source.url.replace("http://mapstory.org/geoserver/", "/geoserver/");
+      }
+      layerConfig.params = params;
+      layerConfig.params.VERSION = "1.1.1";
+      if (layer.capability) {
+        layerConfig.latlonBBOX = layer.capability.llbbox;
+        // TODO require dependency explicitly?
+        const times = storytools.core.time.maps.readCapabilitiesTimeDimensions(layer.capability, true);
+        if (times !== undefined) {
+          layerConfig.times = times;
+        }
+        // info for custom tileGrid
+        if (layer.capability.tileSets) {
+          Object.keys(layer.capability.tileSets[0].bbox).forEach((srs) => {
+            layerConfig.bbox = layer.capability.tileSets[0].bbox[srs].bbox;
           });
-          layerConfig.url = layer.args[1];
-        } else {
-          params = {
-            LAYERS: layer.name,
-            STYLES: layer.styles,
-            TILED: "TRUE",
-            FORMAT: layer.format || "image/png",
-            TRANSPARENT: layer.transparent || "TRUE"
-          };
-          if (layer.tiled === false) {
-            layerConfig.singleTile = true;
-          }
-          layerConfig.id = layer.name;
-          layerConfig.name = layer.name;
-          layerConfig.title = layer.titleAlias || layer.title;
-          layerConfig.maskings = layer.maskings;
-          // TODO not sure if this is the best place to do this?
-          layerConfig.url = source.url.replace("http://mapstory.org/geoserver/", "/geoserver/");
-        }
-        layerConfig.params = params;
-        layerConfig.params.VERSION = "1.1.1";
-        if (layer.capability) {
-          layerConfig.latlonBBOX = layer.capability.llbbox;
-          // TODO require dependency explicitly?
-          const times = storytools.core.time.maps.readCapabilitiesTimeDimensions(layer.capability, true);
-          if (times !== undefined) {
-            layerConfig.times = times;
-          }
-          // info for custom tileGrid
-          if (layer.capability.tileSets) {
-            Object.keys(layer.capability.tileSets[0].bbox).forEach((srs) => {
-              layerConfig.bbox = layer.capability.tileSets[0].bbox[srs].bbox;
-            });
-            layerConfig.resolutions = layer.capability.tileSets[0].resolutions;
-          }
+          layerConfig.resolutions = layer.capability.tileSets[0].resolutions;
         }
       }
     }
-    return layerConfig;
   }
-  return undefined;
+  return layerConfig;
 }
 
 
@@ -105,9 +107,12 @@ export default function MapConfigTransformer(data) {
   }
   for (i=0, ii=data.map.layers.length; i<ii; ++i) {
     const layer = data.map.layers[i];
-    const converted = convert(layer, data);
-    if (converted) {
-      layers.push(converted);
+
+    if (layer.visibility === true) {
+      const converted = convert(layer, data);
+      if (converted) {
+        layers.push(converted);
+      }
     }
     // TODO for the editor we also need the invisible layers
   }

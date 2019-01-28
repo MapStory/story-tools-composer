@@ -150,7 +150,7 @@ export function ol3StyleConverter(stSvgIcon) {
       const rotation = (style.symbol && style.symbol.rotationAttribute) ? feature.get(style.symbol.rotationAttribute): undefined;
       return `${text  }|${  classify  }|${  rotation}`;
     },
-    generateStyleClassify(style, feature, stroke, ) {
+    generateStyleClassify(style, feature, stroke, key) {
       let label, result;
       for (let i=0, ii=style.rules.length; i<ii; ++i) {
         const rule = style.rules[i];
@@ -187,7 +187,43 @@ export function ol3StyleConverter(stSvgIcon) {
           }
         }
       }
+      if (result) {
+        if (!this.styleCache_[key]) {
+          this.styleCache_[key] = {};
+        }
+        const key2 = this.generateCacheKey(style, feature);
+        this.styleCache_[key][key2] = result;
+      }
       return result;
+    },
+    generateStroke(style){
+      if (style.stroke) {
+        let lineDash;
+        if (style.stroke.strokeStyle === "dashed") {
+          lineDash = [5];
+        } else if (style.stroke.strokeStyle === "dotted") {
+          lineDash = [1,2];
+        }
+        return new ol.style.Stroke({
+          lineDash,
+          color: this.getColor(style.stroke.strokeColor, style.stroke.strokeOpacity),
+          width: style.stroke.strokeWidth
+        });
+      }
+      return undefined;
+    },
+    generateOtherFill(style, stroke, feature){
+      const fill = new ol.style.Fill({
+        color: this.getColor(style.symbol.fillColor, style.symbol.fillOpacity)
+      });
+      return [
+        new ol.style.Style({
+          image: this.generateShape(style, fill, stroke, feature),
+          fill,
+          stroke,
+          text: this.generateText(style, stroke, feature)
+        })
+      ];
     },
     generateStyle(style, feature) {
       let result, key2;
@@ -205,41 +241,12 @@ export function ol3StyleConverter(stSvgIcon) {
           return this.styleCache_[key];
         }
       }
-      let stroke;
-      if (style.stroke) {
-        let lineDash;
-        if (style.stroke.strokeStyle === "dashed") {
-          lineDash = [5];
-        } else if (style.stroke.strokeStyle === "dotted") {
-          lineDash = [1,2];
-        }
-        stroke = new ol.style.Stroke({
-          lineDash,
-          color: this.getColor(style.stroke.strokeColor, style.stroke.strokeOpacity),
-          width: style.stroke.strokeWidth
-        });
-      }
+      const stroke = this.generateStroke(style);
+
       if (style.classify && style.classify.attribute !== null) {
-        result = this.generateStyleClassify();
-        if (result) {
-          if (!this.styleCache_[key]) {
-            this.styleCache_[key] = {};
-          }
-          key2 = this.generateCacheKey(style, feature);
-          this.styleCache_[key][key2] = result;
-        }
+        result = this.generateStyleClassify(style, feature, stroke, key);
       } else {
-        const fill = new ol.style.Fill({
-          color: this.getColor(style.symbol.fillColor, style.symbol.fillOpacity)
-        });
-        result = [
-          new ol.style.Style({
-            image: this.generateShape(style, fill, stroke, feature),
-            fill,
-            stroke,
-            text: this.generateText(style, stroke, feature)
-          })
-        ];
+        result = this.generateOtherFill(style, stroke, feature);
       }
       if (result) {
         const hasText = result[0].getText();
@@ -247,7 +254,7 @@ export function ol3StyleConverter(stSvgIcon) {
           if (!this.styleCache_[key]) {
             this.styleCache_[key] = {};
           }
-          key2= this.generateCacheKey(style, feature);
+          key2 = this.generateCacheKey(style, feature);
           this.styleCache_[key][key2] = result;
         } else {
           this.styleCache_[key] = result;
