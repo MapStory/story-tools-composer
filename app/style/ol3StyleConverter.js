@@ -17,39 +17,43 @@ export function ol3MarkRenderer(ol3StyleConverter) {
   };
 }
 
+
 export function ol3StyleConverter(stSvgIcon) {
   return {
     generateShapeConfig(style, fill, stroke) {
       const shape = style.symbol.shape,
         // final size is actually (2 * (radius + stroke.width)) + 1
         radius = style.symbol.size / 2;
-      if (shape === "circle") {
-        return {
+      let newStyle;
+
+      switch (shape) {
+      case "circle":
+        newStyle = {
           fill,
           stroke,
           radius
         };
-      }
-      if (shape === "square") {
-        return {
+        break;
+      case "square":
+        newStyle = {
           fill,
           stroke,
           points: 4,
           radius,
           angle: Math.PI / 4
         };
-      }
-      if (shape === "triangle") {
-        return {
+        break;
+      case "triangle":
+        newStyle = {
           fill,
           stroke,
           points: 3,
           radius,
           angle: 0
         };
-      }
-      if (shape === "star") {
-        return {
+        break;
+      case "star":
+        newStyle = {
           fill,
           stroke,
           points: 5,
@@ -57,9 +61,9 @@ export function ol3StyleConverter(stSvgIcon) {
           radius2: 0.5*radius,
           angle: 0
         };
-      }
-      if (shape === "cross") {
-        return {
+        break;
+      case "cross":
+        newStyle = {
           fill,
           stroke,
           points: 4,
@@ -67,9 +71,9 @@ export function ol3StyleConverter(stSvgIcon) {
           radius2: 0,
           angle: 0
         };
-      }
-      if (shape === "x") {
-        return {
+        break;
+      case "x":
+        newStyle = {
           fill,
           stroke,
           points: 4,
@@ -77,8 +81,12 @@ export function ol3StyleConverter(stSvgIcon) {
           radius2: 0,
           angle: Math.PI / 4
         };
+        break;
+      default:
+        break;
       }
-      return undefined;
+
+      return newStyle;
     },
     calculateRotation(style, feature) {
       if (style.symbol && style.symbol.rotationAttribute) {
@@ -107,9 +115,8 @@ export function ol3StyleConverter(stSvgIcon) {
       }
       if (style.symbol.shape === "circle") {
         return new ol.style.Circle(config);
-      } 
+      }
       return new ol.style.RegularShape(config);
-        
     },
     getText(style, feature) {
       if (style.label && style.label.attribute) {

@@ -1,5 +1,177 @@
 import {Jsonix, mappings} from "./owsjs"
 
+function createSymbolizerObject(graphicOrMark, opacity, styleRule, style){
+  return {
+    name: {
+      localPart: "PointSymbolizer",
+      namespaceURI: "http://www.opengis.net/sld"
+    },
+    value: {
+      graphic: {
+        externalGraphicOrMark: graphicOrMark,
+        opacity: {
+          content: [String(opacity)]
+        },
+        size: {
+          content: [String(styleRule && styleRule.style.symbol && styleRule.style.symbol.size ||
+            style.symbol && style.symbol.size || 10)]
+        },
+        rotation: style.symbol && style.symbol.rotationAttribute ? {
+          content: [style.symbol.rotationUnits === "degrees" ? {
+            name: {
+              localPart: "PropertyName",
+              namespaceURI: "http://www.opengis.net/ogc"
+            },
+            value: {
+              content: [style.symbol.rotationAttribute]
+            }
+          } : {
+            name: {
+              localPart: "Div",
+              namespaceURI: "http://www.opengis.net/ogc"
+            },
+            value: {
+              expression: [{
+                name: {
+                  localPart: "PropertyName",
+                  namespaceURI: "http://www.opengis.net/ogc"
+                },
+                value: {
+                  content: [style.symbol.rotationAttribute]
+                }
+              }, {
+                name: {
+                  localPart: "Div",
+                  namespaceURI: "http://www.opengis.net/ogc"
+                },
+                value: {
+                  expression: [{
+                    name: {
+                      localPart: "Function",
+                      namespaceURI: "http://www.opengis.net/ogc"
+                    },
+                    value: {
+                      name: "pi"
+                    }
+                  }, {
+                    name: {
+                      localPart: "Literal",
+                      namespaceURI: "http://www.opengis.net/ogc"
+                    },
+                    value: {
+                      content: ["360"]
+                    }
+                  }]
+                }
+              }]
+            }
+          }]
+        } : undefined
+      }
+    }
+  };
+}
+
+function generateJSONRules(self, rule, style, ruleContainer) {
+  for (let i = 0, ii = style.rules.length; i < ii; ++i) {
+    const styleRule = style.rules[i];
+    let filter;
+    if (styleRule.value) {
+      filter = {
+        comparisonOps: {
+          name: {
+            namespaceURI: "http://www.opengis.net/ogc",
+            localPart: "PropertyIsEqualTo"
+          },
+          value: {
+            expression: [{
+              name: {
+                namespaceURI: "http://www.opengis.net/ogc",
+                localPart: "PropertyName"
+              },
+              value: {
+                content: [style.classify.attribute]
+              }
+            }, {
+              name: {
+                namespaceURI: "http://www.opengis.net/ogc",
+                localPart: "Literal"
+              },
+              value: {
+                content: [String(styleRule.value)]
+              }
+            }]
+          }
+        }
+      };
+    } else if (styleRule.range) {
+      filter = {
+        comparisonOps: {
+          name: {
+            namespaceURI: "http://www.opengis.net/ogc",
+            localPart: "PropertyIsBetween"
+          },
+          value: {
+            expression: {
+              name: {
+                namespaceURI: "http://www.opengis.net/ogc",
+                localPart: "PropertyName"
+              },
+              value: {
+                content: [style.classify.attribute]
+              }
+            },
+            lowerBoundary: {
+              expression: {
+                name: {
+                  namespaceURI: "http://www.opengis.net/ogc",
+                  localPart: "Literal"
+                },
+                value: {
+                  content: [String(styleRule.range.min)]
+                }
+              }
+            },
+            upperBoundary: {
+              expression: {
+                name: {
+                  namespaceURI: "http://www.opengis.net/ogc",
+                  localPart: "Literal"
+                },
+                value: {
+                  content: [String(styleRule.range.max)]
+                }
+              }
+            }
+          }
+        }
+      };
+    }
+    let title = styleRule.title;
+    if (title === null || title === undefined || title === "") {
+      title = styleRule.name;
+    }
+    rule = {
+      title,
+      name: styleRule.name,
+      filter,
+      symbolizer: []
+    };
+    if (style.geomType === "point") {
+      rule.symbolizer.push(self.createPointSymbolizer(style, styleRule));
+    } else if (style.geomType === "line") {
+      rule.symbolizer.push(self.createLineSymbolizer(style, styleRule));
+    } else if (style.geomType === "polygon") {
+      rule.symbolizer.push(self.createPolygonSymbolizer(style, styleRule));
+    }
+    if (style.label && style.label.attribute !== null) {
+      rule.symbolizer.push(self.createTextSymbolizer(style));
+    }
+    ruleContainer.push(rule);
+  }
+}
+
+
 export default function SLDStyleConverter() {
   return {
     generateStyle(style, layerName, asString) {
@@ -113,75 +285,7 @@ export default function SLDStyleConverter() {
       if (style.symbol && angular.isDefined(style.symbol.fillOpacity)) {
         opacity = Math.max(0.01, style.symbol.fillOpacity) / 100;
       }
-      return {
-        name: {
-          localPart: "PointSymbolizer",
-          namespaceURI: "http://www.opengis.net/sld"
-        },
-        value: {
-          graphic: {
-            externalGraphicOrMark: graphicOrMark,
-            opacity: {
-              content: [String(opacity)]
-            },
-            size: {
-              content: [String(styleRule && styleRule.style.symbol && styleRule.style.symbol.size ||
-                style.symbol && style.symbol.size || 10)]
-            },
-            rotation: style.symbol && style.symbol.rotationAttribute ? {
-              content: [style.symbol.rotationUnits === "degrees" ? {
-                name: {
-                  localPart: "PropertyName",
-                  namespaceURI: "http://www.opengis.net/ogc"
-                },
-                value: {
-                  content: [style.symbol.rotationAttribute]
-                }
-              } : {
-                name: {
-                  localPart: "Div",
-                  namespaceURI: "http://www.opengis.net/ogc"
-                },
-                value: {
-                  expression: [{
-                    name: {
-                      localPart: "PropertyName",
-                      namespaceURI: "http://www.opengis.net/ogc"
-                    },
-                    value: {
-                      content: [style.symbol.rotationAttribute]
-                    }
-                  }, {
-                    name: {
-                      localPart: "Div",
-                      namespaceURI: "http://www.opengis.net/ogc"
-                    },
-                    value: {
-                      expression: [{
-                        name: {
-                          localPart: "Function",
-                          namespaceURI: "http://www.opengis.net/ogc"
-                        },
-                        value: {
-                          name: "pi"
-                        }
-                      }, {
-                        name: {
-                          localPart: "Literal",
-                          namespaceURI: "http://www.opengis.net/ogc"
-                        },
-                        value: {
-                          content: ["360"]
-                        }
-                      }]
-                    }
-                  }]
-                }
-              }]
-            } : undefined
-          }
-        }
-      };
+      return createSymbolizerObject(graphicOrMark, opacity, styleRule, style);
     },
     createLineSymbolizer(style, styleRule) {
       return {
@@ -318,102 +422,7 @@ export default function SLDStyleConverter() {
       let rule;
       const ruleContainer = result.value.namedLayerOrUserLayer[0].namedStyleOrUserStyle[0].featureTypeStyle[0].rule;
       if (style.rules) {
-        for (let i = 0, ii = style.rules.length; i < ii; ++i) {
-          const styleRule = style.rules[i];
-          let filter;
-          if (styleRule.value) {
-            filter = {
-              comparisonOps: {
-                name: {
-                  namespaceURI: "http://www.opengis.net/ogc",
-                  localPart: "PropertyIsEqualTo"
-                },
-                value: {
-                  expression: [{
-                    name: {
-                      namespaceURI: "http://www.opengis.net/ogc",
-                      localPart: "PropertyName"
-                    },
-                    value: {
-                      content: [style.classify.attribute]
-                    }
-                  }, {
-                    name: {
-                      namespaceURI: "http://www.opengis.net/ogc",
-                      localPart: "Literal"
-                    },
-                    value: {
-                      content: [String(styleRule.value)]
-                    }
-                  }]
-                }
-              }
-            };
-          } else if (styleRule.range) {
-            filter = {
-              comparisonOps: {
-                name: {
-                  namespaceURI: "http://www.opengis.net/ogc",
-                  localPart: "PropertyIsBetween"
-                },
-                value: {
-                  expression: {
-                    name: {
-                      namespaceURI: "http://www.opengis.net/ogc",
-                      localPart: "PropertyName"
-                    },
-                    value: {
-                      content: [style.classify.attribute]
-                    }
-                  },
-                  lowerBoundary: {
-                    expression: {
-                      name: {
-                        namespaceURI: "http://www.opengis.net/ogc",
-                        localPart: "Literal"
-                      },
-                      value: {
-                        content: [String(styleRule.range.min)]
-                      }
-                    }
-                  },
-                  upperBoundary: {
-                    expression: {
-                      name: {
-                        namespaceURI: "http://www.opengis.net/ogc",
-                        localPart: "Literal"
-                      },
-                      value: {
-                        content: [String(styleRule.range.max)]
-                      }
-                    }
-                  }
-                }
-              }
-            };
-          }
-          let title = styleRule.title;
-          if (title === null || title === undefined || title === "") {
-            title = styleRule.name;
-          }
-          rule = {
-            title,
-            name: styleRule.name,
-            filter,
-            symbolizer: []
-          };
-          if (style.geomType === "point") {
-            rule.symbolizer.push(this.createPointSymbolizer(style, styleRule));
-          } else if (style.geomType === "line") {
-            rule.symbolizer.push(this.createLineSymbolizer(style, styleRule));
-          } else if (style.geomType === "polygon") {
-            rule.symbolizer.push(this.createPolygonSymbolizer(style, styleRule));
-          }
-          if (style.label && style.label.attribute !== null) {
-            rule.symbolizer.push(this.createTextSymbolizer(style));
-          }
-          ruleContainer.push(rule);
-        }
+        generateJSONRules(this, rule, style, ruleContainer);
       } else {
         // single rule, multiple symbolizers
         rule = {

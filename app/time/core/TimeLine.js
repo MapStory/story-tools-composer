@@ -4,7 +4,8 @@
 
 import moment from "moment";
 import vis from "vis/dist/vis.min.js";
-import {createRange, sha1, rangesEqual} from "./utils";
+import {createRange, rangesEqual} from "./utils";
+import sha1 from "../../utils/sha1";
 
 const Timeline = vis.Timeline;
 
