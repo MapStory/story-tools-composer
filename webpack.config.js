@@ -20,7 +20,7 @@ module.exports = {
       {
         test: /\.html$/,
         use: "raw-loader",
-        include: Path.join(__dirname, "app/style/templates/types")
+        include: Path.join(__dirname, "app/style/templates/types/")
       },
       {
         test: /\.spec\.js$/,
