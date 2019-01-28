@@ -1,6 +1,6 @@
-// import ol from "ol";
-// const ol =  require("imports-loader?require=>false!/vendor/ol-debug");
-
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 
 const format = new ol.format.GeoJSON();
 
@@ -52,7 +52,8 @@ StoryPin.prototype.constructor = StoryPin;
 function getTime(props, prop) {
   let val = props[prop];
   if (typeof val !== "undefined") {
-    return val *= 1000;
+    val *= 1000;
+    return val;
   }
   return null;
 }

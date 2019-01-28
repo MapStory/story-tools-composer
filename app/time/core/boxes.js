@@ -1,3 +1,6 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 import {isRangeLike, createRange, find, computeRange} from "./utils";
 
 function Box(options) {
@@ -23,26 +26,28 @@ function Box(options) {
   // @todo possible divide by zero if speed.interval not set!
   this._steps = this.data === null ? Math.floor(this.range.width() / this.speed.interval) + 1: this.data.length;
 }
-Box.prototype.getSteps = function() {
+Box.prototype.getSteps = function getSteps() {
   return this._steps;
 };
-Box.prototype.getRange = function() {
+Box.prototype.getRange = function getRange() {
   return this.range;
 };
-Box.prototype.getIndex = function(instant) {
+Box.prototype.getIndex = function getIndex(instant) {
   return this.data ? find(this.data, instant) :
     Math.floor(Math.min(this.range.width(), Math.max(0, instant - this.range.start)) / this.speed.interval);
 };
-Box.prototype.getDate = function(idx) {
+Box.prototype.getDate = function getDate(idx) {
   idx -= this._offset;
-  return this.data ? this.data[idx] : this.range.start + (idx * this.speed.interval);
+  const retValue = this.data ? this.data[idx] : this.range.start + (idx * this.speed.interval);
+  return retValue;
 };
 
 
 function getTime(props, prop) {
   let val = props[prop];
   if (typeof val !== "undefined") {
-    return val *= 1000;
+    val *= 1000;
+    return val;
   }
   return null;
 }
@@ -102,18 +107,18 @@ function BoxModel(boxArray) {
     steps = offset;
   }
   updateBoxes(boxArray);
-  this.getRange = function() {
+  this.getRange = function getRange() {
     return range;
   };
-  this.getSteps = function() {
+  this.getSteps = function getSteps() {
     return steps;
   };
-  this.getRangeAt = function(s, e) {
+  this.getRangeAt = function getRangeAt(s, e) {
     const start = findBox(boxes, s);
     const end = findBox(boxes, e);
     return createRange(start.getDate(s), end.getDate(e));
   };
-  this.getIndex = function(instant) {
+  this.getIndex = function getIndex(instant) {
     let idx = 0, i;
     if (instant < boxes[0].getRange().start) {
       return 0;
@@ -130,8 +135,8 @@ function BoxModel(boxArray) {
     }
     return idx;
   };
-  this.setRange = function(newRange) {
-    if (boxes.length == 1) {
+  this.setRange = function setRange(newRange) {
+    if (boxes.length === 1) {
       // @todo support for range
       if (isRangeLike(newRange)) {
         throw new Error("not supported yet");
@@ -141,11 +146,10 @@ function BoxModel(boxArray) {
       boxes[0].range = computeRange(newRange);
     } else {
       // @todo finish
-      console.log("more than one story box to update range with!");
     }
     updateBoxes(boxes);
   };
-  this.update = function(options) {
+  this.update = function update(options) {
 
   };
 }

@@ -1,3 +1,7 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+
 import noUiSlider from "nouislider";
 import {Events} from "./utils";
 
@@ -23,6 +27,23 @@ export default function TimeSlider(id, model) {
   const events = new Events();
   let initialized = false;
   let singleSlider;
+
+
+  function getSliderRangeInternal() {
+    let range = slider.noUiSlider.get();
+    if (! Array.isArray(range)) {
+      range = parseInt(range, 10);
+      range = [model.mode === "cumulative" ? 0 : range, range];
+    } else {
+      range = range.map((i) => parseInt(i, 10));
+    }
+    return range;
+  }
+
+  function getRange() {
+    const range = getSliderRangeInternal();
+    return model.getRangeAt(range[0], range[1]);
+  }
 
   function init(model) {
     const options = {
@@ -54,7 +75,7 @@ export default function TimeSlider(id, model) {
         options.behaviour = "drag-fixed";
       }
     } else {
-      throw `invalid model mode : ${  model.mode}`;
+      throw new Error(`invalid model mode : ${  model.mode}`);
     }
 
     if (initialized) {
@@ -76,7 +97,7 @@ export default function TimeSlider(id, model) {
       if(slider)
       {
         noUiSlider.create(slider, options);
-        slider.noUiSlider.on("slide", (ev) => {
+        slider.noUiSlider.on("slide", () => {
           const range = getRange();
           events.event("rangeChanged").publish(range);
         });
@@ -93,22 +114,6 @@ export default function TimeSlider(id, model) {
   }
 
   init(model);
-
-  function getSliderRangeInternal() {
-    let range = slider.noUiSlider.get();
-    if (! Array.isArray(range)) {
-      range = parseInt(range, 10);
-      range = [model.mode === "cumulative" ? 0 : range, range];
-    } else {
-      range = range.map((i) => parseInt(i, 10));
-    }
-    return range;
-  }
-
-  function getRange() {
-    const range = getSliderRangeInternal();
-    return model.getRangeAt(range[0], range[1]);
-  }
 
   function width() {
     const range = getSliderRangeInternal();
@@ -133,36 +138,36 @@ export default function TimeSlider(id, model) {
   }
 
   this.slider = slider;
-  this.on = function(event, fn) {
+  this.on = function on(event, fn) {
     if(initialized) {
       events.event(event).subscribe(fn);
     }
   };
   this.getSliderRangeInternal = getSliderRangeInternal;
-  this.center = function(index) {
+  this.center = function center(index) {
     const half = Math.floor(width() / 2);
     setValue([index - half, index + half]);
   };
-  this.move = function(amt) {
+  this.move = function move(amt) {
     const vals  = getSliderRangeInternal();
     vals[0] += amt;
     vals[1] += amt;
     setValue(vals);
     return isAtEnd(amt < 0);
   };
-  this.grow = function(amt) {
+  this.grow = function grow(amt) {
     const vals = getSliderRangeInternal();
     vals[1] += amt;
     setValue(vals);
     return isAtEnd(false);
   };
-  this.growTo = function(where) {
+  this.growTo = function growTo(where) {
     const vals = getSliderRangeInternal();
     vals[1] = where;
     setValue(vals);
     return isAtEnd(false);
   };
-  this.jump = function(to) {
+  this.jump = function jump(to) {
     setValue([to, to + width()]);
   };
   this.getRange = getRange;

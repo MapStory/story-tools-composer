@@ -1,398 +1,9 @@
-const moment = require("moment");
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 
-/**
- * Get the number of milliseconds from the provided arg.
- * @param arg - either Date, range (returns start), string or number
- * @returns milliseconds or null if nothing provided
- */
-export function getTime(arg) {
-  const type = typeof arg;
-  if (type === "number") {
-    return arg;
-  }
-  if (arg instanceof Date) {
-    return arg.getTime();
-  }
-  if (type === "string") {
-    return parseDate(arg).getTime();
-  }
-  /* jshint eqnull:true */
-  if (arg == null) {
-    return null;
-  }
-  if (isRangeLike(arg)) {
-    /* jshint eqnull:true */
-    return getTime(arg.start != null ? arg.start : arg.end);
-  }
-  throw new Error(`cannot call getTime with ${  type  }, : ${  arg}`);
-}
-
-export function isRangeLike(object) {
-  /* jshint eqnull:true */
-  return object != null && (object.hasOwnProperty("start") || object.hasOwnProperty("end"));
-}
-
-export const formatTimelineDate = datetime => moment(datetime).format("llll");
-
-export function createRange(start, end) {
-  if (arguments.length === 1) {
-    const other = start;
-    if (isRangeLike(other)) {
-      start = other.start;
-      end = other.end;
-    } else {
-      end = start;
-    }
-  }
-  /* jshint eqnull:true */
-  if (start != null && end != null && start > end) {
-    throw new Error("start > end");
-  }
-  return new Range(getTime(start), getTime(end));
-}
-
-export function rangesEqual(a, b) {
-  return getTime(a.start) === getTime(b.start) &&
-    getTime(a.end) === getTime(b.end);
-}
-
-function rangeContains(range, time) {
-  /* jshint eqnull:true */
-  if (time == null) {
-    throw new Error("invalid time argument");
-  }
-  /* jshint eqnull:true */
-  return ((range.start != null ? time >= range.start : true) &&
-    (range.end != null ? time < range.end : true)) ||
-    range.start === range.end && time === range.start;
-}
-
-export function parseISODuration(duration) {
-  const values = exports.isoDurationToMoment(duration);
-  return moment.duration(values).asMilliseconds();
-}
-
-export function Interval(start, end, duration) {
-  if (typeof start === "object") {
-    const opts = start;
-    start = opts.start;
-    end = opts.end;
-    duration = opts.duration;
-  }
-  if (start === end) {
-    throw new Error("interval should have width");
-  }
-  Range.call(this, start, end);
-  this.duration = duration;
-  this.interval = exports.parseISODuration(this.duration);
-  this.offset = exports.createOffsetter(this);
-}
-
-function Range(start, end) {
-  if (isNaN(start) || isNaN(end)) {
-    throw new Error("invalid start and/or end");
-  }
-  this.start = start;
-  this.end = end;
-}
-/**
- * extend this Range by another. This algorithm will consider an open-ended
- * range to represent a minimum of start and maximum of end.
- * @param {type} other
- * @returns {undefined}
- */
-Range.prototype.extend = function(other) {
-  /* jshint eqnull:true */
-  if (!isRangeLike(other)) {
-    other = exports.createRange(other);
-  }
-  let start = getTime(other.start);
-  let end = getTime(other.end);
-  if (start == null) {
-    start = end;
-  }
-  if (end == null) {
-    end = start;
-  }
-  if (start != null) {
-    if (this.start == null) {
-      this.start = start;
-    } else {
-      this.start = Math.min(this.start, start);
-    }
-  }
-  if (end != null) {
-    if (this.end == null) {
-      this.end = end;
-    } else {
-      this.end = Math.max(this.end, end);
-    }
-  }
-};
-Range.prototype.intersects = function(other) {
-  if (isRangeLike(other)) {
-    /* jshint eqnull:true */
-    const es = other.start == null ? Number.MIN_VALUE : other.start;
-    const ee = other.end == null ? Number.MAX_VALUE : other.end;
-    // intersection if (any)
-    // effective end in this range
-    // effective start in this range
-    // effective start before and effective end after
-    return rangeContains(this, es) ||
-      rangeContains(this, ee) ||
-      es <= this.start && ee >= this.end;
-  } 
-  return rangeContains(this, getTime(other));
-  
-};
-Range.prototype.toString = function() {
-  return `${new Date(this.start).toUTCString()  } : ${  new Date(this.end).toUTCString()}`;
-};
-Range.prototype.center = function() {
-  return Math.floor(this.start + (this.end - this.start) / 2);
-};
-Range.prototype.width = function() {
-  return this.end - this.start;
-};
-Range.prototype.isEmpty = function() {
-  /* jshint eqnull:true */
-  return this.end == null && this.start == null;
-};
-export { Range };
-
-
-
-/**
- * Compute the overall range of provided args. Args may be an array of:
- * date or long, range, object with property/function yielding range for the
- * object.
- * @param {type} args
- * @returns range will have start/end even if the same time.
- */
-export function computeRange(args, rangeGetter) {
-  const range = new Range(null, null);
-  exports.visitRanges(args, rangeGetter, (arg, r) => {
-    range.extend(r);
-  });
-  /* jshint eqnull:true */
-  if (range.start == null) {
-    range.start = range.end;
-  }
-  if (range.end == null) {
-    range.end = range.start;
-  }
-  return range;
-}
-
-export function visitRanges(objects, rangeGetter, visitor) {
-  let getRange;
-  if (typeof rangeGetter === "string") {
-    getRange = function(object) {
-      return object[rangeGetter];
-    };
-  } else if (typeof rangeGetter === "function") {
-    getRange = rangeGetter;
-  } else {
-    getRange = function(object) {
-      return isRangeLike(object) ? object : exports.createRange(object);
-    };
-  }
-  for (let i = 0, ii = objects.length; i < ii; i++) {
-    const object = objects[i];
-    visitor(object, getRange(object));
-  }
-}
-
-/** for the given what, find the index in the items that what is closest
- * to. items must be sorted. The lowest closest value possible is returned.
- */
-export function binarySearch(items, what) {
-  const start = 0;
-  let stop = items.length - 1;
-  let mid = stop + start / 2 | 0;
-  let val;
-  if (what < items[0]) {
-    return 0;
-  }
-  if (what > items[stop]) {
-    return items.length - 1;
-  }
-  while ((val = items[mid]) !== what && start < stop) {
-    if (what > val) {
-      if (what < items[mid + 1]) {
-        return mid;
-      }
-    } else if (what < val) {
-      if (what > items[mid - 1]) {
-        return mid - 1;
-      }
-      stop = mid - 1;
-    }
-    mid = stop + start / 2 | 0;
-  }
-  return mid;
-}
-
-export function find(items, what) {
-  if (what < items[0]) {
-    return 0;
-  }
-  for (let i = 0, ii = items.length - 1; i < ii; i++) {
-    if (what >= items[i] && what < items[i + 1]) {
-      return i;
-    }
-  }
-  return items.length - 1;
-};
-
-export function Events() {
-  const topics = {};
-
-  // @todo introduce setting topics with arguments and logging/exception
-  // on un-fired event
-
-  function event(id) {
-    let callbacks, method,
-      topic = id && topics[ id ];
-    if (!topic) {
-      callbacks = jQuery.Callbacks();
-      topic = {
-        publish: callbacks.fire,
-        subscribe: callbacks.add,
-        unsubscribe: callbacks.remove
-      };
-      if (id) {
-        topics[ id ] = topic;
-      }
-    }
-    return topic;
-  }
-
-  return {
-    event
-  };
-};
-
-export function pickInterval(range) {
-  const intervals = [
-    moment.duration(1, "seconds").asMilliseconds(),
-    moment.duration(1, "minutes").asMilliseconds(),
-    moment.duration(1, "hours").asMilliseconds(),
-    moment.duration(1, "days").asMilliseconds(),
-    moment.duration(1, "weeks").asMilliseconds(),
-    moment.duration(1, "months").asMilliseconds(),
-    moment.duration(1, "years").asMilliseconds()
-  ];
-  return intervals[Math.max(exports.find(intervals, range.width()) - 1, 0)];
-};
-
-export function stringToMoment(date, format){
-  return moment(date, format);
-};
-
-/**
- * Read an iso duration into a moment.js object.
- * @param {string} duration
- * @returns {object} with moment.js info
- */
-export function isoDurationToMoment(duration) {
-  if (duration.charAt(0) != "P") {
-    throw new Error(`expected P as starting duration : ${  duration}`);
-  }
-  const pattern = /(\d+)(\w)/g;
-  let date = null, time = null, values = {};
-  duration = duration.substring(1);
-  if (duration.indexOf("T") >= 0) {
-    const parts = duration.split("T");
-    date = parts[0];
-    time = parts[1];
-  } else {
-    date = duration;
-  }
-  const mapping = {
-    "Y": "years",
-    "M": "months",
-    "W": "weeks",
-    "D": "days",
-    "H": "hours",
-    "m": "minutes",
-    "S": "seconds"
-  };
-  function parse(chunk, time) {
-    function read(amount, part) {
-      if (time && part == "M") {
-        part = "m";
-      }
-      const mappedTo = mapping[part];
-      if (typeof mappedTo === "undefined") {
-        throw Error(`unknown duration specifier : ${  part}`);
-      }
-      values[mappedTo] = parseFloat(amount);
-    }
-    let next;
-    while ((next = pattern.exec(chunk)) !== null) {
-      read(next[1], next[2]);
-    }
-  }
-  if (date !== null) {
-    parse(date, false);
-  }
-  if (time !== null) {
-    parse(time, true);
-  }
-  return values;
-}
-
-/**
- * Get a function for the provided duration that computes a new timestamp based on a
- * provided date and optional multiplier (negative for reverse).
- * @param {string} iso duration
- * @returns {function} offsetter(timestamp, multiplier=1)
- */
-export function createOffsetter(intervalOrDuration) {
-  const duration = typeof intervalOrDuration === "string" ? intervalOrDuration: intervalOrDuration.duration;
-  const values = exports.isoDurationToMoment(duration);
-  // as of writing, moment assumes y=365d and m=30d resulting in slow
-  // day of month shifts that break ticks from matching
-  // so we take care of this using a more accurate approach
-  // ** the current approach breaks down if the day of month is greater than
-  // 28 and day of month will no longer be retained (will shift)
-  if ("years" in values || "months" in values) {
-    const years = values.years;
-    const months = values.months;
-    values.years = 0;
-    values.months = 0;
-    const millis = moment.duration(values).asMilliseconds();
-    return function(ts, mult) {
-      mult = mult || 1;
-      const d = new Date(ts);
-      /* jshint eqnull:true */
-      let y = d.getUTCFullYear();
-      if (years != null) {
-        y += mult * years;
-      }
-      let m = d.getUTCMonth();
-      if (months != null) {
-        m += mult * months;
-      }
-      d.setUTCFullYear(y, m);
-      return d.getTime() + (mult * millis);
-    };
-  } 
-  const offset = moment.duration(values).asMilliseconds();
-  return function(ts, mult) {
-    mult = mult || 1;
-    return ts + (mult * offset);
-  };
-  
-}
-
-
-/**
- * Contains implementations of Date.parse and date.toISOString that match the
- *     ECMAScript 5 specification for parsing RFC 3339 dates.
- *     http://tools.ietf.org/html/rfc3339
- */
+import jQuery from "jquery";
+import moment from "moment";
 
 
 /**
@@ -456,16 +67,411 @@ export function parseDate(str) {
 }
 
 
+export function isRangeLike(object) {
+  return object !== null && object !== undefined && ((object.start !== null && object.start !== undefined) || (object.end !== null && object.end !== undefined));
+}
+
+/**
+ * Get the number of milliseconds from the provided arg.
+ * @param arg - either Date, range (returns start), string or number
+ * @returns milliseconds or null if nothing provided
+ */
+export function getTime(arg) {
+  const type = typeof arg;
+  if (type === "number") {
+    return arg;
+  }
+  if (arg instanceof Date) {
+    return arg.getTime();
+  }
+  if (type === "string") {
+    return parseDate(arg).getTime();
+  }
+  /* jshint eqnull:true */
+  if (arg == null) {
+    return null;
+  }
+  if (isRangeLike(arg)) {
+    /* jshint eqnull:true */
+    return getTime(arg.start != null ? arg.start : arg.end);
+  }
+  throw new Error(`cannot call getTime with ${  type  }, : ${  arg}`);
+}
+
+export const formatTimelineDate = datetime => moment(datetime).format("llll");
+
+function Range(start, end) {
+  if (Number.isNaN(Number(start)) || Number.isNaN(Number(end))) {
+    throw new Error("invalid start and/or end");
+  }
+  this.start = start;
+  this.end = end;
+}
+
+export function createRange(start, end) {
+  if (arguments.length === 1) {
+    const other = start;
+    if (isRangeLike(other)) {
+      start = other.start;
+      end = other.end;
+    } else {
+      end = start;
+    }
+  }
+  /* jshint eqnull:true */
+  if (start != null && end != null && start > end) {
+    throw new Error("start > end");
+  }
+  return new Range(getTime(start), getTime(end));
+}
+
+export function rangesEqual(a, b) {
+  return getTime(a.start) === getTime(b.start) &&
+    getTime(a.end) === getTime(b.end);
+}
+
+function rangeContains(range, time) {
+  /* jshint eqnull:true */
+  if (time == null) {
+    throw new Error("invalid time argument");
+  }
+  /* jshint eqnull:true */
+  return ((range.start != null ? time >= range.start : true) &&
+    (range.end != null ? time < range.end : true)) ||
+    range.start === range.end && time === range.start;
+}
+
+export function parseISODuration(duration) {
+  const values = exports.isoDurationToMoment(duration);
+  return moment.duration(values).asMilliseconds();
+}
+
+export function Interval(start, end, duration) {
+  if (typeof start === "object") {
+    const opts = start;
+    start = opts.start;
+    end = opts.end;
+    duration = opts.duration;
+  }
+  if (start === end) {
+    throw new Error("interval should have width");
+  }
+  Range.call(this, start, end);
+  this.duration = duration;
+  this.interval = exports.parseISODuration(this.duration);
+  this.offset = exports.createOffsetter(this);
+}
+
+/**
+ * extend this Range by another. This algorithm will consider an open-ended
+ * range to represent a minimum of start and maximum of end.
+ * @param {type} other
+ * @returns {undefined}
+ */
+Range.prototype.extend = function extend(other) {
+  /* jshint eqnull:true */
+  if (!isRangeLike(other)) {
+    other = exports.createRange(other);
+  }
+  let start = getTime(other.start);
+  let end = getTime(other.end);
+  if (start == null) {
+    start = end;
+  }
+  if (end == null) {
+    end = start;
+  }
+  if (start != null) {
+    if (this.start == null) {
+      this.start = start;
+    } else {
+      this.start = Math.min(this.start, start);
+    }
+  }
+  if (end != null) {
+    if (this.end == null) {
+      this.end = end;
+    } else {
+      this.end = Math.max(this.end, end);
+    }
+  }
+};
+Range.prototype.intersects = function intersects(other) {
+  if (isRangeLike(other)) {
+    /* jshint eqnull:true */
+    const es = other.start == null ? Number.MIN_VALUE : other.start;
+    const ee = other.end == null ? Number.MAX_VALUE : other.end;
+    // intersection if (any)
+    // effective end in this range
+    // effective start in this range
+    // effective start before and effective end after
+    return rangeContains(this, es) ||
+      rangeContains(this, ee) ||
+      es <= this.start && ee >= this.end;
+  }
+  return rangeContains(this, getTime(other));
+
+};
+Range.prototype.toString = function toString() {
+  return `${new Date(this.start).toUTCString()  } : ${  new Date(this.end).toUTCString()}`;
+};
+Range.prototype.center = function center() {
+  return Math.floor(this.start + (this.end - this.start) / 2);
+};
+Range.prototype.width = function width() {
+  return this.end - this.start;
+};
+Range.prototype.isEmpty = function isEmpty() {
+  /* jshint eqnull:true */
+  return this.end == null && this.start == null;
+};
+export { Range };
+
+
+
+/**
+ * Compute the overall range of provided args. Args may be an array of:
+ * date or long, range, object with property/function yielding range for the
+ * object.
+ * @param {type} args
+ * @returns range will have start/end even if the same time.
+ */
+export function computeRange(args, rangeGetter) {
+  const range = new Range(null, null);
+  exports.visitRanges(args, rangeGetter, (arg, r) => {
+    range.extend(r);
+  });
+  /* jshint eqnull:true */
+  if (range.start == null) {
+    range.start = range.end;
+  }
+  if (range.end == null) {
+    range.end = range.start;
+  }
+  return range;
+}
+
+export function visitRanges(objects, rangeGetter, visitor) {
+  let getRange;
+  if (typeof rangeGetter === "string") {
+    getRange = (object) => object[rangeGetter];
+  } else if (typeof rangeGetter === "function") {
+    getRange = rangeGetter;
+  } else {
+    getRange = (object) => isRangeLike(object) ? object : exports.createRange(object);
+  }
+  for (let i = 0, ii = objects.length; i < ii; i++) {
+    const object = objects[i];
+    visitor(object, getRange(object));
+  }
+}
+
+/** for the given what, find the index in the items that what is closest
+ * to. items must be sorted. The lowest closest value possible is returned.
+ */
+export function binarySearch(items, what) {
+  const start = 0;
+  let stop = items.length - 1;
+  let mid = stop + start / 2 | 0;
+  let val;
+  if (what < items[0]) {
+    return 0;
+  }
+  if (what > items[stop]) {
+    return items.length - 1;
+  }
+  while ((items[mid]) !== what && start < stop) {
+    val = items[mid];
+    if (what > val) {
+      if (what < items[mid + 1]) {
+        return mid;
+      }
+    } else if (what < val) {
+      if (what > items[mid - 1]) {
+        return mid - 1;
+      }
+      stop = mid - 1;
+    }
+    mid = stop + start / 2 | 0;
+  }
+  return mid;
+}
+
+export function find(items, what) {
+  if (what < items[0]) {
+    return 0;
+  }
+  for (let i = 0, ii = items.length - 1; i < ii; i++) {
+    if (what >= items[i] && what < items[i + 1]) {
+      return i;
+    }
+  }
+  return items.length - 1;
+};
+
+export function Events() {
+  const topics = {};
+
+  // @todo introduce setting topics with arguments and logging/exception
+  // on un-fired event
+
+  function event(id) {
+    let callbacks,
+      topic = id && topics[ id ];
+    if (!topic) {
+      callbacks = jQuery.Callbacks();
+      topic = {
+        publish: callbacks.fire,
+        subscribe: callbacks.add,
+        unsubscribe: callbacks.remove
+      };
+      if (id) {
+        topics[ id ] = topic;
+      }
+    }
+    return topic;
+  }
+
+  return {
+    event
+  };
+};
+
+export function pickInterval(range) {
+  const intervals = [
+    moment.duration(1, "seconds").asMilliseconds(),
+    moment.duration(1, "minutes").asMilliseconds(),
+    moment.duration(1, "hours").asMilliseconds(),
+    moment.duration(1, "days").asMilliseconds(),
+    moment.duration(1, "weeks").asMilliseconds(),
+    moment.duration(1, "months").asMilliseconds(),
+    moment.duration(1, "years").asMilliseconds()
+  ];
+  return intervals[Math.max(exports.find(intervals, range.width()) - 1, 0)];
+};
+
+export function stringToMoment(date, format){
+  return moment(date, format);
+}
+
+/**
+ * Read an iso duration into a moment.js object.
+ * @param {string} duration
+ * @returns {object} with moment.js info
+ */
+export function isoDurationToMoment(duration) {
+  if (duration.charAt(0) !== "P") {
+    throw new Error(`expected P as starting duration : ${  duration}`);
+  }
+  const pattern = /(\d+)(\w)/g;
+  let date = null, time = null;
+  const values = {};
+
+  duration = duration.substring(1);
+  if (duration.indexOf("T") >= 0) {
+    const parts = duration.split("T");
+    date = parts[0];
+    time = parts[1];
+  } else {
+    date = duration;
+  }
+  const mapping = {
+    "Y": "years",
+    "M": "months",
+    "W": "weeks",
+    "D": "days",
+    "H": "hours",
+    "m": "minutes",
+    "S": "seconds"
+  };
+  function parse(chunk, time) {
+    function read(amount, part) {
+      if (time && part === "M") {
+        part = "m";
+      }
+      const mappedTo = mapping[part];
+      if (typeof mappedTo === "undefined") {
+        throw Error(`unknown duration specifier : ${  part}`);
+      }
+      values[mappedTo] = parseFloat(amount);
+    }
+    let next = pattern.exec(chunk);
+    while (next !== null) {
+      read(next[1], next[2]);
+      next = pattern.exec(chunk);
+    }
+  }
+  if (date !== null) {
+    parse(date, false);
+  }
+  if (time !== null) {
+    parse(time, true);
+  }
+  return values;
+}
+
+/**
+ * Get a function for the provided duration that computes a new timestamp based on a
+ * provided date and optional multiplier (negative for reverse).
+ * @param {string} iso duration
+ * @returns {function} offsetter(timestamp, multiplier=1)
+ */
+export function createOffsetter(intervalOrDuration) {
+  const duration = typeof intervalOrDuration === "string" ? intervalOrDuration: intervalOrDuration.duration;
+  const values = exports.isoDurationToMoment(duration);
+  // as of writing, moment assumes y=365d and m=30d resulting in slow
+  // day of month shifts that break ticks from matching
+  // so we take care of this using a more accurate approach
+  // ** the current approach breaks down if the day of month is greater than
+  // 28 and day of month will no longer be retained (will shift)
+  if ("years" in values || "months" in values) {
+    const years = values.years;
+    const months = values.months;
+    values.years = 0;
+    values.months = 0;
+    const millis = moment.duration(values).asMilliseconds();
+    return (ts, mult) => {
+      mult = mult || 1;
+      const d = new Date(ts);
+      /* jshint eqnull:true */
+      let y = d.getUTCFullYear();
+      if (years != null) {
+        y += mult * years;
+      }
+      let m = d.getUTCMonth();
+      if (months != null) {
+        m += mult * months;
+      }
+      d.setUTCFullYear(y, m);
+      return d.getTime() + (mult * millis);
+    };
+  }
+  const offset = moment.duration(values).asMilliseconds();
+  return (ts, mult) => {
+    mult = mult || 1;
+    return ts + (mult * offset);
+  };
+
+}
+
+
+/**
+ * Contains implementations of Date.parse and date.toISOString that match the
+ *     ECMAScript 5 specification for parsing RFC 3339 dates.
+ *     http://tools.ietf.org/html/rfc3339
+ */
+
+
+
+
 //  Secure Hash Algorithm (SHA1)
 //  http://www.webtoolkit.info/
 
 export function sha1(msg) {
   /* eslint-disable no-bitwise */
-  const rotate_left = function(n, s) {
-    return (n << s) | (n >>> (32 - s));
-  };
+  const rotate_left = (n, s) => (n << s) | (n >>> (32 - s));
 
-  const cvt_hex = function(val) {
+  const cvt_hex = (val) => {
     let str = "";
     let i;
     let v;
@@ -478,7 +484,7 @@ export function sha1(msg) {
   };
 
 
-  const utf8Encode = function(string) {
+  const utf8Encode = (string) => {
     string = string.replace(/\r\n/g, "\n");
     let utftext = "";
 
@@ -539,11 +545,13 @@ export function sha1(msg) {
     i = msg.charCodeAt(msg_len - 3) << 24 | msg.charCodeAt(msg_len - 2) << 16 |
         msg.charCodeAt(msg_len - 1) << 8 | 0x80;
     break;
+  default:
+    break
   }
 
   word_array.push(i);
 
-  while ((word_array.length % 16) != 14) {
+  while ((word_array.length % 16) !== 14) {
     word_array.push(0);
   }
 

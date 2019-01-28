@@ -1,4 +1,6 @@
-
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 import {createRange, Interval, getTime, visitRanges, computeRange} from "./utils";
 
 /**
@@ -13,7 +15,7 @@ export function readCapabilitiesTimeDimensions(caps, openlayers2 = false) {
       throw new Error(`expected 2 parts for range : ${  subparts}`);
     }
     let range = createRange(subparts[0], subparts[1]);
-    if (subparts.length == 3) {
+    if (subparts.length === 3) {
       range.duration = subparts[2];
       range = new Interval(range);
     }
@@ -21,7 +23,7 @@ export function readCapabilitiesTimeDimensions(caps, openlayers2 = false) {
   }
   function readPart(part) {
     const subparts = part.split("/");
-    if (subparts.length == 1) {
+    if (subparts.length === 1) {
       return getTime(subparts[0]);
     } 
     return readRange(subparts);
@@ -29,7 +31,7 @@ export function readCapabilitiesTimeDimensions(caps, openlayers2 = false) {
   }
   function parse(dimension) {
     const dims = openlayers2 ? dimension : dimension.split(",");
-    if (dims.length == 1) {
+    if (dims.length === 1) {
       const read = readPart(dims[0]);
       return typeof read === "number" ? [read] : read;
     }
@@ -52,26 +54,26 @@ export function readCapabilitiesTimeDimensions(caps, openlayers2 = false) {
     });
   }
   return dimensions;
-};
+}
 
 function TileLoadListener(tileStatusCallback) {
   const tilesLoading = {};
-  let deferred = $.Deferred(),
-    cancelled = false;
+  const deferred = $.Deferred();
+  let cancelled = false;
   function remainingTiles() {
     let t = 0;
-    for (const i in tilesLoading) {
-      t += tilesLoading[i];
-    }
+    Array.forEach(Object.values(tilesLoading), (tile) => {
+      t += tile;
+    });
     return t;
   }
   const listener = {
     deferred,
     cancel() {
       cancelled = true;
-      for (const s in tilesLoading) {
-        tilesLoading[s] = 0;
-      }
+      Array.forEach(Object.keys(tilesLoading), (i) => {
+        tilesLoading[i] = 0;
+      });
       if (deferred) {
         deferred.reject(); // notify we've aborted but w/out error
       }
@@ -126,42 +128,6 @@ function TileLoadListener(tileStatusCallback) {
   return listener;
 }
 
-export function filterVectorLayer(storyLayer, range) {
-  let timeAttr = storyLayer.get("timeAttribute"), l_features = storyLayer.get("features") || storyLayer.getLayer().get("features");
-  if (timeAttr === undefined || l_features === undefined) {
-    return;
-  }
-  range = createRange(range);
-  // loop over all original features and filter them
-  const features = [];
-  const layer = storyLayer.getLayer();
-  visitAllLayerFeatureTimes(storyLayer, (f,r) => {
-    if (range.intersects(r)) {
-      features.push(f);
-    }
-  }, l_features);
-  layer.getSource().clear(true);
-  layer.getSource().addFeatures(features);
-  return features;
-}
-
-
-export function filterVectorBoxLayer(storyLayer, range) {
-  let timeAttr = storyLayer.get("timeAttribute"), l_features = storyLayer.get("features");
-  if (timeAttr === undefined || l_features === undefined) {
-    return;
-  }
-  range = createRange(range);
-  // loop over all original features and filter them
-  const features = [];
-  visitAllLayerFeatureTimes(storyLayer, (f,r) => {
-    if (range.intersects(r)) {
-      features.push(f);
-    }
-  });
-
-  return features;
-}
 /**
  * Call the provided visitor function on the specified features using the
  * configuration provided in the layer. The visitor function will be called
@@ -179,27 +145,63 @@ function visitAllLayerFeatureTimes(storyLayer, visitor, features) {
   const layer = storyLayer.getLayer();
   features = features || storyLayer.get("features") || layer.getSource().getFeatures();
   if (endAtt) {
-    rangeGetter = function(f) {
+    rangeGetter = (f) => {
       if(f.range){
         return f.range;
       }
       const start = f.get(startAtt);
       const end = f.get(endAtt);
       return createRange(start, end);
-            
+
     };
   } else {
-    rangeGetter = function(f) {
+    rangeGetter = (f) => {
       if(f.range){
         return f.range;
       }
       const start = f.get(startAtt);
       return createRange(start, start);
-            
     };
   }
   visitRanges(features, rangeGetter, visitor);
 }
+
+export function filterVectorLayer(storyLayer, range) {
+  const timeAttr = storyLayer.get("timeAttribute"), l_features = storyLayer.get("features") || storyLayer.getLayer().get("features");
+  if (timeAttr === undefined || l_features === undefined) {
+    return undefined;
+  }
+  range = createRange(range);
+  // loop over all original features and filter them
+  const features = [];
+  const layer = storyLayer.getLayer();
+  visitAllLayerFeatureTimes(storyLayer, (f,r) => {
+    if (range.intersects(r)) {
+      features.push(f);
+    }
+  }, l_features);
+  layer.getSource().clear(true);
+  layer.getSource().addFeatures(features);
+  return features;
+}
+
+
+export function filterVectorBoxLayer(storyLayer, range) {
+  const timeAttr = storyLayer.get("timeAttribute"), l_features = storyLayer.get("features");
+  if (timeAttr === undefined || l_features === undefined) {
+    return undefined;
+  }
+  range = createRange(range);
+  // loop over all original features and filter them
+  const features = [];
+  visitAllLayerFeatureTimes(storyLayer, (f,r) => {
+    if (range.intersects(r)) {
+      features.push(f);
+    }
+  });
+  return features;
+}
+
 
 /**
  * Compute the range of the provided features using the layer's configured
@@ -215,15 +217,15 @@ export function computeVectorRange(storyLayer, features) {
   const layer = storyLayer.getLayer();
   features = features || storyLayer.get("features") || layer.getSource().getFeatures();
   return computeRange(features, (f) => createRange(f.get(startAtt), f.get(endAtt)));
-};
+}
 
 export function MapController(options, timeControls) {
-  let loadListener = null,
-    tileStatusCallback = options.tileStatusCallback,
+  let loadListener = null;
+  const tileStatusCallback = options.tileStatusCallback,
     storyMap = options.storyMap;
   function layerAdded(layer) {
-    let source, image;
-    const loaded = function(event) {
+    let source;
+    const loaded = (event) => {
       // grab the active loadListener to avoid phantom onloads
       // when listener is cancelled
       const currentListener = loadListener;
@@ -231,7 +233,7 @@ export function MapController(options, timeControls) {
         currentListener.tileLoaded(event, source);
       }
     };
-    const loadstart = function() {
+    const loadstart = () => {
       // grab the active loadListener to avoid phantom onloads
       // when listener is cancelled
       const currentListener = loadListener;
@@ -266,7 +268,7 @@ export function MapController(options, timeControls) {
     const currentPinFeatures = filterVectorLayer(storyMap.storyPinsLayer, range);
 
     if (currentPinFeatures && currentPinFeatures.length > 0) {
-      
+      return undefined;
     } else if (currentBoxes && currentBoxes.length > 0) {
       const currentBox = currentBoxes[0];
 
@@ -276,16 +278,17 @@ export function MapController(options, timeControls) {
     } else if (storyMap.returnToExtent) {
       storyMap.animateCenterAndZoom(storyMap.getCenter(), storyMap.getZoom());
     }
+    return undefined;
   }
 
   function updateLayers(range) {
     const storyLayers = storyMap.getStoryLayers();
     let time = new Date(range.start).toISOString();
-    if (range.start != range.end) {
+    if (range.start !== range.end) {
       time += `/${  new Date(range.end).toISOString()}`;
     }
     for (let i = 0; i < storyLayers.getLength(); i++) {
-      let storyLayer = storyLayers.item(i), layer = storyLayer.getLayer();
+      const storyLayer = storyLayers.item(i), layer = storyLayer.getLayer();
       if ((layer instanceof ol.layer.Tile && layer.getSource() instanceof ol.source.TileWMS) ||
                   (layer instanceof ol.layer.Image && layer.getSource() instanceof ol.source.ImageWMS)) {
         if (storyLayer.get("times")) {

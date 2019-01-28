@@ -315,7 +315,8 @@ export default function SLDStyleConverter() {
           }]
         }]
       };
-      let rule, ruleContainer = result.value.namedLayerOrUserLayer[0].namedStyleOrUserStyle[0].featureTypeStyle[0].rule;
+      let rule;
+      const ruleContainer = result.value.namedLayerOrUserLayer[0].namedStyleOrUserStyle[0].featureTypeStyle[0].rule;
       if (style.rules) {
         for (let i = 0, ii = style.rules.length; i < ii; ++i) {
           const styleRule = style.rules[i];

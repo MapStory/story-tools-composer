@@ -18,17 +18,17 @@ export function stPlaybackControls() {
       timeControls: "=",
       playbackOptions: "="
     },
-    link (scope, elem) {
+    link (scope) {
       scope.formatTime = formatTimelineDate;
       scope.playbackState = "Play";
       scope.loopText = "Loop Chapter";
       scope.loopStoryEnabled = false;
       scope.loopChapterEnabled = false;
       scope.showPlaybackCtrls = false;
-      scope.next = function () {
+      scope.next = () => {
         scope.timeControls.next();
       };
-      scope.prev = function () {
+      scope.prev = () => {
         scope.timeControls.prev();
       };
       scope.$watch("timeControls", (neu, old) => {
@@ -52,7 +52,7 @@ export function stPlaybackControls() {
           tc.stop();
         }
       });
-      scope.play = function () {
+      scope.play = () => {
         const tc = scope.timeControls;
         const started = tc.isStarted();
         if (started) {
@@ -72,7 +72,7 @@ export function stPlaybackControls() {
          * Check if window is in full screen mode.
          * @return {Boolean} full screen mode
          */
-      scope.isInFullScreen = function (doc) {
+      scope.isInFullScreen = (doc) => {
 
 
         if (doc.fullScreenElement !== undefined) {
@@ -98,12 +98,14 @@ export function stPlaybackControls() {
         if (window.navigator.standalone !== undefined) {
           return !!window.navigator.standalone;
         }
+
+        return false;
       };
 
-      scope.toggleFullScreen = function () {
+      scope.toggleFullScreen = () => {
         const elem = window.parent.document.getElementById("embedded_map");
 
-        if (!this.isInFullScreen(document) && !this.isInFullScreen(parent.document)) {
+        if (!this.isInFullScreen(document) && !this.isInFullScreen(window.parent.document)) {
           if (!document.webkitFullScreen || !document.mozFullScreen || !document.msFullscreenElement || !document.fullscreenElement) {
             if (elem.requestFullscreen) {
               elem.requestFullscreen();
@@ -116,33 +118,36 @@ export function stPlaybackControls() {
             }
           }
         } else if (document.mozCancelFullScreen) {
-          parent.document.mozCancelFullScreen();
+          window.parent.document.mozCancelFullScreen();
           document.mozCancelFullScreen();
         } else {
-          parent.document.webkitCancelFullScreen();
+          window.parent.document.webkitCancelFullScreen();
           document.webkitCancelFullScreen();
         }
       };
 
-      scope.toggleLoop = function () {
+      scope.toggleLoop = () => {
         const tc = scope.timeControls;
         if (tc.loop === "none") {
-          scope.loop = tc.loop = "chapter";
+          tc.loop = "chapter";
+          scope.loop = tc.loop;
           scope.loopText = "Loop Story";
           scope.loopChapterEnabled = true;
         } else if (tc.loop === "chapter") {
-          scope.loop = tc.loop = "story";
+          tc.loop = "story";
+          scope.loop = tc.loop;
           scope.loopText = "Disable Loop";
           scope.loopStoryEnabled = true;
           scope.loopChapterEnabled = false;
         } else {
+          tc.loop = "none";
           scope.loopText = "Loop Chapter";
-          scope.loop = tc.loop = "none";
+          scope.loop = tc.loop;
           scope.loopStoryEnabled = false;
           scope.loopChapterEnabled = false;          }
       };
 
-      scope.getLoopButtonGlyph = function(){
+      scope.getLoopButtonGlyph = () => {
         if (scope.loop === "story") {
           return "glyphicon glyphicon-refresh";
         } 
@@ -153,11 +158,11 @@ export function stPlaybackControls() {
       $("#timeline").hide();
       $("#playback-settings").hide();
 
-      scope.toggleTimeLine = function () {
+      scope.toggleTimeLine = () => {
         $("#timeline").slideToggle("fast");
       };
 
-      scope.togglePlaybackControls = function () {
+      scope.togglePlaybackControls = () => {
         $("#playback-settings").slideToggle("fast");
       };
     }
@@ -185,8 +190,8 @@ export function stPlaybackSettings() {
       // @todo remove once timeControls properly exposes access to this
       playbackOptions: "="
     },
-    link (scope, elem) {
-      scope.optionsChanged = function () {
+    link (scope) {
+      scope.optionsChanged = () => {
         if (scope.timeControls) {
           scope.timeControls.update(scope.playbackOptions);
         }

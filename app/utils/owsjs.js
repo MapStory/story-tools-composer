@@ -1,4 +1,10 @@
-const Jsonix = require("imports-loader?require=>false!exports-loader?Jsonix!ogc-schemas/node_modules/jsonix/jsonix");
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+
+// const Jsonix = require("imports-loader?require=>false!exports-loader?Jsonix!ogc-schemas/node_modules/jsonix/jsonix");
+const Jsonix = require("ogc-schemas/node_modules/jsonix/jsonix");
+
 
 const mappings = {};
 mappings.XLink_1_0 = require("w3c-schemas/lib/XLink_1_0.js").XLink_1_0;

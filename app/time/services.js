@@ -89,7 +89,7 @@ function computeTicks(layersWithTime, storyPins) {
       start = smallest.offset(start);
     }
   }
-  ticks = Object.getOwnPropertyNames(ticks).map((t) => parseInt(t));
+  ticks = Object.getOwnPropertyNames(ticks).map((t) => parseInt(t, 10));
 
   lastComputedTicks.ticks = ticks.sort((a, b) => a - b);
 
@@ -132,9 +132,9 @@ function TimeControlsManager($log, $rootScope, StoryPinLayerManager, MapManager,
         nextChapter: MapManager.navigationSvc.nextChapter
 
       });
-      timeControlsManager.timeControls.on("rangeChange", (range) => {
-        timeControlsManager.currentRange = range;
-        $rootScope.$broadcast("rangeChange", range);
+      timeControlsManager.timeControls.on("rangeChange", (rangeX) => {
+        timeControlsManager.currentRange = rangeX;
+        $rootScope.$broadcast("rangeChange", rangeX);
       });
     }
   }
@@ -148,6 +148,7 @@ function TimeControlsManager($log, $rootScope, StoryPinLayerManager, MapManager,
           data: range
         };
       }
+      return undefined;
     });
   });
   const pinsLayer = MapManager.storyMap.storyPinsLayer;
@@ -162,6 +163,7 @@ function TimeControlsManager($log, $rootScope, StoryPinLayerManager, MapManager,
           data: range
         };
       }
+      return undefined;
     });
   };
   pinsLayer.on("change:features", pinLayerChange);
@@ -176,6 +178,7 @@ function TimeControlsManager($log, $rootScope, StoryPinLayerManager, MapManager,
           data: range
         };
       }
+      return undefined;
     });
   });
 

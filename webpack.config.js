@@ -18,6 +18,14 @@ module.exports = {
   module: {
     rules: [
       {
+        test: /jsonix/,
+        include: Path.join(__dirname, "node_modules/ogc-schemas/node_modules/jsonix/"),
+        use: [
+          "imports-loader?require=>false",
+          "exports-loader?Jsonix"
+        ]
+      },
+      {
         test: /\.html$/,
         use: "raw-loader",
         include: Path.join(__dirname, "app/style/templates/types/")

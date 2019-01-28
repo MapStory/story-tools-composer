@@ -1,3 +1,8 @@
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
+
+import moment from "moment";
 import vis from "vis/dist/vis.min.js";
 import {createRange, sha1, rangesEqual} from "./utils";
 
@@ -18,7 +23,7 @@ export default function TimeLine(id, model) {
   const offset = new Date().getTimezoneOffset() * 60 * 1000;
 
   function init(model) {
-    let elements = [], layer_groups = [], groups = [], options;
+    let elements = [], layer_groups = [], groups = [];
     const story_pin_label = "Annotation";
     let range = model.getRange();
     if (range.isEmpty()) {
@@ -107,20 +112,12 @@ export default function TimeLine(id, model) {
     groups = groups.concat(layer_groups);
 
     if(elements.length > 5000){
-      console.debug("%s elements is too large for the timeline to render performant, no worries we will take care of it.", elements.length);
       elements = [];
-
     }
-
-    console.debug("Building the timeline from %s to %s with %s elements and %s groups.",
-      new Date(range.start).toISOString(),
-      new Date(range.end).toISOString(),
-      elements.length,
-      groups.length);
 
     const height = $( document ).height() * 0.35;
 
-    options = {
+    const options = {
       min: range.start,
       max: range.end,
       start: range.start,
@@ -149,7 +146,7 @@ export default function TimeLine(id, model) {
   timeline.on("timechanged", () => {
     timeline.moveTo(timeline.getCustomTime(), {animate: false});
   });
-  this.moveTo = function(time) {
+  this.moveTo = function moveTo(time) {
     timeline.moveTo(time, {animate: false});
 
     if (window.storypinCallback) {
@@ -160,13 +157,13 @@ export default function TimeLine(id, model) {
       window.frameCallback(time);
     }
   };
-  this.setTime = function(time) {
+  this.setTime = function setTime(time) {
     timeline.setCustomTime(time + offset);
   };
-  this.isWindowMax = function() {
+  this.isWindowMax = function isWindowMax() {
     return rangesEqual(timeline.getWindow(), model.getRange());
   };
-  this.moveToCurrentTime = function() {
+  this.moveToCurrentTime = function moveToCurrentTime() {
     const current = timeline.getCustomTime().getTime();
     const width = createRange(timeline.getWindow()).width();
     const range = model.getRange();
@@ -178,10 +175,10 @@ export default function TimeLine(id, model) {
       timeline.moveTo(current, {animate: false});
     }
   };
-  this.getWindow = function() {
+  this.getWindow = function getWindow() {
     return timeline.getWindow();
   };
-  this.on = function(ev, cb) {
+  this.on = function on(ev, cb) {
     timeline.on(ev, cb);
   };
   this.update = init;

@@ -1,5 +1,6 @@
-
-import {Events} from "./utils";
+/* eslint no-underscore-dangle: 0 */
+/* eslint no-shadow: 0 */
+/* eslint camelcase: 0 */
 import {BoxModel} from "./boxes";
 
 /**
@@ -7,8 +8,7 @@ import {BoxModel} from "./boxes";
  */
 export default function TimeModel(options, boxes, annotations) {
     
-  let events = new Events(),
-    boxModel = new BoxModel(boxes);
+  const boxModel = new BoxModel(boxes);
 
   this.annotations = annotations;
   this.boxes = boxes;
@@ -19,52 +19,54 @@ export default function TimeModel(options, boxes, annotations) {
   this.mode = "instant";
   this.interval = 1000;
 
+  const propertyExists = (obj, prop) => Object.keys(obj).includes(prop);
+
   function init(opts) {
-    if (opts.hasOwnProperty("fixed")) {
+    if (propertyExists(opts, "fixed")) {
       this.fixed = opts.fixed;
     }
 
-    if (opts.hasOwnProperty("speed") && opts.speed !== undefined) {
+    if (propertyExists(opts, "speed") && opts.speed !== undefined) {
       this.interval = opts.speed;
     }
 
-    if (opts.hasOwnProperty("mode") && opts.mode !== undefined) {
+    if (propertyExists(opts, "mode") && opts.mode !== undefined) {
       this.mode = opts.mode;
     }
-    if (opts.hasOwnProperty("annotations")) {
+    if (propertyExists(opts, "annotations")) {
       this.annotations.update(opts.annotations);
     }
-    if (opts.hasOwnProperty("boxes")) {
+    if (propertyExists(opts, "boxes")) {
       this.boxy.update(opts.boxes);
     }
 
-    if (opts.hasOwnProperty("storyLayers")) {
+    if (propertyExists(opts, "storyLayers")) {
       this.storyLayers = opts.storyLayers;
     }
 
     // @todo is the best name for this
-    if (opts.hasOwnProperty("data")) {
+    if (propertyExists(opts, "data")) {
       boxModel.setRange(opts.data);
     }
   }
 
   init.call(this, options);
-  this.getRange = function() {
+  this.getRange = function getRange() {
     return boxModel.getRange();
   };
-  this.getTotalRange = function() {
+  this.getTotalRange = function getTotalRange() {
     // @todo need to access layers and cached dimension data
     //       and consider annotations?
     throw Error("not implemented");
   };
   this.update = init;
-  this.getSteps = function() {
+  this.getSteps = function getSteps() {
     return boxModel.getSteps();
   };
-  this.getIndex = function(instant) {
+  this.getIndex = function getIndex(instant) {
     return boxModel.getIndex(instant);
   };
-  this.getRangeAt = function(i, j) {
+  this.getRangeAt = function getRangeAt(i, j) {
     return boxModel.getRangeAt(i, j);
   };
 };

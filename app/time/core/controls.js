@@ -16,17 +16,28 @@ function TimeController(model, slider, timeline, controls) {
   this.timeline = timeline;
   this.loop = "none";
 
-  let self = this,
-    currentTimelineWindow = getTimelineWindow(),
-    isAdjusting = false,
-    started = false,
-    timeout = null,
-    events = new Events(),
-    deferred = [];
+  const self = this,
+    events = new Events();
 
   function getTimelineWindow() {
     return createRange(timeline.getWindow());
   }
+
+
+
+  function publish(event, data) {
+    events.event(event).publish(data);
+    // For some reason, importing PubSub normally
+    // doesn't allow listeners in composer to listen to these events
+    window.PubSub.publish(event, {loop: self.loop, data});
+  }
+
+  let currentTimelineWindow = getTimelineWindow(),
+    isAdjusting = false,
+    started = false,
+    timeout = null,
+    deferred = [];
+
 
   function adjust(fun, a, b) {
     if (isAdjusting) {
@@ -40,10 +51,65 @@ function TimeController(model, slider, timeline, controls) {
     }
   }
 
+
+  function publishRangeChange(data) {
+    if (typeof data === "undefined") {
+      data = slider.getRange();
+    }
+    publish("rangeChange", data);
+  }
+
   function centerTimeline(range) {
     const c = model.mode === "cumulative" ? range.end : range.center();
     timeline.moveTo(c);
     publishRangeChange(range);
+  }
+
+
+  function move(amt) {
+    timeout = null;
+    let atEnd;
+    if (model.mode === "cumulative") {
+      atEnd = slider.grow(amt);
+    } else {
+      atEnd = slider.move(amt);
+    }
+    if (atEnd) {
+      if (self.loop === "chapter") {
+        slider.jump(0);
+      } else if (self.loop === "story") {
+        slider.jump(0);
+        controls.nextChapter();
+      } else {
+        self.stop();
+      }
+    }
+    centerTimeline(slider.getRange());
+    if (started) {
+      // eslint-disable-next-line no-use-before-define
+      schedule();
+    }
+  }
+
+  function schedule() {
+    if (started) {
+      // @todo respect playback interval options...
+      const wait = model.interval;
+      $.when(...deferred).then(() => {
+        if (started) {
+          timeout = window.setTimeout(move, wait, 1);
+        }
+      }, () => {
+        // the deferred was rejected, if arguments provided, this
+        // represents an error state so don't continue playing
+        if (arguments.length === 0 && started && timeout === null) {
+          timeout = window.setTimeout(move, wait, 1);
+        } else {
+          self.stop();
+        }
+      });
+      deferred = [];
+    }
   }
 
   function adjustSlider(range) {
@@ -76,6 +142,14 @@ function TimeController(model, slider, timeline, controls) {
     currentTimelineWindow = range;
   }
 
+  function clearTimeout() {
+    if (timeout !== null) {
+      window.clearTimeout(timeout);
+    }
+    timeout = null;
+  }
+
+
   slider.on("rangeChanged", (range) => {
     clearTimeout();
     adjust(centerTimeline, range);
@@ -84,100 +158,29 @@ function TimeController(model, slider, timeline, controls) {
   timeline.on("rangechanged", (range) => {
     adjust(updateSlider, range);
   });
-  timeline.on("select", (properties) => {
-    console.log("Selected items: ", properties.items);
-  });
-  function clearTimeout() {
-    if (timeout !== null) {
-      window.clearTimeout(timeout);
-    }
-    timeout = null;
-  }
 
-  function move(amt) {
-    timeout = null;
-    let atEnd;
-    if (model.mode === "cumulative") {
-      atEnd = slider.grow(amt);
-    } else {
-      atEnd = slider.move(amt);
-    }
-    if (atEnd) {
-      if (self.loop === "chapter") {
-        slider.jump(0);
-      } else if (self.loop === "story") {
-        const currentChapter = window.location.hash.split("/")[2];
-        const nextChapter = currentChapter === undefined || currentChapter === null ? 2 : parseInt(currentChapter) + 1;
-        slider.jump(0);
-        controls.nextChapter();
-      } else {
-        self.stop();
-      }
-    }
-    centerTimeline(slider.getRange());
-    if (started) {
-      schedule();
-    }
+  function publishStateChange(state) {
+    publish("stateChange", state);
   }
-
-  function schedule() {
-    if (started) {
-      // @todo respect playback interval options...
-      const wait = model.interval;
-      $.when(...deferred).then(() => {
-        if (started) {
-          timeout = window.setTimeout(move, wait, 1);
-        }
-      }, function() {
-        // the deferred was rejected, if arguments provided, this
-        // represents an error state so don't continue playing
-        if (arguments.length === 0 && started && timeout === null) {
-          timeout = window.setTimeout(move, wait, 1);
-        } else {
-          self.stop();
-        }
-      });
-      deferred = [];
-    }
-  }
-
 
   function run() {
     publishStateChange("running");
     move(1);
   }
 
-  function publishRangeChange(data) {
-    if (typeof data === "undefined") {
-      data = slider.getRange();
-    }
-    publish("rangeChange", data);
-  }
-
-  function publishStateChange(state) {
-    publish("stateChange", state);
-  }
-
-  function publish(event, data) {
-    events.event(event).publish(data);
-    // For some reason, importing PubSub normally
-    // doesn't allow listeners in composer to listen to these events
-    window.PubSub.publish(event, {loop: self.loop, data});
-  }
-
-  this.defer = function(defer) {
+  this.defer = function deferFunc(defer) {
     deferred.push(defer);
   };
-  this.getCurrentRange = function() {
+  this.getCurrentRange = function getCurrentRange() {
     return slider.getRange();
   };
-  this.update = function(options) {
+  this.update = function update(options) {
     model.update(options);
     slider.update(model);
     timeline.update(model);
     window.setTimeout(publishRangeChange, 0);
   };
-  this.start = function() {
+  this.start = function start() {
     if (started) {
       return;
     }
@@ -185,28 +188,28 @@ function TimeController(model, slider, timeline, controls) {
     started = true;
     window.setTimeout(run, 0);
   };
-  this.stop = function() {
+  this.stop = function stop() {
     deferred = [];
     started = false;
     clearTimeout();
     window.setTimeout(publishStateChange, 0, "stopped");
   };
-  this.next = function() {
+  this.next = function next() {
     clearTimeout();
     window.setTimeout(move, 0, 1);
   };
-  this.prev = function() {
+  this.prev = function prev() {
     clearTimeout();
     window.setTimeout(move, 0, -1);
   };
-  this.isStarted = function() {
+  this.isStarted = function isStarted() {
     return started;
   };
-  this.isReady = function() {
+  this.isReady = function isReady() {
     const r = model.getRange();
     return r.start !== null && r.end !== null;
   };
-  this.on = function(event, f) {
+  this.on = function on(event, f) {
     events.event(event).subscribe(f);
   };
   window.PubSub.subscribe("mediaPause", this.stop);
@@ -229,11 +232,11 @@ function Annotations(annotations) {
   function inTimeline() {
     return ann.filter((a) => a.in_timeline);
   }
-  this.getTimeLineAnnotatons = function() {
+  this.getTimeLineAnnotatons = function getTimeLineAnnotations() {
     return inTimeline(true);
   };
-  this.update = function(annotations) {
-    this.ann = annotations;
+  this.update = function update(newAnnotations) {
+    this.ann = newAnnotations;
   };
 }
 
@@ -255,11 +258,11 @@ function Boxes(boxes) {
       true// b.in_timeline;
     );
   }
-  this.getTimeLineBoxes = function() {
+  this.getTimeLineBoxes = function getTimeLineBoxes() {
     return inTimeline(true);
   };
-  this.update = function(boxes) {
-    this.box = boxes;
+  this.update = function update(newBoxes) {
+    this.box = newBoxes;
   };
 }
 
@@ -310,14 +313,15 @@ function Boxes(boxes) {
 export default function create(options) {
   // @todo for layers, annotations won't exist and, intially, we won't
   //       have playback settings for layers...
-  let model,
+
+  const
     annotations = new Annotations(options.annotations),
-    boxes = options.boxes,
-    controls = {"getChapterCount": options.getChapterCount, "nextChapter": options.nextChapter},
+    controls = {"getChapterCount": options.getChapterCount, "nextChapter": options.nextChapter};
+
+  let
     totalRange,
-    slider,
-    timeline,
-    mapController;
+    boxes = options.boxes;
+
   options.boxy = new Boxes(options.boxes);
   // make a default box if none provided
   if (typeof boxes === "undefined" || boxes.length === 0) {
@@ -339,11 +343,13 @@ export default function create(options) {
     }];
   }
 
-  model = new TimeModel(options, boxes, annotations);
-  slider = new TimeSlider(options.timeSliderId || "slider", model);
-  timeline = new TimeLine(options.timeLineId || "timeline", model);
+  const model = new TimeModel(options, boxes, annotations);
+  const slider = new TimeSlider(options.timeSliderId || "slider", model);
+  const timeline = new TimeLine(options.timeLineId || "timeline", model);
 
   const timeControls = new TimeController(model, slider, timeline, controls);
-  mapController = new MapController(options, timeControls);
+
+  // eslint-disable-next-line no-new
+  new MapController(options, timeControls);
   return timeControls;
 }
