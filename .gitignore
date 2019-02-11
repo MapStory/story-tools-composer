@@ -7,3 +7,4 @@ node_modules
 /index.html
 package-lock.json
 yarn-error.log
+.DS_STORE

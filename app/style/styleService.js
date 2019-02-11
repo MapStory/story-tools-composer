@@ -1,3 +1,6 @@
+import SLDStyleConverter from "../utils/SLDStyleConverter";
+import StyleComplete from "./StyleComplete";
+
 function styleService(
   $http,
   $cookies,
@@ -100,12 +103,12 @@ function styleService(
     const layer = storyLayer.getLayer();
     const layerSource = layer.getSource();
     const mapID = stateSvc.config.id;
-    const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
+    const isComplete = new StyleComplete().isComplete(
       style
     );
     if (style.name) {
       if (isComplete) {
-        const sld = new storytools.edit.SLDStyleConverter.SLDStyleConverter();
+        const sld = new SLDStyleConverter();
         const xml = sld.generateStyle(
           style,
           `geonode:${layerSource.getParams().LAYERS}`,
@@ -172,7 +175,7 @@ function styleService(
   svc.updateStyle = storyLayer => {
     const style = storyLayer.get("style");
     const layer = storyLayer.getLayer();
-    const isComplete = new storytools.edit.StyleComplete.StyleComplete().isComplete(
+    const isComplete = new StyleComplete().isComplete(
       style
     );
     svc.handleHeatMapStyle(storyLayer);
