@@ -74,14 +74,14 @@
                             <!-- Title -->
                             <div class="form-field">
                                 <label for="storypin_title">StoryPin Title</label>
-                                <strong><abbr title="required">*</abbr></strong>
+                                <strong><abbr title="required"></abbr></strong>
                                 <br/>
                                 <input id="storypin_title" type="text" name="storypin_title" ng-model="pin.title"/>
                             </div>
                             <!-- Text -->
                             <div class="form-field">
                                 <label for="storypin_text">StoryPin Text</label>
-                                <strong><abbr title="required">*</abbr></strong>
+                                <strong><abbr title="required"></abbr></strong>
                                 <br/>
                                 <input id="storypin_text" type="text" name="storypin_text"
                                        ng-model="pin.content"/>
@@ -95,7 +95,7 @@
                                 <label for="storypin_media">StoryPin Media</label>
                                 <br/>
                                 <!-- TODO: Empty text areas don't work in all browsers-->
-                                <input id="storypin_media" type="text" name="storypin_media" ng-model="pin.media" required/>
+                                <input id="storypin_media" type="text" name="storypin_media" ng-model="pin.media" uib-tooltip="Want to add an image, video or audio to your StoryPin? Just go to one of these whitelisted sources and copy/paste the URL of the content you want here! (YouTube, Twitter, Imgur, SoundCloud, Flickr, Instagram, Vimeo, Ivideo or Gallery)" tooltip-placement="top" required/>
                             </div>
                             <!-- Width Height Widget -->
                             <label for="storypin_width">Width (pixels):</label>
@@ -112,9 +112,9 @@
                             </div>
 
                             <label for="storypin_offset">Media Playback Offset (seconds):</label>
-                            <input type="number" id="storypin_offset" ng-model="pin.offset"/>
+                            <input type="number" id="storypin_offset" ng-model="pin.offset" uib-tooltip="If you have a video embed, indicate how many seconds into the video you want it to begin. For example “30” would begin the video 30 seconds after the start." tooltip-placement="top"/>
                             <label for="storypin_playlength">Media Playlength (seconds):</label>
-                            <input type="number" id="storypin_playlength" ng-model="pin.playLength"/>
+                            <input type="number" id="storypin_playlength" ng-model="pin.playLength" uib-tooltip="If you have a video embed, indicate how many seconds into the video you want it to begin. For example “30” would begin the video 30 seconds after the start." tooltip-placement="top"" tooltip-placement="top"/>
                         </fieldset>
                         <hr />
                         <fieldset>
@@ -140,8 +140,6 @@
                             <legend>Place</legend>
                             <latlon-input pin="pin"/>
                         </fieldset>
-
-
                     </form>
                 </div>
             </div>
