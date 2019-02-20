@@ -1,18 +1,12 @@
 import angular from "angular";
 import ngAnimate from "angular-animate";
 import ngCookies from "angular-cookies";
+import ngBootstrap from "angular-ui-bootstrap";
 
 const module = angular.module("composer", [
   ngAnimate,
-  "ui.bootstrap",
+  ngBootstrap,
   ngCookies,
-  "storytools.core.time",
-  "storytools.core.mapstory",
-  "storytools.core.loading",
-  "storytools.core.legend",
-  "storytools.edit.style",
-  "storytools.edit.pins",
-  "storytools.core.ogc",
   "colorpicker.module",
   "pascalprecht.translate",
   "angular-sortable-view"
@@ -121,6 +115,7 @@ module.config([
 // }
 
 require("./map");
+require("./mapstory");
 require("./style");
 require("./layers");
 require("./ui");
@@ -128,3 +123,5 @@ require("./time");
 require("./state");
 require("./pins");
 require("./frames");
+require("./ogc");
+require("./loading");

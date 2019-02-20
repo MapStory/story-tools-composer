@@ -1,0 +1,19 @@
+<div class="style-editor-item">
+    <div class="title">Rules</div>
+    <table class="controls">
+        <tbody>
+            <tr ng-repeat="rule in activeStyle.rules" class="style-rule">
+                <td>{{ rule.name}}</td>
+                <td ng-if="rule.style.symbol.fillColor && activeStyle.typeName==='unique point'"><input ng-model="rule.title"/></td>
+                <td>
+                    <color-editor st-model="rule.style.symbol" property="fillColor" ng-if="rule.style.symbol.fillColor"></color-editor>
+                    <color-editor st-model="rule.style.stroke" property="strokeColor" ng-if="rule.style.stroke.strokeColor"></color-editor>
+                    <number-editor st-model="rule.style.symbol" property="size" ng-if="rule.style.symbol.size != null"></number-editor>
+                </td>
+                <td>
+                    <button class="btn btn-inverse" ng-click="deleteRule(rule)">&times;</button>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+</div>

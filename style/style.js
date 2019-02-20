@@ -1,6 +1,10 @@
+require("../node_modules/nouislider/distribute/nouislider.css");
 require("./css/index.css");
 require("../app/time/style/time.less");
-// require("../app/layers/style/info-box.less");
+// Warning: the order of these less files does matter
+require("../app/loading/style/style.less");
+require("../app/ogc/style/style.less");
+require("../app/style/style/style.less");
 require("../app/map/style/map.less");
 require("../app/ui/style/pin-sidebar.less");
 require("../app/ui/style/sidebar.less");
