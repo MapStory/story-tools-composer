@@ -17,7 +17,7 @@ const tour = {
         {
           title: "Add New Chapter",
           content: "Each chapter contains a summary and StoryLayers, StoryPins and StoryFrames. To create a new chapter, click Add New Chapter. You’ll then see text boxes where you can give the chapter a title and summary. On the left-side you’ll see buttons where you can manage StoryLayers, StoryPins and StoryFrames for the chapter.",
-          target: "manageChapters",
+          target: "addNewChapter",
           placement: "bottom",
           showPrevButton: true
         },
