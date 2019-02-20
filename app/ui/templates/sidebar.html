@@ -1,7 +1,11 @@
 <div class="sidebar" ng-hide="layerViewerMode">
     <div class="sidebar-header">
         <div class="chapter-header">
-            <a ng-if="composerMode" ng-hide="viewerMode" ng-click="updateSelected('toc')" class="toc-link">Table of Contents</a>
+            <a ng-if="composerMode" ng-hide="viewerMode" ng-click="updateSelected('toc')" class="toc-link">
+                <p id="tableOfContents">
+                Table of Contents
+                </p>    
+            </a>
             <div class="chapter-nav">
                 <a ng-click="previousChapter()" ng-disabled="mapManager.storyChapter == 1" class="arrow"><i class="fa fa-caret-left"></i></a>
                 <h1 class="sidebar-title">{{stateSvc.getChapter()}} <strong>{{ mapManager.storyMap.getStoryTitle()  }}</strong></h1>
@@ -11,16 +15,24 @@
     </div>
     <div class="sidebar-main">
         <nav ng-if="composerMode" ng-hide="viewerMode" class="sidebar-nav">
-            <a ng-click="updateSelected('info')"><i class="fa fa-info-circle" ng-class="selected.info && 'active'" uib-tooltip="Manage Chapters" tooltip-placement="right"></i></a>
+            <p id="tableOfContents">
+                <a ng-click="updateSelected('info')"><i class="fa fa-info-circle" ng-class="selected.info && 'active'" uib-tooltip="Manage Chapters" tooltip-placement="right" id="manageChapters"></i></a>
+            </p>
             <!--a ng-click="selected = {settings:true}"><i class="fa fa-play-circle-o" ng-class="selected.settings && 'active'"></i></a-->
             <!--a ng-click="selected = {legend:true}"><i class="fa fa-list-alt" ng-class="selected.legend && 'active'"></i></a-->
+           <p id="manageLayers">
             <a ng-click="updateSelected('layers')"><i class="fa fa-clone" ng-class="selected.layers && 'active'" uib-tooltip="Manage Layers" tooltip-placement="right"></i></a>
+           </p>
+           <p id="createStorypins">
             <a ng-click="updateSelected('pins')"><i class="fa fa-map-pin" ng-class="selected.pins && 'active'" uib-tooltip="Create StoryPins" tooltip-placement="right"></i></a>
+        </p>
+        <p id="createStoryframes">
             <a ng-click="updateSelected('frames')"><i class="fa fa-object-group" ng-class="selected.frames && 'active'" uib-tooltip="Create StoryFrames" tooltip-placement="right"></i></a>
+        </p>
         </nav>
         <div class="sidebar-content">
-            <div ng-if="selected.toc">
-              <ng-include src="'app/ui/templates/toc.html'"></ng-include>
+            <div ng-if="selected.toc">    
+                <ng-include src="'app/ui/templates/toc.html'"></ng-include>
             </div>
             <div ng-if="selected.settings">
               <ng-include src="'app/ui/templates/playback.html'"></ng-include>
