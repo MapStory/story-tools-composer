@@ -32,7 +32,8 @@ const tour = {
           title: "Create StoryPins",
           content: "StoryPins allow you to add text, images or videos that help you better explain what is observed in the StoryLayer data. The StoryPin create form will ask you to define a start date, end date and location for your StoryPin, as well as the text, image or video that you’d like to appear with your StoryPin.",
           target: "createStorypins",
-          placement: "bottom"
+          placement: "bottom",
+          showPrevButton: true
         },
         {
           title: "Create StoryFrames",
