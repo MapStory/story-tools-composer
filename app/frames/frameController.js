@@ -207,8 +207,8 @@ function frameController($scope, stateSvc, frameSvc, MapManager) {
       $scope.frameSvc.frameSettings[index].endDate
     );
     const coords = [
-      $scope.frameSvc.frameSettings[index].bb3,
-      $scope.frameSvc.frameSettings[index].bb1
+      $scope.frameSvc.copiedFrameSettings[index].bb3,
+      $scope.frameSvc.copiedFrameSettings[index].bb1
     ];
     removeBoundingBox();
     zoomToExtent(coords.flatten());
