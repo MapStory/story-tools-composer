@@ -45,5 +45,13 @@ export default [
   {
     regex: new RegExp(/https?:\/\/.*\.wikimedia\.org\/.*/),
     isImage: true
+  },
+  {
+    regex: new RegExp(/https?:\/\/.*\.amazonaws\.com\/.*/),
+    isImage: true
+  },
+  {
+    regex: new RegExp(/https?:\/\/.*\.amazonaws\.com\/.*/),
+    isImage: false
   }
 ];
