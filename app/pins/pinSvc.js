@@ -336,12 +336,6 @@ function pinSvc($translate, timeSvc, stateSvc, MapManager, $uibModal) {
       if (pin.media !== "") {
         const whitelistObj = svc.getWhitelistObject(pin.media);
         if (whitelistObj != null) {
-          if (!whitelistObj.isImage) {
-            const vid = document.createElement("video");
-            vid.setAttribute('preload', 'none');
-            vid.setAttribute("type", 'video/mp4');
-            vid.setAttribute("src", pin.media);
-          } 
           if (whitelistObj.isImage) {
             const imgDiv = document.createElement("div");
             const img = document.createElement("img");
