@@ -73,7 +73,7 @@
     "eslint-plugin-react": "^7.6.1",
     "font-awesome": "^4.7.0",
     "jquery": "3.3.1",
-    "jsonix": "git+http://github.com/highsource/jsonix#e285e82fb15fa3d62665a35eb728022936df1f4b",
+    "jsonix": "git+https://github.com/highsource/jsonix#e285e82fb15fa3d62665a35eb728022936df1f4b",
     "moment": "^2.20.1",
     "nouislider": "9.2.0",
     "ogc-schemas": "2.6.1",
