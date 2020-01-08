@@ -49,7 +49,8 @@ module.constant("appConfig", {
       canStyleWMS: true
     }
   ],
-  iconCommonsHost: "http://mapstory.dev.boundlessgeo.com"
+  iconCommonsHost: "http://mapstory.dev.boundlessgeo.com",
+  proxy: window.mapstory.composer.config.proxy
 });
 
 module.run(() => {

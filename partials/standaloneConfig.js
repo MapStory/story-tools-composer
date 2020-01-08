@@ -7,6 +7,8 @@ window.mapstory.composer.config = {
   userprofilename:  "Tester" ,
   userprofileemail:  "test@test.org" ,
   currentLanguage: "en",
+  // TODO: How to assign this to django PROXY_URL?
+  // proxy: "{{ PROXY_URL }}" !== '' ? "{{ PROXY_URL }}" : "/proxy/?url=",
   proxy: "/proxy/?url=",
   rest: "/maps/",
   ajaxLoginUrl: "/account/ajax_login",
