@@ -1,3 +1,5 @@
+import utils from "app/utils/utils";
+
 function layerOptionsSvc() {
   const svc = {};
 
@@ -20,10 +22,12 @@ function layerOptionsSvc() {
       name = parts[1];
     }
 
+    // TODO: Will the server arg passed in have the use_proxy param?
     const url =
+      utils.useProxyUrlParam(utils.getUseProxyParam(server),
       server && server.type === "remote"
         ? server.absolutePath
-        : `${server.path + workspace}/${name}/wms`;
+        : `${server.path + workspace}/${name}/wms`, appConfig.proxy);
     const id = `${workspace}:${name}`;
     const options = {
       id,
